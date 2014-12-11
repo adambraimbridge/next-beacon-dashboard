@@ -1,0 +1,16 @@
+{
+  "name": "next-beacon-dashboard",
+  "main": "src/main.js",
+  "dependencies": {
+    "o-grid": "~2.4.1"
+  },
+  "ignore": [
+    "server",
+    ".sass-cache",
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

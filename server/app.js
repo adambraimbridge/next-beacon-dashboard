@@ -14,6 +14,8 @@ var keen = keenIO.configure({
 
 var app = module.exports = express();
 
+app.use(express.static(__dirname + '/../static'));
+
 app.engine('handlebars', exphbs());
 app.set('viewine', 'handlebars');
 
@@ -22,11 +24,6 @@ app.get('/__gtg', function(req, res) {
 });
 
 app.get('/users/by/:group', function(req, res) {
-
-    if (!/(country|browser\.|eRights)/.test(req.params.group)) {
-        console.warn('Group must by one of country|browser.|eRights')
-        res.status(404)
-    } 
 
     var count = new keenIO.Query("count", {
         event_collection: "click",
