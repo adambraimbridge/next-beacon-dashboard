@@ -32,7 +32,7 @@ app.get('/users/by/:group', function(req, res) {
         event_collection: "click",
         target_property: "country",
         timeframe: 'today',
-        group_by: req.params.group
+        group_by: req.params.group.split(',')
     });
     
     keen.run(count, function(err, response){
