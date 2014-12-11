@@ -21,6 +21,31 @@ app.get('/__gtg', function(req, res) {
     res.status(200).send();
 });
 
+app.get('/users/by/:group', function(req, res) {
+
+    if (!/(country|browser\.|eRights)/.test(req.params.group)) {
+        console.warn('Group must by one of country|browser.|eRights')
+        res.status(404)
+    } 
+
+    var count = new keenIO.Query("count", {
+        event_collection: "click",
+        target_property: "country",
+        timeframe: 'today',
+        group_by: req.params.group
+    });
+    
+    keen.run(count, function(err, response){
+        if (err) {
+            res.json(err);
+            return;
+        }
+        console.log(util.inspect(response, { showHidden: true, depth: null })); 
+        res.json(response);
+    });
+    
+})
+
 // ...
 app.get('/clicks', function(req, res) {
     
