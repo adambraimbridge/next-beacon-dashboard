@@ -26,17 +26,26 @@ app.get('/clicks', function(req, res) {
     
     var count = new keenIO.Query("count", {
         event_collection: "click",
-        target_property: "country"
+        target_property: "country",
+        interval: req.query.interval || 'daily',
+        timeframe: req.query.timeframe || 'this_2_days'
+    });
+    
+    var count1 = new keenIO.Query("count", {
+        event_collection: "click",
+        target_property: "country",
+        interval: 'hourly',
+        timeframe: 'today'
     });
 
     // Send query
-    keen.run(count, function(err, response){
+    keen.run([count, count1], function(err, response){
         if (err) {
             res.json(err);
             return;
         }
-        console.log('**', response);
-        res.render('clicks.handlebars', response);
+        console.log(util.inspect(response, { showHidden: true, depth: null })); 
+        res.render('clicks.handlebars', { today: response[1].result, nDays: response[0].result });
     });
      
 });

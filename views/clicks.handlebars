@@ -3,18 +3,47 @@
         <title>Clicks</title>
         <meta http-equiv="refresh" content="120">
         <style>
-            body { background-color: #ff0080; }
-            big { 
-                display: block;
-                line-height: 100vh;
-                text-align: center;
-                font-size: 100px;
+            body { 
+                background-color: #ff0080;
+                margin: 0;
+                padding: 0;
+            }
+            h1 { 
+                padding: 30px;
+                font-size: 14px;
+                background-color: #fff; 
+                font-family: sans-serif;
+            }
+            h2 {
+                font-size: 14px;
+                font-family: sans-serif;
+                font-weight: normal;
+                padding: 10px 30px;
+                color: white;
+            } 
+            li { 
                 text-shadow: 1px 1px black;
                 color: white;
             }
         </style>
     </head>
     <body>
-        <big>{{result}}</big>
+
+    <h1>Next live dashboard</h1>
+   
+    <h2>Daily article page view totals</h2>
+    <ul>
+        {{#each nDays}}
+           <li>{{ timeframe.start }} - {{ value }}</li>
+        {{/each}}
+    </ul>
+    
+    <h2>Article page views today</h2>
+    <ul>
+        {{#each today}}
+            <li>{{ timeframe.start }} - {{ value }}</li>
+        {{/each}}
+    </ul>
+    
     </body>
 </html>
