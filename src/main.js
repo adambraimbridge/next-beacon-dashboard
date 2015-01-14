@@ -18,6 +18,10 @@ reqwest('/users/by/content.genre', function (resp) {
     }).join('');
 });
 
+reqwest('/users/by/eRights', function (resp) {
+    var el = document.getElementById('uniques');
+    el.innerHTML = resp.result.length;
+});
 
 reqwest('/users/by/country', function (resp) {
     var el = document.getElementById('country');
