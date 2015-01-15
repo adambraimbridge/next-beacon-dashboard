@@ -14,10 +14,10 @@ fetch('/api/cta/menu-items')
     .then(function(data) {
 
         var sortedByPopularity = data.result[0].value.sort(function (a, b) {
-            return a.result < b.result 
+            return a.result > b.result 
         });
 
-        var asHtml = sortedByPopularity.map(function (item) {
+        var asHtml = sortedByPopularity.reverse().map(function (item) {
             return '<li>' + item['meta.domPath'] + ' (' + item.result + ')</li>';
         })
 
@@ -27,7 +27,7 @@ fetch('/api/cta/menu-items')
         
     });
 
-fetch('/api/cta/menu-button' + location.search)
+fetch('/api/cta/menu-button')
 
     .then(function(response) {
         if (response.status >= 400) {
