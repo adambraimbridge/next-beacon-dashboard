@@ -1,5 +1,7 @@
 
 build:
+	
+	cp bower_components/rickshaw/rickshaw.css static/
 	./node_modules/.bin/gulp build
 
 run:
