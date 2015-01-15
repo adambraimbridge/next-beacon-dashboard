@@ -27,7 +27,7 @@ fetch('/api/cta/menu-items')
         
     });
 
-fetch('/api/cta/menu-button')
+fetch('/api/cta/menu-button' + location.search)
 
     .then(function(response) {
         if (response.status >= 400) {
