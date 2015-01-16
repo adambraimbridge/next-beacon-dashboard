@@ -6,6 +6,7 @@ var util            = require('util');
 var keenIO          = require('keen.io');
 var exphbs          = require('express3-handlebars');
 var navigation      = require('./queries/navigation');
+var performance     = require('./queries/performance');
 
 // Configure instance. Only projectId and writeKey are required to send data.
 var keen = keenIO.configure({
@@ -65,17 +66,34 @@ app.get('/api/cta/menu-items', function(req, res) {
 })
 
 
+app.get('/api/timing/performance/:metric', function(req, res) {
+    keen.run(performance.navigationTiming(req.params.metric, {
+        interval: req.query.interval,       // move this to middleware
+        timeframe: req.query.timeframe,
+        target_property: req.query.target_property,
+        group_by: (req.query.group_by) ? req.query.group_by.split(',') : []
+    }), function(err, response) {
+        if (err) {
+            res.json(err);
+            return;
+        }
+        console.log(util.inspect(response, { showHidden: true, depth: null })); 
+        res.json(response);
+    });
+})
 
 
 
 
+app.get('/users/by/country', function(req, res) {
 
+});
 
 
 app.get('/users/by/:group', function(req, res) {
 
     var count = new keenIO.Query("count", {
-        event_collection: "click",
+        event_collection: "cl",
         target_property: "country",
         timeframe: 'today',
         group_by: req.params.group.split(',')
