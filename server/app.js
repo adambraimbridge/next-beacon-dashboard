@@ -24,7 +24,7 @@ var asJson = function(err, response) {
     res.json(response);
 };
 
-app.use(express.static(__dirname + '/../static'));
+app.use(express.static(__dirname + '/../static'), { maxAge: 86400000 });
 
 app.engine('handlebars', exphbs());
 app.set('viewine', 'handlebars');
