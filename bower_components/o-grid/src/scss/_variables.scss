@@ -1,0 +1,36 @@
+// -------------------------------------------------------------------------------------
+//  DIMENSIONS
+// -------------------------------------------------------------------------------------
+
+// Gutters
+$o-grid-default-gutter: 10px !default;
+$o-grid-small-gutter: 10px !default;
+
+// Page widths
+$o-grid-min-width: 240px !default;
+$o-grid-small-max-width: 600px !default;
+$o-grid-medium-max-width: 800px !default;
+$o-grid-large-max-width: 1100px !default;
+$o-grid-extra-large-max-width: 1360px !default;
+
+// -------------------------------------------------------------------------------------
+// Responsive behaviour configuration
+// -------------------------------------------------------------------------------------
+$o-grid-is-silent: true !default;
+$o-grid-is-responsive: true !default;
+$o-grid-is-fluid: true !default;
+$o-grid-useragents-fixed-large: ie8 !default;
+$o-grid-selector-fixed-large: null !default;
+$o-grid-is-fixed-large: false !default;
+
+// -------------------------------------------------------------------------------------
+// STRUCTURAL VARIABLES
+//
+// !!! DO NOT CHANGE UNLESS EITHER:
+//  a) MAKING FUNDAMENTAL CHANGES TO HOW THE SASS IS STRUCTURED
+//  b) ADDING EXTRA LAYOUT SIZES (Although technically possible, it's highly
+//     inadvisable to do so as components will not typically define styles for
+//     your new layout)
+// -------------------------------------------------------------------------------------
+$_o-grid-max-widths: $o-grid-small-max-width $o-grid-medium-max-width $o-grid-large-max-width $o-grid-extra-large-max-width;
+$_o-grid-layout-shorthands: S M L XL;

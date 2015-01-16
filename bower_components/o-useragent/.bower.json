@@ -1,0 +1,23 @@
+{
+  "name": "o-useragent",
+  "main": [
+    "main.scss",
+    "main.js"
+  ],
+  "ignore": [
+    ".gitignore",
+    "test",
+    ".travis.yml"
+  ],
+  "homepage": "https://github.com/Financial-Times/o-useragent",
+  "version": "2.2.0",
+  "_release": "2.2.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.2.0",
+    "commit": "3c028c35b636256d066ff2c8717cef4dfc5e4a91"
+  },
+  "_source": "https://github.com/Financial-Times/o-useragent.git",
+  "_target": ">=0.5.0 <3",
+  "_originalSource": "o-useragent"
+}

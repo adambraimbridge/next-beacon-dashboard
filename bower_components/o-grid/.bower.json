@@ -1,0 +1,21 @@
+{
+  "name": "o-grid",
+  "main": [
+    "main.scss"
+  ],
+  "dependencies": {
+    "o-useragent": ">=0.5.0 <3"
+  },
+  "homepage": "https://github.com/Financial-Times/o-grid",
+  "version": "2.4.1",
+  "_release": "2.4.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.4.1",
+    "commit": "f691397140ab2814e4a2f5ac59b2bb0688e9eb23"
+  },
+  "_source": "https://github.com/Financial-Times/o-grid.git",
+  "_target": "~2.4.1",
+  "_originalSource": "o-grid",
+  "_direct": true
+}

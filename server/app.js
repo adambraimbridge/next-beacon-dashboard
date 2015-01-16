@@ -33,7 +33,6 @@ app.get('/__gtg', function(req, res) {
     res.status(200).send();
 });
 
-
 app.get('/api/cta/menu-button', function(req, res) {
     keen.run(navigation.countMenuButtonClicks({
         interval: req.query.interval,       // move this to middleware
@@ -97,12 +96,21 @@ app.get('/', function(req, res) {
     res.render('index.handlebars', { });
 });
 
-app.get('/features/navigation', function(req, res) {
-    res.render('layout.handlebars', { });
+var features = {
+    navigation: 'Navigation menu', 
+    article: 'Article', 
+}
+
+app.get('/features/:feature', function(req, res) {
+    res.render('layout.handlebars', { title: features[req.params.feature], 
+        navigation: req.params.feature === 'navigation'
+    });
 });
 
+
+
+
 app.get('/api/:collection', function(req, res) {
- 
 })
 
 app.get('/api/cta/search-button', function(req, res) {
