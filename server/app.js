@@ -27,7 +27,6 @@ api.get('/api/dwell/:metric', routers.dwell);
 
 // Dashboard routes
 var dashboard = express.Router();
-dashboard.get('/', routers.dashboard.index);
 dashboard.get('/features/:feature', routers.dashboard.features);
 
 app.use('/api', api)
