@@ -7,6 +7,9 @@ var keenIO          = require('keen.io');
 var exphbs          = require('express3-handlebars');
 var navigation      = require('./queries/navigation');
 var performance     = require('./queries/performance');
+var dwell           = require('./queries/dwell');
+
+var routers         = require('./routers');
 
 // Configure instance. Only projectId and writeKey are required to send data.
 var keen = keenIO.configure({
@@ -34,128 +37,35 @@ app.get('/__gtg', function(req, res) {
     res.status(200).send();
 });
 
-app.get('/api/cta/menu-button', function(req, res) {
-    keen.run(navigation.countMenuButtonClicks({
-        interval: req.query.interval,       // move this to middleware
-        timeframe: req.query.timeframe,
-        group_by: (req.query.group_by) ? req.query.group_by.split(',') : []
-    }), function(err, response) {
-        if (err) {
-            res.json(err);
-            return;
-        }
-        console.log(util.inspect(response, { showHidden: true, depth: null })); 
-        res.json(response);
-    });
-})
+var api = express.Router();
+api.get('/cta/menu-button', routers.cta.menu); 
+api.get('/cta/menu-items', routers.cta.menuItems); 
+api.get('/cta/search-button', routers.cta.search); 
+api.get('/api/timing/performance/:metric', routers.performance); 
+api.get('/api/dwell/:metric', routers.dwell); 
 
+app.use('/api', api)
 
-app.get('/api/cta/menu-items', function(req, res) {
-    keen.run(navigation.menuItems({
-        interval: req.query.interval,       // move this to middleware
-        timeframe: req.query.timeframe,
-        group_by: (req.query.group_by) ? req.query.group_by.split(',') : []
-    }), function(err, response) {
-        if (err) {
-            res.json(err);
-            return;
-        }
-        console.log(util.inspect(response, { showHidden: true, depth: null })); 
-        res.json(response);
-    });
-})
-
-
-app.get('/api/timing/performance/:metric', function(req, res) {
-    keen.run(performance.navigationTiming(req.params.metric, {
-        interval: req.query.interval,       // move this to middleware
-        timeframe: req.query.timeframe,
-        target_property: req.query.target_property,
-        group_by: (req.query.group_by) ? req.query.group_by.split(',') : []
-    }), function(err, response) {
-        if (err) {
-            res.json(err);
-            return;
-        }
-        console.log(util.inspect(response, { showHidden: true, depth: null })); 
-        res.json(response);
-    });
-})
-
-
-
-
-app.get('/users/by/country', function(req, res) {
-
-});
-
-
-app.get('/users/by/:group', function(req, res) {
-
-    var count = new keenIO.Query("count", {
-        event_collection: "cl",
-        target_property: "country",
-        timeframe: 'today',
-        group_by: req.params.group.split(',')
-    });
-    
-    keen.run(count, function(err, response){
-        if (err) {
-            res.json(err);
-            return;
-        }
-        console.log(util.inspect(response, { showHidden: true, depth: null })); 
-        res.json(response);
-    });
-    
-})
+var dashboard = express.Router();
+app.use('/', api)
 
 app.get('/', function(req, res) {
     res.render('index.handlebars', { });
 });
 
 var features = {
-    navigation: 'Navigation menu', 
-    article: 'Article', 
+    navigation: 'Navigation menu',
+    biscuits: 'Biscuits'
 }
 
 app.get('/features/:feature', function(req, res) {
-    res.render('layout.handlebars', { title: features[req.params.feature], 
-        navigation: req.params.feature === 'navigation'
-    });
+    var opts = {
+        title: features[req.params.feature]
+    }
+    opts[req.params.feature] = true;
+    res.render('layout.handlebars', opts);
 });
 
-
-
-
-app.get('/api/:collection', function(req, res) {
-})
-
-app.get('/api/cta/search-button', function(req, res) {
-
-    var count = new keenIO.Query("count", {
-        event_collection: "cta",
-        filters: [
-            {
-                "property_name": "meta.domPath",
-                "operator": "eq",
-                "property_value": "o-header | search-button"
-            }
-        ],
-        interval: req.query.interval || 'hourly',
-        timeframe: req.query.timeframe || 'today',
-        group_by: (req.query.group) ? req.query.group.split(',') : []
-    });
-    
-    keen.run(count, function(err, response){
-        if (err) {
-            res.json(err);
-            return;
-        }
-        res.json(response);
-    });
-
-});
 
 app.get('/api/timing', function(req, res) {
 
@@ -175,35 +85,6 @@ app.get('/api/timing', function(req, res) {
         res.json(response);
     });
 
-});
-
-// ...
-app.get('/clicks', function(req, res) {
-    
-    var count = new keenIO.Query("count", {
-        event_collection: "click",
-        target_property: "country",
-        interval: req.query.interval || 'daily',
-        timeframe: req.query.timeframe || 'this_2_days'
-    });
-    
-    var count1 = new keenIO.Query("count", {
-        event_collection: "click",
-        target_property: "country",
-        interval: 'hourly',
-        timeframe: 'today'
-    });
-
-    // Send query
-    keen.run([count, count1], function(err, response){
-        if (err) {
-            res.json(err);
-            return;
-        }
-        console.log(util.inspect(response, { showHidden: true, depth: null })); 
-        res.render('clicks.handlebars', { today: response[1].result, nDays: response[0].result });
-    });
-     
 });
 
 var port = process.env.PORT || 3001;
