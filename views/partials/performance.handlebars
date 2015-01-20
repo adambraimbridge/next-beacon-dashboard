@@ -1,2 +1,21 @@
-<h2 class="subtitle-chart">Daily users using the navigation menu button</h2>
+<p class="purpose">
+    Perceived of page load speed is a key factor in usability.
+</p>
 
+<ul>
+    <li>
+        Navigation timings per browser family :- 
+        <ul> 
+            <li><a href="/api/timing/performance/average?interval=daily&timeframe=this_3_days&group_by=user.browser.family&target_property=meta.timings.connectStart">connectStart</a>
+            <li><a href="/api/timing/performance/average?interval=daily&timeframe=this_3_days&group_by=user.browser.family&target_property=meta.timings.domContentLoadedEventEnd">DOMContentLoaded</a>
+            <li><a href="/api/timing/performance/average?interval=daily&timeframe=this_3_days&group_by=user.browser.family&target_property=meta.timings.loadEventEnd">loadEventEnd</a>
+        </ul>
+    </li> 
+    <li>Cut by page type :-
+        <ul>            
+            <li><a href="/api/dwell/uniques?interval=daily&timeframe=this_week&page_type=frontpage&excludeStaff=false&group_by=user.erights">Frontpage</a>
+            <li><a href="/api/dwell/uniques?interval=daily&timeframe=this_week&page_type=article&excludeStaff=false&group_by=user.erights">Article</a>
+            <li><a href="/api/dwell/uniques?interval=daily&timeframe=this_week&page_type=stream&excludeStaff=false&group_by=user.erights">Streams</a>
+        </ul>
+    </li>
+</ul>

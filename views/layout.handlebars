@@ -22,7 +22,7 @@
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="/features/summary">Next</a></li>
                     <li class="divider"></li>
-                    <li><a href="/features/performance">Performance</a></li>
+                    <li><a href="/features/performance">Page speed</a></li>
                     <li class="divider"></li>
                     <li><a href="/features/article">Article</a></li>
                     <li><a href="/features/cards">Article cards</a></li>
@@ -31,16 +31,15 @@
                     <li><a href="/features/navigation">Navigation menu</a></li>
                     <li><a href="/features/related">Related links</a></li>
                     <li><a href="/features/recommended">Recommended (b2b)</a></li>
-                    <li><a href="/features/forlater">Save for later</a></li>
+                    <li><a href="/features/saveforlater">Save for later</a></li>
                     <li><a href="/features/search">Search</a></li>
                     <li><a href="/features/slideshows">Slideshows and galleries</a></li>
                     <li><a href="/features/video">Video</a></li>
-                    <li class="divider"></li>
-                    <li><a href="/features/biscuits">Biscuits</a></li>
                 </ul>
             </div>
            
             <hr/>
+
 <!--
             <div class="btn-group" data-timeframe-list>
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -91,19 +90,20 @@
             <section class="stats__container" id="c">
                 
                 {{#if summary}}{{> summary}}{{/if}}
-                {{#if performance}}{{> todo}}{{/if}}
-                {{#if article}}{{> todo}}{{/if}}
-                {{#if cards}}{{> todo}}{{/if}}
-                {{#if follow}}{{> todo}}{{/if}}
-                {{#if my}}{{> todo}}{{/if}}
+                {{#if performance}}{{> performance}}{{/if}}
+                {{#if adverts}}{{> adverts}}{{/if}}
+                {{#if article}}{{> article}}{{/if}}
+                {{#if cards}}{{> cards}}{{/if}}
+                {{#if follow}}{{> follow}}{{/if}}
+                {{#if my}}{{> my}}{{/if}}
                 {{#if navigation}}{{> navigation}}{{/if}}
-                {{#if related}}{{> todo}}{{/if}}
-                {{#if recommended}}{{> todo}}{{/if}}
-                {{#if saveforlater}}{{> todo}}{{/if}}
-                {{#if search}}{{> todo}}{{/if}}
-                {{#if slideshows}}{{> todo}}{{/if}}
-                {{#if video}}{{> todo}}{{/if}}
-                {{#if biscuits}}{{> biscuits}}{{/if}}
+                {{#if related}}{{> related}}{{/if}}
+                {{#if recommended}}{{> recommended}}{{/if}}
+                {{#if saveforlater}}{{> saveforlater}}{{/if}}
+                {{#if search}}{{> search}}{{/if}}
+                {{#if slideshows}}{{> slideshows}}{{/if}}
+                {{#if video}}{{> video}}{{/if}}
+            
             </section>
             
         </div>
