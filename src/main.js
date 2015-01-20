@@ -3,8 +3,39 @@ require('es6-promise').polyfill();
 require('isomorphic-fetch');
 var Rickshaw = require('rickshaw');
 
+var Search = function () {
+    this.qs = {};
+}
 
-fetch('/api/cta/menu-items')
+Search.prototype.parse = function (str) {
+    var self = this;
+    str.slice(1)
+        .split('&')
+        .forEach(function (a) {
+            var t = a.split('=');
+            self.qs[t[0]] = t[1]
+        })
+    return this;
+}
+
+Search.prototype.serialise = function () {
+    var self = this;
+    return Object.keys(this.qs).map(function (k) {
+        return [k, self.qs[k]].join('=');
+    }).join('&');
+}
+
+var s = new Search().parse(location.search);
+
+$('[data-timeframe-list].btn-group').on('click', function (e) {
+    var t = e.target.getAttribute('data-timeframe');
+    if (t) {
+        s.qs.timeframe = t;
+        location.search =  '?' + s.serialise(); 
+    }
+})
+
+fetch('/api/cta/menu-items' + location.search)
     .then(function(response) {
         if (response.status >= 400) {
             throw new Error("Bad response from server");
@@ -20,14 +51,10 @@ fetch('/api/cta/menu-items')
         var asHtml = sortedByPopularity.reverse().map(function (item) {
             return '<li>' + item['meta.domPath'] + ' (' + item.result + ')</li>';
         })
-
-        console.log(asHtml);
-
         document.querySelector('.menu-items__list').innerHTML = asHtml.join('');
-        
     });
 
-fetch('/api/cta/menu-button')
+fetch('/api/cta/menu-button' + location.search)
 
     .then(function(response) {
         if (response.status >= 400) {
