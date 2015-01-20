@@ -35,8 +35,12 @@ api.get('/dwell/:metric', routers.dwell);
 var dashboard = express.Router();
 dashboard.get('/features/:feature', routers.dashboard.features);
 
-app.use('/api', api)
-app.use('/', dashboard)
+var data = express.Router();
+data.get('/:source', routers.data.search);
+
+app.use('/api', api);
+app.use('/data', data);
+app.use('/', dashboard);
 
 app.get('/', function (req, res) {
     res.redirect(302, '/features/summary');
