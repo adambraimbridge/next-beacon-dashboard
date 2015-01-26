@@ -38,17 +38,15 @@ dashboard.get('/features/:feature', routers.dashboard.features);
 var data = express.Router();
 data.get('/:source', routers.data.search);
 
-app.use('/api', api);
-app.use('/data', data);
-app.use('/', dashboard);
+app.use('/performance/api', api);
+app.use('/performance/data', data);
+app.use('/performance', dashboard);
 
 app.get('/', function (req, res) {
-    res.redirect(302, '/features/summary');
+    res.redirect(302, '/performance/features/summary');
 })
 
 var port = process.env.PORT || 3001;
 app.listen(port, function() {
     console.log("Listening on " + port);
 });
-
-
