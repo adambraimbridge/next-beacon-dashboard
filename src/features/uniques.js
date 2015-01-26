@@ -1,6 +1,40 @@
 
 module.exports.init = function () {
 
+    
+    fetch('/api/dwell/uniques?interval=daily&timeframe=today&group_by=page.location.type&excludeStaff=false')
+        .then(function(response) {
+            if (response.status >= 400) {
+                throw new Error("Bad response from server");
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            var html = data.result
+                .map(function (n) {
+                    return n.value
+                })
+                .reduce(function (a, b) {
+                    return a.concat(b);
+                })
+                .sort(function (a, b) {
+                    return a.result < b.result;
+                })
+                .map(function (n) {
+                    console.log(n.result, n["page.location.type"]);
+                    return '<li>' + 
+                                '<big>' + n.result +' people</big>' +
+                                    ' ' +
+                                '<span> used ' +
+                                    n["page.location.type"] 
+                                '</span>' +
+                            '</li>';
+                }).join('');
+ 
+            document.getElementById('pagetype').innerHTML = html;
+        })
+
+    // A list of daily uniques
     fetch('/api/dwell/uniques?interval=daily&timeframe=this_7_days&excludeStaff=false')
         .then(function(response) {
             if (response.status >= 400) {
@@ -9,8 +43,6 @@ module.exports.init = function () {
             return response.json();
         })
         .then(function(data) {
-
-            console.log(data);
 
             // ...
             var html = data.result.reverse().map(function (day) {
