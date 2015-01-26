@@ -18,7 +18,7 @@ app.get('/__gtg', function(req, res) {
 });
 
 var cacheControl = function (req, res, next) {
-    res.header('Cache-Control', 'max-age=30');
+    res.header('Cache-Control', 'max-age=120');
     next();
 }
 
