@@ -4,7 +4,7 @@ body {
     font-size: 18px;
 }
 
-ul {
+div>ul {
     list-style-position: inside;
     margin-left: 0;
     padding-left: 0;
