@@ -4,6 +4,12 @@ body {
     font-size: 18px;
 }
 
+ul {
+    list-style-position: inside;
+    margin-left: 0;
+    padding-left: 0;
+}
+
 .feature__container,
 .controls__container,
 .data__container {
@@ -29,8 +35,10 @@ body {
 }
 
 .feature__name {
-    font-weight: normal;
-    font-size: 38px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 16px;
+    color: #DD1879;
 }
 
 .controls__container {
