@@ -1,7 +1,9 @@
 var Rickshaw = require('rickshaw');
+require('isomorphic-fetch');
+require('es6-promise').polyfill();
 
 var Search = function () {
-    this.qs = {};
+    this.qs = { };
 }
 
 Search.prototype.parse = function (str) {

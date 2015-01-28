@@ -1,7 +1,10 @@
 
+require('isomorphic-fetch');
+require('es6-promise').polyfill();
+
 module.exports.init = function () {
 
-    
+    // A list of activity around different page types 
     fetch('/api/dwell/uniques?interval=daily&timeframe=today&group_by=page.location.type&excludeStaff=false')
         .then(function(response) {
             if (response.status >= 400) {
@@ -30,7 +33,6 @@ module.exports.init = function () {
                                 '</span>' +
                             '</li>';
                 }).join('');
- 
             document.getElementById('pagetype').innerHTML = html;
         })
 

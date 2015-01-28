@@ -62,3 +62,25 @@ module.exports.search = function(req, res) {
     });
 };
 
+module.exports.articleCards = function(req, res) {
+    var count = new keenIO.Query("count", {
+        event_collection: "cta",
+        filters: [
+            {
+                "property_name": "meta.domPath",
+                "operator": "contains",
+                "property_value": req.query.dom_path || "article-card"
+            }
+        ],
+        interval: req.query.interval || 'daily',
+        timeframe: req.query.timeframe || 'today',
+        group_by: (req.query.group) ? req.query.group.split(',') : []
+    });
+    keen.run(count, function(err, response){
+        if (err) {
+            res.json(err);
+            return;
+        }
+        res.json(response);
+    });
+};
