@@ -8,7 +8,7 @@ var routers         = require('./routers');
 
 var app = module.exports = express();
 
-app.use(express.static(__dirname + '/../static', { maxAge: 86400000 }));
+app.use(express.static(__dirname + '/../static', { maxAge: 3600000 }));
 
 app.engine('handlebars', exphbs());
 app.set('viewine', 'handlebars');
