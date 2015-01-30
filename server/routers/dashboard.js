@@ -25,3 +25,17 @@ module.exports.features = function(req, res) {
     opts[req.params.feature] = true;
     res.render('layout.handlebars', opts);
 };
+
+module.exports.graph = function(req, res) {
+    
+    var opts = {
+        graph: true
+    }
+    
+    opts[req.query.feature] = true;
+
+    console.log('***********', opts);
+
+    res.render('layout.handlebars', opts);
+}
+
