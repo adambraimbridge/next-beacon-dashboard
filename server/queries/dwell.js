@@ -3,15 +3,13 @@ var keenIO          = require('keen.io');
 
 var dwell = function (metric, opts) { 
   
-    var filters = [];
-
-    if (opts.excludeStaff) {
-        filters.push({
+    var filters = [
+        {
             "property_name": "user.isStaff",
             "operator": "eq",
-            "property_value": false
-        })
-    }
+            "property_value": opts.isStaff
+        }
+    ];
     
     if (opts.pageType) {
         filters.push({

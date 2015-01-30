@@ -9,9 +9,13 @@ var keen = keenIO.configure({
 });
 
 module.exports.menu = function(req, res) {
+    
+    
     keen.run(navigation.countMenuButtonClicks({
         interval: req.query.interval,       // move this to middleware
         timeframe: req.query.timeframe,
+        pageType: (req.query.pageType) ? req.query.pageType : undefined,
+        isStaff: req.query.isStaff ? (req.query.isStaff === 'true') : true,
         group_by: (req.query.group_by) ? req.query.group_by.split(',') : []
     }), function(err, response) {
         if (err) {
@@ -25,9 +29,13 @@ module.exports.menu = function(req, res) {
 
 
 module.exports.menuItems = function(req, res) { 
+    
+
     keen.run(navigation.menuItems({
         interval: req.query.interval,       // move this to middleware
         timeframe: req.query.timeframe,
+        isStaff: req.query.isStaff ? (req.query.isStaff === 'true') : true,
+        pageType: (req.query.pageType) ? req.query.pageType : undefined, 
         group_by: (req.query.group_by) ? req.query.group_by.split(',') : []
     }), function(err, response) {
         if (err) {
@@ -40,6 +48,17 @@ module.exports.menuItems = function(req, res) {
 };
 
 module.exports.search = function(req, res) {
+    
+    var filters = [];
+
+    if (req.query.excludeStaff === 'true') {
+        filters.push({
+            "property_name": "user.isStaff",
+            "operator": "eq",
+            "property_value": true
+        })
+    }
+    
     var count = new keenIO.Query("count", {
         event_collection: "cta",
         filters: [
@@ -51,6 +70,7 @@ module.exports.search = function(req, res) {
         ],
         interval: req.query.interval || 'hourly',
         timeframe: req.query.timeframe || 'today',
+        filters: filters,
         group_by: (req.query.group) ? req.query.group.split(',') : []
     });
     keen.run(count, function(err, response){
@@ -62,3 +82,25 @@ module.exports.search = function(req, res) {
     });
 };
 
+module.exports.articleCards = function(req, res) {
+    var count = new keenIO.Query("count", {
+        event_collection: "cta",
+        filters: [
+            {
+                "property_name": "meta.domPath",
+                "operator": "contains",
+                "property_value": req.query.dom_path || "article-card"
+            }
+        ],
+        interval: req.query.interval || 'daily',
+        timeframe: req.query.timeframe || 'today',
+        group_by: (req.query.group) ? req.query.group.split(',') : []
+    });
+    keen.run(count, function(err, response){
+        if (err) {
+            res.json(err);
+            return;
+        }
+        res.json(response);
+    });
+};

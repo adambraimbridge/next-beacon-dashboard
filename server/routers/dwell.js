@@ -20,10 +20,11 @@ module.exports = function(req, res) {
     };
 
     keen.run(dwell(metric, {
-        excludeStaff: req.query.excludeStaff === 'true',
-        pageType: req.query.page_type,
-        interval: req.query.interval,       // move this to middleware
-        timeframe: req.query.timeframe,
+        excludeStaff: req.query.excludeStaff === 'true' || false,
+        pageType: req.query.pageType,
+        interval: req.query.interval || 'daily',       // move this to middleware
+        isStaff: req.query.isStaff ? (req.query.isStaff === 'true') : true,
+        timeframe: req.query.timeframe || 'this_7_days' ,
         group_by: (req.query.group_by) ? req.query.group_by.split(',') : []
     }), function(err, response) {
         if (err) {

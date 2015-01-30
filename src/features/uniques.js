@@ -1,8 +1,12 @@
 
+require('isomorphic-fetch');
+require('es6-promise').polyfill();
+
 module.exports.init = function () {
 
-    
-    fetch('/api/dwell/uniques?interval=daily&timeframe=today&group_by=page.location.type&excludeStaff=false')
+    // ?interval=daily&timeframe=today&group_by=page.location.type&excludeStaff=false')
+    // A list of activity around different page types 
+    fetch('/api/dwell/uniques' + location.search)
         .then(function(response) {
             if (response.status >= 400) {
                 throw new Error("Bad response from server");
@@ -30,12 +34,11 @@ module.exports.init = function () {
                                 '</span>' +
                             '</li>';
                 }).join('');
- 
             document.getElementById('pagetype').innerHTML = html;
         })
 
     // A list of daily uniques
-    fetch('/api/dwell/uniques?interval=daily&timeframe=this_7_days&excludeStaff=false')
+    fetch('/api/dwell/uniques' + location.search)
         .then(function(response) {
             if (response.status >= 400) {
                 throw new Error("Bad response from server");
@@ -43,7 +46,6 @@ module.exports.init = function () {
             return response.json();
         })
         .then(function(data) {
-
             // ...
             var html = data.result.reverse().map(function (day) {
                 var daysAgo = parseInt((new Date() - new Date(day.timeframe.start)) / 24 / 60 / 60 / 1000);

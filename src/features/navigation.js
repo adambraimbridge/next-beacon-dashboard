@@ -1,38 +1,8 @@
 var Rickshaw = require('rickshaw');
-
-var Search = function () {
-    this.qs = {};
-}
-
-Search.prototype.parse = function (str) {
-    var self = this;
-    str.slice(1)
-        .split('&')
-        .forEach(function (a) {
-            var t = a.split('=');
-            self.qs[t[0]] = t[1]
-        })
-    return this;
-}
-
-Search.prototype.serialise = function () {
-    var self = this;
-    return Object.keys(this.qs).map(function (k) {
-        return [k, self.qs[k]].join('=');
-    }).join('&');
-}
+require('isomorphic-fetch');
+require('es6-promise').polyfill();
 
 module.exports.init = function () {
-
-    var s = new Search().parse(location.search);
-
-    $('[data-timeframe-list].btn-group').on('click', function (e) {
-        var t = e.target.getAttribute('data-timeframe');
-        if (t) {
-            s.qs.timeframe = t;
-            location.search =  '?' + s.serialise(); 
-        }
-    })
 
     fetch('/api/cta/menu-items' + location.search)
         .then(function(response) {

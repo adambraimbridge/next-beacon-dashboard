@@ -8,7 +8,7 @@ var routers         = require('./routers');
 
 var app = module.exports = express();
 
-app.use(express.static(__dirname + '/../static', { maxAge: 86400000 }));
+app.use(express.static(__dirname + '/../static', { maxAge: 3600000 }));
 
 app.engine('handlebars', exphbs());
 app.set('viewine', 'handlebars');
@@ -25,9 +25,10 @@ var cacheControl = function (req, res, next) {
 // API routes
 var api = express.Router();
 api.use(cacheControl);
-api.get('/cta/menu-button', routers.cta.menu); 
-api.get('/cta/menu-items', routers.cta.menuItems); 
-api.get('/cta/search-button', routers.cta.search); 
+api.get('/cta/menu-button', routers.cta.menu);
+api.get('/cta/menu-items', routers.cta.menuItems);
+api.get('/cta/search-button', routers.cta.search);
+api.get('/cta/article-card', routers.cta.articleCards);
 api.get('/timing/performance/:metric', routers.performance); 
 api.get('/dwell/:metric', routers.dwell); 
 
