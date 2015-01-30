@@ -1,5 +1,5 @@
 
-var Filters = require('./filters');
+var Filters = require('./filters')();
 
 switch (location.pathname) {
     case '/graph':
