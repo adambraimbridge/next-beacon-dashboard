@@ -12,6 +12,7 @@ var keen = keenIO.configure(
 // Maps query string parameters to a Keen.io Query object
 module.exports = function (req, res, next) {
 
+    var explain = [];
     var filters = [];
 
     if (req.query.pageType) {
@@ -21,10 +22,18 @@ module.exports = function (req, res, next) {
                 "operator": "eq",
                 "property_value": req.query.pageType
             })
+        explain.push('by ' + req.query.pageType);
     }
 
     var isStaff = req.query.isStaff ? (req.query.isStaff === 'true') : true;  // default to true
     
+
+    if (isStaff) {
+        explain.push('includes FT staff');
+    } else {
+        explain.push('excludes FT staff');
+    }
+
     filters.push(
         {
             "property_name": "user.isStaff",
@@ -52,7 +61,8 @@ module.exports = function (req, res, next) {
             }
         )
     }
-    
+   
+
     var metric = req.query.metric || 'count';
     var keen_defaults = {
         event_collection: req.query.event_collection || undefined,
@@ -63,6 +73,9 @@ module.exports = function (req, res, next) {
         filters: filters 
     }
     
+    explain.push('over ' + keen_defaults.timeframe.replace(/_/g, ' ').replace('this', ''))
+
+    req.keen_explain = explain;
     req.keen_defaults = keen_defaults;
     req.keen_query = new keenIO.Query(metric, keen_defaults);
     next();

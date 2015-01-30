@@ -21,24 +21,23 @@
                     Features <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="/graph?event_collection=dwell&metric=count_unique&target_property=user.erights">Next uniques</a></li>
+                    <li><a href="/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&title=Unique+users+on+next">Next uniques</a></li>
                     <li class="divider"></li>
-                    <li><a href="/performance">Page speed</a></li>
-                    <li class="divider"></li>
-                    <li><a href="/graph?event_collection=cta&metric=count_unique&target_property=user.erights&domPathContains=article-card">Article cards</a></li>
-                    <li><a href="/graph?event_collection=cta&metric=count_unique&target_property=user.erights&domPathEquals=o-header%20|%20menu-button">Navigation menu</a></li>
-                    <li><a href="/recommended">Recommended (b2b)</a></li>
-                    <li><a href="/graph?event_collection=cta&metric=count_unique&target_property=user.erights&domPathEquals=save-for-later">Save for later</a></li>
-                    <li><a href="/graph?event_collection=cta&metric=count_unique&target_property=user.erights&domPathEquals=o-header%20|%20search-button">Search</a></li>
-                    <li><a href="/slideshows">Slideshows and galleries</a></li>
+                    <li><a href="/graph?event_collection=cta&metric=count&domPathContains=article-card&title=Interactions+with+article+cards">Article cards</a></li>
+                    <li><a href="/graph?event_collection=cta&metric=count&target_property=user.erights&domPathEquals=o-header%20|%20menu-button&title=Interactions+with+the+navigation+menu">Navigation menu</a></li>
+                    <li><a href="/graph?event_collection=cta&metric=count_unique&target_property=user.erights&domPathContains=save-for-later&title=Unique+users+using+'save+for+later'">Save for later</a></li>
+                    <li><a href="/graph?event_collection=cta&metric=count&target_property=user.erights&domPathEquals=o-header%20|%20search-button&title=Interactions+with+the+search+button">Search</a></li>
                 </ul>
             </div>
-            <!-- 
+            <!--
+                page speed
                     <li><a href="/video">Video</a></li>
                     <li><a href="/related">Related links</a></li>
                     <li><a href="/follow">Follow</a></li>
                     <li><a href="/article">Article</a></li>
                     <li><a href="/my">My page</a></li>
+                    <li><a href="/recommended">Recommended (b2b)</a></li>
+                    <li><a href="/slideshows">Slideshows and galleries</a></li>
             -->
 
             <hr/>
@@ -83,6 +82,9 @@
 
         <section class="feature__container">
             <h1 class="feature__name">{{ title }}</h1>
+            <p class="explain">
+                {{ explain }}
+            </p>
         </section>
         
         <div class="data__container">

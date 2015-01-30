@@ -36,9 +36,14 @@ div>ul {
 
 .feature__name {
     font-weight: bold;
-    text-transform: uppercase;
     font-size: 16px;
     color: #DD1879;
+    margin-bottom: 2px;
+}
+
+.explain {
+    font-size: 16px;
+    font-style: italic;
 }
 
 .controls__container {
