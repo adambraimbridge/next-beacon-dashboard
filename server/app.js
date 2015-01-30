@@ -5,6 +5,7 @@ var debug           = require('debug')('beacon-dashboard');
 var util            = require('util');
 var exphbs          = require('express3-handlebars');
 var routers         = require('./routers');
+var params          = require('./middleware/params');
 
 var app = module.exports = express();
 
@@ -25,6 +26,7 @@ var cacheControl = function (req, res, next) {
 // API routes
 var api = express.Router();
 api.use(cacheControl);
+api.use(params);
 api.get('/cta/menu-button', routers.cta.menu);
 api.get('/cta/menu-items', routers.cta.menuItems);
 api.get('/cta/search-button', routers.cta.search);
@@ -34,6 +36,7 @@ api.get('/dwell/:metric', routers.dwell);
 
 // Dashboard routes
 var dashboard = express.Router();
+dashboard.use(params);
 dashboard.get('/features/:feature', routers.dashboard.features);
 
 var data = express.Router();
