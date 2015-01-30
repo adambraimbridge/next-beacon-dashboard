@@ -47,7 +47,7 @@ app.use('/__test', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-    res.redirect(302, '/graph?event_collection=dwell&metric=count_unique&target_property=user.erights');
+    res.redirect(302, '/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&title=Unique+users+on+next');
 })
 
 var port = process.env.PORT || 3001;
