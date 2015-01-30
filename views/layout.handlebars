@@ -21,35 +21,27 @@
                     Features <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="/features/summary">Next</a></li>
+                    <li><a href="/graph?event_collection=dwell&metric=count_unique&target_property=user.erights">Next uniques</a></li>
                     <li class="divider"></li>
-                    <li><a href="/features/performance">Page speed</a></li>
+                    <li><a href="/performance">Page speed</a></li>
                     <li class="divider"></li>
-                    <li><a href="/features/article">Article</a></li>
-                    <li><a href="/features/cards">Article cards</a></li>
-                    <li><a href="/features/follow">Follow</a></li>
-                    <li><a href="/features/my">My page</a></li>
-                    <li><a href="/features/navigation">Navigation menu</a></li>
-                    <li><a href="/features/related">Related links</a></li>
-                    <li><a href="/features/recommended">Recommended (b2b)</a></li>
-                    <li><a href="/features/saveforlater">Save for later</a></li>
-                    <li><a href="/features/search">Search</a></li>
-                    <li><a href="/features/slideshows">Slideshows and galleries</a></li>
-                    <li><a href="/features/video">Video</a></li>
+                    <li><a href="/graph?event_collection=cta&metric=count_unique&target_property=user.erights&domPathContains=article-card">Article cards</a></li>
+                    <li><a href="/graph?event_collection=cta&metric=count_unique&target_property=user.erights&domPathEquals=o-header%20|%20menu-button">Navigation menu</a></li>
+                    <li><a href="/recommended">Recommended (b2b)</a></li>
+                    <li><a href="/graph?event_collection=cta&metric=count_unique&target_property=user.erights&domPathEquals=save-for-later">Save for later</a></li>
+                    <li><a href="/graph?event_collection=cta&metric=count_unique&target_property=user.erights&domPathEquals=o-header%20|%20search-button">Search</a></li>
+                    <li><a href="/slideshows">Slideshows and galleries</a></li>
                 </ul>
             </div>
-            
-            <div class="btn-group" data-timeframe-list>
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    Data <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="/data/searches" data-timeframe="this_week">Searches on ft.com</a></li>
-                </ul>
-            </div>
-           
-            <hr/>
+            <!-- 
+                    <li><a href="/video">Video</a></li>
+                    <li><a href="/related">Related links</a></li>
+                    <li><a href="/follow">Follow</a></li>
+                    <li><a href="/article">Article</a></li>
+                    <li><a href="/my">My page</a></li>
+            -->
 
+            <hr/>
             Filter by -
 
             <div class="btn-group" data-filter-pagetype>
@@ -61,9 +53,22 @@
                     <li><a href="#" data-filter-page-type="frontpage">Frontpage</a></li>
                     <li><a href="#" data-filter-page-type="article">Articles</a></li>
                     <li><a href="#" data-filter-page-type="stream">Streams</a></li>
+                    <li><a href="#" data-filter-page-type="search">Search</a></li>
                 </ul>
             </div>
-            
+           <!-- 
+            <div class="btn-group" data-timeframe-list>
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    Timeframe <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="#" data-timeframe="today">Today</a></li>
+                    <li><a href="#" data-timeframe="yesterday">Yesterday</a></li>
+                    <li><a href="#" data-timeframe="this_7_days">This week</a></li>
+                    <li><a href="#" data-timeframe="this_28_days">This month</a></li>
+                </ul>
+            </div>
+            -->
             <div class="btn-group" data-filter-staff>
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                      FT Staff <span class="caret"></span>
@@ -73,75 +78,17 @@
                     <li><a href="#" data-filter-staff="true">Include FT Staff</a></li>
                 </ul>
             </div>
-
-
-            <hr/>
-<!--
-            <div class="btn-group" data-timeframe-list>
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    Timeframe <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="#" data-timeframe="today">Today</a></li>
-                    <li><a href="#" data-timeframe="yesterday">Yesterday</a></li>
-                    <li><a href="#" data-timeframe="this_week">This week</a></li>
-                    <li><a href="#" data-timeframe="this_month">This month</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">Morning</a></li>
-                    <li><a href="#">Lunch</a></li>
-                    <li><a href="#">Evening</a></li>
-                    <li><a href="#">Bedtime</a></li>
-                </ul>
-            </div>
-            
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    Device <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="#">Mobile</a></li>
-                    <li><a href="#">Desktop</a></li>
-                </ul>
-            </div>
-            
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                     Page type <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="#">Frontpage</a></li>
-                    <li><a href="#">Articles</a></li>
-                    <li><a href="#">Streams</a></li>
-                </ul>
-            </div>
             
         </div>
--->
+
         <section class="feature__container">
             <h1 class="feature__name">{{ title }}</h1>
         </section>
         
         <div class="data__container">
-
             <section class="stats__container" id="c">
-                
-                {{#if summary}}{{> summary}}{{/if}}
-                {{#if performance}}{{> performance}}{{/if}}
-                {{#if adverts}}{{> adverts}}{{/if}}
-                {{#if article}}{{> article}}{{/if}}
-                {{#if cards}}{{> cards}}{{/if}}
-                {{#if follow}}{{> follow}}{{/if}}
-                {{#if my}}{{> my}}{{/if}}
-                {{#if navigation}}{{> navigation}}{{/if}}
-                {{#if related}}{{> related}}{{/if}}
-                {{#if recommended}}{{> recommended}}{{/if}}
-                {{#if saveforlater}}{{> saveforlater}}{{/if}}
-                {{#if search}}{{> search}}{{/if}}
-                {{#if slideshows}}{{> slideshows}}{{/if}}
-                {{#if video}}{{> video}}{{/if}}
-            
+                {{#if graph}}{{> graph}}{{/if}}
             </section>
-            
         </div>
  
         <link rel="stylesheet" type="text/css" href="/rickshaw.css"/> 
