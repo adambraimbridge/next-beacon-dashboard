@@ -4,11 +4,11 @@ var obt = require('origami-build-tools');
 
 gulp.task('build', function () {
 	obt.build(gulp, {
-		js: './src/main.js',
+		js: './client/main.js',
 		buildFolder: './static',
 	});
 });
 
 gulp.task('watch', function() {
-	gulp.watch('./src/**/*', ['build']);
+	gulp.watch('./client/**/*', ['build']);
 });

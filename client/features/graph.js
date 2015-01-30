@@ -1,29 +1,11 @@
+
 var Rickshaw = require('rickshaw');
 require('isomorphic-fetch');
 require('es6-promise').polyfill();
 
 module.exports.init = function () {
-
-    fetch('/api/cta/menu-items' + location.search)
-        .then(function(response) {
-            if (response.status >= 400) {
-                throw new Error("Bad response from server");
-            }
-            return response.json();
-        })
-        .then(function(data) {
-
-            var sortedByPopularity = data.result[0].value.sort(function (a, b) {
-                return a.result > b.result 
-            });
-
-            var asHtml = sortedByPopularity.reverse().map(function (item) {
-                return '<li>' + item['meta.domPath'] + ' (' + item.result + ')</li>';
-            })
-            document.querySelector('.menu-items__list').innerHTML = asHtml.join('');
-        });
-
-    fetch('/api/cta/menu-button' + location.search)
+    
+    fetch('/api' + location.search)
 
         .then(function(response) {
             if (response.status >= 400) {
