@@ -73,8 +73,9 @@ a {
 
 .note {
     background-color: #ff9;
-    padding: 10px;
+    padding: 5px;
     text-align: center;
+    font-size: 12px;
 }
 
 .branding {

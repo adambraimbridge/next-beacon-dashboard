@@ -2,7 +2,7 @@
 var Filters = require('./filters');
 
 switch (location.pathname) {
-    case '/features/graph':
+    case '/graph':
         require('./features/graph').init();
         break;
     default:
