@@ -1,27 +1,11 @@
-
-module.exports.features = function(req, res) {
-
-    var features = {
-        summary: 'Summary',
-        adverts: 'Adverts',
-        article: 'Article',
-        cards: 'Article cards',
-        follow: 'Follow',
-        my: 'My page',
-        navigation: 'Navigation menu',
-        performance: 'Page speed',
-        related: 'Related',
-        recommended: 'Recommended',
-        saveforlater: 'Save for later',
-        search: 'Search',
-        slideshows: 'Galleries & slideshows',
-        video: 'Video'
-    }
+module.exports.graph = function(req, res) {
     
     var opts = {
-        title: features[req.params.feature]
+        graph: true,
+        title: req.query.title || '',   // XSS me
+        explain: req.keen_explain.join(', ')
     }
-
-    opts[req.params.feature] = true;
+    
     res.render('layout.handlebars', opts);
-};
+}
+
