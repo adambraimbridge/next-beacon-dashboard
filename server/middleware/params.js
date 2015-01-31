@@ -43,6 +43,28 @@ module.exports = function (req, res, next) {
             }
         )
     }
+   
+    // filter by an individual article
+    if (req.query.uuid) {
+        filters.push(
+            {
+                "property_name": "page.capi.id",
+                "operator": "eq",
+                "property_value": req.query.uuid 
+            }
+        )
+    }
+    
+    // filter by a flag 
+    if (req.query.flags) {
+        filters.push(
+            {
+                "property_name": "user.flags",
+                "operator": "eq",
+                "property_value": req.query.flags 
+            }
+        )
+    }
 
     if (req.query.domPathEquals) {
         filters.push(
