@@ -18,12 +18,14 @@ module.exports.init = function () {
 
             var palette = new Rickshaw.Color.Palette();
 
-
             console.log(data);
 
             if (/group_by/.test(location.search)) {
                
                 var numberOfSeries = data.result.map(function (a) { return a.value.length })[0];
+                var key = data.result.map(function (a) { return Object.keys(a.value[0]).filter(function (k) { return k !== 'result' }) })[0];
+
+                console.log(key, numberOfSeries);
 
                 var series = [];
                 for(var n = 0; n < numberOfSeries; n++) {
@@ -37,7 +39,7 @@ module.exports.init = function () {
                             }),
                             color: palette.color(),
                             name: data.result.map(function (a) {
-                                return a.value[n]['page.location.type']
+                                return a.value[n][key];
                             })[0]
                         }
                     )
