@@ -34,14 +34,16 @@ module.exports = function (req, res, next) {
         explain.push('excludes FT staff');
     }
 
-    filters.push(
-        {
-            "property_name": "user.isStaff",
-            "operator": "eq",
-            "property_value": isStaff 
-        }
-    )
-    
+    if (req.query.isStaff) {
+        filters.push(
+            {
+                "property_name": "user.isStaff",
+                "operator": "eq",
+                "property_value": isStaff 
+            }
+        )
+    }
+
     if (req.query.domPathEquals) {
         filters.push(
             {

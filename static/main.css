@@ -64,6 +64,20 @@ a {
     margin-top: 40px;
 }
 
+#legend {
+    margin: 20px 40px;
+}
+
+.rickshaw_legend .line {
+    display: inline;
+    padding-right: 5px;
+}
+
+.rickshaw_legend {
+    color: #000;
+    background: white;
+}
+
 #chart {
     position: relative;
     left: 40px;
