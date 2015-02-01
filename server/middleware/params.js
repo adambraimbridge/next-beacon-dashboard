@@ -43,6 +43,14 @@ module.exports = function (req, res, next) {
             }
         )
     }
+        
+    /*filters.push(
+        {
+            "property_name": "page.location.hostname",
+            "operator": "eq",
+            "property_value": 'next.ft.com' 
+        }
+    */
    
     // filter by an individual article
     if (req.query.uuid) {
@@ -53,6 +61,19 @@ module.exports = function (req, res, next) {
                 "property_value": req.query.uuid 
             }
         )
+        explain.push('article <a href="http://next.ft.com/' + req.query.uuid + '">' + req.query.uuid  +'</a>');
+    }
+    
+    // filter by an individual article
+    if (req.query.erights) {
+        filters.push(
+            {
+                "property_name": "user.erights",
+                "operator": "eq",
+                "property_value": req.query.erights 
+            }
+        )
+        explain.push('erights ' + req.query.erights);
     }
     
     // filter by a flag 
@@ -64,6 +85,7 @@ module.exports = function (req, res, next) {
                 "property_value": req.query.flags 
             }
         )
+        explain.push('by flag <a href="http://next.ft.com/__toggler">' + req.query.flags + '</a>');
     }
 
     if (req.query.domPathEquals) {
