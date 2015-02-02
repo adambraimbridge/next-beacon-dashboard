@@ -88,7 +88,7 @@
             <p class="explain">
                 {{{ explain }}} 
                 <small>
-                    | <a href="/api?{{{ apiLink }}}">export as JSON</a>
+                    | <a href="/api{{{ apiLink }}}">export as JSON</a>
                 </small>
             </p>
         </section>
@@ -98,7 +98,9 @@
                 {{#if graph}}{{> graph}}{{/if}}
             </section>
         </div>
- 
+
+        {{> help}}
+
         <link rel="stylesheet" type="text/css" href="/rickshaw.css"/> 
         <link rel="stylesheet" type="text/css" href="/main.css"/> 
         <link rel="stylesheet" type="text/css" href="/vendor/bootstrap-3.3.1/css/bootstrap.css"/>
