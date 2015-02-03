@@ -15,4 +15,4 @@ LATER
 - Drop-down filters by time/interval
 - Drop-down filters by device class - Eg, mobile / tablet / desktop (might need to collect more data to ascertain the device type)
 - Do something with the latest events stream, https://keen.io/docs/data-analysis/extractions/
-
+- Visualise the CTA data - Eg, menu button clicks
