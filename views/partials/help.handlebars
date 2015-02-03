@@ -1,8 +1,13 @@
 
 <div class="help">
   <section class="help__container">
-
+    
     <h2>Guide</h2>
+    
+    <p>
+        Confused? Need a question answered, then get in touch with <a href="mailto:next.team@ft.com">next.team@ft.com</a>.
+    </p>
+    
     <h3>Event collections</h2>
     <p>
         Events are things that happen inside the Next system that we want to track. 
@@ -36,7 +41,13 @@
     </p>
 
     <pre>...com/graph?<b>metric=count_unique</b>&<b>target_property=user.erights</b></pre>
-    
+   
+    <p>
+        There's plently of <a href="https://keen.io/docs/data-analysis/metrics/">other metrics</a> documented in Keen.io
+        although most of them pertain to specific types of data.
+    </p>
+
+
     <h3>Time</h2>
     <p>
     
@@ -81,13 +92,28 @@
     <h3>Group by</h2>
     
     <p>
-        Often you'll want to group the results of a query in to sets. 
+        Often you'll want to group the output of a query in to sets of results. 
     </p>
     <p>
-        Adding a <i>group_by</i> parameter allows you to split the results in this way, Eg.
+        Adding a <i>group_by</i> parameter allows you to split the results in this way, Eg. We may want page views <i>grouped by</i>
+        common browser family (Chrome, Firefox etc.)
     </p>
     
     <pre>...com/graph?<b>group_by=user.browser.family</b></pre>
 
+    <h3>API</h3>
+
+    <p>
+        All data is available in time-series graph form for dashboards,
+    </p>
+  
+    <pre>http://ft-next-beacon-dashboard.herokuapp.com/<b>graph</b>?...</pre>
+    
+    <p>
+        Or JSON for programmatic access.
+    </p>
+
+    <pre>http://ft-next-beacon-dashboard.herokuapp.com/<b>api</b>?...</pre>
+  
   </section>
 </div>
