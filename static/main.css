@@ -10,8 +10,15 @@ div>ul {
     padding-left: 0;
 }
 
+.help {
+    background-color: #eee;
+    padding: 30px 0 50px 0;
+}
+
 .feature__container,
 .controls__container,
+.stream__container,
+.help__container,
 .data__container {
     margin: 0 auto;
     max-width: 800px;
