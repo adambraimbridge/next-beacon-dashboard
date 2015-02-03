@@ -6,8 +6,11 @@ module.exports.graph = function(req, res) {
         apiLink: req._parsedUrl.search,
         explain: req.keen_explain.join(', ')
     }
-    
 
     res.render('layout.handlebars', opts);
+}
+
+module.exports.stream = function(req, res) {
+    res.render('stream.handlebars');
 }
 

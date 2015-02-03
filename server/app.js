@@ -27,6 +27,7 @@ var cacheControl = function (req, res, next) {
 var api = express.Router();
 api.use(cacheControl);
 api.use(params);
+api.get('/stream', routers.eventStream);
 api.get('/', routers.genericQuery);
 
 // Dashboard routes

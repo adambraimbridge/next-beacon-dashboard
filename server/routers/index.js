@@ -10,6 +10,26 @@ var keen = keenIO.configure({
     readKey: process.env['KEEN_READ_KEY']
 });
 
+// The latest 100 events we've logged
+module.exports.eventStream = function(req, res) {
+    var latest = new keenIO.Query('extraction', {
+        timeframe: 'this_2_days',
+        interval: 'minutely',
+        event_collection: 'dwell',
+        latest: 100
+    });
+
+    keen.run(latest, function(err, response) {
+        if (err) {
+            res.json(err);
+            return;
+        }
+        console.log(util.inspect(response, { showHidden: true, depth: null })); 
+        res.json(response);
+    });
+}
+
+// Runs a query attached to the req object = see also ./middleware/params
 module.exports.genericQuery = function(req, res) {
     console.log(req.keen_defaults, req.keen_query)
     keen.run(req.keen_query, function(err, response) {
