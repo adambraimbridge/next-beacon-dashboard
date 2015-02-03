@@ -5,7 +5,8 @@
     <h2>Guide</h2>
     
     <p>
-        Confused? Need a question answered, then get in touch with <a href="mailto:next.team@ft.com">next.team@ft.com</a>.
+        Confused? Need a question answered? Thought of something to track that we don't yet show on the dashboards?
+        Then get in touch with <a href="mailto:next.team@ft.com">next.team@ft.com</a>.
     </p>
     
     <h3>Event collections</h2>
@@ -57,6 +58,7 @@
     and <a href="https://keen.io/docs/data-analysis/interval/">interval</a> guides for more information.
 
     </p>
+    
     <ul>
         <li>timeframe - A timeframe is the period of time over which you want to run an analysis.
         <li>interval - In a timeseries, this is the duration of each timeframe - Eg, daily.
@@ -73,6 +75,7 @@
     <p>
         Filters allow us to cut the results different ways. You can supply more than one filter.
     </p>
+    
     <ul>
         <li>isStaff - true|false - Filters out FT staff members from the results.
         <li>pageType - stream|article|... - Filters the data to only that of a particular type of page.
@@ -94,6 +97,7 @@
     <p>
         Often you'll want to group the output of a query in to sets of results. 
     </p>
+    
     <p>
         Adding a <i>group_by</i> parameter allows you to split the results in this way, Eg. We may want page views <i>grouped by</i>
         common browser family (Chrome, Firefox etc.)
@@ -110,6 +114,7 @@
     <pre>...com/graph?<b>title=Unique+users+on+next</b></pre>
 
     <h3>API</h3>
+
     <p>
         All data is available in time-series graph form for dashboards,
     </p>
@@ -117,10 +122,22 @@
     <pre>http://ft-next-beacon-dashboard.herokuapp.com/<b>graph</b>?...</pre>
     
     <p>
-        Or JSON for programmatic access.
+        The graphs are available as JSON using the same parameters as described above, 
     </p>
 
     <pre>http://ft-next-beacon-dashboard.herokuapp.com/<b>api</b>?...</pre>
   
+    <p>
+        Or the lastest 100 or so events as a stream,
+    </p>
+
+    <pre>http://ft-next-beacon-dashboard.herokuapp.com/<b>api/stream</b>?...</pre>
+
+    <h3>Disclaimer</h3>
+
+    <p>
+        These dashboards are designed for short-term product insight. They are not a replacement for auditted statistics for business/external reporting.
+    </p>
+
   </section>
 </div>
