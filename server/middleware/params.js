@@ -34,14 +34,60 @@ module.exports = function (req, res, next) {
         explain.push('excludes FT staff');
     }
 
-    filters.push(
+    if (req.query.isStaff) {
+        filters.push(
+            {
+                "property_name": "user.isStaff",
+                "operator": "eq",
+                "property_value": isStaff 
+            }
+        )
+    }
+        
+    /*filters.push(
         {
-            "property_name": "user.isStaff",
+            "property_name": "page.location.hostname",
             "operator": "eq",
-            "property_value": isStaff 
+            "property_value": 'next.ft.com' 
         }
-    )
+    */
+   
+    // filter by an individual article
+    if (req.query.uuid) {
+        filters.push(
+            {
+                "property_name": "page.capi.id",
+                "operator": "eq",
+                "property_value": req.query.uuid 
+            }
+        )
+        explain.push('article <a href="http://next.ft.com/' + req.query.uuid + '">' + req.query.uuid  +'</a>');
+    }
     
+    // filter by an individual article
+    if (req.query.erights) {
+        filters.push(
+            {
+                "property_name": "user.erights",
+                "operator": "eq",
+                "property_value": req.query.erights 
+            }
+        )
+        explain.push('erights ' + req.query.erights);
+    }
+    
+    // filter by a flag 
+    if (req.query.flags) {
+        filters.push(
+            {
+                "property_name": "user.flags",
+                "operator": "eq",
+                "property_value": req.query.flags 
+            }
+        )
+        explain.push('by flag <a href="http://next.ft.com/__toggler">' + req.query.flags + '</a>');
+    }
+
     if (req.query.domPathEquals) {
         filters.push(
             {
