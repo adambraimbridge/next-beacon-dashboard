@@ -79,6 +79,8 @@ module.exports.init = function () {
                 element: document.getElementById('legend')
             });
 
+            var axes = new Rickshaw.Graph.Axis.Time( { graph: graph } );
+
             graph.render();
         })
         .catch(function (e) {
