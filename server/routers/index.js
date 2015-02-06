@@ -13,10 +13,9 @@ var keen = keenIO.configure({
 // The latest 100 events we've logged
 module.exports.eventStream = function(req, res) {
     var latest = new keenIO.Query('extraction', {
-        timeframe: 'this_2_days',
-        interval: 'minutely',
-        event_collection: 'dwell',
-        latest: 100
+        timeframe: req.query.timeframe || 'this_2_days',
+        event_collection: req.query.event_collection || 'dwell',
+        latest: req.query.limit || 100
     });
 
     keen.run(latest, function(err, response) {
@@ -24,7 +23,6 @@ module.exports.eventStream = function(req, res) {
             res.json(err);
             return;
         }
-        console.log(util.inspect(response, { showHidden: true, depth: null })); 
         res.json(response);
     });
 }
