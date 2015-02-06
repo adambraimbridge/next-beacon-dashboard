@@ -20,7 +20,6 @@ module.exports.init = function () {
 
             var data = _.groupBy(data.result[0].value, 'result');
             var series = _.map(data, function (n, i) { return { x: parseInt(i), y: n.length }  })
-            var ctx = document.getElementById("chart-js").getContext("2d");
             
             console.log(series); 
             var s = [];
