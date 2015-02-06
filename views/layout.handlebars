@@ -6,71 +6,9 @@
     </head>
     <body>
         
-        <div class="branding">
-            next.ft.com performance dashboard 
-        </div>
-
-        <div class="note">
-            Be advised this is an experimental series of dashboards for next.ft.com, not an audited set of statistics.
-        </div>
-
-        <div class="controls__container">
-            
-            <div class="btn-group">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                    Features <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&title=Unique+users+on+next">Unique users</a></li>
-                    <li><a href="/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&group_by=page.location.type&title=Unique+users+by+page+type">Usage by page type</a></li>
-                    <li><a href="/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&title=Country&group_by=user.country">Users by country</a>
-                    <li><a href="/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&group_by=user.browser.family&title=Web+browsers">Usage by web browser</a>
-                    <li class="divider"></li>
-                    <li><a href="/graph?event_collection=cta&metric=count&domPathContains=article-card&title=Interactions+with+article+cards">Article cards</a></li>
-                    <li><a href="/graph?event_collection=cta&metric=count&target_property=user.erights&domPathEquals=o-header%20|%20menu-button&title=Interactions+with+the+navigation+menu">Navigation menu</a></li>
-                    <li><a href="/graph?event_collection=cta&metric=count_unique&target_property=user.erights&domPathContains=save-for-later&title=Unique+users+using+'save+for+later'">Save for later</a></li>
-                    <li><a href="/graph?event_collection=cta&metric=count&target_property=user.erights&domPathEquals=o-header%20|%20search-button&title=Interactions+with+the+search+button">Search</a></li>
-                </ul>
-            </div>
-
-            <hr/>
-
-            <p>
-                Filters:-
-            </p>
-
-            <select class="form-control" data-filter-pagetype>
-                <option value="__clear__">Page type</option>
-                <option value="frontpage">Frontpage</option>
-                <option value="article">Article</option>
-                <option value="stream">Stream</option>
-                <option value="search">Search</option>
-                <option value="my">My</option>
-                <option value="group">Group</option>
-            </select>
-            
-            <select class="form-control" data-filter-staff>
-                <option value="__clear__">Staff</option>
-                <option value="false">Excluded</option>
-                <option value="true">Included</option>
-            </select>
-            
-            <select class="form-control" data-filter-timeframe>
-                <option value="__clear__">Timeframe</option>
-                <option value="today">Today</a></li>
-                <option value="yesterday">Yesterday</a></li>
-                <option value="this_7_days">This week</a></li>
-                <option value="this_28_days">This month</a></li>
-            </select>
-            
-            <select class="form-control" data-filter-interval>
-                <option value="__clear__">Interval</option>
-                <option value="hourly">Hourly</a></li>
-                <option value="daily">Daily</a></li>
-            </select>
-            
-        </div>
-
+        {{> header}}
+        {{> filters}}
+        
         <section class="feature__container">
             <h1 class="feature__name">{{ title }}</h1>
             <p class="explain">
@@ -88,13 +26,7 @@
         </div>
 
         {{> help}}
-
-        <link rel="stylesheet" type="text/css" href="/rickshaw.css"/> 
-        <link rel="stylesheet" type="text/css" href="/main.css"/> 
-        <link rel="stylesheet" type="text/css" href="/vendor/bootstrap-3.3.1/css/bootstrap.css"/>
-        <script src="/vendor/jquery-2.1.3.min.js"></script>
-        <script src="/vendor/bootstrap-3.3.1/js/bootstrap.js"></script>
-        <script src="/main.js"></script>
-
+        {{> assets}}
+    
     </body>
 </html>
