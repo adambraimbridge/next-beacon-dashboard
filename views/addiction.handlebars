@@ -1,0 +1,71 @@
+<html>
+    <head>
+        <title>next.ft.com performance</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta http-equiv="refresh" content="120"/>
+    </head>
+    <body>
+        
+        <div class="branding">
+            next.ft.com performance dashboard 
+        </div>
+
+        <div class="note">
+            Be advised this is an experimental series of dashboards for next.ft.com, not an audited set of statistics.
+        </div>
+
+        <div class="controls__container">
+            
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    Features <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&title=Unique+users+on+next">Unique users</a></li>
+                    <li><a href="/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&group_by=page.location.type&title=Unique+users+by+page+type">Usage by page type</a></li>
+                    <li><a href="/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&title=Country&group_by=user.country">Users by country</a>
+                    <li><a href="/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&group_by=user.browser.family&title=Web+browsers">Usage by web browser</a>
+                    <li class="divider"></li>
+                    <li><a href="/graph?event_collection=cta&metric=count&domPathContains=article-card&title=Interactions+with+article+cards">Article cards</a></li>
+                    <li><a href="/graph?event_collection=cta&metric=count&target_property=user.erights&domPathEquals=o-header%20|%20menu-button&title=Interactions+with+the+navigation+menu">Navigation menu</a></li>
+                    <li><a href="/graph?event_collection=cta&metric=count_unique&target_property=user.erights&domPathContains=save-for-later&title=Unique+users+using+'save+for+later'">Save for later</a></li>
+                    <li><a href="/graph?event_collection=cta&metric=count&target_property=user.erights&domPathEquals=o-header%20|%20search-button&title=Interactions+with+the+search+button">Search</a></li>
+                </ul>
+            </div>
+
+        </div>
+    
+        <section class="feature__container">
+        
+        <p>
+            Addiction is a <a href="http://www.nhs.uk/conditions/Addictions/Pages/Introduction.aspx">strong, uncontrollable</a> need to use next.ft.com.
+            These graphs show the number of users returning to use to <a href="http://next.ft.com">next.ft.com</a> and it's features every
+            day over the last week.
+        </p>
+
+            <h1 class="feature__name">{{ title }}</h1>
+            <p class="explain">
+                {{{ explain }}} 
+                <small>
+                    | <a href="/api{{{ apiLink }}}">export as JSON</a>
+                </small>
+            </p>
+        </section>
+        
+        <div class="data__container">
+            <section class="stats__container" id="c">
+                {{#if graph}}{{> graph}}{{/if}}
+            </section>
+        </div>
+
+        {{> help}}
+
+        <link rel="stylesheet" type="text/css" href="/rickshaw.css"/> 
+        <link rel="stylesheet" type="text/css" href="/main.css"/> 
+        <link rel="stylesheet" type="text/css" href="/vendor/bootstrap-3.3.1/css/bootstrap.css"/>
+        <script src="/vendor/jquery-2.1.3.min.js"></script>
+        <script src="/vendor/bootstrap-3.3.1/js/bootstrap.js"></script>
+        <script src="/main.js"></script>
+
+    </body>
+</html>
