@@ -41,20 +41,13 @@ div>ul {
     color: #666; 
 }
 
-.feature__name {
-    font-weight: normal;
-    font-size: 16px;
-    color: #DD1879;
-    margin-bottom: 2px;
-}
-
 .explain {
     font-size: 16px;
     font-style: italic;
 }
 
 .controls__container {
-    padding: 20px 10px;
+    padding: 10px 10px;
 }
 
 .controls__container:after { 
