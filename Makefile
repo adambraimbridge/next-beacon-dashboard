@@ -1,8 +1,9 @@
+export SHELL := /bin/bash
+export PATH  := $(shell npm bin):$(PATH)
 
 build:
-	
 	cp bower_components/rickshaw/rickshaw.css static/
-	./node_modules/.bin/gulp build
+	gulp build
 
 run:
 	export KEEN_PROJECT_ID=`cat .keen.io.project`; export KEEN_READ_KEY=`cat .keen.io.read_key`; export DEBUG=*; nodemon server/app
