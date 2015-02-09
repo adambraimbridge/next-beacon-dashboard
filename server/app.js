@@ -34,6 +34,7 @@ api.get('/', routers.genericQuery);
 var dashboard = express.Router();
 dashboard.use(params);
 dashboard.get('/graph', routers.dashboard.graph);
+dashboard.get('/addiction', routers.dashboard.addiction);
 
 // TODO - list, table, json, export ...
 
