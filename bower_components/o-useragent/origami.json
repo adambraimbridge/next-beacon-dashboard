@@ -1,7 +1,0 @@
-{
-  "description": "Mechanism to target style rules at only specific user agents, allowing browser-specific bugs to be fixed. Also includes convenience methods for dealing with vendor prefixed CSS and JavaScript properties.",
-  "origamiType": "module",
-  "origamiVersion": 1,
-  "support": "https://github.com/Financial-Times/o-useragent/issues",
-  "supportStatus": "active"
-}

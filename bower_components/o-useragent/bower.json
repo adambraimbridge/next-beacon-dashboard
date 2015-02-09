@@ -1,9 +1,0 @@
-{
-  "name": "o-useragent",
-  "main": ["main.scss", "main.js"],
-  "ignore": [
-    ".gitignore",
-    "test",
-    ".travis.yml"
-  ]
-}

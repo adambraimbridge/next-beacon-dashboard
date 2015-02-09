@@ -3,3 +3,4 @@ node_modules
 .bowerrc
 .haikro-cache
 /node-*
+>>>>>>> ignore bower folder
