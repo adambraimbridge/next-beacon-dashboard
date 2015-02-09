@@ -7,18 +7,9 @@
     <body>
         
         {{> header}}
-        {{> filters}}
-        
-        <section class="feature__container">
-            <h1 class="feature__name">{{ title }}</h1>
-            <p class="explain">
-                {{{ explain }}} 
-                <small>
-                    | <a href="/api{{{ apiLink }}}">export as JSON</a>
-                </small>
-            </p>
-        </section>
-        
+
+        {{{ body }}}
+
         <div class="data__container">
             <section class="stats__container" id="c">
                 {{#if graph}}{{> graph}}{{/if}}
@@ -27,6 +18,6 @@
 
         {{> help}}
         {{> assets}}
-    
+
     </body>
 </html>

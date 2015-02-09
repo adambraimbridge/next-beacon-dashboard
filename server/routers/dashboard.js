@@ -7,7 +7,7 @@ module.exports.graph = function(req, res) {
         explain: req.keen_explain.join(', ')
     }
 
-    res.render('layout.handlebars', opts);
+    res.render('main.handlebars', opts);
 }
 
 module.exports.addiction = function(req, res) {
