@@ -1,5 +1,5 @@
-
-var keenIO          = require('keen.io');
+var keenIO = require('keen.io');
+var _ = require('../../bower_components/lodash/lodash.js');
 
 var keen = keenIO.configure(
     {
@@ -107,22 +107,36 @@ module.exports = function (req, res, next) {
             }
         )
     }
-   
 
-    var metric = req.query.metric || 'count';
-    var keen_defaults = {
-        event_collection: req.query.event_collection || undefined,
-        target_property: req.query.target_property || undefined,
-        interval: req.query.interval || 'daily', 
-        timeframe: req.query.timeframe || 'this_14_days',
-        group_by: req.query.group_by || [],
-        filters: filters 
-    }
-    
-    explain.push('over ' + keen_defaults.timeframe.replace(/_/g, ' ').replace('this', ''))
+    var fields = [
+        'event_collection',
+        'target_property',
+        'interval',
+        'timeframe',
+        'group_by'
+    ];
+
+    var params = _.pick(req.query, fields);
+    var metrics = [].concat(req.query.metric || 'count');
+
+    req.keen_defaults = {};
+
+    var queries = metrics.map(function(metric, i) {
+        var query = _.defaults(_.mapValues(params, function(param) {
+            return _.isArray(param) ? param[i] : param;
+        }), {
+            interval: 'daily', 
+            timeframe: 'this_14_days',
+            group_by: []
+        });
+        query.filters = filters;
+        req.keen_defaults[metric] = query;
+        return new keenIO.Query(metric, query);
+    });
+
+    // explain.push('over ' + keen_defaults.timeframe.replace(/_/g, ' ').replace('this', ''))
 
     req.keen_explain = explain;
-    req.keen_defaults = keen_defaults;
-    req.keen_query = new keenIO.Query(metric, keen_defaults);
+    req.keen_query = queries;
     next();
 }
