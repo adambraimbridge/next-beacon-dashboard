@@ -115,7 +115,7 @@ module.exports = function (req, res, next) {
         target_property: req.query.target_property || undefined,
         interval: req.query.interval || 'daily', 
         timeframe: req.query.timeframe || 'this_14_days',
-        group_by: req.query.group_by ? req.query.group_by.split(',') : [],
+        group_by: req.query.group_by || [],
         filters: filters 
     }
     
