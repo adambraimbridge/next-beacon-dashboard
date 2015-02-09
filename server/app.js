@@ -3,7 +3,7 @@
 var express         = require('express');
 var debug           = require('debug')('beacon-dashboard');
 var util            = require('util');
-var exphbs          = require('express3-handlebars');
+var exphbs          = require('express-handlebars');
 var routers         = require('./routers');
 var params          = require('./middleware/params');
 
