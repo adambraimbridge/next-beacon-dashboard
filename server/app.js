@@ -12,8 +12,12 @@ var app = module.exports = express();
 app.use(express.static(__dirname + '/../static', { maxAge: 3600000 }));
 
 app.engine('handlebars', exphbs({
-    defaultLayout: 'layout'
+    defaultLayout: 'layout',
+    helpers: {
+        formatUrl: require('url').format
+    }
 }));
+
 app.set('viewine', 'handlebars');
 
 app.get('/__gtg', function(req, res) {

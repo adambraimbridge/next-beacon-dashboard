@@ -1,7 +1,10 @@
+var graphs = require('../graphs.js');
+
 module.exports.graph = function(req, res) {
     
     var opts = {
         graph: true,
+        graphs: graphs,
         title: req.query.title || '',   // XSS me
         apiLink: req._parsedUrl.search,
         explain: req.keen_explain.join(', ')
@@ -14,6 +17,7 @@ module.exports.addiction = function(req, res) {
     
     var opts = {
         graph: true,
+        graphs: graphs,
         title: req.query.title || '',   // XSS me
         apiLink: req._parsedUrl.search,
         explain: req.keen_explain.join(', ')
