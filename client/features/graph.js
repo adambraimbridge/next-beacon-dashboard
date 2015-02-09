@@ -2,8 +2,11 @@
 var Rickshaw = require('rickshaw');
 require('isomorphic-fetch');
 require('es6-promise').polyfill();
+var _ = require('lodash');
+var qs = require('query-string');
 
 module.exports.init = function () {
+    var query = qs.parse(location.search);
     
     fetch('/api' + location.search)
 
@@ -18,9 +21,27 @@ module.exports.init = function () {
 
             var palette = new Rickshaw.Color.Palette();
 
-            console.log(data);
+            // console.log(data);
 
-            if (/group_by/.test(location.search)) {
+            if (_.isArray(data)) { // multiple query
+                var series = _(query.event_collection)
+                    .zip(_.pluck(data, 'result'))
+                    .map(function(result, i) {
+                        return {
+                            data: result[1][0].value.map(function(a) {
+
+                                return {
+                                    y: a.result,
+                                    x: a[_.isArray(query.group_by) ?
+                                        query.group_by[i] :
+                                        query.group_by]
+                                }
+                            }),
+                            color: palette.color(),
+                            name: result[0]
+                        }
+                    }).value();
+            } else if (query.group_by) {
                
                 var numberOfSeries = data.result.map(function (a) { return a.value.length })[0];
                 var key = data.result.map(function (a) { return Object.keys(a.value[0]).filter(function (k) { return k !== 'result' }) })[0];
