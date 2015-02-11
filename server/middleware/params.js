@@ -41,12 +41,16 @@ module.exports = function (req, res, next) {
     req.keen_defaults = {};
 
     var queries = metrics.map(function(metric, i) {
-        var query = _.mapValues(params, function(param) {
+        var query = _.defaults(_.mapValues(params, function(param) {
             return _.isArray(param) ? param[i] : param;
+        }), {
+            interval: req.query.single ? null : 'daily', 
+            timeframe: req.query.single ? null : 'this_14_days',
+            group_by: []
         });
 
         query.filters = activeFilters;
-        req.keen_defaults[metric] = query;
+        req.keen_defaults[params.event_collection[i] || metric] = query;
         return new keenIO.Query(metric, query);
     });
 

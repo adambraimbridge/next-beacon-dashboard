@@ -99,8 +99,8 @@ module.exports = [{
 			metric: ['count_unique', 'count_unique'],
 			target_property: 'user.erights',
 			group_by: 'page.article.wordCount',
-			interval: 'every_100_years',
-			title: 'Dwell vs scrolldepth by article length'
+			title: 'Dwell vs scrolldepth by article length',
+			single: true
 		}
 	}
 }];
