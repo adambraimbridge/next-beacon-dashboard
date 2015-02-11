@@ -91,8 +91,7 @@ module.exports = [{
 			"title": "Next addiction"
 		}
 	},
-
-	"Dwell vs scroll": {
+	"Wordcount scroll depth": {
 		pathname: "graph",
 		query: {
 			event_collection: ['dwell', 'scrolldepth'],
@@ -101,6 +100,15 @@ module.exports = [{
 			group_by: 'page.article.wordCount',
 			title: 'Dwell vs scrolldepth by article length',
 			single: true
+		}
+	},
+	"Dwell vs scroll": {
+		pathname: 'graph',
+		query: {
+			event_collection: ['dwell', 'scrolldepth'],
+			metric: ['count_unique', 'count_unique'],
+			target_property: 'user.erights',
+			title: 'Dwell vs scrolldepth over time'
 		}
 	}
 }];

@@ -23,7 +23,7 @@ module.exports = function(data, palette, query) {
 
 	return {
 		series: series,
-		renderer: 'line',
+		renderer: 'area',
 		stack: false
 	};
 };
