@@ -55,7 +55,8 @@ module.exports = [{
 			"metric": "count",
 			"target_property": "user.erights",
 			"domPathEquals": "o-header%20|%20menu-button",
-			"title": "Interactions with the navigation menu"}
+			"title": "Interactions with the navigation menu"
+		}
 	},
 	"Save for later": {
 		pathname: "graph",
@@ -88,6 +89,18 @@ module.exports = [{
 			"interval": "weekly",
 			"group_by": "user.erights",
 			"title": "Next addiction"
+		}
+	},
+
+	"Dwell vs scroll": {
+		pathname: "graph",
+		query: {
+			event_collection: ['dwell', 'scrolldepth'],
+			metric: ['count_unique', 'count_unique'],
+			target_property: 'user.erights',
+			group_by: 'page.article.wordCount',
+			interval: 'every_100_years',
+			title: 'Dwell vs scrolldepth by article length'
 		}
 	}
 }];

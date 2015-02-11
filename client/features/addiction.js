@@ -18,9 +18,14 @@ module.exports.init = function () {
 
             var palette = new Rickshaw.Color.Palette();
 
-            var data = _.groupBy(data.result[0].value, 'result');
-            var series = _.map(data, function (n, i) { return { x: parseInt(i), y: n.length }  })
-            
+            var grouped = _.groupBy(data.result[0].value, 'result');
+            var series  = _.map(grouped, function (n, i) {
+                return {
+                    x: parseInt(i),
+                    y: n.length
+                };
+            });
+
             console.log(series); 
             var s = [];
             s.push({
