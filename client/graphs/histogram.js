@@ -7,7 +7,7 @@ function sum(xs) {
 }
 
 module.exports = function(data, palette, query) {
-	var avgWindow = 3;
+	var avgWindow = 4;
 	var series = _(query.event_collection)
 	.zip(_.pluck(data, 'result'))
 	.map(function(result, i) {
@@ -26,10 +26,11 @@ module.exports = function(data, palette, query) {
 			.chunk(avgWindow)
 			.map(function(sub) {
 				return {
-					x: sum(_.pluck(sub, 'x')) / avgWindow,
+					x: sum(_.pluck(sub, 'x')) / sub.length,
 					y: sum(_.pluck(sub, 'y')),
 				};
 			})
+			.sortBy('x')
 			.value(),
 			color: palette.color(),
 			name: result[0]
@@ -39,7 +40,8 @@ module.exports = function(data, palette, query) {
 	return {
 		series: series,
 		stack: false,
-		renderer: 'bar',
+		renderer: 'line',
+		interpolation: 'linear',
 		xaxis: 'X'
 	};
 };
