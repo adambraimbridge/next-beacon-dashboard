@@ -5,6 +5,12 @@ require('es6-promise').polyfill();
 var _ = require('lodash');
 var qs = require('query-string');
 
+function sum(xs) {
+    return xs.reduce(function(y, x) {
+        return x + y;
+    }, 0);
+}
+
 module.exports.init = function () {
     var query = qs.parse(location.search);
     
@@ -24,22 +30,33 @@ module.exports.init = function () {
             // console.log(data);
 
             if (_.isArray(data)) { // multiple query
+                var avgWindow = 3;
                 var series = _(query.event_collection)
                     .zip(_.pluck(data, 'result'))
                     .map(function(result, i) {
                         return {
-                            data: result[1][0].value.map(function(a) {
-
+                            data: _(result[1][0].value).map(function(a) {
                                 return {
                                     y: a.result,
                                     x: a[_.isArray(query.group_by) ?
                                         query.group_by[i] :
                                         query.group_by]
-                                }
-                            }),
+                                };
+                            }).filter(function(r) {
+                                return !_.isNull(r.x);
+                            })
+                            .sortBy('x')
+                            .chunk(avgWindow)
+                            .map(function(sub) {
+                                return {
+                                    x: sum(_.pluck(sub, 'x')) / avgWindow,
+                                    y: sum(_.pluck(sub, 'y')),
+                                };
+                            })
+                            .value(),
                             color: palette.color(),
                             name: result[0]
-                        }
+                        };
                     }).value();
             } else if (query.group_by) {
                
@@ -82,7 +99,9 @@ module.exports.init = function () {
                 element: document.querySelector("#chart"),
                 width: document.querySelector("#chart").parentNode.offsetWidth * 0.9,  
                 height: window.innerHeight * 0.5,
-                series: series
+                series: series,
+                renderer: 'bar',
+                stack: false
             });
 
             var hoverDetail = new Rickshaw.Graph.HoverDetail( {
@@ -100,12 +119,11 @@ module.exports.init = function () {
                 element: document.getElementById('legend')
             });
 
-            var axes = new Rickshaw.Graph.Axis.Time( { graph: graph } );
+            var axes = new Rickshaw.Graph.Axis.X( { graph: graph } );
 
             graph.render();
         })
         .catch(function (e) {
             console.error(e);
         });
-
 };
