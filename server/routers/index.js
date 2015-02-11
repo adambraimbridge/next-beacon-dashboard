@@ -34,7 +34,10 @@ module.exports.genericQuery = function(req, res) {
     keen.run(req.keen_query, function(err, response) {
         if (!errored) {
             if (err) {
-                res.json(err);
+                res.json({
+                    message: err.message,
+                    code: err.code
+                });
                 errored = true;
                 return;
             }
