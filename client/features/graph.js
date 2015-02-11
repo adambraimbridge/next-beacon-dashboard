@@ -5,6 +5,7 @@ var _ = require('lodash');
 var qs = require('query-string');
 
 var histogram = require('../graphs/histogram.js');
+var lines     = require('../graphs/lines.js');
 var single    = require('../graphs/single.js');
 var stacked   = require('../graphs/stacked.js');
 
@@ -24,7 +25,11 @@ module.exports.init = function () {
         var graphType;
 
         if (_.isArray(data)) { // multiple query
-            graphType = histogram;
+            if(query.single) {
+                graphType = histogram;
+            } else {
+                graphType = lines;
+            }
         } else if (query.group_by) {
             graphType = stacked;
         } else {
