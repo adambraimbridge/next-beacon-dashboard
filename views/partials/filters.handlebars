@@ -1,21 +1,15 @@
 
 <div class="controls__container">
-
-    <select class="form-control" data-filter="pageType">
-        <option value="__clear__">Page type</option>
-        <option value="frontpage">Frontpage</option>
-        <option value="article">Article</option>
-        <option value="stream">Stream</option>
-        <option value="search">Search</option>
-        <option value="my">My</option>
-        <option value="group">Group</option>
-    </select>
-
-    <select class="form-control" data-filter="staff">
-        <option value="__clear__">Staff</option>
-        <option value="false">Excluded</option>
-        <option value="true">Included</option>
-    </select>
+    {{#each filters}}
+    {{#unless hidden}}
+        <select class="form-control" data-filter="{{@key}}">
+            <option value="__clear__">{{title}}</option>
+            {{#each values}}
+            <option value="{{@key}}">{{.}}</option>
+            {{/each}}
+        </select>
+    {{/unless}}
+    {{/each}}
 
     <select class="form-control" data-filter="timeframe">
         <option value="__clear__">Timeframe</option>
