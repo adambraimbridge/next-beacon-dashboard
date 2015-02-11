@@ -41,12 +41,8 @@ module.exports = function (req, res, next) {
     req.keen_defaults = {};
 
     var queries = metrics.map(function(metric, i) {
-        var query = _.defaults(_.mapValues(params, function(param) {
+        var query = _.mapValues(params, function(param) {
             return _.isArray(param) ? param[i] : param;
-        }), {
-            interval: 'daily', 
-            timeframe: 'this_14_days',
-            group_by: []
         });
 
         query.filters = activeFilters;

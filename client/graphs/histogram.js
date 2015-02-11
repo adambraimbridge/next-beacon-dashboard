@@ -12,7 +12,7 @@ module.exports = function(data, palette, query) {
 	.zip(_.pluck(data, 'result'))
 	.map(function(result, i) {
 		return {
-			data: _(result[1][0].value).map(function(a) {
+			data: _(result[1]).map(function(a) {
 				return {
 					y: a.result,
 					x: a[_.isArray(query.group_by) ?
