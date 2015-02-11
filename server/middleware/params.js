@@ -50,7 +50,9 @@ module.exports = function (req, res, next) {
         });
 
         query.filters = activeFilters;
-        req.keen_defaults[params.event_collection[i] || metric] = query;
+        req.keen_defaults[
+            (params.event_collection && params.event_collection[i]) || metric
+        ] = query;
         return new keenIO.Query(metric, query);
     });
 

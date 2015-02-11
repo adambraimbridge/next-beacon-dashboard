@@ -29,7 +29,6 @@ module.exports.eventStream = function(req, res) {
 
 // Runs a query attached to the req object = see also ./middleware/params
 module.exports.genericQuery = function(req, res) {
-    console.log(req.keen_defaults, req.keen_query);
     var errored = false;
     keen.run(req.keen_query, function(err, response) {
         if (!errored) {
