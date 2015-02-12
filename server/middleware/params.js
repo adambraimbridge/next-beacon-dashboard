@@ -19,7 +19,7 @@ module.exports = function (req, res, next) {
     req.query.isStaff = req.query.isStaff ? (req.query.isStaff === 'true') : true; // default to true
 
     if(req.query.inTheLast) {
-        req.query.inTheLast = moment().subtract(1, req.query.inTheLast).toISOString();
+        req.query.inTheLast = moment().add(1, 'day').startOf('day').subtract(1, req.query.inTheLast).toISOString();
     }
 
     var activeFilters = _(filters).map(function(filter, field) {

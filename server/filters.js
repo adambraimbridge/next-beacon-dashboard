@@ -63,8 +63,8 @@ module.exports = {
 		}
 	},
 	inTheLast: {
-		property_name: 'keen.timestamp',
-		operator: 'gte',
+		property_name: 'time.day',
+		operator: 'gt',
 		hidden: true
 	}
 };
