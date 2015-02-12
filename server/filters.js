@@ -45,5 +45,21 @@ module.exports = {
 		"property_name": "meta.domPath",
 		"operator": "contains",
 		hidden: true
+	},
+	wordCount: {
+		property_name: "page.article.wordCount",
+		operator: "gt",
+		title: "Minimum word count",
+		values: {
+			50: "50",
+			100: "100",
+			200: "200",
+			500: "500",
+			1000: "1000",
+			1500: "1500",
+			2000: "2000",
+			2500: "2500",
+			3000: "3000"
+		}
 	}
 };
