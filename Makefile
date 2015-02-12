@@ -2,7 +2,7 @@ export SHELL := /bin/bash
 export PATH  := $(shell npm bin):$(PATH)
 
 install:
-	origami-build-tools install
+	origami-build-tools install --verbose
 
 build:
 	cp bower_components/rickshaw/rickshaw.css static/
