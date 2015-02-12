@@ -1,4 +1,3 @@
-
 module.exports.dashboard    = require('./dashboard');
 module.exports.data         = require('./data');
 
@@ -9,6 +8,8 @@ var keen = keenIO.configure({
     projectId: process.env['KEEN_PROJECT_ID'],
     readKey: process.env['KEEN_READ_KEY']
 });
+
+var processors = require('../process.js');
 
 // The latest 100 events we've logged
 module.exports.eventStream = function(req, res) {
@@ -40,7 +41,13 @@ module.exports.genericQuery = function(req, res) {
                 errored = true;
                 return;
             }
-            console.log(util.inspect(response, { showHidden: true, depth: null })); 
+
+            for(var p in processors) {
+                if(req.query['process_' + p]) {
+                    response = processors[p](req.query['process_' + p], response);
+                }
+            }
+
             res.json(response);
         }
     });

@@ -61,5 +61,10 @@ module.exports = {
 			2500: "2500",
 			3000: "3000"
 		}
+	},
+	inTheLast: {
+		property_name: 'keen.timestamp',
+		operator: 'gte',
+		hidden: true
 	}
 };

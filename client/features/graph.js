@@ -37,6 +37,9 @@ module.exports.init = function () {
             } else {
                 graphType = lines;
             }
+        } else if (query.histogram) {
+            data = [data];
+            graphType = histogram;
         } else if (query.group_by) {
             graphType = stacked;
         } else {
@@ -44,6 +47,7 @@ module.exports.init = function () {
         }
 
         var graphSpec = graphType(data, palette, query);
+        console.log(graphSpec);
 
         var graph = new Rickshaw.Graph(_.extend({
             element: document.querySelector("#chart"),
@@ -51,9 +55,9 @@ module.exports.init = function () {
             height: window.innerHeight * 0.5,
         }, graphSpec));
 
-        new Rickshaw.Graph.HoverDetail({
+        new Rickshaw.Graph.HoverDetail(_.extend({
             graph: graph,
-        });
+        }, graphSpec.hoverOptions));
         
         new Rickshaw.Graph.Axis.Y({
             graph: graph,
@@ -61,10 +65,12 @@ module.exports.init = function () {
             element: document.getElementById('y_axis'),
         });
 
-        new Rickshaw.Graph.Legend({
-            graph: graph,
-            element: document.getElementById('legend')
-        });
+        if(!graphSpec.hideLegend) {
+            new Rickshaw.Graph.Legend({
+                graph: graph,
+                element: document.getElementById('legend')
+            });
+        }
 
         if(graphSpec.xaxis) {
             new Rickshaw.Graph.Axis[graphSpec.xaxis]({

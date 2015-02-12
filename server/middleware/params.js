@@ -1,6 +1,7 @@
 var keenIO = require('keen.io');
 var _ = require('../../bower_components/lodash/lodash.js');
 var filters = require('../filters.js');
+var moment = require('moment');
 
 var keen = keenIO.configure(
     {
@@ -17,6 +18,10 @@ module.exports = function (req, res, next) {
 
     req.query.isStaff = req.query.isStaff ? (req.query.isStaff === 'true') : true; // default to true
 
+    if(req.query.inTheLast) {
+        req.query.inTheLast = moment().subtract(1, req.query.inTheLast).toISOString();
+    }
+
     var activeFilters = _(filters).map(function(filter, field) {
         if(req.query[field]) {
             return _.extend({
@@ -24,8 +29,6 @@ module.exports = function (req, res, next) {
             }, filter);
         }
     }).compact().value();
-
-    console.log(activeFilters);
 
     var fields = [
         'event_collection',

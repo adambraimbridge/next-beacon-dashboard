@@ -80,15 +80,18 @@ module.exports = [{
 	},
 }, {
 	"Addiction": {
-		pathname: "addiction",
+		pathname: "graph",
 		query: {
 			"event_collection": "dwell",
 			"metric": "count_unique",
 			"target_property": "time.day",
-			"timeframe": "last_week",
-			"interval": "weekly",
 			"group_by": "user.erights",
-			"title": "Next addiction"
+			"title": "Next addiction",
+			inTheLast: 'week',
+			single: true,
+			histogram: true,
+			process_countAs: 'user.erights',
+			window: 1
 		}
 	},
 	"Wordcount scroll depth": {
