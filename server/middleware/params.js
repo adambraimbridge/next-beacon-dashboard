@@ -13,9 +13,6 @@ var keen = keenIO.configure(
 
 // Maps query string parameters to a Keen.io Query object
 module.exports = function (req, res, next) {
-
-    var explain = [];
-
     req.query.isStaff = req.query.isStaff ? (req.query.isStaff === 'true') : true; // default to true
 
     if(req.query.inTheLast) {
@@ -29,6 +26,10 @@ module.exports = function (req, res, next) {
             }, filter);
         }
     }).compact().value();
+
+    var explainFilters = _(activeFilters).map(function(filter) {
+        return filter.explain();
+    }).compact().join(', ');
 
     var fields = [
         'event_collection',
@@ -61,7 +62,7 @@ module.exports = function (req, res, next) {
 
     // explain.push('over ' + keen_defaults.timeframe.replace(/_/g, ' ').replace('this', ''))
 
-    req.keen_explain = explain;
+    req.keen_explain = explainFilters;
     req.keen_query = queries;
     next();
 };

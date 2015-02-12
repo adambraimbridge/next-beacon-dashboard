@@ -9,7 +9,7 @@ module.exports.graph = function(req, res) {
         filters: filters,
         title: req.query.title || '',   // XSS me
         apiLink: req._parsedUrl.search,
-        explain: req.keen_explain.join(', ')
+        explain: req.keen_explain
     };
 
     res.render('main.handlebars', opts);
