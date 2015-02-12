@@ -6,6 +6,7 @@ SOONER
 - Add help system w/ feedback
 - Add a retention graph
 - Add a funnel graph 
+- Be awesome
 
 LATER
 
