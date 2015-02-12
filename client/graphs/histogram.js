@@ -20,7 +20,7 @@ module.exports = function(data, palette, query) {
 						query.group_by])
 				};
 			}).filter(function(r) {
-				return !_.isNull(r.x) && r.y;
+				return !_.isNull(r.x) && !_.isNaN(r.x) && r.y;
 			})
 			.sortBy('x')
 			.chunk(avgWindow)
@@ -39,7 +39,7 @@ module.exports = function(data, palette, query) {
 
 	return _.extend({
 		series: series,
-	}, _.isArray(query.event_collection.length) ? {
+	}, _.isArray(query.event_collection) ? {
 		stack: false,
 		renderer: 'line',
 		interpolation: 'linear',

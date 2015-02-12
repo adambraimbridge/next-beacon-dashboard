@@ -83,7 +83,7 @@ module.exports.init = function () {
     .catch(function (e) {
         $('<div>')
             .addClass('alert alert-danger')
-            .text(e.message)
+            .text(e.message || e.toString())
             .prependTo('#chart_container');
     });
 };
