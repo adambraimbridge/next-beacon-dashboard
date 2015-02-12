@@ -47,7 +47,6 @@ module.exports.init = function () {
         }
 
         var graphSpec = graphType(data, palette, query);
-        console.log(graphSpec);
 
         var graph = new Rickshaw.Graph(_.extend({
             element: document.querySelector("#chart"),
@@ -73,9 +72,9 @@ module.exports.init = function () {
         }
 
         if(graphSpec.xaxis) {
-            new Rickshaw.Graph.Axis[graphSpec.xaxis]({
+            new Rickshaw.Graph.Axis[graphSpec.xaxis](_.extend({
                 graph: graph
-            });
+            }, graphSpec.xaxisOptions));
         }
 
         graph.render();

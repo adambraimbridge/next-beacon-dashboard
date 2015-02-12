@@ -19,8 +19,15 @@ module.exports = function(data, palette, query) {
 						query.group_by[i] :
 						query.group_by])
 				};
-			}).filter(function(r) {
+			})
+			.filter(function(r) {
 				return !_.isNull(r.x) && !_.isNaN(r.x) && r.y;
+			})
+			.map(function(r) {
+				return {
+					y: r.y,
+					x: query.logX ? Math.log(r.x)*Math.LOG10E : r.x
+				};
 			})
 			.sortBy('x')
 			.chunk(avgWindow)
@@ -42,8 +49,12 @@ module.exports = function(data, palette, query) {
 	}, _.isArray(query.event_collection) ? {
 		stack: false,
 		renderer: 'line',
-		interpolation: 'linear',
-		xaxis: 'X'
+		xaxis: 'X',
+		xaxisOptions: {
+			tickFormat: function(x) {
+				return Math.round(Math.pow(10, x));
+			}
+		}
 	} : {
 		renderer: 'bar',
 		hoverOptions: {

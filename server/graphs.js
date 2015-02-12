@@ -102,7 +102,8 @@ module.exports = [{
 			target_property: 'user.erights',
 			group_by: 'page.article.wordCount',
 			title: 'Dwell vs scrolldepth by article length',
-			single: true
+			single: true,
+			logX: true
 		}
 	},
 	"Dwell vs scroll": {
