@@ -20,6 +20,13 @@ module.exports.init = function () {
         return response.json();
     })
     .then(function(data) {
+        if(data.code) {
+            throw new Error(data.code + ': ' + data.message);
+        }
+
+        return data;
+    })
+    .then(function(data) {
 
         var palette = new Rickshaw.Color.Palette();
         var graphType;
@@ -68,6 +75,9 @@ module.exports.init = function () {
         graph.render();
     })
     .catch(function (e) {
-        console.error(e);
+        $('<div>')
+            .addClass('alert alert-danger')
+            .text(e.message)
+            .prependTo('#chart_container');
     });
 };
