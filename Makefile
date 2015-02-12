@@ -11,5 +11,5 @@ run:
 deploy:
 	haikro build deploy \
 		--app ft-next-beacon-dashboard \
-		--heroku-token `heroku auth:token` \
+		--heroku-token $(HEROKU_AUTH_TOKEN) \
 		--commit `git rev-parse HEAD`
