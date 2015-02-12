@@ -10,21 +10,7 @@ module.exports.graph = function(req, res) {
         title: req.query.title || '',   // XSS me
         apiLink: req._parsedUrl.search,
         explain: req.keen_explain.join(', ')
-    }
+    };
 
     res.render('main.handlebars', opts);
-}
-
-module.exports.addiction = function(req, res) {
-    
-    var opts = {
-        graph: true,
-        graphs: graphs,
-        filters: filters,
-        title: req.query.title || '',   // XSS me
-        apiLink: req._parsedUrl.search,
-        explain: req.keen_explain.join(', ')
-    }
-
-    res.render('addiction.handlebars', opts);
-}
+};

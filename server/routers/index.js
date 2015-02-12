@@ -26,7 +26,7 @@ module.exports.eventStream = function(req, res) {
         }
         res.json(response);
     });
-}
+};
 
 // Runs a query attached to the req object = see also ./middleware/params
 module.exports.genericQuery = function(req, res) {
