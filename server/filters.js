@@ -1,3 +1,5 @@
+var moment = require('moment');
+
 module.exports = {
 	isStaff: {
 		property_name: "user.isStaff",
@@ -91,7 +93,7 @@ module.exports = {
 		operator: 'gt',
 		hidden: true,
 		explain: function() {
-			return 'impressions from the last ' + this.property_value;
+			return 'starting ' + moment(this.property_value).fromNow();
 		}
 	}
 };
