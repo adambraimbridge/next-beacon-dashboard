@@ -18,4 +18,13 @@ module.exports = function () {
         var key = $(this).data('filter');
         $(this).val(query[key] || '__clear__');
     });
+
+    $('#graph-select li a').each(function() {
+        if(this.href === location.href) {
+            $("#graph-select")
+                .prev("[data-toggle=dropdown]")
+                .text(this.textContent + ' ')
+                .append("<span class=\"caret\"></span>");
+        }
+    });
 };

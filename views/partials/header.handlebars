@@ -12,10 +12,10 @@
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
             Charts <span class="caret"></span>
         </button>
-        <ul class="dropdown-menu" role="menu">
+        <ul class="dropdown-menu" role="menu" id="graph-select">
             {{#each graphs}}
             {{#each .}}
-            <li><a href="{{formatUrl .}}">{{@key}}</a></li>
+            <li><a href="/{{formatUrl .}}">{{@key}}</a></li>
             {{/each}}
             {{#unless @last}}<li class="divider"></li>{{/unless}}
             {{/each}}
