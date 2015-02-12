@@ -25,12 +25,6 @@ module.exports = function(data, palette, query) {
 			.filter(function(r) {
 				return !_.isNull(r.x) && !_.isNaN(r.x) && r.y;
 			})
-			.map(function(r) {
-				return {
-					y: r.y,
-					x: query.logX ? Math.log(r.x)*Math.LOG10E : r.x
-				};
-			})
 			.sortBy('x')
 			.chunk(avgWindow)
 			.map(function(sub) {
@@ -40,6 +34,12 @@ module.exports = function(data, palette, query) {
 				};
 			})
 			.sortBy('x')
+			.map(function(r) {
+				return {
+					y: r.y,
+					x: query.logX ? Math.log(r.x)*Math.LOG10E : r.x
+				};
+			})
 			.value(),
 			color: palette.color(),
 			name: sameCollection(query) ? describeVars(query, i) : result[0]
