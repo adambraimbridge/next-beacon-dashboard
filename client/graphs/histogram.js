@@ -1,4 +1,6 @@
 var _ = require('lodash');
+var sameCollection = require('../utils/samecollection.js');
+var describeVars = require('../utils/describe.js');
 
 function sum(xs) {
 	return xs.reduce(function(y, x) {
@@ -40,19 +42,19 @@ module.exports = function(data, palette, query) {
 			.sortBy('x')
 			.value(),
 			color: palette.color(),
-			name: result[0]
+			name: sameCollection(query) ? describeVars(query, i) : result[0]
 		};
 	}).value();
 
 	return _.extend({
 		series: series,
-	}, _.isArray(query.event_collection) ? {
+	}, _.isArray(query.metric) ? {
 		stack: false,
 		renderer: 'line',
 		xaxis: 'X',
 		xaxisOptions: {
 			tickFormat: function(x) {
-				return Math.round(Math.pow(10, x));
+				return query.logX ? Math.round(Math.pow(10, x)) : x;
 			}
 		}
 	} : {

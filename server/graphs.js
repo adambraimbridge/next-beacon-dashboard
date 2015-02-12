@@ -134,5 +134,18 @@ module.exports = [{
 			target_property: 'meta.timings.domInteractive',
 			title: 'domInteractive percentiles'
 		}
+	},
+	"domInteractive uniques": {
+		pathname: 'graph',
+		query: {
+			event_collection: 'timing',
+			metric: ['count', 'count_unique'],
+			target_property: 'user.erights',
+			group_by: 'meta.timings.domInteractive',
+			title: 'domInteractive unique vs page views',
+			single: true,
+			logX: true,
+			window: 20
+		}
 	}
 }];
