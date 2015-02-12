@@ -115,4 +115,24 @@ module.exports = [{
 			title: 'Dwell vs scrolldepth over time'
 		}
 	}
+}, {
+	"domInteractive vs loadEventEnd": {
+		pathname: 'graph',
+		query: {
+			event_collection: ['timing', 'timing'],
+			metric: ['average', 'average'],
+			target_property: ['meta.timings.loadEventEnd', 'meta.timings.domInteractive'],
+			title: 'domInteractive vs loadEventEnd'
+		}
+	},
+	"domInteractive percentiles": {
+		pathname: 'graph',
+		query: {
+			event_collection: ['timing', 'timing', 'timing', 'timing'],
+			metric: ['percentile','percentile','percentile','percentile'],
+			percentile: [99, 95, 75, 50, 25],
+			target_property: 'meta.timings.domInteractive',
+			title: 'domInteractive percentiles'
+		}
+	}
 }];

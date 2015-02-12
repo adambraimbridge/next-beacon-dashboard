@@ -36,7 +36,8 @@ module.exports = function (req, res, next) {
         'target_property',
         'interval',
         'timeframe',
-        'group_by'
+        'group_by',
+        'percentile'
     ];
 
     var params = _.pick(req.query, fields);
