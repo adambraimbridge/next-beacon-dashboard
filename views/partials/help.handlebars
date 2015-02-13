@@ -21,7 +21,7 @@
         <li>cta (call-to-action) - Indicates a user has clicked on something on the Next user interface.</li>
     </ul>
     <p>
-        Viewing the events is as simple as using the <i>event_collection</i> parameter,
+        Viewing the events is as simple as using the <code>event_collection</code> parameter,
     </p>
     <pre>...com/graph?<b>event_collection=dwell</b></pre>
 
@@ -31,7 +31,7 @@
     </p>
     <p>
      Typically we want to find out how many times something has 
-        happened, which you can do so with the <i>metric</i> parameter, 
+        happened, which you can do so with the <code>metric</code> parameter, 
     </p> 
 
     <pre>...com/graph?<b>metric=count</b></pre>
@@ -84,6 +84,7 @@
         <li>flags - Filters data to a flag. Eg. useful to counting the number of users or behaviour around a flag.
         <li>domPathEquals - (cta only) - Filters data to match the full DOM path of a CTA action.
         <li>domPathContains - (cta only) - Filters data to match a sub-string of a DOM path. 
+        <li>inTheLast - hour|day|week|... - Filters data to impressions submitted in the timeframe, for queries incompatible with the timeframe parameter.
     </ul>
 
     <p>
@@ -99,11 +100,39 @@
     </p>
     
     <p>
-        Adding a <i>group_by</i> parameter allows you to split the results in this way, Eg. We may want page views <i>grouped by</i>
+        Adding a <code>group_by</code> parameter allows you to split the results in this way, Eg. We may want page views <code>grouped by</code>
         common browser family (Chrome, Firefox etc.)
     </p>
     
     <pre>...com/graph?<b>group_by=user.browser.family</b></pre>
+
+    <h3>Multiple variables</h3>
+
+    <p>You can compare multiple variables either as area graphs over time or as histograms over a common numerical variable.</p>
+
+    <p>To compare two or more timescale variables, just add another query's parameters to the URL:</p>
+
+    <pre>...com/graph?metric=count...<b>&metric=count_unique...</b></pre>
+
+    <p>There must be multiple <code>metric</code> parameters, even if they are all the same. Each parameter that applies to a query must be included either once in total or once per query. If included once, that value is used for every query. Filters apply to every query.</p>
+
+    <h3>Histograms</h3>
+
+    <p>To draw a histogram of impressions over a numerical property, perform a <code>group_by</code> query with the parameter <code>single=true</code>. This counts all impressions since the beginning of time, graphing them by the <code>group_by</code> parameter.</p>
+
+    <pre>...com/graph?metric=count&target_property=user.erights&<b>single=true</b>&<b>group_by=meta.timings.domInteractive</b></pre>
+
+    <h4>Window</h4>
+
+    <p>The width of the moving sum window. Defaults to <code>4</code>. Higher values make smoother graphs but discard more data.</p>
+
+    <pre>...com/graph?...<b>window=20</b></pre>
+
+    <h4>logX</h4>
+
+    <p>If <code>true</code>, plots the data on a logarithmic X axis. Useful for histograms with lots of detail at the start but a very long tail, e.g. response times.</p>
+
+    <pre>...com/graph?...<b>logX=true</b></pre>
 
     <h3>Titles</h3>
 
