@@ -1,90 +1,88 @@
-
 var Rickshaw = require('rickshaw');
 require('isomorphic-fetch');
 require('es6-promise').polyfill();
+var _ = require('lodash');
+var qs = require('query-string');
+
+var histogram = require('../graphs/histogram.js');
+var lines     = require('../graphs/lines.js');
+var single    = require('../graphs/single.js');
+var stacked   = require('../graphs/stacked.js');
 
 module.exports.init = function () {
+    var query = qs.parse(location.search);
     
     fetch('/api' + location.search)
+    .then(function(response) {
+        if (response.status >= 400) {
+            throw new Error("Bad response from server");
+        }
+        return response.json();
+    })
+    .then(function(data) {
+        if(data.code) {
+            throw new Error(data.code + ': ' + data.message);
+        }
 
-        .then(function(response) {
-            if (response.status >= 400) {
-                throw new Error("Bad response from server");
-            }
-            return response.json();
-        })
+        return data;
+    })
+    .then(function(data) {
 
-        .then(function(data) {
+        var palette = new Rickshaw.Color.Palette();
+        var graphType;
 
-            var palette = new Rickshaw.Color.Palette();
-
-            console.log(data);
-
-            if (/group_by/.test(location.search)) {
-               
-                var numberOfSeries = data.result.map(function (a) { return a.value.length })[0];
-                var key = data.result.map(function (a) { return Object.keys(a.value[0]).filter(function (k) { return k !== 'result' }) })[0];
-
-                console.log(key, numberOfSeries);
-
-                var series = [];
-                for(var n = 0; n < numberOfSeries; n++) {
-                    series.push(
-                        {
-                            data: data.result.map(function (a) {
-                                return {
-                                    x: new Date(a.timeframe.start).valueOf() / 1000,
-                                    y: a.value[n].result
-                                }
-                            }),
-                            color: palette.color(),
-                            name: data.result.map(function (a) {
-                                return a.value[n][key];
-                            })[0]
-                        }
-                    )
-                }
+        if (_.isArray(data)) { // multiple query
+            if(query.single) {
+                graphType = histogram;
             } else {
-                var series = [{
-                    data: data.result.map(function (result) {
-                        return {
-                            x: new Date(result.timeframe.start).valueOf() / 1000,
-                            y: result.value
-                        }
-                    }),
-                    color: palette.color(),
-                    name: 'interactions'
-                }]
+                graphType = lines;
             }
+        } else if (query.histogram) {
+            data = [data];
+            graphType = histogram;
+        } else if (query.group_by) {
+            graphType = stacked;
+        } else {
+            graphType = single;
+        }
 
-            var graph = new Rickshaw.Graph({
-                element: document.querySelector("#chart"),
-                width: document.querySelector("#chart").parentNode.offsetWidth * 0.9,  
-                height: window.innerHeight * 0.5,
-                series: series
-            });
+        var graphSpec = graphType(data, palette, query);
 
-            var hoverDetail = new Rickshaw.Graph.HoverDetail( {
-                graph: graph,
-            });
-            
-            var y_axis = new Rickshaw.Graph.Axis.Y( {
-                graph: graph,
-                orientation: 'left',
-                element: document.getElementById('y_axis'),
-            });
+        var graph = new Rickshaw.Graph(_.extend({
+            element: document.querySelector("#chart"),
+            width: document.querySelector("#chart").parentNode.offsetWidth * 0.9,  
+            height: window.innerHeight * 0.5,
+        }, graphSpec));
 
-            var legend = new Rickshaw.Graph.Legend( {
+        new Rickshaw.Graph.HoverDetail(_.extend({
+            graph: graph,
+        }, graphSpec.hoverOptions));
+        
+        new Rickshaw.Graph.Axis.Y({
+            graph: graph,
+            orientation: 'left',
+            element: document.getElementById('y_axis'),
+        });
+
+        if(!graphSpec.hideLegend) {
+            new Rickshaw.Graph.Legend({
                 graph: graph,
                 element: document.getElementById('legend')
             });
+        }
 
-            var axes = new Rickshaw.Graph.Axis.Time( { graph: graph } );
+        if(graphSpec.xaxis) {
+            new Rickshaw.Graph.Axis[graphSpec.xaxis](_.extend({
+                graph: graph
+            }, graphSpec.xaxisOptions));
+        }
 
-            graph.render();
-        })
-        .catch(function (e) {
-            console.error(e);
-        });
-
+        graph.render();
+    })
+    .catch(function (e) {
+        $('<div>')
+            .addClass('alert alert-danger')
+            .text(e.message || e.toString())
+            .prependTo('#chart_container');
+    });
 };

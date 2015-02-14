@@ -3,7 +3,7 @@
 var express         = require('express');
 var debug           = require('debug')('beacon-dashboard');
 var util            = require('util');
-var exphbs          = require('express3-handlebars');
+var exphbs          = require('express-handlebars');
 var routers         = require('./routers');
 var params          = require('./middleware/params');
 
@@ -12,8 +12,12 @@ var app = module.exports = express();
 app.use(express.static(__dirname + '/../static', { maxAge: 3600000 }));
 
 app.engine('handlebars', exphbs({
-    defaultLayout: 'layout'
+    defaultLayout: 'layout',
+    helpers: {
+        formatUrl: require('url').format
+    }
 }));
+
 app.set('viewine', 'handlebars');
 
 app.get('/__gtg', function(req, res) {
@@ -36,7 +40,6 @@ api.get('/', routers.genericQuery);
 var dashboard = express.Router();
 dashboard.use(params);
 dashboard.get('/graph', routers.dashboard.graph);
-dashboard.get('/addiction', routers.dashboard.addiction);
 
 // TODO - list, table, json, export ...
 

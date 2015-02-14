@@ -1,5 +1,7 @@
-
-var keenIO          = require('keen.io');
+var keenIO = require('keen.io');
+var _ = require('../../bower_components/lodash/lodash.js');
+var filters = require('../filters.js');
+var moment = require('moment');
 
 var keen = keenIO.configure(
     {
@@ -11,118 +13,57 @@ var keen = keenIO.configure(
 
 // Maps query string parameters to a Keen.io Query object
 module.exports = function (req, res, next) {
+    req.query.isStaff = req.query.isStaff ? (req.query.isStaff === 'true') : true; // default to true
 
-    var explain = [];
-    var filters = [];
-
-    if (req.query.pageType) {
-        filters.push(
-            {
-                "property_name": "page.location.type",
-                "operator": "eq",
-                "property_value": req.query.pageType
-            })
-        explain.push('by ' + req.query.pageType);
+    if(req.query.inTheLast) {
+        req.query.inTheLast = moment().add(1, 'day').startOf('day').subtract(1, req.query.inTheLast).toISOString();
     }
 
-    var isStaff = req.query.isStaff ? (req.query.isStaff === 'true') : true;  // default to true
-    
-
-    if (isStaff) {
-        explain.push('includes FT staff');
-    } else {
-        explain.push('excludes FT staff');
-    }
-
-    if (req.query.isStaff) {
-        filters.push(
-            {
-                "property_name": "user.isStaff",
-                "operator": "eq",
-                "property_value": isStaff 
-            }
-        )
-    }
-        
-    /*filters.push(
-        {
-            "property_name": "page.location.hostname",
-            "operator": "eq",
-            "property_value": 'next.ft.com' 
+    var activeFilters = _(filters).map(function(filter, field) {
+        if(req.query[field]) {
+            return _.extend({
+                property_value: req.query[field]
+            }, filter);
         }
-    */
-   
-    // filter by an individual article
-    if (req.query.uuid) {
-        filters.push(
-            {
-                "property_name": "page.capi.id",
-                "operator": "eq",
-                "property_value": req.query.uuid 
-            }
-        )
-        explain.push('article <a href="http://next.ft.com/' + req.query.uuid + '">' + req.query.uuid  +'</a>');
-    }
-    
-    // filter by an individual article
-    if (req.query.erights) {
-        filters.push(
-            {
-                "property_name": "user.erights",
-                "operator": "eq",
-                "property_value": req.query.erights 
-            }
-        )
-        explain.push('erights ' + req.query.erights);
-    }
-    
-    // filter by a flag 
-    if (req.query.flags) {
-        filters.push(
-            {
-                "property_name": "user.flags",
-                "operator": "eq",
-                "property_value": req.query.flags 
-            }
-        )
-        explain.push('by flag <a href="http://next.ft.com/__toggler">' + req.query.flags + '</a>');
-    }
+    }).compact().value();
 
-    if (req.query.domPathEquals) {
-        filters.push(
-            {
-                "property_name": "meta.domPath",
-                "operator": "eq",
-                "property_value": req.query.domPathEquals
-            }
-        )
-    }
-    
-    if (req.query.domPathContains) {
-        filters.push(
-            {
-                "property_name": "meta.domPath",
-                "operator": "contains",
-                "property_value": req.query.domPathContains
-            }
-        )
-    }
-   
+    var explainFilters = _(activeFilters).map(function(filter) {
+        return filter.explain();
+    }).compact().join(', ');
 
-    var metric = req.query.metric || 'count';
-    var keen_defaults = {
-        event_collection: req.query.event_collection || undefined,
-        target_property: req.query.target_property || undefined,
-        interval: req.query.interval || 'daily', 
-        timeframe: req.query.timeframe || 'this_14_days',
-        group_by: req.query.group_by ? req.query.group_by.split(',') : [],
-        filters: filters 
-    }
-    
-    explain.push('over ' + keen_defaults.timeframe.replace(/_/g, ' ').replace('this', ''))
+    var fields = [
+        'event_collection',
+        'target_property',
+        'interval',
+        'timeframe',
+        'group_by',
+        'percentile'
+    ];
 
-    req.keen_explain = explain;
-    req.keen_defaults = keen_defaults;
-    req.keen_query = new keenIO.Query(metric, keen_defaults);
+    var params = _.pick(req.query, fields);
+    var metrics = [].concat(req.query.metric || 'count');
+
+    req.keen_defaults = {};
+
+    var queries = metrics.map(function(metric, i) {
+        var query = _.defaults(_.mapValues(params, function(param) {
+            return _.isArray(param) ? param[i] : param;
+        }), {
+            interval: req.query.single ? null : 'daily', 
+            timeframe: req.query.single ? null : 'this_14_days',
+            group_by: []
+        });
+
+        query.filters = activeFilters;
+        req.keen_defaults[
+            _.isArray(params.event_collection) ? params.event_collection[i] : metric
+        ] = query;
+        return new keenIO.Query(metric, query);
+    });
+
+    // explain.push('over ' + keen_defaults.timeframe.replace(/_/g, ' ').replace('this', ''))
+
+    req.keen_explain = explainFilters;
+    req.keen_query = queries;
     next();
-}
+};
