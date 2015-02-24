@@ -4,6 +4,8 @@ module.exports.data         = require('./data');
 var util        = require('util');
 var keenIO      = require('keen.io');
 var flat        = require('flat');
+var csv			= require('csv');
+var csvUtils	= require('./../../lib/csv-utils');
 
 var keen = keenIO.configure({
     projectId: process.env['KEEN_PROJECT_ID'],
@@ -22,16 +24,41 @@ module.exports.eventStream = function(req, res) {
         });
 
     keen.run(latest, function(err, response) {
-        if (err) {
+
+		if (err) {
             res.json(err);
             return;
         }
-    
+
+
         var flattened = response.result.map(function (event) {
             return flat(event);
         });
 
-        res.json(flattened);
+		if (req.query.format === 'csv') {
+
+			
+			var cols = csvUtils.columns(flattened);
+			flattened.unshift(cols);
+
+			// The columns as a heading
+			var heading = '# ' + Object.keys(cols).join(',');
+
+			// Output data
+			csv.stringify(flattened, function(err, data) {
+				
+				if (err) {
+					res.status(503).body(err);
+					return;
+				}
+
+				res.set('Content-Type: text/plain');
+				res.send(heading + "\n" + data);
+			});
+
+		} else {
+			res.json(flattened);
+		}
     });
 };
 
