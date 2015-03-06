@@ -1,5 +1,6 @@
 module.exports.dashboard    = require('./dashboard');
 module.exports.data         = require('./data');
+module.exports.optInOut     = require('./opt-in-out');
 
 var util        = require('util');
 var keenIO      = require('keen.io');
