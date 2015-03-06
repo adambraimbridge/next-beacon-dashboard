@@ -128,3 +128,41 @@ select.form-control {
     margin-top: 5px;
     margin-right: 5px;
 }
+
+.opt {
+    margin: 0 0 40px;
+    overflow: hidden;
+    position: relative;
+    text-align: center;
+}
+
+.opt--active::before {
+    border-left: 2px dotted black;
+    content: '';
+    display: block;
+    height: 100%;
+    left: 50%;
+    position: absolute;
+}
+
+.opt--active .opt__section {
+    display: block;
+}
+
+.opt__section {
+    display: none;
+    float: left;
+    width: 50%;
+}
+
+.opt__copy {
+    font-size: 30px;
+}
+
+#opted-out-p {
+    background: #cb513a;
+}
+
+#opted-in-p {
+    background: #73c03a;
+}
