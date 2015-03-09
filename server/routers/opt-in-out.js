@@ -23,11 +23,12 @@ module.exports.graph = function(req, res) {
 
 module.exports.api = function(req, res) {
 
-	var query = new keenIO.Query('count', {
-		eventCollection: 'optin',
-		timeframe: req.query.timeframe || 'previous_7_days',
-		groupBy: 'meta.type',
-		filters: [{'property_name':'meta.type','operator':'exists','property_value':true}]
+	var query = new keenIO.Query('count_unique', {
+        eventCollection: 'optin',
+        filters: [{'property_name':'meta.type','operator':'exists','property_value':true}],
+        groupBy: 'meta.type',
+        targetProperty: 'user.erights',
+        timeframe: req.query.timeframe || 'previous_7_days'
 	});
 	var errored = false;
 
