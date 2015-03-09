@@ -55,7 +55,11 @@ app.use('/__test', function (req, res) {
 
 app.get('/', function (req, res) {
     res.redirect(302, '/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&title=Unique+users+on+next');
-})
+});
+
+// Opts (in/out) routes
+app.get('/opt-in-out', routers.optInOut.graph);
+app.get('/opt-api', routers.optInOut.api);
 
 var port = process.env.PORT || 3001;
 app.listen(port, function() {

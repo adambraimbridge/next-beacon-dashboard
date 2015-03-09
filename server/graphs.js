@@ -148,4 +148,12 @@ module.exports = [{
 			window: 20
 		}
 	}
+}, {
+	"Opt-ins vs Opt-outs": {
+		pathname: 'opt-in-out',
+		query: {
+			timeframe: 'this_7_days',
+			title: 'Opt-ins vs Opt-outs'
+		}
+	}
 }];
