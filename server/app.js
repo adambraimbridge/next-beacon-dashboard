@@ -48,6 +48,7 @@ data.get('/:source', routers.data.search);  // FIXME - proxy to AWS
 
 app.use('/api', api);
 app.use('/data', data);
+app.get('/table', routers.dashboard.table);
 app.use('/', dashboard);
 app.use('/__test', function (req, res) {
     res.send(req.keen_defaults);

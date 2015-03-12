@@ -198,3 +198,12 @@ select.form-control {
 	text-align: right;
 }
 
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+td {
+	border-bottom: 1px solid #ccc;
+	line-height: 40px;
+}
