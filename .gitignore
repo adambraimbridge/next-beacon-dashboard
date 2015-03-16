@@ -5,4 +5,4 @@ node_modules
 /node-*
 bower_components
 static/main.js
-
+.DS_Store
