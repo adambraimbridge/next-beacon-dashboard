@@ -4,5 +4,5 @@ node_modules
 .haikro-cache
 /node-*
 bower_components
-static/*
+static/main.js
 .DS_Store
