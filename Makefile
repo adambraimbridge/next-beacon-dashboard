@@ -5,7 +5,6 @@ install:
 	origami-build-tools install --verbose
 
 build:
-	cp bower_components/rickshaw/rickshaw.css static/
 	gulp build
 
 run:
