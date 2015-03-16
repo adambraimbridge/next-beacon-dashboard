@@ -4,3 +4,5 @@ node_modules
 .haikro-cache
 /node-*
 bower_components
+static/main.js
+
