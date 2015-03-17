@@ -14,8 +14,5 @@ run:
 		export DEBUG=*; nodemon server/app
 
 deploy:
-	haikro build deploy \
-		--app ft-next-beacon-dashboard \
-		--heroku-token $(HEROKU_AUTH_TOKEN) \
-		--commit `git rev-parse HEAD` \
-		--debug
+	next-build-tools configure
+	next-build-tools deploy

@@ -19,7 +19,7 @@ app.engine('handlebars', exphbs({
     }
 }));
 
-app.set('view', 'handlebars');
+app.set('view engine', 'handlebars');
 
 app.get('/__gtg', function(req, res) {
     res.status(200).send();
