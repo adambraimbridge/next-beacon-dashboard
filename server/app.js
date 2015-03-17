@@ -24,6 +24,14 @@ app.get('/__gtg', function(req, res) {
     res.status(200).send();
 });
 
+app.get('*', function(req, res, next) {
+	if(process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
+		res.send('Client request must use TLS').status(426); // http://tools.ietf.org/html/rfc2817#section-4.2
+	} else {
+		next();
+	}
+});
+
 var cacheControl = function (req, res, next) {
     res.header('Cache-Control', 'max-age=120');
     next();
