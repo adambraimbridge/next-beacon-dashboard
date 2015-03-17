@@ -6,6 +6,7 @@ var util            = require('util');
 var exphbs          = require('express-handlebars');
 var routers         = require('./routers');
 var params          = require('./middleware/params');
+var auth			= require('./middleware/auth');
 
 var app = module.exports = express();
 
@@ -18,7 +19,7 @@ app.engine('handlebars', exphbs({
     }
 }));
 
-app.set('viewine', 'handlebars');
+app.set('view', 'handlebars');
 
 app.get('/__gtg', function(req, res) {
     res.status(200).send();
@@ -31,6 +32,8 @@ app.get('*', function(req, res, next) {
 		next();
 	}
 });
+
+app.use(auth);
 
 var cacheControl = function (req, res, next) {
     res.header('Cache-Control', 'max-age=120');
