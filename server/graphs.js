@@ -48,6 +48,17 @@ module.exports = [{
 			"title": "Interactions with article cards"
 		},
 	},
+	"Article cards — cta popularity": {
+		pathname: "graph",
+		query: {
+			"event_collection": "cta",
+			"metric": "count",
+			"domPathContains": "article-card",
+			"group_by": "meta.domPath",
+			"title": "Popularity of CTA elements in Article cards",
+			"stacked_area": true
+		},
+	},
 	"Navigation menu": {
 		pathname: "graph",
 		query: {

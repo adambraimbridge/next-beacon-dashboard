@@ -8,6 +8,7 @@ var histogram = require('../graphs/histogram.js');
 var lines     = require('../graphs/lines.js');
 var single    = require('../graphs/single.js');
 var stacked   = require('../graphs/stacked.js');
+var stacked_area = require('../graphs/stacked-area.js');
 
 module.exports.init = function () {
     var query = qs.parse(location.search);
@@ -40,6 +41,8 @@ module.exports.init = function () {
         } else if (query.histogram) {
             data = [data];
             graphType = histogram;
+        } else if (query.stacked_area) {
+            graphType = stacked_area;
         } else if (query.group_by) {
             graphType = stacked;
         } else {
