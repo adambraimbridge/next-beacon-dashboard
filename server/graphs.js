@@ -56,7 +56,9 @@ module.exports = [{
 			"domPathContains": "article-card",
 			"group_by": "meta.domPath",
 			"title": "Popularity of CTA elements in Article cards",
-			"stacked_area": true
+			"stacked_area": true,
+			"timeframe": "this_7_days",
+			"interval": "weekly"
 		},
 	},
 	"Navigation menu": {
