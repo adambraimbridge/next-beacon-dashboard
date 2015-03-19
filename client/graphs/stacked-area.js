@@ -6,9 +6,7 @@ module.exports = function(data, palette, query) {
 		return {
 			timeframe: a.timeframe,
 			value: a.value.sort(function(a,b){
-				if (a.result > b.result) return 1;
-				else if (a.result < b.result) return -1;
-				else return 0;
+				return (a.result > b.result) ? 1 : -1;
 			})
 		}
 	});

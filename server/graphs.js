@@ -58,7 +58,7 @@ module.exports = [{
 			"title": "Popularity of CTA elements in Article cards",
 			"stacked_area": true,
 			"timeframe": "this_7_days",
-			"interval": "weekly"
+			"interval": "daily"
 		},
 	},
 	"Navigation menu": {
