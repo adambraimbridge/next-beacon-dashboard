@@ -72,22 +72,19 @@ app.use('/api', api);
 // Routes for drawing graphs 
 var dashboard = express.Router();
 dashboard.use(params);
-dashboard.get('/graph', routers.dashboard.graph);
-app.use('/', dashboard);
+dashboard.get('/', routers.dashboard.graph);
+app.use('/graph', dashboard);
 
 // Routes for drawing tabular data 
 var tables = express.Router();
 tables.use(cacheControl);
 tables.use(params);
 tables.get('/', routers.dashboard.table);
-app.use('/tables', tables);
+app.use('/table', tables);
 
 // Opts (in/out) routes
 app.get('/opt-in-out', routers.optInOut.graph);
 app.get('/opt-api', routers.optInOut.api);
-
-//  
-var data = express.Router();
 
 var port = process.env.PORT || 3001;
 app.listen(port, function() {
