@@ -1,5 +1,5 @@
 module.exports = [{
-	"Unique users": {
+	"... daily uniques": {
 		pathname: "graph",
 		query: {
 			"event_collection": "dwell",
@@ -8,7 +8,7 @@ module.exports = [{
 			"title": "Unique users on next"
 		}
 	},
-	"Usage by page type": {
+	"... by page type": {
 		pathname: "graph",
 		query: {
 			"event_collection": "dwell",
@@ -18,153 +18,64 @@ module.exports = [{
 			"title": "Unique users by page type"
 		}
 	},
-	"Users by country": {
+	"... by country": {	// FIXME - top 20?
 		pathname: "graph",
 		query: {
 			"event_collection": "dwell",
 			"metric": "count_unique",
 			"target_property": "user.erights",
-			"title": "Country",
-			"group_by": "user.country"
+			"title": "Unique users by country",
+			"group_by": "user.geo.country_name"
 		}
 	},
-	"Usage by web browser": {
+	"... by continent": {
+		pathname: "graph",
+		query: {
+			"event_collection": "dwell",
+			"metric": "count_unique",
+			"target_property": "user.erights",
+			"title": "Unique users by continent",
+			"group_by": "user.geo.continent"
+		}
+	},
+	"... by web browser": {
 		pathname: "graph",
 		query: {
 			"event_collection": "dwell",
 			"metric": "count_unique",
 			"target_property": "user.erights",
 			"group_by": "user.browser.family",
-			"title": "Web browsers"
+			"title": "Unique users by web browser family"
 		}
 	},
-}, {
-	"Article cards": {
-		pathname: "graph",
-		query: {
-			"event_collection": "cta",
-			"metric": "count",
-			"domPathContains": "article-card",
-			"title": "Interactions with article cards"
-		},
-	},
-	"Article cards — cta popularity": {
-		pathname: "graph",
-		query: {
-			"event_collection": "cta",
-			"metric": "count",
-			"domPathContains": "article-card",
-			"group_by": "meta.domPath",
-			"title": "Popularity of CTA elements in Article cards",
-			"stacked_area": true
-		},
-	},
-	"Navigation menu": {
-		pathname: "graph",
-		query: {
-			"event_collection": "cta",
-			"metric": "count",
-			"target_property": "user.erights",
-			"domPathEquals": "o-header%20|%20menu-button",
-			"title": "Interactions with the navigation menu"
-		}
-	},
-	"Save for later": {
-		pathname: "graph",
-		query: {
-			"event_collection": "cta",
-			"metric": "count_unique",
-			"target_property": "user.erights",
-			"domPathContains": "save-for-later",
-			"title": "Unique users using 'save for later'"
-		}
-	},
-	"Search": {
-		pathname: "graph",
-		query: {
-			"event_collection": "cta",
-			"metric": "count",
-			"target_property": "user.erights",
-			"domPathEquals": "o-header%20|%20search-button",
-			"title": "Interactions with the search button"
-		}
-	},
-}, {
-	"Addiction": {
+	"... by operating system": {
 		pathname: "graph",
 		query: {
 			"event_collection": "dwell",
 			"metric": "count_unique",
-			"target_property": "time.day",
-			"group_by": "user.erights",
-			"title": "Next addiction",
-			inTheLast: 'week',
-			single: true,
-			histogram: true,
-			process_countAs: 'user.erights',
-			window: 1
+			"target_property": "user.erights",
+			"group_by": "user.os.family",
+			"title": "Unique users by operating system family"
 		}
 	},
-	"Wordcount scroll depth": {
+	"... by device size": {
 		pathname: "graph",
 		query: {
-			event_collection: ['dwell', 'scrolldepth'],
-			metric: ['count_unique', 'count_unique'],
-			target_property: 'user.erights',
-			group_by: 'page.article.wordCount',
-			title: 'Dwell vs scrolldepth by article length',
-			single: true,
-			logX: true
+			"event_collection": "dwell",
+			"metric": "count_unique",
+			"target_property": "user.erights",
+			"group_by": "user.deviceType",
+			"title": "Unique users by device size"
 		}
 	},
-	"Dwell vs scroll": {
-		pathname: 'graph',
+	"... by referring site": {
+		pathname: "graph",
 		query: {
-			event_collection: ['dwell', 'scrolldepth'],
-			metric: ['count_unique', 'count_unique'],
-			target_property: 'user.erights',
-			title: 'Dwell vs scrolldepth over time'
-		}
-	}
-}, {
-	"domInteractive vs loadEventEnd": {
-		pathname: 'graph',
-		query: {
-			event_collection: ['timing', 'timing'],
-			metric: ['average', 'average'],
-			target_property: ['meta.timings.loadEventEnd', 'meta.timings.domInteractive'],
-			title: 'domInteractive vs loadEventEnd'
-		}
-	},
-	"domInteractive percentiles": {
-		pathname: 'graph',
-		query: {
-			event_collection: ['timing', 'timing', 'timing', 'timing'],
-			metric: ['percentile','percentile','percentile','percentile'],
-			percentile: [99, 95, 75, 50, 25],
-			target_property: 'meta.timings.domInteractive',
-			title: 'domInteractive percentiles'
-		}
-	},
-	"domInteractive uniques": {
-		pathname: 'graph',
-		query: {
-			event_collection: 'timing',
-			metric: ['count', 'count_unique'],
-			target_property: 'user.erights',
-			group_by: 'meta.timings.domInteractive',
-			title: 'domInteractive unique vs page views',
-			single: true,
-			logX: true,
-			window: 20
-		}
-	}
-}, {
-	"Opt-ins vs Opt-outs": {
-		pathname: 'opt-in-out',
-		query: {
-			timeframe: 'this_7_days',
-			title: 'Opt-ins vs Opt-outs'
+			"event_collection": "dwell",
+			"metric": "count_unique",
+			"target_property": "user.erights",
+			"group_by": "page.referrer.hostname",
+			"title": "Unique users by referrer"
 		}
 	}
 }];
