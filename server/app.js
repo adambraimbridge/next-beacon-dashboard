@@ -7,6 +7,9 @@ var exphbs          = require('express-handlebars');
 var routers         = require('./routers');
 var params          = require('./middleware/params');
 var auth			= require('./middleware/auth');
+var graphs			= require('./graphs.js');
+var ctas			= require('./ctas.js');
+var filters			= require('./filters.js');
 
 var app = module.exports = express();
 
@@ -25,15 +28,23 @@ app.get('/__gtg', function(req, res) {
     res.status(200).send();
 });
 
+app.get('/', function (req, res) {
+	res.render('index.handlebars', { hideMenu: true, graphs: graphs, ctas: ctas });
+});
+
 app.get('*', function(req, res, next) {
 	if(process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
-		res.send('Client request must use TLS').status(426); // http://tools.ietf.org/html/rfc2817#section-4.2
+		res.redirect('/?https');		
 	} else {
 		next();
 	}
 });
 
 app.use(auth);
+
+app.get('/enter', function (req, res) {
+	res.redirect('/graph?event_collection=dwell&metric=count_unique&target_property=user.erights')
+});
 
 var cacheControl = function (req, res, next) {
     res.header('Cache-Control', 'max-age=120');
@@ -52,22 +63,23 @@ var dashboard = express.Router();
 dashboard.use(params);
 dashboard.get('/graph', routers.dashboard.graph);
 
+var tables = express.Router();
+tables.use(cacheControl);
+tables.use(params);
+tables.get('/', routers.dashboard.table);
+
 // TODO - list, table, json, export ...
 
 var data = express.Router();
 data.get('/:source', routers.data.search);  // FIXME - proxy to AWS
-
 app.use('/api', api);
 app.use('/data', data);
-app.get('/table', routers.dashboard.table);
+app.use('/tables', tables);
 app.use('/', dashboard);
 app.use('/__test', function (req, res) {
     res.send(req.keen_defaults);
 });
 
-app.get('/', function (req, res) {
-    res.redirect(302, '/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&title=Unique+users+on+next');
-});
 
 // Opts (in/out) routes
 app.get('/opt-in-out', routers.optInOut.graph);

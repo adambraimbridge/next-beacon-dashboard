@@ -1,4 +1,5 @@
 var graphs = require('../graphs.js');
+var ctas = require('../ctas.js');
 var filters = require('../filters.js');
 
 module.exports.graph = function(req, res) {
@@ -6,6 +7,7 @@ module.exports.graph = function(req, res) {
     var opts = {
         graph: true,
         graphs: graphs,
+        ctas: ctas,
         filters: filters,
         title: req.query.title || '',   // XSS me
         apiLink: req._parsedUrl.search,
@@ -28,12 +30,12 @@ module.exports.table = function (req, res) {
     var q = new keenIO.Query('count', {
         timeframe: req.query.timeframe || 'this_7_days',
         event_collection: req.query.event_collection || 'cta',
-        latest: req.query.limit || 1000,
+        latest: req.query.limit || 10000,
 		interval: "yearly",
 		filters: [{
 			 property_name: "meta.domPath",
 			 operator: "contains",
-			 property_value: "o-header | nav"
+			 property_value: req.query.domPathContains || "o-header | nav"
 		}],
 		group_by: ["meta.domPath"]
     });
@@ -54,7 +56,17 @@ module.exports.table = function (req, res) {
 						return (a.result < b.result) ? 1 : -1;
 					})
 
-		res.render('table.handlebars', { data: sorted });
+		res.render('table.handlebars', { 
+			graphs: graphs,
+			ctas: ctas,
+			title: req.query.title || '',   // XSS me
+			filters: filters,
+			data: sorted,
+			explain: req.keen_explain
+		});
 
 	})
 }
+
+module.exports.article = function (req, res) { }
+module.exports.user = function (req, res) { }

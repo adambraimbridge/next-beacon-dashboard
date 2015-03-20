@@ -1,4 +1,4 @@
-
+<!--
 <div class="controls__container">
     {{#each filters}}
     {{#unless hidden}}
@@ -7,14 +7,14 @@
             {{#each values}}
             <option value="{{@key}}">{{.}}</option>
             {{/each}}
+            <option value="/tables/navigation">{{.}}</option>
         </select>
     {{/unless}}
     {{/each}}
 
     <select class="form-control" data-filter="timeframe">
         <option value="__clear__">Timeframe</option>
-        <option value="today">Today</a></li>
-        <option value="yesterday">Yesterday</a></li>
+        <option value="last_3_days">Last three days</a></li>
         <option value="this_7_days">This week</a></li>
         <option value="this_28_days">This month</a></li>
     </select>
@@ -29,3 +29,4 @@
     </div>
 
 </div>
+-->

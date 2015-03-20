@@ -1,18 +1,6 @@
 var moment = require('moment');
 
 module.exports = {
-	isStaff: {
-		property_name: "user.isStaff",
-		operator: "eq",
-		title: 'Staff',
-		values: {
-			false: 'Included',
-			true: 'Excluded'
-		},
-		explain: function() {
-			return (this.property_value ? 'includes' : 'excludes') + ' FT staff';
-		}
-	},
 	uuid: {
 		"property_name": "page.capi.id",
 		"operator": "eq",
@@ -67,25 +55,6 @@ module.exports = {
 		hidden: true,
 		explain: function() {
 			return false;
-		}
-	},
-	wordCount: {
-		property_name: "page.article.wordCount",
-		operator: "gt",
-		title: "Minimum word count",
-		values: {
-			50: "50",
-			100: "100",
-			200: "200",
-			500: "500",
-			1000: "1000",
-			1500: "1500",
-			2000: "2000",
-			2500: "2500",
-			3000: "3000"
-		},
-		explain: function() {
-			return 'articles longer than ' + this.property_value + ' words';
 		}
 	},
 	inTheLast: {
