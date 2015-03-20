@@ -41,11 +41,12 @@ module.exports = [{
 	"... by web browser": {
 		pathname: "graph",
 		query: {
-			"event_collection": "cta",
-			"metric": "count",
-			"domPathContains": "article-card",
-			"title": "Interactions with article cards"
-		},
+			"event_collection": "dwell",
+			"metric": "count_unique",
+			"target_property": "user.erights",
+			"title": "Unique users by web browser",
+			"group_by": "user.browser.family"
+		}
 	},
 	"... by operating system": {
 		pathname: "graph",
