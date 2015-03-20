@@ -26,7 +26,7 @@ module.exports = [{
 		query: {
 			timeframe: 'this_7_days',
 			title: 'Navigation menu popularity',
-			domPathContains: 'o-header | nav'
+			domPathContains: 'nav%20|'
 		}
 	}
 }];
