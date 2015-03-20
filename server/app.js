@@ -9,7 +9,7 @@ var graphs			= require('./graphs.js');
 var ctas			= require('./ctas.js');
 var filters			= require('./filters.js');
 
-
+// Middleware
 var params          = require('./middleware/params');
 var auth			= require('./middleware/auth');
 var cacheControl	= require('./middleware/cacheControl');
@@ -65,29 +65,29 @@ app.get('/user/:id', function (req, res) {
 var api = express.Router();
 api.use(cacheControl);
 api.use(params);
-api.get('/stream', routers.eventStream);
-api.get('/', routers.genericQuery);
+api.get('/export', routers.api.export);
+api.get('/', routers.api.query);
+app.use('/api', api);
 
 // Routes for drawing graphs 
 var dashboard = express.Router();
 dashboard.use(params);
 dashboard.get('/graph', routers.dashboard.graph);
+app.use('/', dashboard);
 
 // Routes for drawing tabular data 
 var tables = express.Router();
 tables.use(cacheControl);
 tables.use(params);
 tables.get('/', routers.dashboard.table);
+app.use('/tables', tables);
 
 // Opts (in/out) routes
 app.get('/opt-in-out', routers.optInOut.graph);
 app.get('/opt-api', routers.optInOut.api);
 
-// 
+//  
 var data = express.Router();
-app.use('/api', api);
-app.use('/tables', tables);
-app.use('/', dashboard);
 
 var port = process.env.PORT || 3001;
 app.listen(port, function() {
