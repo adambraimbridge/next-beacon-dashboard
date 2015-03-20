@@ -16,9 +16,10 @@ div>ul {
 }
 
 .splash__container {
-	background-image: url('http://static.guim.co.uk/sys-images/Media/Pix/pictures/2011/11/3/1320309310598/FT-Group-007.jpg');
-	background-size: cover;
 	min-height: 90%;
+	margin: 0 auto;
+	max-width: 600px;
+	padding: 20px;
 }
 
 .feature__container,

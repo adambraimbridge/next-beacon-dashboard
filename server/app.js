@@ -29,18 +29,22 @@ app.get('/__gtg', function(req, res) {
 });
 
 app.get('/', function (req, res) {
-	res.render('index.handlebars', { graphs: graphs, ctas: ctas });
+	res.render('index.handlebars', { hideMenu: true, graphs: graphs, ctas: ctas });
 });
 
 app.get('*', function(req, res, next) {
 	if(process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
-		res.send('Client request must use TLS').status(426); // http://tools.ietf.org/html/rfc2817#section-4.2
+		res.redirect('/?https');		
 	} else {
 		next();
 	}
 });
 
 app.use(auth);
+
+app.get('/enter', function (req, res) {
+	res.redirect('/graph?event_collection=dwell&metric=count_unique&target_property=user.erights')
+});
 
 var cacheControl = function (req, res, next) {
     res.header('Cache-Control', 'max-age=120');
