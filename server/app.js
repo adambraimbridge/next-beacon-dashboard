@@ -43,7 +43,7 @@ app.get('*', function(req, res, next) {
 app.use(auth);
 
 app.get('/enter', function (req, res) {
-	res.redirect('/graph?event_collection=dwell&metric=count_unique&target_property=user.erights')
+	res.redirect('/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&title=Unique%20users%20on%20next')
 });
 
 var cacheControl = function (req, res, next) {
