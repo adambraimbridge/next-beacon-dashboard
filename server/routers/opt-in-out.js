@@ -6,12 +6,14 @@ var keen = keenIO.configure(
     }
 );
 var graphs = require('../graphs.js');
+var ctas = require('../ctas.js');
 
 module.exports.graph = function(req, res) {
 
 	var opts = {
 		optInOut: true,
 		graphs: graphs,
+		ctas: ctas,
 		filters: [],
 		title: req.query.title || '',   // XSS me
 		apiLink: req._parsedUrl.search,
