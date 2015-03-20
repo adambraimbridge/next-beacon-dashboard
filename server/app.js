@@ -72,14 +72,14 @@ app.use('/api', api);
 // Routes for drawing graphs 
 var dashboard = express.Router();
 dashboard.use(params);
-dashboard.get('/', routers.dashboard.graph);
+dashboard.get('/', routers.graph);
 app.use('/graph', dashboard);
 
 // Routes for drawing tabular data 
 var tables = express.Router();
 tables.use(cacheControl);
 tables.use(params);
-tables.get('/', routers.dashboard.table);
+tables.get('/', routers.table);
 app.use('/table', tables);
 
 // Opts (in/out) routes

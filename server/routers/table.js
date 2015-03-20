@@ -2,22 +2,6 @@ var graphs = require('../graphs.js');
 var ctas = require('../ctas.js');
 var filters = require('../filters.js');
 
-module.exports.graph = function(req, res) {
-    
-    var opts = {
-        graph: true,
-        graphs: graphs,
-        ctas: ctas,
-        filters: filters,
-        title: req.query.title || '',   // XSS me
-        apiLink: req._parsedUrl.search,
-        explain: req.keen_explain
-    };
-
-    res.render('main.handlebars', opts);
-};
-
-
 var keenIO      = require('keen.io');
 
 var keen = keenIO.configure({
@@ -25,7 +9,7 @@ var keen = keenIO.configure({
     readKey: process.env['KEEN_READ_KEY']
 });
 
-module.exports.table = function (req, res) {
+module.exports = function (req, res) {
 
     var q = new keenIO.Query('count', {
         timeframe: req.query.timeframe || 'this_7_days',
