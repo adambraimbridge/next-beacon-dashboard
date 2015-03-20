@@ -47,30 +47,6 @@ module.exports = [{
 			"title": "Interactions with article cards"
 		},
 	},
-	"Article cards — cta popularity": {
-		pathname: "graph",
-		query: {
-			"event_collection": "cta",
-			"metric": "count",
-			"domPathContains": "article-card",
-			"group_by": "meta.domPath",
-			"title": "Popularity of CTA elements in Article cards",
-			"stacked_area": true,
-			"timeframe": "this_7_days",
-			"interval": "daily"
-		},
-	},
-	"Navigation menu": {
-		pathname: "graph",
-		query: {
-			"event_collection": "cta",
-			"metric": "count",
->>>>>>> 9b51cfd8b3eb24ad6952f7971e70b8692a75630b
-			"target_property": "user.erights",
-			"group_by": "user.browser.family",
-			"title": "Unique users by web browser family"
-		}
-	},
 	"... by operating system": {
 		pathname: "graph",
 		query: {
