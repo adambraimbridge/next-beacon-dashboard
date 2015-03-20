@@ -15,6 +15,12 @@ div>ul {
 	padding: 30px 0 50px 0;
 }
 
+.splash__container {
+	background-image: url('http://static.guim.co.uk/sys-images/Media/Pix/pictures/2011/11/3/1320309310598/FT-Group-007.jpg');
+	background-size: cover;
+	min-height: 90%;
+}
+
 .feature__container,
 .controls__container,
 .stream__container,
@@ -208,4 +214,13 @@ table {
 td {
 	border-bottom: 1px solid #ccc;
 	line-height: 40px;
+}
+
+.feature__name {
+	font-family: BentonSans, sans-serif;
+}
+
+table {
+	width: 80%;
+	margin: 30px 20px;
 }
