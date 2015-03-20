@@ -9,6 +9,14 @@ module.exports = {
 			return 'article <a href="http://next.ft.com/' + this.property_value + '">' + this.property_value  +'</a>';
 		}
 	},
+	href: {
+		"property_name": "page.location.href",
+		"operator": "contains",
+		hidden: true,
+		explain: function() {
+			return 'by href';
+		}
+	},
 	pageType: {
 		"property_name": "page.location.type",
 		"operator": "eq",
