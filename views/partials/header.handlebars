@@ -1,26 +1,60 @@
 <div class="branding">
-    next.ft.com performance dashboard 
+    <a href="/">next.ft.com performance dashboard</a> 
 </div>
 
 <div class="note">
     Be advised this is an experimental series of dashboards for next.ft.com, not an audited set of statistics.
 </div>
 
-<div class="controls__container">
-    
-    <div class="btn-group">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-            Charts <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" id="graph-select">
-            {{#each graphs}}
-            {{#each .}}
-            <li><a href="/{{formatUrl .}}">{{@key}}</a></li>
-            {{/each}}
-            {{#unless @last}}<li class="divider"></li>{{/unless}}
-            {{/each}}
-        </ul>
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
     </div>
 
-</div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Unique users<span class="caret"></span></a>
+        	<ul class="dropdown-menu" role="menu" id="graph-select">
+            {{#each graphs}}
+            {{#each .}}
+            	<li><a href="/{{formatUrl .}}">{{@key}}</a></li>
+            {{/each}}
+            	{{#unless @last}}<li class="divider"></li>{{/unless}}
+            {{/each}}
+        	</ul>
+		</li>
+		<li>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Interactions<span class="caret"></span></a>
+        	<ul class="dropdown-menu" role="menu" id="cta-select">
+            {{#each ctas}}
+            {{#each .}}
+            	<li><a href="/{{formatUrl .}}">{{@key}}</a></li>
+            {{/each}}
+            	{{#unless @last}}<li class="divider"></li>{{/unless}}
+            {{/each}}
+        	</ul>
+		</li>
+        <li><a href="/graph?event_collection=dwell&metric=count_unique&target_property=time.day&group_by=user.erights&title=Next%20addiction&inTheLast=week&single=true&histogram=true&process_countAs=user.erights&window=1">Addiction</a></li>
+        <li><a href="/opt-in-out?timeframe=this_7_days&title=Opt-ins%20vs%20Opt-outs">Opt in <i>vs</i> out</a></li>
+      </ul>
+      <!--
+	  <form class="navbar-form navbar-right" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="article uuid or erights id" size="40">
+        </div>
+        <button type="submit" class="btn btn-default">Go</button>
+      </form>
+	  -->
 
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>

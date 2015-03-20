@@ -36,6 +36,7 @@ module.exports = function () {
         $(this).val(query[key] || '__clear__');
     });
 
+	/*
     $('#graph-select li a').each(function() {
         if(matchGraph(this)) {
             $("#graph-select")
@@ -44,4 +45,5 @@ module.exports = function () {
                 .append("<span class=\"caret\"></span>");
         }
     });
+	*/
 };
