@@ -5,9 +5,7 @@ var debug           = require('debug')('beacon-dashboard');
 var util            = require('util');
 var exphbs          = require('express-handlebars');
 var routers         = require('./routers');
-var graphs			= require('./graphs.js');
-var ctas			= require('./ctas.js');
-var filters			= require('./filters.js');
+var conf			= require('./conf')
 
 // Middleware
 var params          = require('./middleware/params');
@@ -33,7 +31,7 @@ app.get('/__gtg', function(req, res) {
 
 // index
 app.get('/', function (req, res) {
-	res.render('index.handlebars', { hideMenu: true, graphs: graphs, ctas: ctas });
+	res.render('index.handlebars', { hideMenu: true, graphs: conf.graphs, ctas: ctas.conf });
 });
 
 // Force HTTPS in production
@@ -67,19 +65,20 @@ api.use(cacheControl);
 api.use(params);
 api.get('/export', routers.api.export);
 api.get('/', routers.api.query);
-app.use('/api', api);
 
 // Routes for drawing graphs 
 var dashboard = express.Router();
 dashboard.use(params);
 dashboard.get('/', routers.graph);
-app.use('/graph', dashboard);
 
 // Routes for drawing tabular data 
 var tables = express.Router();
 tables.use(cacheControl);
 tables.use(params);
 tables.get('/', routers.table);
+
+app.use('/api', api);
+app.use('/graph', dashboard);
 app.use('/table', tables);
 
 // Opts (in/out) routes

@@ -1,6 +1,4 @@
-var graphs = require('../graphs.js');
-var ctas = require('../ctas.js');
-var filters = require('../filters.js');
+var conf = require('../conf');
 
 var keenIO      = require('keen.io');
 
@@ -41,10 +39,10 @@ module.exports = function (req, res) {
 					})
 
 		res.render('table.handlebars', { 
-			graphs: graphs,
-			ctas: ctas,
+			graphs: conf.graphs,
+			ctas: conf.ctas,
 			title: req.query.title || '',   // XSS me
-			filters: filters,
+			filters: conf.filters,
 			data: sorted,
 			explain: req.keen_explain
 		});

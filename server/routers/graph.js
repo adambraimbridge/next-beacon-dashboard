@@ -1,14 +1,12 @@
-var graphs = require('../graphs.js');
-var ctas = require('../ctas.js');
-var filters = require('../filters.js');
+var conf = require('../conf'); 
 
 module.exports = function(req, res) {
     
     var opts = {
         graph: true,
-        graphs: graphs,
-        ctas: ctas,
-        filters: filters,
+        graphs: conf.graphs,
+        ctas: conf.ctas,
+        filters: conf.filters,
         title: req.query.title || '',   // XSS me
         apiLink: req._parsedUrl.search,
         explain: req.keen_explain

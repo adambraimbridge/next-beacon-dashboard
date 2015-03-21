@@ -5,15 +5,15 @@ var keen = keenIO.configure(
         readKey: process.env.KEEN_READ_KEY
     }
 );
-var graphs = require('../graphs.js');
-var ctas = require('../ctas.js');
+
+var conf = require('../conf');
 
 module.exports.graph = function(req, res) {
 
 	var opts = {
 		optInOut: true,
-		graphs: graphs,
-		ctas: ctas,
+		graphs: conf.graphs,
+		ctas: conf.ctas,
 		filters: [],
 		title: req.query.title || '',   // XSS me
 		apiLink: req._parsedUrl.search,
