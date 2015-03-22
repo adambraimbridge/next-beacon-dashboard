@@ -3,7 +3,11 @@
 		Page views: <a href="http://next.ft.com/{{ article.id }}">{{ article.headline }}</a> 
 	</h1>	
 	<p>
-		{{ article.genre }}, {{ article.wordCount }} words, {{ article.firstPublished }}
+		{{ article.raw.item.editorial.byline }}.
+		Genre: {{ article.genre }}, {{ article.wordCount }} words. 
+	</p>
+	<p>
+		First published on {{ article.firstPublished }}
 	</p>
 	<p>
 		Group this data

@@ -53,7 +53,7 @@ module.exports = function (req, res) {
 			res.render('top.handlebars', { 
 				graphs: conf.graphs,
 				ctas: conf.ctas,
-				title: 'Top page views on next in the last 24 hours',
+				title: 'Top page views on Next',
 				filters: conf.filters,
 				data: annotate,
 				explain: req.keen_explain
