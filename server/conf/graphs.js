@@ -5,7 +5,8 @@ module.exports = [{
 			"event_collection": "dwell",
 			"metric": "count_unique",
 			"target_property": "user.erights",
-			"title": "Unique users on next"
+			"title": "Unique users on next (7 days)",
+			"explain": "xxx"
 		}
 	},
 	"... by page type": {
@@ -15,7 +16,7 @@ module.exports = [{
 			"metric": "count_unique",
 			"target_property": "user.erights",
 			"group_by": "page.location.type",
-			"title": "Unique users by page type"
+			"title": "Unique users by page type (7 days)"
 		}
 	},
 	"... by country": {	// FIXME - top 20?
@@ -24,7 +25,7 @@ module.exports = [{
 			"event_collection": "dwell",
 			"metric": "count_unique",
 			"target_property": "user.erights",
-			"title": "Unique users by country",
+			"title": "Unique users by country (7 days)",
 			"group_by": "user.geo.country_name"
 		}
 	},
@@ -34,7 +35,7 @@ module.exports = [{
 			"event_collection": "dwell",
 			"metric": "count_unique",
 			"target_property": "user.erights",
-			"title": "Unique users by continent",
+			"title": "Unique users by continent (7 days)",
 			"group_by": "user.geo.continent"
 		}
 	},
