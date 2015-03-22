@@ -3,6 +3,7 @@ var Filters = require('./filters')();
 
 switch (location.pathname) {
     case '/graph':
+    case '/content':
         require('./features/graph').init();
         break;
     case '/opt-in-out':
