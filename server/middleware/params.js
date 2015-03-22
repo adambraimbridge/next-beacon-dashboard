@@ -1,7 +1,7 @@
 var keenIO = require('keen.io');
 var _ = require('../../bower_components/lodash/lodash.js');
-var filters = require('../filters.js');
 var moment = require('moment');
+var conf = require('../conf');
 
 var keen = keenIO.configure(
     {
@@ -19,7 +19,7 @@ module.exports = function (req, res, next) {
         req.query.inTheLast = moment().add(1, 'day').startOf('day').subtract(1, req.query.inTheLast).toISOString();
     }
 
-    var activeFilters = _(filters).map(function(filter, field) {
+    var activeFilters = _(conf.filters).map(function(filter, field) {
         if(req.query[field]) {
             return _.extend({
                 property_value: req.query[field]

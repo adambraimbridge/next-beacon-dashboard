@@ -5,11 +5,12 @@ var debug           = require('debug')('beacon-dashboard');
 var util            = require('util');
 var exphbs          = require('express-handlebars');
 var routers         = require('./routers');
+var conf			= require('./conf')
+
+// Middleware
 var params          = require('./middleware/params');
 var auth			= require('./middleware/auth');
-var graphs			= require('./graphs.js');
-var ctas			= require('./ctas.js');
-var filters			= require('./filters.js');
+var cacheControl	= require('./middleware/cacheControl');
 
 var app = module.exports = express();
 
@@ -28,10 +29,12 @@ app.get('/__gtg', function(req, res) {
     res.status(200).send();
 });
 
+// index
 app.get('/', function (req, res) {
-	res.render('index.handlebars', { hideMenu: true, graphs: graphs, ctas: ctas });
+	res.render('index.handlebars', { hideMenu: true, graphs: conf.graphs, ctas: ctas.conf });
 });
 
+// Force HTTPS in production
 app.get('*', function(req, res, next) {
 	if(process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
 		res.redirect('/?https');		
@@ -40,46 +43,63 @@ app.get('*', function(req, res, next) {
 	}
 });
 
+// Authenticate all routes beneath here
 app.use(auth);
 
+// Simple entry point 
 app.get('/enter', function (req, res) {
 	res.redirect('/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&title=Unique%20users%20on%20next')
 });
 
-var cacheControl = function (req, res, next) {
-    res.header('Cache-Control', 'max-age=120');
-    next();
-}
+app.get('/search', function (req, res) {
 
-// API routes
+	var isUser = /^([0-9]+)$/.test(req.query.q);
+	var isContent = /^([\d\w]+)-([\d\w]+)/.test(req.query.q);
+	
+	if (isUser) {
+		var user = '&erights=' + req.query.q;
+		var title = '&title=User ' + req.query.q;
+		res.redirect('/graph?event_collection=dwell&metric=count&group_by=page.location.type' + user + title);
+	} else if (isContent) {
+		var uuid = '&uuid=' + req.query.q;
+		var title = '&title=Content <a href="http://next.ft.com/' + req.query.q + '">' + req.query.q + '</a>';
+		// TODO - by host referrer
+		res.redirect('/graph?event_collection=dwell&metric=count_unique&target_property=user.eright' + uuid + title);
+	} else {
+		res.send('?');
+	}
+
+	// TODO 
+	//	- dwell by page type - http://localhost:3001/graph?event_collection=dwell&metric=count&group_by=page.location.type&erights=10620249
+	//	- devices - http://localhost:3001/graph?event_collection=dwell&metric=count&group_by=user.deviceType&erights=10620249
+	//	- locations - http://localhost:3001/graph?event_collection=dwell&metric=count&group_by=user.geo.city&erights=10620249
+	// event_collection=dwell&metric=count&group_by=page.location.type&erights=3266367&title=Unique%20users%20for%20user:3266367
+});
+
+app.get('/user/:erights', function (req, res) {
+});
+
+// Routes for API calls
 var api = express.Router();
 api.use(cacheControl);
 api.use(params);
-api.get('/stream', routers.eventStream);
-api.get('/', routers.genericQuery);
+api.get('/export', routers.api.export);
+api.get('/', routers.api.query);
 
-// Dashboard routes
+// Routes for drawing graphs 
 var dashboard = express.Router();
 dashboard.use(params);
-dashboard.get('/graph', routers.dashboard.graph);
+dashboard.get('/', routers.graph);
 
+// Routes for drawing tabular data 
 var tables = express.Router();
 tables.use(cacheControl);
 tables.use(params);
-tables.get('/', routers.dashboard.table);
+tables.get('/', routers.table);
 
-// TODO - list, table, json, export ...
-
-var data = express.Router();
-data.get('/:source', routers.data.search);  // FIXME - proxy to AWS
 app.use('/api', api);
-app.use('/data', data);
-app.use('/tables', tables);
-app.use('/', dashboard);
-app.use('/__test', function (req, res) {
-    res.send(req.keen_defaults);
-});
-
+app.use('/graph', dashboard);
+app.use('/table', tables);
 
 // Opts (in/out) routes
 app.get('/opt-in-out', routers.optInOut.graph);

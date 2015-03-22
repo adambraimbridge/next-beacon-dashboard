@@ -219,6 +219,8 @@ td {
 
 .feature__name {
 	font-family: BentonSans, sans-serif;
+	font-weight: normal;
+	font-size: 30px;
 }
 
 table {

@@ -22,11 +22,11 @@ module.exports = [{
 	}
 }, {
 	"Navigation menu": {
-		pathname: 'tables',
+		pathname: 'table',
 		query: {
 			timeframe: 'this_7_days',
 			title: 'Navigation menu popularity',
-			domPathContains: 'nav%20|'
+			domPathStartsWith: 'header'
 		}
 	}
 }];
