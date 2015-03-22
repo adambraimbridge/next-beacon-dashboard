@@ -1,0 +1,11 @@
+<section class="feature__container">
+    <h1 class="feature__name">{{ title }}</h1>
+	<table>
+		{{#each data}}
+		<tr>
+			<td><a href="/search?q={{ id }}">{{ headline }}</a></td>
+			<td>{{ keenio.result }}</td>
+		</tr>
+		{{/each}}
+	</table>
+</section>
