@@ -5,4 +5,10 @@
 	<p>
 		{{ article.genre }}, {{ article.wordCount }} words, {{ article.firstPublished }}
 	</p>
+	<p>
+		Group this data
+			<a href="content?event_collection=dwell&group_by=page.referrer.hostname&metric=count&uuid={{ uuid }}">by referring site</a>,
+			<a href="content?event_collection=dwell&group_by=user.geo.country_name&metric=count&uuid={{ uuid }}">by country</a>,
+			<a href="content?event_collection=dwell&group_by=user.deviceType&metric=count&uuid={{ uuid }}">by device</a>.
+	</p>
 </section>

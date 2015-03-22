@@ -35,7 +35,7 @@ module.exports = function (req, res) {
 					.sort(function (a, b) {
 						return (a.result < b.result) ? 1 : -1;
 					})
-					.slice(0, 10)
+					.slice(0, 19)
 					.map(function (item) {
 						return item['page.capi.id'];
 					});
