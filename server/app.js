@@ -64,7 +64,7 @@ app.get('/search', function (req, res) {
 		var uuid = '&uuid=' + req.query.q;
 		var title = '&title=Content <a href="http://next.ft.com/' + req.query.q + '">' + req.query.q + '</a>';
 		// TODO - by host referrer
-		res.redirect('/graph?event_collection=dwell&metric=count_unique&target_property=user.eright' + uuid + title);
+		res.redirect('/graph?event_collection=dwell&metric=count' + uuid + title);
 	} else {
 		res.send('?');
 	}
