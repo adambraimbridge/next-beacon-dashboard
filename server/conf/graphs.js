@@ -78,5 +78,15 @@ module.exports = [{
 			"group_by": "page.referrer.hostname",
 			"title": "Unique users by referrer"
 		}
-	}
+	},
+	"... by content genre": {
+		pathname: "graph",
+		query: {
+			"event_collection": "dwell",
+			"metric": "count_unique",
+			"target_property": "user.erights",
+			"group_by": "page.capi.genre",
+			"title": "Unique users by content genre"
+		}
+	},
 }];
