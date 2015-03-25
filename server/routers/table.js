@@ -17,7 +17,7 @@ module.exports = function (req, res) {
 		filters: [{
 			 property_name: "meta.domPath",
 			 operator: "contains",
-			 property_value: req.query.domPathContains || "o-header | nav"
+			 property_value: req.query.domPathContains || "header"
 		}],
 		group_by: ["meta.domPath"]
     });
