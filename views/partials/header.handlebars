@@ -48,6 +48,21 @@
         <li><a href="/graph?event_collection=dwell&metric=count_unique&target_property=time.day&group_by=user.erights&title=Next%20addiction&inTheLast=week&single=true&histogram=true&process_countAs=user.erights&window=1">Addiction</a></li>
         <li><a href="/opt-in-out?timeframe=this_7_days&title=Opt-ins%20vs%20Opt-outs">Opt in <i>vs</i> out</a></li>
         <li><a href="/top">Top 20</a></li>
+		<li>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">A/B tests<span class="caret"></span></a>
+        	<ul class="dropdown-menu" role="menu" id="cta-select">
+            {{#each ab}}
+            	<li>
+					<a href="/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&timeframe=this_7_days&group_by=user.ab.{{flag}}">
+						{{title}} 
+						{{#if active}}
+							<small class="ab-test__active-true">(active)</small>
+						{{/if}}
+					</a>
+				</li>
+            {{/each}}
+        	</ul>
+		</li>
       </ul>
 	  <form class="navbar-form navbar-right" role="search" method="get" action="/search">
         <div class="form-group">

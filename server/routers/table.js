@@ -43,6 +43,7 @@ module.exports = function (req, res) {
 			ctas: conf.ctas,
 			title: req.query.title || '',   // XSS me
 			filters: conf.filters,
+			ab: conf.ab,
 			data: sorted,
 			explain: req.keen_explain
 		});

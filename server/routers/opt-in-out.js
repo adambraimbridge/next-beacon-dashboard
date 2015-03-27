@@ -15,6 +15,7 @@ module.exports.graph = function(req, res) {
 		graphs: conf.graphs,
 		ctas: conf.ctas,
 		filters: [],
+		ab: conf.ab,
 		title: req.query.title || '',   // XSS me
 		apiLink: req._parsedUrl.search,
 		explain: req.keen_explain

@@ -227,3 +227,9 @@ table {
 	width: 80%;
 	margin: 30px 20px;
 }
+
+.ab-test__active-true {
+	color: green;
+	font-size: 11px;
+}
+
