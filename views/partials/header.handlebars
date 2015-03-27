@@ -53,7 +53,7 @@
         	<ul class="dropdown-menu" role="menu" id="cta-select">
             {{#each ab}}
             	<li>
-					<a href="/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&timeframe=this_7_days&group_by=user.ab.{{flag}}">
+					<a href="/graph?event_collection=dwell&title=AB%20test:%20{{title}}&metric=count_unique&target_property=user.erights&timeframe=this_7_days&group_by=user.ab.{{flag}}">
 						{{title}} 
 						{{#if active}}
 							<small class="ab-test__active-true">(active)</small>
