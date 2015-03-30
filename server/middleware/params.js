@@ -21,9 +21,16 @@ module.exports = function (req, res, next) {
 
     var activeFilters = _(conf.filters).map(function(filter, field) {
         if(req.query[field]) {
-            return _.extend({
-                property_value: req.query[field]
-            }, filter);
+
+            var query = {};
+
+            if (filter.property_name) {
+                query.property_value = req.query[field];
+            } else if (filter.property_value) {
+                query.property_name = req.query[field];
+            }
+
+            return _.extend(query, filter);
         }
     }).compact().value();
 
