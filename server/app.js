@@ -31,7 +31,7 @@ app.get('/__gtg', function(req, res) {
 
 // index
 app.get('/', function (req, res) {
-	res.render('index.handlebars', { hideMenu: true, graphs: conf.graphs, ctas: conf.ctas });
+	res.render('index.handlebars', { hideMenu: true, graphs: conf.graphs, ctas: conf.ctas, opts: conf.opts });
 });
 
 // Force HTTPS in production

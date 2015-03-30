@@ -13,7 +13,8 @@ module.exports.graph = function(req, res) {
 	var opts = {
 		optInOut: true,
 		graphs: conf.graphs,
-		ctas: conf.ctas,
+        ctas: conf.ctas,
+		optInOuts: conf.optInOuts,
 		filters: [],
 		title: req.query.title || '',   // XSS me
 		apiLink: req._parsedUrl.search,

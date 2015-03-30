@@ -53,6 +53,7 @@ module.exports = function (req, res) {
 			res.render('top.handlebars', { 
 				graphs: conf.graphs,
 				ctas: conf.ctas,
+				optInOuts: conf.optInOuts,
 				title: 'Top page views on Next',
 				filters: conf.filters,
 				data: annotate,
