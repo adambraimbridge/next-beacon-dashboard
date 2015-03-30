@@ -5,7 +5,7 @@ var debug           = require('debug')('beacon-dashboard');
 var util            = require('util');
 var exphbs          = require('express-handlebars');
 var routers         = require('./routers');
-var conf			= require('./conf')
+var conf			= require('./conf');
 
 // Middleware
 var params          = require('./middleware/params');
@@ -80,7 +80,6 @@ app.use('/table', tables);
 
 // Opts (in/out) routes
 app.get('/opt-in-out', routers.optInOut.graph);
-app.get('/opt-api', routers.optInOut.api);
 
 var port = process.env.PORT || 3001;
 app.listen(port, function() {

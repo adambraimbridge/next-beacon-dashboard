@@ -5,8 +5,7 @@ var qs = require('query-string');
 
 module.exports.init = function () {
     var query = qs.parse(location.search);
-    
-    fetch('/opt-api' + location.search)
+    fetch('/api' + location.search)
     .then(function(response) {
         if (response.status >= 400) {
             throw new Error("Bad response from server");
