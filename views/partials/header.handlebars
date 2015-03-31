@@ -33,8 +33,8 @@
             	{{#unless @last}}<li class="divider"></li>{{/unless}}
             {{/each}}
         	</ul>
-		</li>
-		<li>
+		    </li>
+		    <li>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Interactions<span class="caret"></span></a>
         	<ul class="dropdown-menu" role="menu" id="cta-select">
             {{#each ctas}}
@@ -44,12 +44,22 @@
             	{{#unless @last}}<li class="divider"></li>{{/unless}}
             {{/each}}
         	</ul>
-		</li>
+		    </li>
         <li><a href="/graph?event_collection=dwell&metric=count_unique&target_property=time.day&group_by=user.erights&title=Next%20addiction&inTheLast=week&single=true&histogram=true&process_countAs=user.erights&window=1">Addiction</a></li>
-        <li><a href="/opt-in-out?timeframe=this_7_days&title=Opt-ins%20vs%20Opt-outs">Opt in <i>vs</i> out</a></li>
+        <li>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Opt in/out<span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu" id="cta-select">
+          {{#each optInOuts}}
+            {{#each .}}
+              <li><a href="/{{formatUrl .}}">{{@key}}</a></li>
+            {{/each}}
+            {{#unless @last}}<li class="divider"></li>{{/unless}}
+          {{/each}}
+          </ul>
+        </li>
         <li><a href="/top">Top 20</a></li>
       </ul>
-	  <form class="navbar-form navbar-right" role="search" method="get" action="/search">
+	    <form class="navbar-form navbar-right" role="search" method="get" action="/search">
         <div class="form-group">
           <input type="text" class="form-control" name="q" placeholder="article uuid or erights id" size="40">
         </div>

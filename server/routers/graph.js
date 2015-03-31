@@ -6,6 +6,7 @@ module.exports = function(req, res) {
         graph: true,
         graphs: conf.graphs,
         ctas: conf.ctas,
+        optInOuts: conf.optInOuts,
         filters: conf.filters,
         title: req.query.title || '',   // XSS me
         apiLink: req._parsedUrl.search,

@@ -5,8 +5,7 @@ var qs = require('query-string');
 
 module.exports.init = function () {
     var query = qs.parse(location.search);
-    
-    fetch('/opt-api' + location.search)
+    fetch('/api' + location.search)
     .then(function(response) {
         if (response.status >= 400) {
             throw new Error("Bad response from server");
@@ -23,18 +22,25 @@ module.exports.init = function () {
     .then(function(data) {
         var optEls = document.getElementsByClassName('opt');
 
-        if (!optEls.length) { return; }
+        if (!optEls.length || !data.result.length) { return; }
 
-        var optTypes = data.result;
-        var total = _.reduce(optTypes, function (m, type) {
-            return m + type.result;
+        var rawOptTypes = data.result[0].value;
+
+        // Cleans up to be { in: n, out: n }
+        var optTypes = _.object(
+            _.pluck(rawOptTypes, 'meta.type'),
+            _.pluck(rawOptTypes, 'result')
+        );
+
+        var grandTotal = _.reduce(optTypes, function (m, typeTotal) {
+            return m + typeTotal;
         }, 0);
 
-        document.getElementById('opted-in').style.width = Math.floor(optTypes[0].result / total * 100) + '%';
-        document.getElementById('opted-in-p').innerHTML = optTypes[0].result;
+        document.getElementById('opted-in').style.width = Math.floor(optTypes['in'] / grandTotal * 100) + '%';
+        document.getElementById('opted-in-p').innerHTML = optTypes['in'];
 
-        document.getElementById('opted-out').style.width = Math.floor(optTypes[1].result / total * 100) + '%';
-        document.getElementById('opted-out-p').innerHTML = optTypes[1].result;
+        document.getElementById('opted-out').style.width = Math.floor(optTypes['out'] / grandTotal * 100) + '%';
+        document.getElementById('opted-out-p').innerHTML = optTypes['out'];
 
         optEls[0].className += ' opt--active';
     })

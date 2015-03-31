@@ -41,6 +41,7 @@ module.exports = function (req, res) {
 		res.render('table.handlebars', { 
 			graphs: conf.graphs,
 			ctas: conf.ctas,
+			optInOuts: conf.optInOuts,
 			title: req.query.title || '',   // XSS me
 			filters: conf.filters,
 			data: sorted,

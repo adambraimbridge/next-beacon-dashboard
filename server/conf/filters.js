@@ -72,5 +72,29 @@ module.exports = {
 		explain: function() {
 			return 'starting ' + moment(this.property_value).fromNow();
 		}
+	},
+	exists: {
+		property_value: true,
+		operator: 'exists',
+		hidden: true,
+		explain: function() {
+			return 'property exists';
+		}
+	},
+	notUnknown: {
+		property_value: 'unknown',
+		operator: 'ne',
+		hidden: true,
+		explain: function() {
+			return 'property value is not "unknown"';
+		}
+	},
+	isUnknown: {
+		property_value: 'unknown',
+		operator: 'eq',
+		hidden: true,
+		explain: function() {
+			return 'property value is equal to "unknown"';
+		}
 	}
 };
