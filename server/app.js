@@ -78,6 +78,9 @@ app.use('/api', api);
 app.use('/graph', dashboard);
 app.use('/table', tables);
 
+//
+app.get('/addiction', routers.addiction);
+
 // Opts (in/out) routes
 app.get('/opt-in-out', routers.optInOut.graph);
 app.get('/opt-api', routers.optInOut.api);
