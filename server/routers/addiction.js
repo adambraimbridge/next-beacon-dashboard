@@ -2,6 +2,7 @@
 var conf		= require('../conf');
 var _			= require('lodash');
 var keenIO      = require('keen.io');
+var debug		= require('debug')('1');
 
 var keen = keenIO.configure({
     projectId: process.env['KEEN_PROJECT_ID'],
@@ -10,14 +11,21 @@ var keen = keenIO.configure({
 
 module.exports = function (req, res) {
 
-    var q = new keenIO.Query('count_unique', {
+	var group_by = ['user.erights'];
+	
+	// Allows to see frequency of visit by other property
+	if (req.query.group_by) {
+		group_by.push(req.query.group_by);
+	}
+
+	var q = new keenIO.Query('count_unique', {
         timeframe: {
     		'start' : req.query.from,
     		'end' : req.query.to
 		}, 
-        target_property: 'time.day',
+        target_property: req.query.target_property || 'time.day',
 		event_collection: req.query.event_collection || 'dwell',
-		group_by: ['user.erights'],
+		group_by: group_by,
 		filters: [
 			{
 				property_name: 'user.isStaff',
@@ -38,19 +46,34 @@ module.exports = function (req, res) {
 			res.json(response);
 			return;
 		}
-
-		var a = response.result.map(function (item) {
+	
+		var a = _.map(response.result, function (item) {
 			return item.result;
 		});
-
+	
 		var b = _.groupBy(a, function (el) {
 			return el;
 		});
 		
-		var c = _.map(b, function (el) {
+		var c = _.map(b, function (el, key) {
+			return {
+				group_by: key,
+				length: el.length
+			}
+		});
+
+		// sum the total number of users
+		var sum = _.sum(c, function (el) {
 			return el.length;
 		});
 
-		res.json(c);
+		// Calculate number of users as a % of the total
+		var e = _.map(c, function (el) {
+			el.percentage = (el.length / sum) * 100;
+			return el;
+		})
+
+		res.json(e);
+
 	});
 }
