@@ -12,6 +12,7 @@
 
         <div class="data__container">
             <section class="stats__container" id="c">
+                {{#if abTest}}{{> ab}}{{/if}}
                 {{#if graph}}{{> graph}}{{/if}}
                 {{#if optInOut}}{{> opt-in-out}}{{/if}}
             </section>

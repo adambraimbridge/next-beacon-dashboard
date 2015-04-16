@@ -1,0 +1,71 @@
+<p>
+	{{ abTest.description }}
+</p>
+
+<p>
+</p>
+
+<ul>
+	<li>This test is currently 
+		<strong>{{#if abTest.active }}active{{/if}}</strong>.
+	</li>
+	<li>This test expires on <strong>{{ abTest.expires }}</strong></li>
+	<li>Contact: <a href="mailto:{{ abTest.owner }}">{{ abTest.owner }}</a></li>
+	<li>Discussion: <a href="{{ abTest.discussion }}">{{ abTest.discussion }}</a></li>
+	<li>This test uses the <a href="http://next.ft.com/__toggler#{{ abTest.flag }}">{{ abTest.flag }} flag</a>.</li>
+</ul>
+
+<!-- 
+
+	KPIs
+
+	- Addiction - 7 (daily) / 30 (weekly) / 90 (monthly) return rate.
+	- Frequency of vist (to the hour)
+	- Page views p/user p/day 
+	----
+	- Export this data (to do your own analysis)
+
+-->
+
+<h2>Addiction</h2>
+
+<p>
+	How many days did we see each user this week?  
+	<a href="#-">Weekly</a>, <a href="#-">Monthly</a>, <a href="#-">90-day</a>. 
+</p>
+
+<table width="100%">
+	<tr>
+		<th>Daily return rate</th>
+		<th>control</th>
+		<th>variant</th>
+	</tr>
+	<tr>
+		<td>Once <i>in the last week</i></td>
+		<td>100%</td>
+		<td>100%</td>
+	</tr>
+	<tr>
+		<td>Twice <i>in the last week</i></td>
+		<td>40%</td>
+		<td>35%</td>
+	</tr>
+	<tr>
+		<td>Three times</td>
+		<td>21%</td>
+		<td>15%</td>
+	</tr>
+	<tr>
+		<td>Four times</td>
+		<td>11%</td>
+		<td>6%</td>
+	</tr>
+	<tr>
+		<td>Five times or more</td>
+		<td>3%</td>
+		<td>2%</td>
+	</tr>
+</table>
+
+<h2>Segmentation</h2>
+

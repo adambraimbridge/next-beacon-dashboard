@@ -10,10 +10,10 @@ var keen = keenIO.configure(
     }
 );
 
-
 // Maps query string parameters to a Keen.io Query object
 module.exports = function (req, res, next) {
-    req.query.isStaff = req.query.isStaff ? (req.query.isStaff === 'true') : true; // default to true
+    
+	req.query.isStaff = req.query.isStaff ? (req.query.isStaff === 'true') : true; // default to true
 
     if(req.query.inTheLast) {
         req.query.inTheLast = moment().add(1, 'day').startOf('day').subtract(1, req.query.inTheLast).toISOString();
@@ -61,7 +61,7 @@ module.exports = function (req, res, next) {
         return new keenIO.Query(metric, query);
     });
 
-    // explain.push('over ' + keen_defaults.timeframe.replace(/_/g, ' ').replace('this', ''))
+	console.log(JSON.stringify(queries));
 
     req.keen_explain = explainFilters;
     req.keen_query = queries;
