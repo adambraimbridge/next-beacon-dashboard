@@ -2,6 +2,9 @@
 var Filters = require('./filters')();
 
 switch (location.pathname) {
+    case '/addiction':
+        require('./features/addiction').init();
+        break;
     case '/graph':
     case '/content':
         require('./features/graph').init();
