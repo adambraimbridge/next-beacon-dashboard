@@ -54,6 +54,7 @@ module.exports = function (req, res) {
 				graphs: conf.graphs,
 				ctas: conf.ctas,
 				ab: conf.ab,
+				optInOuts: conf.optInOuts,
 				title: 'Top page views on Next',
 				filters: conf.filters,
 				data: annotate,

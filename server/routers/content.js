@@ -18,6 +18,7 @@ module.exports = function(req, res) {
 		graphs: conf.graphs,
 		ctas: conf.ctas,
 		ab: conf.ab,
+		optInOuts: conf.optInOuts,
 		filters: [],
 		uuid: req.query.uuid
 	};
