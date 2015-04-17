@@ -16,6 +16,7 @@ module.exports.graph = function(req, res) {
         ctas: conf.ctas,
 		optInOuts: conf.optInOuts,
 		filters: [],
+		ab: conf.ab,
 		title: req.query.title || '',   // XSS me
 		apiLink: req._parsedUrl.search,
 		explain: req.keen_explain

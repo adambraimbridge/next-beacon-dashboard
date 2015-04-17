@@ -61,6 +61,7 @@ var api = express.Router();
 api.use(cacheControl);
 api.use(params);
 api.get('/export', routers.api.export);
+api.get('/addiction', routers.api.addiction);
 api.get('/', routers.api.query);
 
 // Routes for drawing graphs 
@@ -76,6 +77,7 @@ tables.get('/', routers.table);
 
 app.use('/api', api);
 app.use('/graph', dashboard);
+app.use('/addiction', routers.addiction);
 app.use('/table', tables);
 
 // Opts (in/out) routes
