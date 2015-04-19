@@ -21,15 +21,19 @@ module.exports.init = function () {
         return data;
     })
     .then(function(data) {
-        var table = $('<table>');
-			
+        
+		// total searches
+		var sum = $('<p>').text(data.total + ' searches.');
+		
+		// serach terms table
+		var table = $('<table>');	
 		var tr = $('<tr>')
 			.append($('<th>').text('Search term'))
 			.append($('<th>').text('Total'))
 		
 		tr.appendTo(table);
 		
-		data.map(function (row) {
+		data.table.map(function (row) {
 			
 			var term = $('<a>')
 				.attr('href', 'http://next.ft.com/search?q=' + row['page.location.search.q'])
@@ -41,7 +45,9 @@ module.exports.init = function () {
 				.append($('<td>').text(row.result))
 			tr.appendTo(table);
 		})
+	
 		table.prependTo('#chart_container');
+		sum.prependTo('#chart_container');
     })
     .catch(function (e) {
         $('<div>')

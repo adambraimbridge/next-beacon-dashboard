@@ -39,9 +39,13 @@ module.exports = function (req, res) {
             return;
         }
 
+		var sum = _.sum(response.result, 'result');
 		var sortedByAsc = _.sortBy(response.result, 'result').reverse();
 
-		res.json(sortedByAsc);
+		res.json({ 
+			total: sum,
+			table: sortedByAsc
+		});
 
 	});
 }
