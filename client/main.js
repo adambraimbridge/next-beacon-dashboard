@@ -5,6 +5,9 @@ switch (location.pathname) {
     case '/addiction':
         require('./features/addiction').init();
         break;
+    case '/search':
+        require('./features/search').init();
+        break;
     case '/graph':
     case '/content':
         require('./features/graph').init();
