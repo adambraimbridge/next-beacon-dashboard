@@ -5,6 +5,7 @@ module.exports.api = {};
 module.exports.api.query		= require('./api/query');
 module.exports.api.export		= require('./api/export');
 module.exports.api.addiction	= require('./api/addiction');
+module.exports.api.search		= require('./api/search');
 
 // Routes for UIs 
 

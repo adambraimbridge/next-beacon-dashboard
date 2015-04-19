@@ -62,6 +62,7 @@ api.use(cacheControl);
 api.use(params);
 api.get('/export', routers.api.export);
 api.get('/addiction', routers.api.addiction);
+api.get('/search', routers.api.search);
 api.get('/', routers.api.query);
 
 // Routes for drawing graphs 

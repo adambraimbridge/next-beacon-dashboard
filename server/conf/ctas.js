@@ -29,4 +29,19 @@ module.exports = [{
 			domPathStartsWith: 'header'
 		}
 	}
+}, {
+	"Search terms - last 7 days": {
+		pathname: 'search',
+		query: {
+			timeframe: 'this_7_days',
+			title: 'Search terms (last 7 days)'
+		}
+	},
+	"Search terms - last 4 weeks": {
+		pathname: 'search',
+		query: {
+			timeframe: 'this_28_days',
+			title: 'Search terms - last 4 weeks'
+		}
+	}
 }];
