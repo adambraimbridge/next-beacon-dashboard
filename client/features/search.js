@@ -1,3 +1,4 @@
+/*global $*/
 'use strict';
 
 require('isomorphic-fetch');
