@@ -1,3 +1,5 @@
+'use strict';
+
 var Rickshaw = require('rickshaw');
 require('isomorphic-fetch');
 require('es6-promise').polyfill();

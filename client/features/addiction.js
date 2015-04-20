@@ -1,10 +1,12 @@
+/*global $*/
+'use strict';
 
 require('isomorphic-fetch');
 require('es6-promise').polyfill();
 var _ = require('lodash');
 var qs = require('query-string');
 
-module.exports.init = function () {
+module.exports.init = function() {
     var query = qs.parse(location.search);
 
     fetch('/api/addiction' + location.search, { credentials: 'same-origin' })
@@ -30,7 +32,7 @@ module.exports.init = function () {
 
 		tr.appendTo(table);
 
-		data.map(function (row) {
+		data.map(function(row) {
 
 			//
 			var tr = $('<tr>')
@@ -38,10 +40,10 @@ module.exports.init = function () {
 				.append($('<td>').text(row.length))
 				.append($('<td>').text(row.percentage + '%'));
 			tr.appendTo(table);
-		})
+		});
 		table.prependTo('#chart_container');
     })
-    .catch(function (e) {
+    .catch(function(e) {
         $('<div>')
             .addClass('alert alert-danger')
             .text(e.message || e.toString())

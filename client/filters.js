@@ -21,10 +21,10 @@ var qs = require('query-string');
 //}
 
 // Attach events to the Bootstrap filter dropdown menus
-module.exports = function () {
-    var query = qs.parse(location.search);
+module.exports = function() {
+	var query = qs.parse(location.search);
 
-    $('[data-filter].form-control').on('change', function (e) {
+    $('[data-filter].form-control').on('change', function(e) {
         var type = this.options[this.selectedIndex].value;
         var key = $(this).data('filter');
         if (type) {

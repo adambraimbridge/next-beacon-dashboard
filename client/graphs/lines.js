@@ -1,3 +1,4 @@
+'use strict';
 var _ = require('lodash');
 var describeVars = require('../utils/describe.js');
 var sameCollection = require('../utils/samecollection.js');

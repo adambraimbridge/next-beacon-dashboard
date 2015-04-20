@@ -1,3 +1,5 @@
+'use strict';
+
 require('isomorphic-fetch');
 require('es6-promise').polyfill();
 var _ = require('lodash');

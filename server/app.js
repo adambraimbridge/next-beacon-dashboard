@@ -1,8 +1,6 @@
 'use strict';
 
 var express         = require('express');
-var debug           = require('debug')('beacon-dashboard');
-var util            = require('util');
 var exphbs          = require('express-handlebars');
 var routers         = require('./routers');
 var conf			= require('./conf');
