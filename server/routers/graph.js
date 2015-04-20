@@ -1,30 +1,33 @@
-var conf = require('../conf'); 
+'use strict';
+
+var conf = require('../conf');
 
 module.exports = function(req, res) {
-   
+
 	// is an AB test
-	var isAb = /user\.ab\.([\w\d]+)/.exec(req.query.group_by); 
-	
+	var isAb = /user\.ab\.([\w\d]+)/.exec(req.query.group_by);
+
 	// ... and if so find the test metadata
+	var abTest;
 	if (isAb) {
 		var testName = isAb[1];
-		var abTest = conf.ab.filter(function (test) {
+		abTest = conf.ab.filter(function (test) {
 			return test.flag === testName;
 		})[0];
 	}
 
 	var opts = {
-        graph: true,
-        graphs: conf.graphs,
-        ctas: conf.ctas,
-        optInOuts: conf.optInOuts,
-        filters: conf.filters,
-        ab: conf.ab,
+		graph: true,
+		graphs: conf.graphs,
+		ctas: conf.ctas,
+		optInOuts: conf.optInOuts,
+		filters: conf.filters,
+		ab: conf.ab,
 		abTest: abTest,
-        title: req.query.title || '',   // XSS me
-        apiLink: req._parsedUrl.search,
-        explain: req.keen_explain
-    };
+		title: req.query.title || '', // XSS me
+		apiLink: req._parsedUrl.search,
+		explain: req.keen_explain
+	};
 
-    res.render('main.handlebars', opts);
+	res.render('main.handlebars', opts);
 };
