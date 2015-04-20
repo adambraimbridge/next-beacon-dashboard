@@ -1,23 +1,26 @@
+/*global $*/
+'use strict';
+
 var qs = require('query-string');
 
-function matchGraph(link) {
-    var linkQuery = qs.parse(link.search);
-    var locQuery = qs.parse(location.search);
+//function matchGraph(link) {
+//    var linkQuery = qs.parse(link.search);
+//    var locQuery = qs.parse(location.search);
+//
+//    if(link.pathname !== location.pathname) {
+//        return false;
+//    }
+//
+//    for(var p in linkQuery) {
+//        if(linkQuery[p] !== locQuery[p]) {
+//            return false;
+//        }
+//    }
+//
+//     return true;
+//}
 
-    if(link.pathname !== location.pathname) {
-        return false;
-    }
-
-    for(var p in linkQuery) {
-        if(linkQuery[p] !== locQuery[p]) {
-            return false;
-        }
-    }
-
-     return true;
-}
-
-// Attach events to the Bootstrap filter dropdown menus 
+// Attach events to the Bootstrap filter dropdown menus
 module.exports = function () {
     var query = qs.parse(location.search);
 

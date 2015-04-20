@@ -56,7 +56,7 @@ module.exports = function (req, res, next) {
         var query = _.defaults(_.mapValues(params, function(param) {
             return _.isArray(param) ? param[i] : param;
         }), {
-            interval: req.query.single ? null : 'daily', 
+            interval: req.query.single ? null : 'daily',
             timeframe: req.query.single ? null : 'this_14_days',
             group_by: []
         });

@@ -1,3 +1,4 @@
+'use strict';
 var _ = require('../bower_components/lodash/lodash');
 
 exports.countAs = function(prop, data) {

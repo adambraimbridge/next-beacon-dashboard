@@ -29,6 +29,9 @@ endif
 		export KEEN_READ_KEY=$(KEEN_READ_KEY); \
 		export DEBUG=*; nodemon server/app.js
 
+test:
+	next-build-tools verify
+
 deploy:
 	next-build-tools configure
 	next-build-tools deploy

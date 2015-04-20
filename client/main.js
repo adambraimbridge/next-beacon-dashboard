@@ -1,5 +1,6 @@
+'use strict';
 
-var Filters = require('./filters')();
+require('./filters')();
 
 switch (location.pathname) {
     case '/addiction':
