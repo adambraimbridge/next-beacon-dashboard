@@ -6,8 +6,8 @@ var qs = require('query-string');
 
 module.exports.init = function () {
     var query = qs.parse(location.search);
-    
-    fetch('/api/search' + location.search)
+
+    fetch('/api/search' + location.search, { credentials: 'same-origin' })
     .then(function(response) {
         if (response.status >= 400) {
             throw new Error("Bad response from server");
@@ -21,31 +21,31 @@ module.exports.init = function () {
         return data;
     })
     .then(function(data) {
-        
+
 		// total searches
 		var sum = $('<p>').text(data.total + ' searches.');
-		
+
 		// serach terms table
-		var table = $('<table>');	
+		var table = $('<table>');
 		var tr = $('<tr>')
 			.append($('<th>').text('Search term'))
 			.append($('<th>').text('Total'))
-		
+
 		tr.appendTo(table);
-		
+
 		data.table.map(function (row) {
-			
+
 			var term = $('<a>')
 				.attr('href', 'http://next.ft.com/search?q=' + row['page.location.search.q'])
 				.text(row['page.location.search.q']);
-			
-			// 
+
+			//
 			var tr = $('<tr>')
 				.append($('<td>').html(term))
 				.append($('<td>').text(row.result))
 			tr.appendTo(table);
 		})
-	
+
 		table.prependTo('#chart_container');
 		sum.prependTo('#chart_container');
     })
