@@ -12,8 +12,8 @@ var stacked_area = require('../graphs/stacked-area.js');
 
 module.exports.init = function () {
     var query = qs.parse(location.search);
-    
-    fetch('/api' + location.search)
+
+    fetch('/api' + location.search, { credentials: 'same-origin' })
     .then(function(response) {
         if (response.status >= 400) {
             throw new Error("Bad response from server");
@@ -53,14 +53,14 @@ module.exports.init = function () {
 
         var graph = new Rickshaw.Graph(_.extend({
             element: document.querySelector("#chart"),
-            width: document.querySelector("#chart").parentNode.offsetWidth * 0.9,  
+            width: document.querySelector("#chart").parentNode.offsetWidth * 0.9,
             height: window.innerHeight * 0.5,
         }, graphSpec));
 
         new Rickshaw.Graph.HoverDetail(_.extend({
             graph: graph,
         }, graphSpec.hoverOptions));
-        
+
         new Rickshaw.Graph.Axis.Y({
             graph: graph,
             orientation: 'left',

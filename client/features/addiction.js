@@ -6,8 +6,8 @@ var qs = require('query-string');
 
 module.exports.init = function () {
     var query = qs.parse(location.search);
-    
-    fetch('/api/addiction' + location.search)
+
+    fetch('/api/addiction' + location.search, { credentials: 'same-origin' })
     .then(function(response) {
         if (response.status >= 400) {
             throw new Error("Bad response from server");
@@ -22,17 +22,17 @@ module.exports.init = function () {
     })
     .then(function(data) {
         var table = $('<table>');
-			
+
 		var tr = $('<tr>')
 			.append($('<th>').text('Frequency'))
 			.append($('<th>').text('Unique users seen'))
 			.append($('<th>').text('%'));
-		
+
 		tr.appendTo(table);
-		
+
 		data.map(function (row) {
-			
-			// 
+
+			//
 			var tr = $('<tr>')
 				.append($('<td>').text(row.group_by))
 				.append($('<td>').text(row.length))

@@ -1,11 +1,12 @@
-var conf = require('../conf'); 
+var conf = require('../conf');
 
 module.exports = function(req, res) {
-   
+
 	var opts = {
         graph: true,
         graphs: conf.graphs,
         ctas: conf.ctas,
+        optInOuts: conf.optInOuts,
         filters: conf.filters,
         ab: conf.ab,
         title: req.query.title || '',   // XSS me
