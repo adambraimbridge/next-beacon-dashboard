@@ -5,7 +5,7 @@ KEEN_PROJECT_ID := $(shell cat ~/.keen.io.project 2>/dev/null)
 KEEN_READ_KEY := $(shell cat ~/.keen.io.read_key 2>/dev/null)
 
 install:
-	origami-build-tools install --verbose
+	origami-build-tools install
 
 build:
 	gulp build
