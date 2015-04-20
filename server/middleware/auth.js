@@ -1,6 +1,6 @@
-
-var auth			= require('http-auth');
-var credentials		= process.env.BASIC_AUTH;
+'use strict';
+var auth = require('http-auth');
+var credentials = process.env.BASIC_AUTH;
 
 if (!credentials) throw new Error("ft-next-beacon-dashboard BASIC_AUTH env *must* be set");
 
