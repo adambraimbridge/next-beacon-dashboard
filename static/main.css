@@ -1,4 +1,4 @@
-body { 
+body {
 	margin: 0;
 	padding: 0;
 	font-size: 18px;
@@ -40,12 +40,12 @@ div>ul {
 .subtitle,
 .subtitle-chart {
 	font-family: sans-serif;
-	font-size: 18px; 
+	font-size: 18px;
 	font-weight: normal;
 }
 
 .subtitle-chart {
-	color: #666; 
+	color: #666;
 }
 
 .explain {
@@ -57,9 +57,9 @@ div>ul {
 	padding: 10px 10px;
 }
 
-.controls__container:after { 
+.controls__container:after {
 	content: "";
-	display: block; 
+	display: block;
 	clear: both;
 }
 
@@ -67,7 +67,7 @@ div>ul {
 	font-size: 14px;
 }
 
-a { 
+a {
 	text-decoration: none;
 }
 
@@ -81,6 +81,9 @@ a {
 	margin: 20px 40px;
 }
 
+.rickshaw_graph .x_tick {
+    bottom: -23px;
+}
 .rickshaw_legend {
 	color: #000;
 	background: white;
@@ -112,11 +115,11 @@ a {
 	background-color: #444;
 }
 
-.branding a { 
+.branding a {
 	color: #fff;
 }
 
-.branding a:hover { 
+.branding a:hover {
 	color: #fff;
 }
 
@@ -129,8 +132,8 @@ a {
 	padding: 0 0 20px 0;
 	border-bottom: 1px solid #eee;
 }
-				
-select.form-control { 
+
+select.form-control {
 	display: inline-block;
 	max-width: 150px;
 	float: left;

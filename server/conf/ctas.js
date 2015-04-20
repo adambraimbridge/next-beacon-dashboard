@@ -19,6 +19,15 @@ module.exports = [{
 			"group_by": "meta.domPath",
 			"title": "Popularity of article components"
 		},
+	},
+	"Galleries": {
+		pathname: "graph",
+		query: {
+			"event_collection": "gallery",
+			"metric": "count",
+			"group_by": "meta.picture",
+			"title": "Interaction with galleries"
+		},
 	}
 }, {
 	"Navigation menu": {
