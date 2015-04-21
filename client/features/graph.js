@@ -78,7 +78,7 @@ module.exports.init = function() {
 				});
 			}
 
-	        if(graphSpec.xaxis) {
+			if (graphSpec.xaxis) {
 				var timeFixture = new Rickshaw.Fixtures.Time();
 				timeFixture.units = timeFixture.units.map(function (unit) {
 					if (unit.name === 'day') {
@@ -88,9 +88,9 @@ module.exports.init = function() {
 				});
 				new Rickshaw.Graph.Axis[graphSpec.xaxis](_.extend({
 					graph: graph,
-	                timeFixture: timeFixture
-	            }, graphSpec.xaxisOptions));
-	        }
+					timeFixture: timeFixture
+				}, graphSpec.xaxisOptions));
+			}
 
 			graph.render();
 		})

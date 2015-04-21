@@ -28,17 +28,17 @@ module.exports = function(req, res, next) {
 				query.property_value = req.query[field];
 			} else if (filter.property_value) {
 				query.property_name = req.query[field];
-            } else {
+			} else {
 				var propertyParts = req.query[field].split(';');
 				query.property_name = propertyParts[0];
 				query.property_value = propertyParts[1];
-            }
+			}
 
 			return _.extend(query, filter);
 		}
 	}).compact().value();
 
-    var steps = req.query.steps ? conf.steps[req.query.steps] : [];
+	var steps = req.query.steps ? conf.steps[req.query.steps] : [];
 
 	var explainFilters = _(activeFilters).map(function(filter) {
 		return filter.explain();

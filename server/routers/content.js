@@ -17,7 +17,7 @@ module.exports = function(req, res) {
 		ctas: conf.ctas,
 		ab: conf.ab,
 		optInOuts: conf.optInOuts,
-        flow: conf.flow,
+		flow: conf.flow,
 		filters: [],
 		uuid: req.query.uuid
 	};

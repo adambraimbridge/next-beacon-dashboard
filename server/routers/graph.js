@@ -21,7 +21,7 @@ module.exports = function(req, res) {
 		graphs: conf.graphs,
 		ctas: conf.ctas,
 		optInOuts: conf.optInOuts,
-        flow: conf.flow,
+		flow: conf.flow,
 		filters: conf.filters,
 		ab: conf.ab,
 		abTest: abTest,
