@@ -3,7 +3,6 @@
 module.exports = function(data, palette, query) {
 	var key = query.group_by;
 
-
 	// First, sort all data by value
 	data.result.map(function(a) {
 		return {
