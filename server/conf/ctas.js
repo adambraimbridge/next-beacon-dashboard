@@ -19,14 +19,6 @@ module.exports = [{
 			"group_by": "meta.domPath",
 			"title": "Popularity of article components"
 		},
-	},
-	"Galleries": {
-		pathname: "flow",
-		query: {
-			metric: "funnel",
-			title: "Interaction with galleries",
-			steps: "galleryInteraction"
-		},
 	}
 }, {
 	"Navigation menu": {

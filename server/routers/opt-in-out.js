@@ -15,6 +15,7 @@ module.exports.graph = function(req, res) {
 		graphs: conf.graphs,
 		ctas: conf.ctas,
 		optInOuts: conf.optInOuts,
+        flow: conf.flow,
 		filters: [],
 		ab: conf.ab,
 		title: req.query.title || '', // XSS me
