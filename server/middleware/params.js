@@ -28,7 +28,11 @@ module.exports = function(req, res, next) {
 				query.property_value = req.query[field];
 			} else if (filter.property_value) {
 				query.property_name = req.query[field];
-			}
+            } else {
+				var propertyParts = req.query[field].split(';');
+				query.property_name = propertyParts[0];
+				query.property_value = propertyParts[1];
+            }
 
 			return _.extend(query, filter);
 		}
@@ -62,6 +66,7 @@ module.exports = function(req, res, next) {
 		});
 
 		query.filters = activeFilters;
+		query.steps = steps;
 		req.keen_defaults[
 			_.isArray(params.event_collection) ? params.event_collection[i] : metric
 		] = query;
