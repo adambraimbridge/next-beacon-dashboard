@@ -38,6 +38,8 @@ module.exports = function(req, res, next) {
 		}
 	}).compact().value();
 
+    var steps = req.query.steps ? conf.steps[req.query.steps] : [];
+
 	var explainFilters = _(activeFilters).map(function(filter) {
 		return filter.explain();
 	}).compact().join(', ');

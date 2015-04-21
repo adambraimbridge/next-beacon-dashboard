@@ -21,12 +21,11 @@ module.exports = [{
 		},
 	},
 	"Galleries": {
-		pathname: "graph",
+		pathname: "flow",
 		query: {
-			"event_collection": "gallery",
-			"metric": "count",
-			"group_by": "meta.picture",
-			"title": "Interaction with galleries"
+			metric: "funnel",
+			title: "Interaction with galleries",
+			steps: "galleryInteraction"
 		},
 	}
 }, {

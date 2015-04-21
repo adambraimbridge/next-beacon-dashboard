@@ -16,6 +16,9 @@ switch (location.pathname) {
 	case '/opt-in-out':
 		require('./features/opt-in-out').init();
 		break;
+    case '/flow':
+        require('./features/flow').init();
+        break;
 	default:
 		console.info('This route seems to have no corresponding javascript');
 }
