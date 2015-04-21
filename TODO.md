@@ -1,7 +1,5 @@
-
 SOONER
 
-- Haikro + codeship setup
 - Unit tests around params middleware
 - Add help system w/ feedback
 - Add a retention graph
