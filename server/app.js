@@ -1,32 +1,30 @@
 'use strict';
 
-var express         = require('express');
-var debug           = require('debug')('beacon-dashboard');
-var util            = require('util');
-var exphbs          = require('express-handlebars');
-var routers         = require('./routers');
-var conf			= require('./conf');
+var express = require('express');
+var exphbs = require('express-handlebars');
+var routers = require('./routers');
+var conf = require('./conf');
 
 // Middleware
-var params          = require('./middleware/params');
-var auth			= require('./middleware/auth');
-var cacheControl	= require('./middleware/cacheControl');
+var params = require('./middleware/params');
+var auth = require('./middleware/auth');
+var cacheControl = require('./middleware/cacheControl');
 
 var app = module.exports = express();
 
 app.use(express.static(__dirname + '/../static', { maxAge: 3600000 }));
 
 app.engine('handlebars', exphbs({
-    defaultLayout: 'layout',
-    helpers: {
-        formatUrl: require('url').format
-    }
+	defaultLayout: 'layout',
+	helpers: {
+		formatUrl: require('url').format
+	}
 }));
 
 app.set('view engine', 'handlebars');
 
 app.get('/__gtg', function(req, res) {
-    res.status(200).send();
+	res.status(200).send();
 });
 
 // index
@@ -36,8 +34,8 @@ app.get('/', function (req, res) {
 
 // Force HTTPS in production
 app.get('*', function(req, res, next) {
-	if(process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
-		res.redirect('/?https');		
+	if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
+		res.redirect('/?https');
 	} else {
 		next();
 	}
@@ -46,9 +44,9 @@ app.get('*', function(req, res, next) {
 // Authenticate all routes beneath here
 app.use(auth);
 
-// Simple entry point 
+// Simple entry point
 app.get('/enter', function (req, res) {
-	res.redirect('/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&title=Unique%20users%20on%20next')
+	res.redirect('/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&title=Unique%20users%20on%20next');
 });
 
 app.get('/top', require('./routers/top-n'));
@@ -65,12 +63,12 @@ api.get('/addiction', routers.api.addiction);
 api.get('/search', routers.api.search);
 api.get('/', routers.api.query);
 
-// Routes for drawing graphs 
+// Routes for drawing graphs
 var dashboard = express.Router();
 dashboard.use(params);
 dashboard.get('/', routers.graph);
 
-// Routes for drawing tabular data 
+// Routes for drawing tabular data
 var tables = express.Router();
 tables.use(cacheControl);
 tables.use(params);
@@ -86,5 +84,5 @@ app.get('/opt-in-out', routers.optInOut.graph);
 
 var port = process.env.PORT || 3001;
 app.listen(port, function() {
-    console.log("Listening on " + port);
+	console.log("Listening on " + port);
 });
