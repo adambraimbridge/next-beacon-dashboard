@@ -61,6 +61,7 @@ api.use(params);
 api.get('/export', routers.api.export);
 api.get('/addiction', routers.api.addiction);
 api.get('/search', routers.api.search);
+api.get('/funnel', routers.api.funnel);
 api.get('/', routers.api.query);
 
 // Routes for drawing graphs
@@ -74,10 +75,17 @@ tables.use(cacheControl);
 tables.use(params);
 tables.get('/', routers.table);
 
+// Routes for drawing user flow
+var flow = express.Router();
+flow.use(cacheControl);
+flow.use(params);
+flow.get('/', routers.flow);
+
 app.use('/api', api);
 app.use('/graph', dashboard);
 app.use('/addiction', routers.addiction);
 app.use('/table', tables);
+app.use('/flow', flow);
 
 // Opts (in/out) routes
 app.get('/opt-in-out', routers.optInOut.graph);

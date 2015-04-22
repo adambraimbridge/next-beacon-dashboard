@@ -98,5 +98,12 @@ module.exports = {
 		explain: function() {
 			return 'property value is equal to "unknown"';
 		}
+	},
+	greaterThan: {
+		operator: 'gt',
+		hidden: true,
+		explain: function() {
+			return this.property_name + ' is greater than ' + this.property_value;
+		}
 	}
 };

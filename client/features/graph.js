@@ -6,6 +6,7 @@ require('isomorphic-fetch');
 require('es6-promise').polyfill();
 var _ = require('lodash');
 var qs = require('query-string');
+var moment = require('moment');
 
 var histogram = require('../graphs/histogram.js');
 var lines	 = require('../graphs/lines.js');
@@ -78,8 +79,16 @@ module.exports.init = function() {
 			}
 
 			if (graphSpec.xaxis) {
+				var timeFixture = new Rickshaw.Fixtures.Time();
+				timeFixture.units = timeFixture.units.map(function (unit) {
+					if (unit.name === 'day') {
+						unit.formatter = function(d) { return moment(d).format('Do'); };
+					}
+					return unit;
+				});
 				new Rickshaw.Graph.Axis[graphSpec.xaxis](_.extend({
-					graph: graph
+					graph: graph,
+					timeFixture: timeFixture
 				}, graphSpec.xaxisOptions));
 			}
 
