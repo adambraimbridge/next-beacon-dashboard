@@ -1,5 +1,7 @@
 'use strict';
 
+var stepsConf = require('../../conf/steps');
+
 var keen = require('keen.io').configure({
     projectId: process.env['KEEN_PROJECT_ID'],
     readKey: process.env['KEEN_READ_KEY']
@@ -18,6 +20,9 @@ module.exports = function(req, res) {
                 errored = true;
                 return;
             }
+            response.descriptions = stepsConf[req.query.steps].map(function (step) {
+				return step.description;
+            });
 
             res.json(response);
         }
