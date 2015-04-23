@@ -1,40 +1,70 @@
 module.exports = {
 	galleryInteraction: [
 		{
-			event_collection: "dwell",
-			actor_property :"user.erights",
-			filters: [{
-				property_name: "page.capi.hasGallery",
-				operator: "eq",
-				property_value: true
-			}]
+			description: 'View a page with a gallery',
+			query: {
+				event_collection: "dwell",
+				actor_property :"user.erights",
+				filters: [{
+					property_name: "page.capi.hasGallery",
+					operator: "eq",
+					property_value: true
+				},
+				{
+					property_name: "keen.timestamp",
+					operator: "gt",
+					property_value: "2015-04-21T11:48:16.643",
+					coercion_type: "Datetime"
+				}]
+			}
 		},
 		{
-			event_collection: "gallery",
-			actor_property: "user.erights",
-			filters: [{
-				property_name: "meta.percentageThrough",
-				operator: "gte",
-				property_value: 25
-			}]
+			description: 'View at least 25% of the gallery',
+			query: {
+				event_collection: "gallery",
+				actor_property: "user.erights",
+				filters: [{
+					property_name: "meta.percentageThrough",
+					operator: "gte",
+					property_value: 25
+				}]
+			}
 		},
 		{
-			event_collection: "gallery",
-			actor_property: "user.erights",
-			filters: [{
-				property_name: "meta.percentageThrough",
-				operator: "gte",
-				property_value: 50
-			}]
+			description: 'View at least 50% of the gallery',
+			query: {
+				event_collection: "gallery",
+				actor_property: "user.erights",
+				filters: [{
+					property_name: "meta.percentageThrough",
+					operator: "gte",
+					property_value: 50
+				}]
+			}
 		},
 		{
-			event_collection: "gallery",
-			actor_property: "user.erights",
-			filters: [{
-				property_name: "meta.percentageThrough",
-				operator: "eq",
-				property_value: 100
-			}]
+			description: 'View at least 75% of the gallery',
+			query: {
+				event_collection: "gallery",
+				actor_property: "user.erights",
+				filters: [{
+					property_name: "meta.percentageThrough",
+					operator: "gte",
+					property_value: 75
+				}]
+			}
+		},
+		{
+			description: 'View all the gallery',
+			query: {
+				event_collection: "gallery",
+				actor_property: "user.erights",
+				filters: [{
+					property_name: "meta.percentageThrough",
+					operator: "eq",
+					property_value: 100
+				}]
+			}
 		}
 	]
 };

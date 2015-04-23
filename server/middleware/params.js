@@ -38,7 +38,9 @@ module.exports = function(req, res, next) {
 		}
 	}).compact().value();
 
-	var steps = req.query.steps ? conf.steps[req.query.steps] : [];
+	var steps = req.query.steps ? conf.steps[req.query.steps].map(function (conf) {
+		return conf.query;
+	}) : [];
 
 	var explainFilters = _(activeFilters).map(function(filter) {
 		return filter.explain();

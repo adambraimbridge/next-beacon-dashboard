@@ -33,7 +33,8 @@ module.exports.init = function () {
 							y: (100 / total) * result
 						};
 					}),
-					color: palette.color()
+					color: palette.color(),
+					name: 'Percentage of first step'
 				}]
 			};
 
@@ -44,21 +45,16 @@ module.exports.init = function () {
 				renderer: 'bar'
 			}, graphSpec));
 
-			new Rickshaw.Graph.HoverDetail({
-				graph: graph
-			});
-
 			new Rickshaw.Graph.Axis.Y({
 				graph: graph,
 				orientation: 'left',
 				element: document.getElementById('y_axis')
 			});
 
-			new Rickshaw.Graph.Axis.X({
+			new Rickshaw.Graph.HoverDetail({
 				graph: graph,
-				ticks: data.result.length,
-				tickFormat: function (n) {
-					return 'Step ' + n;
+				xFormatter: function (x) {
+					return data.descriptions[x - 1];
 				}
 			});
 
