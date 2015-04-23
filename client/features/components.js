@@ -23,11 +23,11 @@ module.exports.init = function () {
 			var percent = 100 / data.result[0];
 			data.result.slice(1).forEach(function (size, index) {
 				var percentage = (percent * size).toFixed(2);
-				$('<h2>')
+				$('<p>')
 					.addClass('component-usage')
 					.html(
 						'<span class="big-number">' + percentage + '%</span> of users have '
-						+ data.descriptions[index + 1].toLowerCase() + ' in the last 24 hours'
+						+ data.descriptions[index + 1].toLowerCase()
 					)
 					.appendTo('.stats__container');
 				});

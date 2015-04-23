@@ -2,7 +2,7 @@ module.exports = [{
 	"Comments": {
 		pathname: "components",
 		query: {
-			title: "Comments usage",
+			title: "In the last 24 hours...",
 			component: "comments",
 			metric: 'funnel',
 			timeframe: 'this_24_hours',
