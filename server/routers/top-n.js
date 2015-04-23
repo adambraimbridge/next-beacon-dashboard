@@ -58,6 +58,7 @@ module.exports = function (req, res) {
 				optInOuts: conf.optInOuts,
 				title: 'Top page views on Next',
 				filters: conf.filters,
+				components: conf.components,
 				data: annotate,
 				explain: req.keen_explain
 			});

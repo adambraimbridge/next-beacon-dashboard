@@ -235,4 +235,11 @@ table {
 	color: green;
 	font-size: 11px;
 }
+.component-usage {
+    font-size: 20px;
+}
+.big-number {
+    color: green;
+    font-size: 3em;
+}
 

@@ -10,6 +10,7 @@ module.exports = function(req, res) {
 		ctas: conf.ctas,
 		filters: conf.filters,
 		flow: conf.flow,
+		components: conf.components,
 		ab: conf.ab,
 		title: req.query.title || '',   // XSS me
 		apiLink: req._parsedUrl.search

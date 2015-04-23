@@ -66,5 +66,53 @@ module.exports = {
 				}]
 			}
 		}
+	],
+	commentsComponent: [
+		{
+			description: 'Unique user',
+			query: {
+				event_collection: "dwell",
+				actor_property :"user.erights"
+			}
+		},
+		{
+			description: 'Posted a comment',
+			query: {
+				event_collection: "comment",
+				actor_property: "user.erights",
+				optional: true,
+				filters: [{
+					property_name: "meta.interaction",
+					operator: "eq",
+					property_value: 'posted'
+				}]
+			}
+		},
+		{
+			description: 'Liked a comment',
+			query: {
+				event_collection: "comment",
+				actor_property: "user.erights",
+				optional: true,
+				filters: [{
+					property_name: "meta.interaction",
+					operator: "eq",
+					property_value: 'liked'
+				}]
+			}
+		},
+		{
+			description: 'Shared a comment',
+			query: {
+				event_collection: "comment",
+				actor_property: "user.erights",
+				optional: true,
+				filters: [{
+					property_name: "meta.interaction",
+					operator: "eq",
+					property_value: 'shared'
+				}]
+			}
+		}
 	]
 };

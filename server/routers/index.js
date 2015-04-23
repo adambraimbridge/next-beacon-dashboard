@@ -15,3 +15,4 @@ module.exports.graph			= require('./graph');
 module.exports.addiction		= require('./addiction');
 module.exports.optInOut			= require('./opt-in-out');
 module.exports.flow				= require('./flow');
+module.exports.components       = require('./components');

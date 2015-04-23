@@ -81,11 +81,18 @@ flow.use(cacheControl);
 flow.use(params);
 flow.get('/', routers.flow);
 
+// Routes for components' analytics
+var components = express.Router();
+components.use(cacheControl);
+components.use(params);
+components.get('/', routers.components);
+
 app.use('/api', api);
 app.use('/graph', dashboard);
 app.use('/addiction', routers.addiction);
 app.use('/table', tables);
 app.use('/flow', flow);
+app.use('/components', components);
 
 // Opts (in/out) routes
 app.get('/opt-in-out', routers.optInOut.graph);

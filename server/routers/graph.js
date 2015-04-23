@@ -22,6 +22,7 @@ module.exports = function(req, res) {
 		ctas: conf.ctas,
 		optInOuts: conf.optInOuts,
 		flow: conf.flow,
+		components: conf.components,
 		filters: conf.filters,
 		ab: conf.ab,
 		abTest: abTest,

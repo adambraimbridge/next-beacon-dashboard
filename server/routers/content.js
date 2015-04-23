@@ -18,6 +18,7 @@ module.exports = function(req, res) {
 		ab: conf.ab,
 		optInOuts: conf.optInOuts,
 		flow: conf.flow,
+		components: conf.components,
 		filters: [],
 		uuid: req.query.uuid
 	};
