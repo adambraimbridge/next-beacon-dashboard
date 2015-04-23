@@ -114,5 +114,35 @@ module.exports = {
 				}]
 			}
 		}
+	],
+	galleryComponent: [
+		{
+			description: 'Unique user',
+			query: {
+				event_collection: "dwell",
+				actor_property :"user.erights"
+			}
+		},
+		{
+			description: 'Seen a gallery',
+			query: {
+				event_collection: "dwell",
+				actor_property: "user.erights",
+				optional: true,
+				filters: [{
+					property_name: "page.capi.hasGallery",
+					operator: "eq",
+					property_value: true
+				}]
+			}
+		},
+		{
+			description: 'Interacted with a gallery',
+			query: {
+				event_collection: "gallery",
+				actor_property: "user.erights",
+				optional: true
+			}
+		}
 	]
 };
