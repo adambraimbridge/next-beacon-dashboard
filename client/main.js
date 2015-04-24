@@ -19,6 +19,9 @@ switch (location.pathname) {
 	case '/flow':
 		require('./features/flow').init();
 		break;
+	case '/components':
+		require('./features/components').init();
+		break;
 	default:
 		console.info('This route seems to have no corresponding javascript');
 }

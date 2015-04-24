@@ -46,6 +46,7 @@ module.exports = function (req, res) {
 			title: req.query.title || '', // XSS me
 			filters: conf.filters,
 			flow: conf.flow,
+			components: conf.components,
 			ab: conf.ab,
 			data: sorted,
 			explain: req.keen_explain

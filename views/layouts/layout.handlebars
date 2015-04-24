@@ -5,16 +5,16 @@
         <meta http-equiv="refresh" content="120"/>
     </head>
     <body>
-        
+
         {{> header}}
 
         {{{ body }}}
-        
+
 
         <div class="data__container">
-        
+
 			{{#if isAddiction}}{{> addiction}}{{/if}}
-            
+
 			<section class="stats__container" id="c">
                 {{#if abTest}}{{> ab}}{{/if}}
                 {{#if graph}}{{> graph}}{{/if}}

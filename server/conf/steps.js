@@ -66,5 +66,83 @@ module.exports = {
 				}]
 			}
 		}
+	],
+	commentsComponent: [
+		{
+			description: 'Unique user',
+			query: {
+				event_collection: "dwell",
+				actor_property :"user.erights"
+			}
+		},
+		{
+			description: 'Posted a comment',
+			query: {
+				event_collection: "comment",
+				actor_property: "user.erights",
+				optional: true,
+				filters: [{
+					property_name: "meta.interaction",
+					operator: "eq",
+					property_value: 'posted'
+				}]
+			}
+		},
+		{
+			description: 'Liked a comment',
+			query: {
+				event_collection: "comment",
+				actor_property: "user.erights",
+				optional: true,
+				filters: [{
+					property_name: "meta.interaction",
+					operator: "eq",
+					property_value: 'liked'
+				}]
+			}
+		},
+		{
+			description: 'Shared a comment',
+			query: {
+				event_collection: "comment",
+				actor_property: "user.erights",
+				optional: true,
+				filters: [{
+					property_name: "meta.interaction",
+					operator: "eq",
+					property_value: 'shared'
+				}]
+			}
+		}
+	],
+	galleryComponent: [
+		{
+			description: 'Unique user',
+			query: {
+				event_collection: "dwell",
+				actor_property :"user.erights"
+			}
+		},
+		{
+			description: 'Seen a gallery',
+			query: {
+				event_collection: "dwell",
+				actor_property: "user.erights",
+				optional: true,
+				filters: [{
+					property_name: "page.capi.hasGallery",
+					operator: "eq",
+					property_value: true
+				}]
+			}
+		},
+		{
+			description: 'Interacted with a gallery',
+			query: {
+				event_collection: "gallery",
+				actor_property: "user.erights",
+				optional: true
+			}
+		}
 	]
 };
