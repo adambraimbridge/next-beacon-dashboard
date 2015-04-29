@@ -3,29 +3,29 @@ module.exports = {
 		{
 			description: 'View a page with a gallery',
 			query: {
-				event_collection: "dwell",
-				actor_property :"user.erights",
+				event_collection: 'dwell',
+				actor_property :'user.erights',
 				filters: [{
-					property_name: "page.capi.hasGallery",
-					operator: "eq",
+					property_name: 'page.capi.hasGallery',
+					operator: 'eq',
 					property_value: true
 				},
 				{
-					property_name: "keen.timestamp",
-					operator: "gt",
-					property_value: "2015-04-21T11:48:16.643",
-					coercion_type: "Datetime"
+					property_name: 'keen.timestamp',
+					operator: 'gt',
+					property_value: '2015-04-21T11:48:16.643',
+					coercion_type: 'Datetime'
 				}]
 			}
 		},
 		{
 			description: 'View at least 25% of the gallery',
 			query: {
-				event_collection: "gallery",
-				actor_property: "user.erights",
+				event_collection: 'gallery',
+				actor_property: 'user.erights',
 				filters: [{
-					property_name: "meta.percentageThrough",
-					operator: "gte",
+					property_name: 'meta.percentageThrough',
+					operator: 'gte',
 					property_value: 25
 				}]
 			}
@@ -33,11 +33,11 @@ module.exports = {
 		{
 			description: 'View at least 50% of the gallery',
 			query: {
-				event_collection: "gallery",
-				actor_property: "user.erights",
+				event_collection: 'gallery',
+				actor_property: 'user.erights',
 				filters: [{
-					property_name: "meta.percentageThrough",
-					operator: "gte",
+					property_name: 'meta.percentageThrough',
+					operator: 'gte',
 					property_value: 50
 				}]
 			}
@@ -45,11 +45,11 @@ module.exports = {
 		{
 			description: 'View at least 75% of the gallery',
 			query: {
-				event_collection: "gallery",
-				actor_property: "user.erights",
+				event_collection: 'gallery',
+				actor_property: 'user.erights',
 				filters: [{
-					property_name: "meta.percentageThrough",
-					operator: "gte",
+					property_name: 'meta.percentageThrough',
+					operator: 'gte',
 					property_value: 75
 				}]
 			}
@@ -57,11 +57,11 @@ module.exports = {
 		{
 			description: 'View all the gallery',
 			query: {
-				event_collection: "gallery",
-				actor_property: "user.erights",
+				event_collection: 'gallery',
+				actor_property: 'user.erights',
 				filters: [{
-					property_name: "meta.percentageThrough",
-					operator: "eq",
+					property_name: 'meta.percentageThrough',
+					operator: 'eq',
 					property_value: 100
 				}]
 			}
@@ -71,19 +71,19 @@ module.exports = {
 		{
 			description: 'Unique user',
 			query: {
-				event_collection: "dwell",
-				actor_property :"user.erights"
+				event_collection: 'dwell',
+				actor_property :'user.erights'
 			}
 		},
 		{
 			description: 'Posted a comment',
 			query: {
-				event_collection: "comment",
-				actor_property: "user.erights",
+				event_collection: 'comment',
+				actor_property: 'user.erights',
 				optional: true,
 				filters: [{
-					property_name: "meta.interaction",
-					operator: "eq",
+					property_name: 'meta.interaction',
+					operator: 'eq',
 					property_value: 'posted'
 				}]
 			}
@@ -91,12 +91,12 @@ module.exports = {
 		{
 			description: 'Liked a comment',
 			query: {
-				event_collection: "comment",
-				actor_property: "user.erights",
+				event_collection: 'comment',
+				actor_property: 'user.erights',
 				optional: true,
 				filters: [{
-					property_name: "meta.interaction",
-					operator: "eq",
+					property_name: 'meta.interaction',
+					operator: 'eq',
 					property_value: 'liked'
 				}]
 			}
@@ -104,12 +104,12 @@ module.exports = {
 		{
 			description: 'Shared a comment',
 			query: {
-				event_collection: "comment",
-				actor_property: "user.erights",
+				event_collection: 'comment',
+				actor_property: 'user.erights',
 				optional: true,
 				filters: [{
-					property_name: "meta.interaction",
-					operator: "eq",
+					property_name: 'meta.interaction',
+					operator: 'eq',
 					property_value: 'shared'
 				}]
 			}
@@ -119,19 +119,19 @@ module.exports = {
 		{
 			description: 'Unique user',
 			query: {
-				event_collection: "dwell",
-				actor_property :"user.erights"
+				event_collection: 'dwell',
+				actor_property :'user.erights'
 			}
 		},
 		{
 			description: 'Seen a gallery',
 			query: {
-				event_collection: "dwell",
-				actor_property: "user.erights",
+				event_collection: 'dwell',
+				actor_property: 'user.erights',
 				optional: true,
 				filters: [{
-					property_name: "page.capi.hasGallery",
-					operator: "eq",
+					property_name: 'page.capi.hasGallery',
+					operator: 'eq',
 					property_value: true
 				}]
 			}
@@ -139,10 +139,106 @@ module.exports = {
 		{
 			description: 'Interacted with a gallery',
 			query: {
-				event_collection: "gallery",
-				actor_property: "user.erights",
+				event_collection: 'gallery',
+				actor_property: 'user.erights',
 				optional: true
 			}
 		}
+	],
+	mypageFollowing: [
+		{
+			description: 'All users',
+			query: {
+				actor_property: 'user.erights',
+				timeframe: 'this_14_days',
+				event_collection: 'cta'
+			}
+		}, {
+			description: 'Clicked on follow',
+			query: {
+				actor_property: 'user.erights',
+				filters: [
+					{
+						operator: 'eq',
+						property_name: 'meta.target',
+						property_value: 'follow'
+					}
+				],
+				timeframe: 'this_14_days',
+				event_collection: 'cta'
+			}
+		}, {
+			description: 'Visited mypage/following',
+			query: {
+				actor_property: 'user.erights',
+				filters: [
+					{
+						operator: 'contains',
+						property_name: 'page.location.pathname',
+						property_value: 'mypage/following'
+					}
+				],
+				timeframe: 'this_14_days',
+				event_collection: 'dwell'
+			}
+		}, {
+			description: 'Arrived at article from mypage',
+			query: {
+				actor_property: 'user.erights',
+				filters: [
+					{
+						operator: 'contains',
+						property_name: 'page.referrer.pathname',
+						property_value: 'mypage/following'
+					},
+					{
+						operator: 'eq',
+						property_name: 'page.location.type',
+						property_value: 'article'
+					}
+				],
+				timeframe: 'this_14_days',
+				event_collection: 'dwell'
+			}
+		}
+	],
+	myfeedFollowing: [
+		{
+			description: 'All users',
+			query: {
+				actor_property: 'user.erights',
+				timeframe: 'this_14_days',
+				event_collection: 'cta'
+			}
+		}, {
+			description: 'Clicked on follow',
+			query: {
+				actor_property: 'user.erights',
+				filters: [
+					{
+						operator: 'eq',
+						property_name: 'meta.target',
+						property_value: 'follow'
+					}
+				],
+				timeframe: 'this_14_days',
+				event_collection: 'cta'
+			}
+		}, {
+			description: 'Referred to article from mypage feed',
+			query: {
+				actor_property: 'user.erights',
+				filters: [
+					{
+						operator: 'contains',
+						property_name: 'meta.domPath',
+						property_value: 'my-page-feed | headline'
+					}
+				],
+				timeframe: 'this_14_days',
+				event_collection: 'cta'
+			}
+		}
 	]
+
 };
