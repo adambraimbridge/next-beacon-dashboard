@@ -2,6 +2,7 @@
 
 var express = require('express');
 var exphbs = require('express-handlebars');
+var cookieParser = require('cookie-parser');
 var routers = require('./routers');
 var conf = require('./conf');
 
@@ -42,6 +43,7 @@ app.get('*', function(req, res, next) {
 });
 
 // Authenticate all routes beneath here
+app.use(cookieParser());
 app.use(auth);
 
 // Simple entry point
