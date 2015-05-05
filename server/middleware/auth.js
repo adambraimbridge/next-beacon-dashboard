@@ -1,12 +1,23 @@
 'use strict';
 var isSecure;
+var logger = require('ft-next-logger');
 var crypto = require('crypto');
 var NodeRSA = require("node-rsa");
-var cookieOptions = { maxAge: 900000, httpOnly: true, secure: isSecure };
 
-// TODO: Always use https://s3o.ft.com/publickey or cached copy,
-// rather than using an environment variable or hard-coding it.
-var publicKey = "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAu37tyRosqi5m22+/DFpmBG3ySwa7F1mOKSGi5ALineHWO3Pa9JIjxVl9wqj0zGuOJJZlDfWMILEEphe3l3xb+iiMhEuUceqkL21fJx4toy3buGhM/9VL72CYLl2aUGCqu+Q2qXNtxhqC6TrB+AU9g4RUlrjmI8VcCAhhgGMkX6z5mcI3mB5S/fNZL73RSEenDnHUNz1As6Km4glvzBZLu2axWijs+Y1b1U/ilYiUu8mchha2S1LSKdA6wLt6zrE0EH7zCve91Yzpypw/MpfPYVmDrzYRA/z04f88nowGA9b+DJfgIpPSvmyhlgpbYqhnDRwCEMniIoayPkFR4oFONQrLT8ARDk56PHSTmCb7BVQTnrzRbJMV0nVln+eHensryFhA/PBCoxowPjH2jPDWgiM5M0HHqtPFG+307uSSBTAzM1gdKAdim2M9ivICKpXS1yP/O9dVtWtA0rsuiKU+vKtLPk3tSX9rpopbIH9C6w8shnMGcyVyckugVz2T6s4gySTtDNLHIugc6n2bDSPlMaZ+uWlrHtZeWBbxvs1ZlwYnfAs1Ohi9xdTuO1Q4DKUvcVxmhglufn5bASJ5MLd6sJaeNnuuAoUSKw6/8B8Eh1whvHy583t17oA43SPZbfxAj622yi73kT15YmwsO7DDjtfV1ME+qsDrt3sFYtRNDlsCAwEAAQ==";
+// The Staff Single Sign On (S3O) public key is available at https://s3o.ft.com/publickey.
+//  — S3O validates only @ft.com google accounts (and a whitelist of non-ft.com accounts).
+//    It displays an error to the user if they try to sign in with an invalid account.
+//  — It's intended to change sporadically and without warning, mainly for security testing.
+//  — Currently it comes in DER format and needs to be converted to PEM format,
+//    but a PEM version should soon be available.
+//  – The key is stored in the config-vars repository ...
+//    http://git.svc.ft.com/projects/NEXTPRIVATE/repos/config-vars/browse/models/production.json
+//    ... and consumed by heroku to make it available as an environment variable.
+//    https://dashboard.heroku.com/orgs/financial-times/apps/ft-next-beacon-dashboard/settings
+//  – The intention is that config-vars will push its settings into all apps, so if it changed
+//    we would update manually and it would fix instantly.
+var publicKey = process.env.S3O_PUBLIC_KEY;
+if (!publicKey) throw new Error("The ft-next-beacon-dashboard S3O_PUBLIC_KEY heroku environment variable *must* be set. For support contact next.team@ft.com");
 
 var authenticateToken = function(res,username,token) {
 
@@ -22,36 +33,37 @@ var authenticateToken = function(res,username,token) {
 	var result = verifier.verify(publicPem, token, "base64");
 
 	if (result) {
+		var cookieOptions = { maxAge: 900000, httpOnly: true, secure: isSecure };
 		res.cookie('s3o_username', username, cookieOptions);
 		res.cookie('s3o_token', token, cookieOptions);
 		return true;
 	} else {
 		return false;
 	}
-}
+};
 
 var auth = function(req, res, next){
 	var s3oUsername, s3oToken;
-	isSecure = req.protocol === "https" ? true : false;
+	isSecure = req.protocol === "https"? true : false;
 
 	if (req.cookies.s3o_username && req.cookies.s3o_token) {
 
 		// Check for s3o username/token cookies
-		console.log("\n\n Found: s3o cookies. \n\n");
 		s3oUsername = req.cookies.s3o_username;
 		s3oToken = req.cookies.s3o_token;
+		logger.info("S3O: Found cookie token for s3o_username: " + s3oUsername);
 	} else if (req.query.username && req.query.token) {
 
 		// Check for s3o username/token URL parameters.
-		// These parameters come from https://s30.ft.com. It redirects back after it does the google authentication.
-		console.log("\n\n Found: s3o parameters. \n\n");
+		// These parameters come from https://s3o.ft.com. It redirects back after it does the google authentication.
 		s3oUsername = req.query.username;
 		s3oToken = req.query.token;
+		logger.info("S3O: Found parameter token for s3o_username: " + s3oUsername);
 	} else {
 
 		// Send the user to s3o to authenticate
-		console.log("\n\n No s3o data found. Redirecting to s3o auth … \n\n");
-		res.redirect("https://s3o.ft.com/authenticate?redirect=" + encodeURIComponent(req.protocol + "://" + req.headers.host + req.url));
+		logger.info("S3O: No token/s3o_username found. Redirecting to https://s3o.ft.com/authenticate … ");
+		res.redirect("https://s3o.ft.com/authenticate?redirect="+ encodeURIComponent(req.protocol + "://"+ req.headers.host + req.url));
 	}
 
 	if (s3oUsername && s3oToken) {
@@ -61,7 +73,5 @@ var auth = function(req, res, next){
 			throw new Error("Authentication error. For access contact next.team@ft.com.");
 		}
 	}
-}
-
+};
 module.exports = auth;
-

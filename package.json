@@ -13,6 +13,7 @@
     "flat": "^1.5.0",
     "forever": "^0.13.0",
     "ft-api-client": "https://github.com/Financial-Times/ft-api-client/archive/v3.13.1.tar.gz",
+    "ft-next-logger": "^1.1.0",
     "gulp": "^3.8.11",
     "gulp-watch": "^4.1.1",
     "keen.io": "^0.1.3",
