@@ -33,14 +33,10 @@ app.get('/', function (req, res) {
 	res.render('index.handlebars', { hideMenu: true, graphs: conf.graphs, ctas: conf.ctas, opts: conf.opts });
 });
 
-// Force HTTPS in production
-app.get('*', function(req, res, next) {
-	if (process.env.NODE_ENV === 'production' && req.protocol !== 'https') {
-		res.redirect('https://' + req.headers.host + req.url);
-	} else {
-		next();
-	}
-});
+console.log('FIXME protocol', req.protocol);
+console.log('FIXME headers', req.headers);
+console.log('FIXME host', req.headers.host);
+console.log('FIXME url', req.url);
 
 // Authenticate all routes beneath here
 app.use(cookieParser());
