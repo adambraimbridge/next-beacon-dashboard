@@ -33,10 +33,13 @@ app.get('/', function (req, res) {
 	res.render('index.handlebars', { hideMenu: true, graphs: conf.graphs, ctas: conf.ctas, opts: conf.opts });
 });
 
-console.log('FIXME protocol', req.protocol);
-console.log('FIXME headers', req.headers);
-console.log('FIXME host', req.headers.host);
-console.log('FIXME url', req.url);
+app.get('*', function(req, res, next) {
+	console.log('FIXME protocol', req.protocol);
+	console.log('FIXME headers', req.headers);
+	console.log('FIXME host', req.headers.host);
+	console.log('FIXME url', req.url);
+	next();
+}
 
 // Authenticate all routes beneath here
 app.use(cookieParser());
