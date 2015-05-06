@@ -39,7 +39,7 @@ app.get('*', function(req, res, next) {
 	console.log('FIXME host', req.headers.host);
 	console.log('FIXME url', req.url);
 	next();
-}
+});
 
 // Authenticate all routes beneath here
 app.use(cookieParser());
