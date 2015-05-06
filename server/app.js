@@ -35,7 +35,7 @@ app.get('/', function (req, res) {
 
 // Force HTTPS in production
 app.get('*', function(req, res, next) {
-	if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
+	if (process.env.NODE_ENV === 'production' && req.protocol !== 'https') {
 		res.redirect('https://' + req.headers.host + req.url);
 	} else {
 		next();
