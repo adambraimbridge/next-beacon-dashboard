@@ -9,7 +9,6 @@ var conf = require('./conf');
 // Middleware
 var params = require('./middleware/params');
 var auth = require('./middleware/auth');
-var authApi = require('./middleware/auth-api');
 var cacheControl = require('./middleware/cacheControl');
 
 var app = module.exports = express();
@@ -44,16 +43,8 @@ app.get('*', function(req, res, next) {
 });
 
 // Authenticate all routes beneath here.
-// Calls to /api require a "secret" api key in the request header,
-// which is handled via `api.use(authApi);`.
-// Everything else uses s3o auth.
-app.get('*', function(req, res, next) {
-	if (!req.params[0] || req.params[0].substr(0,4) != '/api') {
-		app.use(cookieParser());
-		app.use(auth);
-	}
-	next();
-});
+app.use(cookieParser());
+app.use(auth);
 
 // Simple entry point
 app.get('/enter', function (req, res) {
@@ -67,7 +58,6 @@ app.get('/user/:erights', function (req, res) { });
 
 // Routes for API calls
 var api = express.Router();
-api.use(authApi);
 api.use(cacheControl);
 api.use(params);
 api.get('/export', routers.api.export);
