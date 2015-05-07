@@ -7,6 +7,7 @@ module.exports.api.export		= require('./api/export');
 module.exports.api.addiction	= require('./api/addiction');
 module.exports.api.search		= require('./api/search');
 module.exports.api.funnel		= require('./api/funnel');
+module.exports.api.ab			= require('./api/ab');
 
 // Routes for UIs
 
