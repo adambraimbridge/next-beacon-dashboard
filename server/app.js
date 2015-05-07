@@ -2,6 +2,7 @@
 
 var express = require('express');
 var exphbs = require('express-handlebars');
+var cookieParser = require('cookie-parser');
 var routers = require('./routers');
 var conf = require('./conf');
 
@@ -35,13 +36,14 @@ app.get('/', function (req, res) {
 // Force HTTPS in production
 app.get('*', function(req, res, next) {
 	if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
-		res.redirect('/?https');
+		res.redirect('https://' + req.headers.host + req.url);
 	} else {
 		next();
 	}
 });
 
 // Authenticate all routes beneath here
+app.use(cookieParser());
 app.use(auth);
 
 // Simple entry point
