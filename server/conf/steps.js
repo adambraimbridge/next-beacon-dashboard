@@ -154,18 +154,18 @@ module.exports = {
 				event_collection: 'cta'
 			}
 		}, {
-			description: 'Clicked on follow',
+			description: 'Are following at least one topic',
 			query: {
 				actor_property: 'user.erights',
 				filters: [
 					{
-						operator: 'eq',
-						property_name: 'meta.target',
-						property_value: 'follow'
+						operator: 'gte',
+						property_name: 'user.myft.topicsFollowed',
+						property_value: 1
 					}
 				],
 				timeframe: 'this_14_days',
-				event_collection: 'cta'
+				event_collection: 'dwell'
 			}
 		}, {
 			description: 'Visited mypage/following',
@@ -211,18 +211,18 @@ module.exports = {
 				event_collection: 'cta'
 			}
 		}, {
-			description: 'Clicked on follow',
+			description: 'Are following at least one topic',
 			query: {
 				actor_property: 'user.erights',
 				filters: [
 					{
-						operator: 'eq',
-						property_name: 'meta.target',
-						property_value: 'follow'
+						operator: 'gte',
+						property_name: 'user.myft.topicsFollowed',
+						property_value: 1
 					}
 				],
 				timeframe: 'this_14_days',
-				event_collection: 'cta'
+				event_collection: 'dwell'
 			}
 		}, {
 			description: 'Referred to article from mypage feed',
