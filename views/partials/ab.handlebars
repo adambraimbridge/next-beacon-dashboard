@@ -2,9 +2,6 @@
 	{{ abTest.description }}
 </p>
 
-<p>
-</p>
-
 <ul>
 	<li>This test is currently 
 		<strong>{{#if abTest.active }}active{{/if}}</strong>.
@@ -15,57 +12,51 @@
 	<li>This test uses the <a href="http://next.ft.com/__toggler#{{ abTest.flag }}">{{ abTest.flag }} flag</a>.</li>
 </ul>
 
-<!-- 
-
-	KPIs
-
-	- Addiction - 7 (daily) / 30 (weekly) / 90 (monthly) return rate.
-	- Frequency of vist (to the hour)
-	- Page views p/user p/day 
-	----
-	- Export this data (to do your own analysis)
-
--->
-
-<h2>Addiction</h2>
+<h2>Results</h2>
 
 <p>
-	How many days did we see each user this week?  
-	<a href="#-">Weekly</a>, <a href="#-">Monthly</a>, <a href="#-">90-day</a>. 
+	This table explains the performance of each variant in the AB test. If the conversion rate
+	of the variant is higher than the control we can use the significant calculations below to 
+	tell us whether we can be confidence in it's out-performance.
 </p>
 
-<table width="100%">
+<div id="ab__container"></div>
+
+<p>
+	This table helps to intpret the significance A/B test results.
+</p>
+<p>
+	In general, the smaller the variation between the control and variant the
+	larger the sample or test duration needs to be in order to increase our
+	confidence in the result. 
+</p>
+
+<table class="ab__signficance">
 	<tr>
-		<th>Daily return rate</th>
-		<th>control</th>
-		<th>variant</th>
+		<th colspan="2"></th>
+		<td colspan="3" align="center">Signficance</th>
 	</tr>
 	<tr>
-		<td>Once <i>in the last week</i></td>
-		<td>100%</td>
-		<td>100%</td>
+		<th><a href="http://20bits.com/article/statistical-analysis-and-ab-testing">p-value</a></th>
+		<th><a href="http://20bits.com/article/statistical-analysis-and-ab-testing">z-score</a></th>
+		<th class="ab__confidence">90% confidence</th>
+		<th class="ab__confidence">95% confidence</th>
+		<th class="ab__confidence">99% confidence</th>
 	</tr>
 	<tr>
-		<td>Twice <i>in the last week</i></td>
-		<td>40%</td>
-		<td>35%</td>
-	</tr>
-	<tr>
-		<td>Three times</td>
-		<td>21%</td>
-		<td>15%</td>
-	</tr>
-	<tr>
-		<td>Four times</td>
-		<td>11%</td>
-		<td>6%</td>
-	</tr>
-	<tr>
-		<td>Five times or more</td>
-		<td>3%</td>
-		<td>2%</td>
+		<td class="ab__p-val"></td>
+		<td class="ab__z-score"></td>
+		<td class="ab__confidence-90"></td>
+		<td class="ab__confidence-95"></td>
+		<td class="ab__confidence-99"></td>
 	</tr>
 </table>
 
 <h2>Segmentation</h2>
+<p>
+	For each live A/B test we segment users in to a group. For the duration of
+	each test the user belongs that group and gets serve the control or variant
+	features. At the moment this is just a random 50/50 split for all users, so the
+	below graph should show an equal number of users in both groups.
+</p>
 
