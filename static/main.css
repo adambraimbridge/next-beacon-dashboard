@@ -16,11 +16,30 @@ div>ul {
 }
 
 .splash__container {
-	min-height: 90%;
+	min-height: 150%;
 	margin: 0 auto;
-	max-width: 600px;
-	padding: 20px;
+	background-image: url('/beacon.jpg');
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
 }
+	
+.email {
+	display: block;
+	color: white;
+}
+
+@media (min-width: 450px)  {
+	
+	.email {
+		float: right;
+	}
+
+}
+
+.splash__hello {
+	padding: 20px 10px;
+}
+
 
 .feature__container,
 .controls__container,
@@ -113,6 +132,10 @@ a {
 	font-family: sans-serif;
 	font-size: 14px;
 	background-color: #444;
+}
+
+.branding__beacon {
+	color: #ff0;
 }
 
 .branding a {
