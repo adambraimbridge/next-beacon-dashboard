@@ -81,6 +81,7 @@ var authApi = function(req, res, next) {
 	if (!basicAuth) throw new Error("The ft-next-beacon-dashboard BASIC_AUTH environment variable *must* be set. For support contact next.team@ft.com");
 	var basicAuthToken = basicAuth.split(':')[1];
 	var secretHeaderToken = req.headers['X-Beacon-Dashboard-API-Key'];
+logger.info("API: secret header API token: " +secretHeaderToken );
 	if (basicAuthToken && secretHeaderToken) {
 		logger.info("API: Found secret header API token.");
 		if (basicAuthToken === secretHeaderToken ) {
@@ -101,6 +102,7 @@ var authApi = function(req, res, next) {
 // but that's a 2-Factor Auth, and API calls can't easily work with 2FA.
 // So /api calls are authorised differently from the other endpoints.
 var auth = function(req, res, next){
+	console.log(req.params);
 	if (req.params[0] && req.params[0].substr(0,4) === '/api') {
 		authApi(req, res, next);
 	} else {
