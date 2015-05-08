@@ -12,6 +12,7 @@ switch (location.pathname) {
 	case '/graph':
 	case '/content':
 		require('./features/graph').init();
+		require('./features/ab').init();
 		break;
 	case '/opt-in-out':
 		require('./features/opt-in-out').init();
