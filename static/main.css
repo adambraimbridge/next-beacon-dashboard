@@ -16,11 +16,11 @@ div>ul {
 }
 
 .splash__container {
-	min-height: 150%;
 	margin: 0 auto;
 	background-image: url('/beacon.jpg');
-	background-size: 100% 100%;
+	background-size: cover;
 	background-repeat: no-repeat;
+	padding-bottom: 125%;
 }
 	
 .email {
