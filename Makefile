@@ -31,10 +31,10 @@ ifeq ($(S3O_PUBLIC_KEY),)
 endif
 	export apikey=${API_KEY}; \
 	export BASIC_AUTH="user:123"; \
-		export KEEN_PROJECT_ID=$(KEEN_PROJECT_ID); \
-		export KEEN_READ_KEY=$(KEEN_READ_KEY); \
-		export S3O_PUBLIC_KEY=$(S3O_PUBLIC_KEY); \
-		export DEBUG=*; nodemon server/app.js
+	export KEEN_PROJECT_ID=$(KEEN_PROJECT_ID); \
+	export KEEN_READ_KEY=$(KEEN_READ_KEY); \
+	export S3O_PUBLIC_KEY=$(S3O_PUBLIC_KEY); \
+	export DEBUG=*; nodemon server/app.js
 
 test: build
 	next-build-tools verify
