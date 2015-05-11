@@ -77,13 +77,14 @@ var authS3O = function(req, res, next){
 // There is a BASIC_AUTH token environment variable available,
 // so it's utilised for API authentication to make things a bit easier.
 var authApi = function(req, res, next) {
+	logger.info("Authenticating API request.");
+
 	var basicAuth = process.env.BASIC_AUTH;
 	if (!basicAuth) throw new Error("The ft-next-beacon-dashboard BASIC_AUTH environment variable *must* be set. For support contact next.team@ft.com");
 	var basicAuthToken = basicAuth.split(':')[1];
-	var secretHeaderToken = req.headers['X-Beacon-Dashboard-API-Key'];
-logger.info("API: secret header API token: " +secretHeaderToken );
+	var secretHeaderToken = req.headers['x-beacon-dashboard-api-key'];
 	if (basicAuthToken && secretHeaderToken) {
-		logger.info("API: Found secret header API token.");
+		logger.info("API Authentication: Secret header API token detected. ");
 		if (basicAuthToken === secretHeaderToken ) {
 			next();
 		} else {
@@ -93,6 +94,7 @@ logger.info("API: secret header API token: " +secretHeaderToken );
 
 		// The beacon dashboard fetch()es api URLs but doesn't provide the API token.
 		// In this case it is better to fall back to the same S3O auth used by all other endpoints.
+		logger.info("No header token supplied to authenticate API request. Falling back to S3O.");
 		authS3O(req, res, next);
 	}
 };
@@ -102,8 +104,7 @@ logger.info("API: secret header API token: " +secretHeaderToken );
 // but that's a 2-Factor Auth, and API calls can't easily work with 2FA.
 // So /api calls are authorised differently from the other endpoints.
 var auth = function(req, res, next){
-	console.log(req.params);
-	if (req.params[0] && req.params[0].substr(0,4) === '/api') {
+	if (req._parsedUrl.pathname && req._parsedUrl.pathname.substr(0,4) === '/api') {
 		authApi(req, res, next);
 	} else {
 		authS3O(req, res, next);
