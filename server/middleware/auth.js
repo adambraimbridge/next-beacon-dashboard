@@ -74,18 +74,16 @@ var authS3O = function(req, res, next){
 	}
 };
 
-// There is a BASIC_AUTH token environment variable available,
-// so it's utilised for API authentication to make things a bit easier.
+// Use a BEACON_API_KEY token environment variable for API authentication
 var authApi = function(req, res, next) {
 	logger.info("Authenticating API request.");
 
-	var basicAuth = process.env.BASIC_AUTH;
-	if (!basicAuth) throw new Error("The ft-next-beacon-dashboard BASIC_AUTH environment variable *must* be set. For support contact next.team@ft.com");
-	var basicAuthToken = basicAuth.split(':')[1];
-	var secretHeaderToken = req.headers['x-beacon-dashboard-api-key'];
-	if (basicAuthToken && secretHeaderToken) {
+	var beaconApiKey = process.env.BEACON_API_KEY;
+	if (!beaconApiKey) throw new Error("The BEACON_API_KEY environment variable *must* be set. For support contact next.team@ft.com");
+	var secretHeaderToken = req.headers['x-beacon-api-key'];
+	if (beaconApiKey && secretHeaderToken) {
 		logger.info("API Authentication: Secret header API token detected. ");
-		if (basicAuthToken === secretHeaderToken ) {
+		if (beaconApiKey === secretHeaderToken ) {
 			next();
 		} else {
 			throw new Error("API authentication error. For access contact next.team@ft.com.");
@@ -94,7 +92,7 @@ var authApi = function(req, res, next) {
 
 		// The beacon dashboard fetch()es api URLs but doesn't provide the API token.
 		// In this case it is better to fall back to the same S3O auth used by all other endpoints.
-		logger.info("No header token supplied to authenticate API request. Falling back to S3O.");
+		logger.info("Missing 'x-beacon-api-key' header token in API request. Falling back to S3O.");
 		authS3O(req, res, next);
 	}
 };
