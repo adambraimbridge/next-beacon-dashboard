@@ -42,7 +42,7 @@ app.get('*', function(req, res, next) {
 	}
 });
 
-// Authenticate all routes beneath here
+// Authenticate all routes beneath here.
 app.use(cookieParser());
 app.use(auth);
 

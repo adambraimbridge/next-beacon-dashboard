@@ -16,10 +16,9 @@ var NodeRSA = require("node-rsa");
 //    https://dashboard.heroku.com/orgs/financial-times/apps/ft-next-beacon-dashboard/settings
 //  – The intention is that config-vars will push its settings into all apps, so if it changed
 //    we would update manually and it would fix instantly.
-var publicKey = process.env.S3O_PUBLIC_KEY;
-if (!publicKey) throw new Error("The ft-next-beacon-dashboard S3O_PUBLIC_KEY heroku environment variable *must* be set. For support contact next.team@ft.com");
-
 var authenticateToken = function(res,username,token) {
+	var publicKey = process.env.S3O_PUBLIC_KEY;
+	if (!publicKey) throw new Error("The ft-next-beacon-dashboard S3O_PUBLIC_KEY heroku environment variable *must* be set. For support contact next.team@ft.com");
 
 	// Convert the publicKey from DER format to PEM format
 	// See: https://www.npmjs.com/package/node-rsa
@@ -42,7 +41,7 @@ var authenticateToken = function(res,username,token) {
 	}
 };
 
-var auth = function(req, res, next){
+var authS3O = function(req, res, next){
 	var s3oUsername, s3oToken;
 	isSecure = req.protocol === "https"? true : false;
 
@@ -74,4 +73,42 @@ var auth = function(req, res, next){
 		}
 	}
 };
+
+// There is a BASIC_AUTH token environment variable available,
+// so it's utilised for API authentication to make things a bit easier.
+var authApi = function(req, res, next) {
+	logger.info("Authenticating API request.");
+
+	var basicAuth = process.env.BASIC_AUTH;
+	if (!basicAuth) throw new Error("The ft-next-beacon-dashboard BASIC_AUTH environment variable *must* be set. For support contact next.team@ft.com");
+	var basicAuthToken = basicAuth.split(':')[1];
+	var secretHeaderToken = req.headers['x-beacon-dashboard-api-key'];
+	if (basicAuthToken && secretHeaderToken) {
+		logger.info("API Authentication: Secret header API token detected. ");
+		if (basicAuthToken === secretHeaderToken ) {
+			next();
+		} else {
+			throw new Error("API authentication error. For access contact next.team@ft.com.");
+		}
+	} else {
+
+		// The beacon dashboard fetch()es api URLs but doesn't provide the API token.
+		// In this case it is better to fall back to the same S3O auth used by all other endpoints.
+		logger.info("No header token supplied to authenticate API request. Falling back to S3O.");
+		authS3O(req, res, next);
+	}
+};
+
+// Beacon dashboard has API endpoints, which can be consumed by third parties (within FT).
+// The public face of https://beacon.ft.com uses s3o (Single Staff Sign-On) to authenticate,
+// but that's a 2-Factor Auth, and API calls can't easily work with 2FA.
+// So /api calls are authorised differently from the other endpoints.
+var auth = function(req, res, next){
+	if (req._parsedUrl.pathname && req._parsedUrl.pathname.substr(0,4) === '/api') {
+		authApi(req, res, next);
+	} else {
+		authS3O(req, res, next);
+	}
+};
+
 module.exports = auth;
