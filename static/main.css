@@ -292,3 +292,22 @@ table {
 .ab__confidence {
 	text-align: center;
 }
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+	position: relative;
+	min-height: 100%;
+}
+body {
+	margin-bottom: 100px !important;
+}
+.footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	min-height: 50px;
+	padding: 10px 0;
+	border: 1px solid #e7e7e7;
+	background-color: #f8f8f8;
+}
