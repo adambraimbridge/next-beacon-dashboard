@@ -104,7 +104,7 @@ var authApi = function(req, res, next) {
 // but that's a 2-Factor Auth, and API calls can't easily work with 2FA.
 // So /api calls are authorised differently from the other endpoints.
 var auth = function(req, res, next){
-	if (req._parsedUrl.pathname && req._parsedUrl.pathname.substr(0,4) === '/api') {
+	if ( /^\/api/.test(req._parsedUrl.pathname) ) {
 		authApi(req, res, next);
 	} else {
 		authS3O(req, res, next);
