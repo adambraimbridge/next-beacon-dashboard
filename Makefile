@@ -36,7 +36,6 @@ ifeq ($(BEACON_API_KEY),)
 	exit 1
 endif
 	export apikey=${API_KEY}; \
-	export BASIC_AUTH="user:123"; \
 	export KEEN_PROJECT_ID=$(KEEN_PROJECT_ID); \
 	export KEEN_READ_KEY=$(KEEN_READ_KEY); \
 	export S3O_PUBLIC_KEY=$(S3O_PUBLIC_KEY); \
