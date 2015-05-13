@@ -38,7 +38,7 @@ module.exports = [{
 			metric: "count",
 			domPathContains: "looking-for",
 			group_by: "meta.domPath",
-			title: "Popularity of “before you opt out” links (%)"
+			title: "Popularity of “before you opt out” links"
 		}
 	}
 }, {
