@@ -19,6 +19,27 @@ module.exports = [{
 			"group_by": "meta.domPath",
 			"title": "Popularity of article components"
 		},
+	},
+	"Before you go links (%)": {
+		pathname: "graph",
+		query: {
+			event_collection: "cta",
+			metric: "count",
+			domPathContains: "looking-for",
+			group_by: "meta.domPath",
+			title: "Popularity of “before you opt out” links (%)",
+			stacked_area: true
+		}
+	},
+	"Before you go links": {
+		pathname: "graph",
+		query: {
+			event_collection: "cta",
+			metric: "count",
+			domPathContains: "looking-for",
+			group_by: "meta.domPath",
+			title: "Popularity of “before you opt out” links (%)"
+		}
 	}
 }, {
 	"Navigation menu": {
