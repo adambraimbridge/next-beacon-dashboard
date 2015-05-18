@@ -22,5 +22,13 @@ module.exports = [{
 			title: "Engagement with my page feed",
 			steps: "myfeedFollowing"
 		}
+	},
+	AllMyFTNotifications: {
+		pathname: "flow",
+		query: {
+			metric: "funnel",
+			title: "Engagement with any My FT notification",
+			steps: "myFTFNotifications"
+		}
 	}
 }];
