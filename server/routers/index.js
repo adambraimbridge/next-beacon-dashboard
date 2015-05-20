@@ -17,3 +17,4 @@ module.exports.addiction		= require('./addiction');
 module.exports.optInOut			= require('./opt-in-out');
 module.exports.flow				= require('./flow');
 module.exports.components       = require('./components');
+module.exports.featureflags       = require('./featureflags');

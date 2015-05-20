@@ -90,12 +90,19 @@ components.use(cacheControl);
 components.use(params);
 components.get('/', routers.components);
 
+// Routes for feature flags
+var featureflags = express.Router();
+featureflags.use(cacheControl);
+featureflags.use(params);
+featureflags.get('/', routers.featureflags);
+
 app.use('/api', api);
 app.use('/graph', dashboard);
 app.use('/addiction', routers.addiction);
 app.use('/table', tables);
 app.use('/flow', flow);
 app.use('/components', components);
+app.use('/featureflags', featureflags);
 
 // Opts (in/out) routes
 app.get('/opt-in-out', routers.optInOut.graph);

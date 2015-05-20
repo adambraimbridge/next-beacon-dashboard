@@ -11,6 +11,7 @@ module.exports = function(req, res) {
 		filters: conf.filters,
 		flow: conf.flow,
 		components: conf.components,
+		featureflags: conf.featureflags,
 		ab: conf.ab,
 		title: req.query.title || '', // XSS me
 		apiLink: req._parsedUrl.search,

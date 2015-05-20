@@ -6,3 +6,4 @@ module.exports.optInOuts  = require('./opt-in-outs');
 module.exports.steps      = require('./steps');
 module.exports.flow       = require('./flow');
 module.exports.components = require('./components');
+module.exports.featureflags = require('./featureflags');

@@ -236,6 +236,7 @@ select.form-control {
 table {
 	width: 100%;
 	border-collapse: collapse;
+	margin: 30px 20px;
 }
 
 td {
@@ -247,11 +248,6 @@ td {
 	font-family: BentonSans, sans-serif;
 	font-weight: normal;
 	font-size: 30px;
-}
-
-table {
-	width: 80%;
-	margin: 30px 20px;
 }
 
 .ab-test__active-true {
