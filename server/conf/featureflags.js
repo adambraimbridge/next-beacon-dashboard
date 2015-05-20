@@ -4,7 +4,9 @@ module.exports = [{
 		query: {
 			title: "Feature: globalNavigation",
 			metric: 'funnel',
-			steps: 'globalNavigation'
+			steps: 'globalNavigation',
+			feature: 'globalNavigation',
+			cta: 'primary-nav'
 		}
 	},
 	"homePageLoadMore": {
@@ -12,7 +14,9 @@ module.exports = [{
 		query: {
 			title: "Feature: homePageLoadMore",
 			metric: 'funnel',
-			steps: 'homePageLoadMore'
+			steps: 'homePageLoadMore',
+			feature: 'homePageLoadMore',
+			cta: 'toggle-more-stories'
 		}
 	}
 }];

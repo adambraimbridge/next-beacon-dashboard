@@ -3,8 +3,11 @@
 
 require('isomorphic-fetch');
 require('es6-promise').polyfill();
+var queryString = require('query-string');
 
 module.exports.init = function () {
+	var queryParameters = queryString.parse(location.search);
+
 	fetch('/api/funnel' + location.search, { credentials: 'same-origin' })
 		.then(function(response) {
 			if (response.status >= 400) {
@@ -40,7 +43,7 @@ module.exports.init = function () {
 			tr.appendTo(table);
 
 			var tr = $('<tr>')
-				.append($('<td>').text('How many of those active users used globalNavigation?*'))
+				.append($('<td>').text('How many of those active users used ' + queryParameters.feature + '?*'))
 				.append($('<td>').html(response.result[2] + ' <i>active, feature-clicking</i> users'));
 			tr.appendTo(table);
 
@@ -51,7 +54,8 @@ module.exports.init = function () {
 
 			table.appendTo('.stats__container');
 
-			$('<p>').html('<small>* These users clicked at least one <a href="https://goo.gl/FiWwaE" target="_blank">CTA element in "primary-nav"</a> in the last two weeks.</small>')
+			var beaconHref = 'https://beacon.ft.com/graph?event_collection=cta&metric=count&group_by=meta.domPath&timeframe=this_14_days&title=Trackable%20element:%20'+ queryParameters.cta +'&domPathContains='+ queryParameters.cta;
+			$('<p>').html('<small>* These users clicked at least one <a href="' + beaconHref + '" target="_blank">"' + queryParameters.cta + '" trackable element</a> in the last two weeks.</small>')
 				.appendTo('.stats__container');
 
 		})
