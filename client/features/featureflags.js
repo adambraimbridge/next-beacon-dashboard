@@ -38,7 +38,7 @@ module.exports.init = function () {
 			tr.appendTo(table);
 
 			var tr = $('<tr>')
-				.append($('<td>').text('Of those users, how many visited next.ft in the last 7 days?'))
+				.append($('<td>').text('Of those users, how many visited next.ft in the last seven days?'))
 				.append($('<td>').html(response.result[1] + ' <i>active</i> users'));
 			tr.appendTo(table);
 
