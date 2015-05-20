@@ -19,18 +19,41 @@ module.exports.init = function () {
 			return response;
 		})
 		.then(function(response) {
-			var html = '';
 			var percentage = (100 / response.result[1] * response.result[2]).toFixed(2);
 
-			html = html + '<h1><span class="big-number">' + percentage + '%</span> active usage</h1>';
-			html = html + '<h3>How this is calculated:</h3>';
-			html = html + '<table><tr><td>How many users visited next.ft in a one-week period, two weeks ago?</td><td><b>' + response.result[0] + ' users</b></td></tr>';
-			html = html + '<tr><td>Of those users, how many visited next.ft in the last 7 days?</td><td><b>' + response.result[1] + ' <i>active</i> users</b></td></tr>';
-			html = html + '<tr><td>How many of those active users used globalNavigation?*</td><td><b>' + response.result[2] + ' <i>active, feature-clicking</i> users</b></td></tr>';
-			html = html + '<tr><td>What\'s that as a percentage?</td><td><b>' + percentage + '%</b></td></tr></table>';
-			html = html + '<br/><small>* These users clicked at least one <a href="https://goo.gl/FiWwaE" target="_blank">CTA element in "primary-nav"</a> in the last two weeks.</small>';
+			$('<h1>').text(' active usage')
+				.prepend($('<span>').text(percentage + '%').addClass('big-number'))
+				.appendTo('.stats__container');
 
-			$('.stats__container').append(html);
+			$('<h3>').text('How this is calculated:').appendTo('.stats__container');
+
+			var table = $('<table>').addClass('explanation');
+
+			var tr = $('<tr>')
+				.append($('<td>').text('How many users visited next.ft in a one-week period, two weeks ago?'))
+				.append($('<td>').html('<b>' + response.result[0] + ' users</b>'));
+			tr.appendTo(table);
+
+			var tr = $('<tr>')
+				.append($('<td>').text('Of those users, how many visited next.ft in the last 7 days?'))
+				.append($('<td>').html(response.result[1] + ' <i>active</i> users'));
+			tr.appendTo(table);
+
+			var tr = $('<tr>')
+				.append($('<td>').text('How many of those active users used globalNavigation?*'))
+				.append($('<td>').html(response.result[2] + ' <i>active, feature-clicking</i> users'));
+			tr.appendTo(table);
+
+			var tr = $('<tr>')
+				.append($('<td>').text("What's that as a percentage?"))
+				.append($('<td>').text(percentage + '%'));
+			tr.appendTo(table);
+
+			table.appendTo('.stats__container');
+
+			$('<p>').html('<small>* These users clicked at least one <a href="https://goo.gl/FiWwaE" target="_blank">CTA element in "primary-nav"</a> in the last two weeks.</small>')
+				.appendTo('.stats__container');
+
 		})
 		.catch(function (e) {
 			$('<div>')

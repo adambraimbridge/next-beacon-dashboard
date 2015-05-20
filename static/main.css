@@ -244,6 +244,14 @@ td {
 	line-height: 40px;
 }
 
+table.explanation {
+	margin: 0;
+}
+
+table.explanation tr td:last-child {
+	font-weight: bold;
+}
+
 .feature__name {
 	font-family: BentonSans, sans-serif;
 	font-weight: normal;

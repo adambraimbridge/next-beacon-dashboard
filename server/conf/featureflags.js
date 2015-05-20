@@ -7,13 +7,12 @@ module.exports = [{
 			steps: 'globalNavigation'
 		}
 	},
-	"Feature B": {
+	"homePageLoadMore": {
 		pathname: "featureflags",
 		query: {
-			title: "In the last 24 hours...",
+			title: "Feature: homePageLoadMore",
 			metric: 'funnel',
-			timeframe: 'this_24_hours',
-			steps: 'galleryComponent'
+			steps: 'homePageLoadMore'
 		}
 	}
 }];

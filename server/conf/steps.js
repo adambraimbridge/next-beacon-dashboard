@@ -339,5 +339,40 @@ module.exports = {
 				}]
 			})
 		}
+	],
+	homePageLoadMore: [
+		{
+			description: 'Users who visited next.ft in a one-week period, two weeks ago',
+			query: new step({
+				timeframe: {
+					start:twoWeeksAgo,
+					end:oneWeekAgo
+				}
+			})
+		},
+		{
+			description: 'Users who visited next.ft in the last 7 days',
+			query: new step({
+				timeframe: {
+					start:oneWeekAgo,
+					end:now
+				}
+			})
+		},
+		{
+			description: 'Users who clicked the toggle-more-stories CTA in the past two weeks',
+			query: new step({
+				eventCollection: "cta",
+				timeframe: {
+					start:twoWeeksAgo,
+					end:now
+				},
+				filters: [{
+					property_name:"meta.domPath",
+					operator:"contains",
+					property_value:"toggle-more-stories"
+				}]
+			})
+		}
 	]
 };
