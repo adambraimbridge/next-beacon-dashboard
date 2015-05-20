@@ -77,8 +77,6 @@ module.exports = function(req, res, next) {
 		return new keenIO.Query(metric, query);
 	});
 
-	console.log(JSON.stringify(queries));
-
 	req.keen_explain = explainFilters;
 	req.keen_query = queries;
 	next();
