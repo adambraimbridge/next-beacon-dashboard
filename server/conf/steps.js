@@ -1,3 +1,5 @@
+"use strict";
+
 // These are some relative dates
 var now = new Date();
 now = now.toISOString();
@@ -22,7 +24,7 @@ var step = function(options) {
 			property_value:false
 		}].concat(options.filters || [])
 	};
-}
+};
 
 // Most steps here are hard-coded, but some are generated using step().
 module.exports = {

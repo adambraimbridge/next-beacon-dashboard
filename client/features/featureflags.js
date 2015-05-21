@@ -32,25 +32,25 @@ module.exports.init = function () {
 
 			var table = $('<table>').addClass('explanation');
 
-			var tr = $('<tr>')
+			$('<tr>')
 				.append($('<td>').text('How many users visited next.ft in a one-week period, two weeks ago?'))
-				.append($('<td>').html('<b>' + response.result[0] + ' users</b>'));
-			tr.appendTo(table);
+				.append($('<td>').html('<b>' + response.result[0] + ' users</b>'))
+				.appendTo(table);
 
-			var tr = $('<tr>')
+			$('<tr>')
 				.append($('<td>').text('Of those users, how many visited next.ft in the last seven days?'))
-				.append($('<td>').html(response.result[1] + ' <i>active</i> users'));
-			tr.appendTo(table);
+				.append($('<td>').html(response.result[1] + ' <i>active</i> users'))
+				.appendTo(table);
 
-			var tr = $('<tr>')
+			$('<tr>')
 				.append($('<td>').text('How many of those active users used ' + queryParameters.feature + '?*'))
-				.append($('<td>').html(response.result[2] + ' <i>active, feature-clicking</i> users'));
-			tr.appendTo(table);
+				.append($('<td>').html(response.result[2] + ' <i>active, feature-clicking</i> users'))
+				.appendTo(table);
 
-			var tr = $('<tr>')
+			$('<tr>')
 				.append($('<td>').text("What's that as a percentage?"))
-				.append($('<td>').text(percentage + '%'));
-			tr.appendTo(table);
+				.append($('<td>').text(percentage + '%'))
+				.appendTo(table);
 
 			table.appendTo('.stats__container');
 
