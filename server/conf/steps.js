@@ -10,7 +10,7 @@ var twoWeeksAgo = new Date();
 twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 twoWeeksAgo = twoWeeksAgo.toISOString();
 
-// This is a base step object, for spawning new steps.
+// This is a base step object, for spawning steps.
 var step = function(options) {
 	return {
 		eventCollection:options.eventCollection || "dwell",
@@ -308,7 +308,7 @@ module.exports = {
 	globalNavigation: [
 		{
 			description: 'Users who visited next.ft in a one-week period, two weeks ago',
-			query: new step({
+			query: step({
 				timeframe: {
 					start:twoWeeksAgo,
 					end:oneWeekAgo
@@ -317,7 +317,7 @@ module.exports = {
 		},
 		{
 			description: 'Users who visited next.ft in the last 7 days',
-			query: new step({
+			query: step({
 				timeframe: {
 					start:oneWeekAgo,
 					end:now
@@ -326,7 +326,7 @@ module.exports = {
 		},
 		{
 			description: 'Users who clicked any primary-nav CTA in the past two weeks',
-			query: new step({
+			query: step({
 				eventCollection: "cta",
 				timeframe: {
 					start:twoWeeksAgo,
@@ -343,7 +343,7 @@ module.exports = {
 	homePageLoadMore: [
 		{
 			description: 'Users who visited next.ft in a one-week period, two weeks ago',
-			query: new step({
+			query: step({
 				timeframe: {
 					start:twoWeeksAgo,
 					end:oneWeekAgo
@@ -352,7 +352,7 @@ module.exports = {
 		},
 		{
 			description: 'Users who visited next.ft in the last 7 days',
-			query: new step({
+			query: step({
 				timeframe: {
 					start:oneWeekAgo,
 					end:now
@@ -361,7 +361,7 @@ module.exports = {
 		},
 		{
 			description: 'Users who clicked the toggle-more-stories CTA in the past two weeks',
-			query: new step({
+			query: step({
 				eventCollection: "cta",
 				timeframe: {
 					start:twoWeeksAgo,
