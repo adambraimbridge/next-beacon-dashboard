@@ -311,3 +311,21 @@ body {
 	border: 1px solid #e7e7e7;
 	background-color: #f8f8f8;
 }
+
+.funnel__cell {
+	width: 120px;
+}
+
+.funnel__percent {
+	width: 100px;
+	padding: 20px;
+}
+
+.funnel {
+	display: block;
+	background-color: red;
+	min-height: 20px;
+	margin: 0px auto;
+	padding: 25px 0;
+}
+

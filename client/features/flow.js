@@ -23,42 +23,31 @@ module.exports.init = function () {
 		})
 		.then(function(data) {
 
-			var palette = new Rickshaw.Color.Palette();
+			console.log(data);
+
 			var total = data.result[0];
-			var graphSpec = {
-				series: [{
-					data: data.result.map(function (result, index) {
-						return {
-							x: index + 1,
-							y: (100 / total) * result
-						};
-					}),
-					color: palette.color(),
-					name: 'Percentage of first step'
-				}]
-			};
+			var table = $('<table>');
 
-			var graph = new Rickshaw.Graph(_.extend({
-				element: document.querySelector("#chart"),
-				width: document.querySelector("#chart").parentNode.offsetWidth * 0.9,
-				height: window.innerHeight * 0.5,
-				renderer: 'bar'
-			}, graphSpec));
+			var tr = $('<tr>')
+				.append($('<th>').text('Step'))
+				.append($('<th>').text('Number of users'))
+				.append($('<th class="funnel__cell">').text(''))
+				.append($('<th class="funnel__percent">').text(''));
 
-			new Rickshaw.Graph.Axis.Y({
-				graph: graph,
-				orientation: 'left',
-				element: document.getElementById('y_axis')
+			tr.appendTo(table);
+
+			data.result.map(function(row, index) {
+				var tr = $('<tr>')
+					.append($('<td>').text(data.descriptions[index]))
+					.append($('<td>').text(row))
+					.append($('<td class="funnel__cell">').html('<span class="funnel" style="width: ' + ((row/total)*100) + '%"></span>'))
+					.append($('<td class="funnel__percent">').text((Math.round((row / total) * 100) / 100) * 100 + '%'));
+				tr.appendTo(table);
 			});
+		
+			$('#chart_container').empty();
+			table.prependTo('#chart_container');
 
-			new Rickshaw.Graph.HoverDetail({
-				graph: graph,
-				xFormatter: function (x) {
-					return data.descriptions[x - 1];
-				}
-			});
-
-			graph.render();
 		})
 		.catch(function (e) {
 			$('<div>')
