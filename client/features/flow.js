@@ -1,10 +1,8 @@
 /*global $*/
 'use strict';
 
-var Rickshaw = require('rickshaw');
 require('isomorphic-fetch');
 require('es6-promise').polyfill();
-var _ = require('lodash');
 
 module.exports.init = function () {
 	fetch('/api/funnel' + location.search, { credentials: 'same-origin' })
@@ -44,7 +42,7 @@ module.exports.init = function () {
 					.append($('<td class="funnel__percent">').text((Math.round((row / total) * 100) / 100) * 100 + '%'));
 				tr.appendTo(table);
 			});
-		
+
 			$('#chart_container').empty();
 			table.prependTo('#chart_container');
 
