@@ -1,3 +1,32 @@
+"use strict";
+
+// These are some relative dates
+var now = new Date();
+now = now.toISOString();
+
+var oneWeekAgo = new Date();
+oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+oneWeekAgo = oneWeekAgo.toISOString();
+
+var twoWeeksAgo = new Date();
+twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+twoWeeksAgo = twoWeeksAgo.toISOString();
+
+// This is a base step object, for spawning steps.
+var step = function(options) {
+	return {
+		eventCollection:options.eventCollection || "dwell",
+		actor_property:"user.erights",
+		timeframe:options.timeframe,
+		filters:[{
+			property_name:"user.isStaff",
+			operator:"eq",
+			property_value:false
+		}].concat(options.filters || [])
+	};
+};
+
+// Most steps here are hard-coded, but some are generated using step().
 module.exports = {
 	galleryInteraction: [
 		{
@@ -276,6 +305,76 @@ module.exports = {
 				timeframe: 'this_14_days',
 				event_collection: 'cta'
 			}
+		}
+	],
+	globalNavigation: [
+		{
+			description: 'Users who visited next.ft in a one-week period, two weeks ago',
+			query: step({
+				timeframe: {
+					start:twoWeeksAgo,
+					end:oneWeekAgo
+				}
+			})
+		},
+		{
+			description: 'Users who visited next.ft in the last 7 days',
+			query: step({
+				timeframe: {
+					start:oneWeekAgo,
+					end:now
+				}
+			})
+		},
+		{
+			description: 'Users who clicked any primary-nav CTA in the past two weeks',
+			query: step({
+				eventCollection: "cta",
+				timeframe: {
+					start:twoWeeksAgo,
+					end:now
+				},
+				filters: [{
+					property_name:"meta.domPath",
+					operator:"contains",
+					property_value:"primary-nav"
+				}]
+			})
+		}
+	],
+	homePageLoadMore: [
+		{
+			description: 'Users who visited next.ft in a one-week period, two weeks ago',
+			query: step({
+				timeframe: {
+					start:twoWeeksAgo,
+					end:oneWeekAgo
+				}
+			})
+		},
+		{
+			description: 'Users who visited next.ft in the last 7 days',
+			query: step({
+				timeframe: {
+					start:oneWeekAgo,
+					end:now
+				}
+			})
+		},
+		{
+			description: 'Users who clicked the toggle-more-stories CTA in the past two weeks',
+			query: step({
+				eventCollection: "cta",
+				timeframe: {
+					start:twoWeeksAgo,
+					end:now
+				},
+				filters: [{
+					property_name:"meta.domPath",
+					operator:"contains",
+					property_value:"toggle-more-stories"
+				}]
+			})
 		}
 	]
 };

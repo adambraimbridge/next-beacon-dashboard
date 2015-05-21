@@ -18,6 +18,7 @@ module.exports.graph = function(req, res) {
 		flow: conf.flow,
 		filters: [],
 		components: conf.components,
+		featureflags: conf.featureflags,
 		ab: conf.ab,
 		title: req.query.title || '', // XSS me
 		apiLink: req._parsedUrl.search,

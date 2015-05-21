@@ -23,6 +23,9 @@ switch (location.pathname) {
 	case '/components':
 		require('./features/components').init();
 		break;
+	case '/featureflags':
+		require('./features/featureflags').init();
+		break;
 	default:
 		console.info('This route seems to have no corresponding javascript');
 }

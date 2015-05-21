@@ -236,6 +236,7 @@ select.form-control {
 table {
 	width: 100%;
 	border-collapse: collapse;
+	margin: 30px 20px;
 }
 
 td {
@@ -243,15 +244,18 @@ td {
 	line-height: 40px;
 }
 
+table.explanation {
+	margin: 0;
+}
+
+table.explanation tr td:last-child {
+	font-weight: bold;
+}
+
 .feature__name {
 	font-family: BentonSans, sans-serif;
 	font-weight: normal;
 	font-size: 30px;
-}
-
-table {
-	width: 80%;
-	margin: 30px 20px;
 }
 
 .ab-test__active-true {
