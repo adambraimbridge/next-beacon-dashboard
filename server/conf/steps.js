@@ -1,16 +1,12 @@
 "use strict";
 
-// These are some relative dates
-var now = new Date();
-now = now.toISOString();
-
-var oneWeekAgo = new Date();
-oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-oneWeekAgo = oneWeekAgo.toISOString();
-
-var twoWeeksAgo = new Date();
-twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-twoWeeksAgo = twoWeeksAgo.toISOString();
+// Return the ISO string for relative dates
+var daysFromNow = function (offset) {
+	offset = offset || 0;
+	var dateObject = new Date();
+	dateObject.setDate(dateObject.getDate() + offset);
+	return dateObject.toISOString();
+};
 
 // This is a base step object, for spawning steps.
 var step = function(options) {
@@ -309,11 +305,11 @@ module.exports = {
 	],
 	globalNavigation: [
 		{
-			description: 'Users who visited next.ft in a one-week period, two weeks ago',
+			description: 'Users who visited next.ft in a one-week period, two weeks whence',
 			query: step({
 				timeframe: {
-					start:twoWeeksAgo,
-					end:oneWeekAgo
+					start:daysFromNow(-14), //two weeks whence
+					end:daysFromNow(-7) //one week whence
 				}
 			})
 		},
@@ -321,8 +317,8 @@ module.exports = {
 			description: 'Users who visited next.ft in the last 7 days',
 			query: step({
 				timeframe: {
-					start:oneWeekAgo,
-					end:now
+					start:daysFromNow(-7), //one week whence
+					end:daysFromNow() //now
 				}
 			})
 		},
@@ -331,8 +327,8 @@ module.exports = {
 			query: step({
 				eventCollection: "cta",
 				timeframe: {
-					start:twoWeeksAgo,
-					end:now
+					start:daysFromNow(-14), //two weeks whence
+					end:daysFromNow() //now
 				},
 				filters: [{
 					property_name:"meta.domPath",
@@ -344,11 +340,11 @@ module.exports = {
 	],
 	homePageLoadMore: [
 		{
-			description: 'Users who visited next.ft in a one-week period, two weeks ago',
+			description: 'Users who visited next.ft in a one-week period, two weeks whence',
 			query: step({
 				timeframe: {
-					start:twoWeeksAgo,
-					end:oneWeekAgo
+					start:daysFromNow(-14), //two weeks whence
+					end:daysFromNow(-7) //one week whence
 				}
 			})
 		},
@@ -356,8 +352,8 @@ module.exports = {
 			description: 'Users who visited next.ft in the last 7 days',
 			query: step({
 				timeframe: {
-					start:oneWeekAgo,
-					end:now
+					start:daysFromNow(-7), //one week whence
+					end:daysFromNow() //now
 				}
 			})
 		},
@@ -366,8 +362,8 @@ module.exports = {
 			query: step({
 				eventCollection: "cta",
 				timeframe: {
-					start:twoWeeksAgo,
-					end:now
+					start:daysFromNow(-14), //two weeks whence
+					end:daysFromNow() //now
 				},
 				filters: [{
 					property_name:"meta.domPath",
