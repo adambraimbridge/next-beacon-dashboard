@@ -8,9 +8,11 @@ var oneWeekAgo = new Date();
 oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 oneWeekAgo = oneWeekAgo.toISOString();
 
-var twoWeeksAgo = new Date();
-twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-twoWeeksAgo = twoWeeksAgo.toISOString();
+var twoWeeksAgo = function () {
+	var now = new Date();
+	now.setDate(now.getDate() - 14);
+	return now.toISOString();
+};
 
 // This is a base step object, for spawning steps.
 var step = function(options) {
@@ -366,7 +368,7 @@ module.exports = {
 			query: step({
 				eventCollection: "cta",
 				timeframe: {
-					start:twoWeeksAgo,
+					start:twoWeeksAgo(),
 					end:now
 				},
 				filters: [{
