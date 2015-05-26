@@ -1,7 +1,7 @@
 "use strict";
 
 // Return the ISO string for relative dates
-var getISOString = function (offset) {
+var daysFromNow = function (offset) {
 	offset = offset || 0;
 	var dateObject = new Date();
 	dateObject.setDate(dateObject.getDate() + offset);
@@ -305,11 +305,11 @@ module.exports = {
 	],
 	globalNavigation: [
 		{
-			description: 'Users who visited next.ft in a one-week period, two weeks ago',
+			description: 'Users who visited next.ft in a one-week period, two weeks whence',
 			query: step({
 				timeframe: {
-					start:getISOString(-14), //two weeks ago
-					end:getISOString(-7) //one week ago
+					start:daysFromNow(-14), //two weeks whence
+					end:daysFromNow(-7) //one week whence
 				}
 			})
 		},
@@ -317,8 +317,8 @@ module.exports = {
 			description: 'Users who visited next.ft in the last 7 days',
 			query: step({
 				timeframe: {
-					start:getISOString(-7), //one week ago
-					end:getISOString() //now
+					start:daysFromNow(-7), //one week whence
+					end:daysFromNow() //now
 				}
 			})
 		},
@@ -327,8 +327,8 @@ module.exports = {
 			query: step({
 				eventCollection: "cta",
 				timeframe: {
-					start:getISOString(-14), //two weeks ago
-					end:getISOString() //now
+					start:daysFromNow(-14), //two weeks whence
+					end:daysFromNow() //now
 				},
 				filters: [{
 					property_name:"meta.domPath",
@@ -340,11 +340,11 @@ module.exports = {
 	],
 	homePageLoadMore: [
 		{
-			description: 'Users who visited next.ft in a one-week period, two weeks ago',
+			description: 'Users who visited next.ft in a one-week period, two weeks whence',
 			query: step({
 				timeframe: {
-					start:getISOString(-14), //two weeks ago
-					end:getISOString(-7) //one week ago
+					start:daysFromNow(-14), //two weeks whence
+					end:daysFromNow(-7) //one week whence
 				}
 			})
 		},
@@ -352,8 +352,8 @@ module.exports = {
 			description: 'Users who visited next.ft in the last 7 days',
 			query: step({
 				timeframe: {
-					start:getISOString(-7), //one week ago
-					end:getISOString() //now
+					start:daysFromNow(-7), //one week whence
+					end:daysFromNow() //now
 				}
 			})
 		},
@@ -362,8 +362,8 @@ module.exports = {
 			query: step({
 				eventCollection: "cta",
 				timeframe: {
-					start:getISOString(-14), //two weeks ago
-					end:getISOString() //now
+					start:daysFromNow(-14), //two weeks whence
+					end:daysFromNow() //now
 				},
 				filters: [{
 					property_name:"meta.domPath",
