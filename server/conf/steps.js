@@ -357,5 +357,22 @@ module.exports = {
 				}]
 			})
 		}
+	]),
+	marketDataAPI: activeUserSteps().concat([
+		{
+			description: 'Users who clicked the markets-link CTA in the past two weeks',
+			query: step({
+				eventCollection: "cta",
+				timeframe: {
+					start:daysFromNow(-14), //two weeks whence
+					end:daysFromNow() //now
+				},
+				filters: [{
+					property_name:"meta.domPath",
+					operator:"contains",
+					property_value:"markets-link"
+				}]
+			})
+		}
 	])
 };
