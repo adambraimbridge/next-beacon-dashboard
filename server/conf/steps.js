@@ -22,7 +22,7 @@ var step = function(options) {
 	};
 };
 
-var activeUsers = function() {
+var activeUserSteps = function() {
 	return [{
 		description: 'Users who visited next.ft in a one-week period, two weeks whence',
 		query: step({
@@ -324,7 +324,7 @@ module.exports = {
 			}
 		}
 	],
-	globalNavigation: activeUsers().concat([
+	globalNavigation: activeUserSteps().concat([
 		{
 			description: 'Users who clicked any primary-nav CTA in the past two weeks',
 			query: step({
@@ -341,7 +341,7 @@ module.exports = {
 			})
 		}
 	]),
-	homePageLoadMore: activeUsers().concat([
+	homePageLoadMore: activeUserSteps().concat([
 		{
 			description: 'Users who clicked the toggle-more-stories CTA in the past two weeks',
 			query: step({
