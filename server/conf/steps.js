@@ -22,7 +22,28 @@ var step = function(options) {
 	};
 };
 
-// Most steps here are hard-coded, but some are generated using step().
+var activeUserSteps = function() {
+	return [{
+		description: 'Users who visited next.ft in a one-week period, two weeks whence',
+		query: step({
+			timeframe: {
+				start:daysFromNow(-14), //two weeks whence
+				end:daysFromNow(-7) //one week whence
+			}
+		})
+	},
+	{
+		description: 'Users who visited next.ft in the last 7 days',
+		query: step({
+			timeframe: {
+				start:daysFromNow(-7), //one week whence
+				end:daysFromNow() //now
+			}
+		})
+	}];
+};
+
+// Export libraries of steps
 module.exports = {
 	galleryInteraction: [
 		{
@@ -303,25 +324,7 @@ module.exports = {
 			}
 		}
 	],
-	globalNavigation: [
-		{
-			description: 'Users who visited next.ft in a one-week period, two weeks whence',
-			query: step({
-				timeframe: {
-					start:daysFromNow(-14), //two weeks whence
-					end:daysFromNow(-7) //one week whence
-				}
-			})
-		},
-		{
-			description: 'Users who visited next.ft in the last 7 days',
-			query: step({
-				timeframe: {
-					start:daysFromNow(-7), //one week whence
-					end:daysFromNow() //now
-				}
-			})
-		},
+	globalNavigation: activeUserSteps().concat([
 		{
 			description: 'Users who clicked any primary-nav CTA in the past two weeks',
 			query: step({
@@ -337,26 +340,8 @@ module.exports = {
 				}]
 			})
 		}
-	],
-	homePageLoadMore: [
-		{
-			description: 'Users who visited next.ft in a one-week period, two weeks whence',
-			query: step({
-				timeframe: {
-					start:daysFromNow(-14), //two weeks whence
-					end:daysFromNow(-7) //one week whence
-				}
-			})
-		},
-		{
-			description: 'Users who visited next.ft in the last 7 days',
-			query: step({
-				timeframe: {
-					start:daysFromNow(-7), //one week whence
-					end:daysFromNow() //now
-				}
-			})
-		},
+	]),
+	homePageLoadMore: activeUserSteps().concat([
 		{
 			description: 'Users who clicked the toggle-more-stories CTA in the past two weeks',
 			query: step({
@@ -372,5 +357,22 @@ module.exports = {
 				}]
 			})
 		}
-	]
+	]),
+	marketDataAPI: activeUserSteps().concat([
+		{
+			description: 'Users who clicked the markets-link CTA in the past two weeks',
+			query: step({
+				eventCollection: "cta",
+				timeframe: {
+					start:daysFromNow(-14), //two weeks whence
+					end:daysFromNow() //now
+				},
+				filters: [{
+					property_name:"meta.domPath",
+					operator:"contains",
+					property_value:"markets-link"
+				}]
+			})
+		}
+	])
 };

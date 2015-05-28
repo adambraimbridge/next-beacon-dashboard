@@ -18,5 +18,15 @@ module.exports = [{
 			feature: 'homePageLoadMore',
 			cta: 'toggle-more-stories'
 		}
+	},
+	"marketDataAPI": {
+		pathname: "featureflags",
+		query: {
+			title: "Feature: marketDataAPI",
+			metric: 'funnel',
+			steps: 'marketDataAPI',
+			feature: 'marketDataAPI',
+			cta: 'markets-link'
+		}
 	}
 }];
