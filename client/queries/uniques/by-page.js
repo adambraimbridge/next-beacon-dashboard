@@ -6,5 +6,6 @@ module.exports.query = new Keen.Query("count_unique", {
 	eventCollection: "dwell",
 	timeframe: qs.timeframe || "this_14_days",
 	targetProperty: "user.uuid",
+	group_by: ["page.location.type"],
 	interval: "daily"
 });

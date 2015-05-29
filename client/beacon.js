@@ -24,13 +24,33 @@ Keen.ready(function(){
 
 	switch (location.pathname) {
 		
+		case '/graph/uniques/by-page':
+
+			render(require('./queries/uniques/by-page'), {
+				chartType: "areachart",
+				titlePosition: 'none',
+				legend: { position: 'bottom' },
+				isStacked: 'percent',
+				height: '400',
+				colors: ['rgb(115, 192, 58)', 'rgb(150, 85, 126)', 'rgb(101, 185, 172)', 'rgb(70, 130, 180)', 'rgb(203, 81, 58)', 'rgb(120, 95, 67)'], 
+				lineWidth: 0,
+				theme: 'maximized',
+				areaOpacity: 0.8
+			});
+
+			break;
+
+
 		case '/graph/uniques/timeline':
 			
 			render(require('./queries/uniques/trend'), {
 				chartType: "areachart",
-				title: 'Unique users over the last 2 weeks',
-				colors: ['#77C9BC'],
+				titlePosition: 'none',
 				height: 400,
+				colors: ['rgb(115, 192, 58)'], 
+				lineWidth: 0,
+				theme: 'maximized',
+				areaOpacity: 0.8,
 				labels: ['unique users']
 			});
 
