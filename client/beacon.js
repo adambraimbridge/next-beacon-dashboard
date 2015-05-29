@@ -22,6 +22,9 @@ switch (location.pathname) {
 			});
 
 		}); 
+	
+		break;
+
 	default:
 		console.log('unknown graph');
 }
