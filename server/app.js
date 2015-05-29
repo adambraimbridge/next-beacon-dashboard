@@ -21,7 +21,7 @@ app.get('/hashed-assets/:path*', function(req, res) {
 });
 
 app.get('/', function (req, res) {
-	res.render('summary', { flags: expiredFlags || {}, layout: 'beacon' });
+	res.render('summary', { layout: 'beacon' });
 });
 
 app.get('/graph/:name', function (req, res) {
