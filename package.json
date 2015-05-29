@@ -1,5 +1,5 @@
 {
-  "name": "ft-next-beacon-dashboard",
+  "name": "mattc-beacon",
   "browserify": {
     "transform": [
       "debowerify"
