@@ -28,10 +28,8 @@ app.get('/graph/:name', function (req, res) {
 	res.render('graphs', { 
 		graph: req.params.name,
 		layout: 'beacon',
-		keen: { 
-			project: KEEN_PROJECT,
-			read_key: KEEN_READ_KEY
-		}
+		keen_project: KEEN_PROJECT,
+		keen_read_key: KEEN_READ_KEY
 	});
 });
 
