@@ -5,6 +5,9 @@ console.log('ok');
 switch (location.pathname) {
 	
 	case '/graph/uniques':
+		
+		console.log('graphing', location.pathname);
+
 		var client = new Keen({
 			projectId: keen_project,
 			readKey: keen_read_key
