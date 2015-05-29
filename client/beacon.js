@@ -24,6 +24,18 @@ Keen.ready(function(){
 
 	switch (location.pathname) {
 		
+		case '/graph/uniques/timeline':
+			
+			render(require('./queries/uniques/trend'), {
+				chartType: "areachart",
+				title: 'Unique users over the last 2 weeks',
+				colors: ['#77C9BC'],
+				height: 400,
+				labels: ['unique users']
+			});
+
+			break;
+
 		case '/graph/uniques':
 			
 			render(require('./queries/uniques/today'), {

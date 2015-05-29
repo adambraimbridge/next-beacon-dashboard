@@ -6,7 +6,8 @@
     "sprintf": "~1.0.2",
     "o-techdocs": "^4.0.2",
     "next-js-setup": "~2.5.1",
-    "keen-js": "~3.2.4"
+    "keen-js": "~3.2.4",
+    "querystring": "~3.46.1"
   },
   "resolutions": {
     "o-grid": "^3.0.3",

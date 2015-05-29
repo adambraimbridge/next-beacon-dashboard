@@ -24,9 +24,10 @@ app.get('/', function (req, res) {
 	res.render('summary', { layout: 'beacon' });
 });
 
-app.get('/graph/:name', function (req, res) {
-	res.render('graphs', { 
-		graph: req.params.name,
+app.get('/graph/:name/:sub?', function (req, res) {
+	var tmpl = req.params.name;
+	tmpl += (req.params.sub) ? '-' + req.params.sub : '';
+	res.render(tmpl, { 
 		layout: 'beacon',
 		keen_project: KEEN_PROJECT,
 		keen_read_key: KEEN_READ_KEY
