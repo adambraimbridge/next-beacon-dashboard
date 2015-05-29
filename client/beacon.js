@@ -19,25 +19,52 @@ switch (location.pathname) {
 				timeframe: "today"
 			});
 			
-			var weeklyQuery = new Keen.Query("count_unique", {
+			var yesterdayQuery = new Keen.Query("count_unique", {
 				eventCollection: "dwell",
 				target_property: "user.erights",
 				timeframe: "yesterday"
+			});
+			
+			var averageQuery = new Keen.Query("count_unique", {
+				eventCollection: "dwell",
+				target_property: "user.erights",
+				timeframe: "last_14_days",
+				interval: "daily",
+				filters: [{ "property_name":"time.weekday", "operator":"eq", "property_value":true }]
 			});
 
 			var today = document.createElement('div');
 			container.appendChild(today);
 			
-			var weekly = document.createElement('div');
-			container.appendChild(weekly);
+			var yesterday = document.createElement('div');
+			container.appendChild(yesterday);
 
+			var average = document.createElement('div');
+			container.appendChild(average);
+			
 			client.draw(todayQuery, today, { 
 			    title: "Unique users today"
 			});
 			
-			client.draw(weeklyQuery, weekly, { 
+			client.draw(yesterdayQuery, yesterday, { 
 			    title: "Unique users yesterday",
-				color: ['#49c5b1']
+				colors: ['#77C9BC']
+			});
+	
+			client.run(averageQuery, function (err, results) { 
+					console.log(err, results);
+					var sum = results.result.map(function (c) {
+						return c.value;
+					}).reduce(function (a, b) {
+						return a + b
+					});
+					var chart = new Keen.Dataviz()
+						.el(average)
+						.parseRawData({ result: sum / 10 })
+						.chartType("metric")
+						.colors(["#92CBC2"])
+						.title("14 weekday average uniques")
+						.render();
 			});
 
 		}); 
