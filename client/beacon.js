@@ -5,73 +5,42 @@ var client = new Keen({
 	readKey: keen_read_key
 });
 
-var container = document.getElementById("my_chart"); 
+var container = document.getElementById("graph__container"); 
 
-switch (location.pathname) {
-	
-	case '/graph/uniques':
-
-		Keen.ready(function(){
-
-			var todayQuery = new Keen.Query("count_unique", {
-				eventCollection: "dwell",
-				target_property: "user.erights",
-				timeframe: "today"
-			});
-			
-			var yesterdayQuery = new Keen.Query("count_unique", {
-				eventCollection: "dwell",
-				target_property: "user.erights",
-				timeframe: "yesterday"
-			});
-			
-			var averageQuery = new Keen.Query("count_unique", {
-				eventCollection: "dwell",
-				target_property: "user.erights",
-				timeframe: "last_14_days",
-				interval: "daily",
-				filters: [{ "property_name":"time.weekday", "operator":"eq", "property_value":true }]
-			});
-
-			var today = document.createElement('div');
-			container.appendChild(today);
-			
-			var yesterday = document.createElement('div');
-			container.appendChild(yesterday);
-
-			var average = document.createElement('div');
-			container.appendChild(average);
-			
-			client.draw(todayQuery, today, { 
-			    title: "Unique users today"
-			});
-			
-			client.draw(yesterdayQuery, yesterday, { 
-			    title: "Unique users yesterday",
-				colors: ['#77C9BC']
-			});
-	
-			client.run(averageQuery, function (err, results) { 
-					console.log(err, results);
-					var sum = results.result.map(function (c) {
-						return c.value;
-					}).reduce(function (a, b) {
-						return a + b
-					});
-					var chart = new Keen.Dataviz()
-						.el(average)
-						.parseRawData({ result: sum / 10 })
-						.chartType("metric")
-						.colors(["#92CBC2"])
-						.title("14 weekday average uniques")
-						.render();
-			});
-
-		}); 
-	
-		break;
-
-	default:
-		console.log('unknown graph');
+// Given a query object { query: new Keen.Query(...), render: fn }
+var render = function (keen, opts) {
+	var el = document.createElement('div');
+	container.appendChild(el);
+	if (keen.render) {
+		client.run(keen.query, function (err, results) {
+			keen.render(el, results);
+		});
+	} else {
+		client.draw(keen.query, el, opts);
+	}
 }
 
+Keen.ready(function(){
+
+	switch (location.pathname) {
+		
+		case '/graph/uniques':
+			
+			render(require('./queries/uniques/today'), {
+				title: 'Unique users so far today'}
+			);
+			
+			render(require('./queries/uniques/yesterday'), {
+				title: 'Unique users yesterday',
+				colors: ['#77C9BC']
+			});
+			
+			render(require('./queries/uniques/two_week_average'), { });
+
+			break;
+	
+		default:
+			console.log('unknown graph');
+	}
+
+});
