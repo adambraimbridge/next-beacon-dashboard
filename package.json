@@ -1,0 +1,23 @@
+{
+  "name": "ft-next-beacon-dashboard",
+  "browserify": {
+    "transform": [
+      "debowerify"
+    ]
+  },
+  "dependencies": {
+    "es6-promise": "^2.0.0",
+    "forever": "^0.11.1",
+    "ft-next-express": "^8.9.0",
+    "ft-poller": "https://github.com/Financial-Times/ft-poller/archive/v1.0.1.tar.gz",
+    "request": "^2.45.0"
+  },
+  "devDependencies": {
+    "browserify": "^8.1.1",
+    "debowerify": "^1.2.0",
+    "haikro": "^1.6.3",
+    "next-build-tools": "^2.4.0",
+    "nodemon": "^1.3.7",
+    "origami-build-tools": "^2.13.0"
+  }
+}
