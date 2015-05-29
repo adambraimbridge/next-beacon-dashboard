@@ -21,6 +21,5 @@ test:
 	nbt build
 
 deploy:
-	nbt configure
 	nbt deploy-hashed-assets
 	nbt deploy

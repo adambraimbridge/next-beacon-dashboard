@@ -6,8 +6,8 @@ var app = module.exports = require('ft-next-express')({ layoutsDir: __dirname + 
 
 require('es6-promise').polyfill();
 
-const KEEN_PROJECT = process.env.KEEN_PROJECT;
-const KEEN_READ_KEY = process.env.KEEN_READ_KEY;
+var KEEN_PROJECT = process.env.KEEN_PROJECT;
+var KEEN_READ_KEY = process.env.KEEN_READ_KEY;
 
 app.get('/__gtg', function (req, res) {
 	res.send(200);
@@ -27,7 +27,11 @@ app.get('/', function (req, res) {
 app.get('/graph/:name', function (req, res) {
 	res.render('graphs', { 
 		graph: req.params.name,
-		layout: 'beacon'
+		layout: 'beacon',
+		keen: { 
+			project: KEEN_PROJECT,
+			read_key: KEEN_READ_KEY
+		}
 	});
 });
 
