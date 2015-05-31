@@ -30,7 +30,12 @@
 						<ul class="o-techdocs-nav o-techdocs-nav--sub">
 							<li><a href="/graph/uniques/timeline">Trend</a></li>
 							<li><a href="/graph/uniques/by-page">By page type</a></li>
+							<li><a href="/graph/uniques/by-geo">By country</a></li>
+							<li><a href="/graph/uniques/by-device">By device</a></li>
 						</ul>
+					</li>
+					<li>
+						<a href="/graph/addiction">Addiction</a>
 					</li>
 				</ul>
 			</div>
@@ -45,7 +50,9 @@
 			window.keen_project = '{{keen_project}}';
 			window.keen_read_key = '{{keen_read_key}}';
 		</script>
+		<script src="//code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
 		<script src="//cdn.jsdelivr.net/keen.js/3.2.3/keen.min.js" type="text/javascript"></script>
+		
 		{{>next-js-setup/templates/script-loader}}
 	</body>
 </html
