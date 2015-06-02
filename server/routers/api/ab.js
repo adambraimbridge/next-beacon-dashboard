@@ -17,10 +17,12 @@ module.exports = function (req, res) {
 	 * - push through the ab-test-confidence stats
 	 */
 
+	var group_by = req.query.group_by; 
+
 	var q = new keenIO.Query('count', {
 		timeframe: req.query.timeframe || 'this_14_days',
 		event_collection: req.query.event_collection || 'dwell',
-		group_by: ['user.ab.aa', 'user.erights'],
+		group_by: [group_by, 'user.erights'],
 		latest: req.query.limit || 10000,
 		interval: "yearly",
 	});
@@ -35,7 +37,7 @@ module.exports = function (req, res) {
 		var ab = { on: {}, off: {}, confidence: {} };
 
 		var c = _.groupBy(response.result[0].value, function (user) {
-			return user['user.ab.aa'];
+			return user[group_by];
 		}); 
 
 		var conversion = req.query.conversion || 5;
