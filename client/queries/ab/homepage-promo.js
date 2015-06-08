@@ -1,16 +1,18 @@
+/* global Keen, console */
+
 'use strict';
 
 var confidence	= require('ab-test-confidence');
 var _			= require('lodash');
 
 module.exports = {
-	
+
 	/*
 	 * - count unique by erights, group by 'views', 'ab:aa' , then filter every user with n views as 'converted'
 	 * - produce an 'a' and 'b' visitors / conversions
 	 * - push through the ab-test-confidence stats
 	 */
-	
+
 	// FIXME - step i) everyone who visited the frontpage, ii) % of people clicked 'myft-panel | myft-topic | follow'
 
 	query: new Keen.Query('count', {
@@ -29,11 +31,11 @@ module.exports = {
 		console.log(arguments);
 
 		var ab = { on: {}, off: {}, confidence: {} };
-		
+
 		// Turn the array of results in to two groups, keyed on the variant of the 'user.ab.aa' key
 		//
 		// So we end up with everyone in 'on' and 'off' in two arrays -> { on: [ ... ], off: [ ... ] }
-		// 
+
 		var c = _.groupBy(response.result, function (user) {
 			return user['user.ab.homePageProminentFollowAB'];
 		});
@@ -44,10 +46,10 @@ module.exports = {
 
 		// control
 		ab.off.visitors = c.off.length;
-		ab.off.conversions = _.filter(c.off, function (user) { 
+		ab.off.conversions = _.filter(c.off, function (user) {
 			return user.result > conversion;
 		}).length;
-		
+
 		// variant
 		ab.on.visitors = c.on.length;
 		ab.on.conversions = _.filter(c.on, function (user) {
@@ -67,7 +69,4 @@ module.exports = {
 		console.log({ stats: ab, results: c });
 
 	}
-}
-
-
-
+};

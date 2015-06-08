@@ -1,3 +1,6 @@
+/* global Keen, $ */
+
+'use strict';
 
 var _ = require('lodash');
 
@@ -5,7 +8,7 @@ var daysAgo = function (n) {
 	var d = new Date();
 	d.setDate(d.getDate() - n);
 	return d.toISOString();
-}
+};
 
 var render = function (el, results, opts) {
 
@@ -37,15 +40,14 @@ var render = function (el, results, opts) {
 			return el;
 		});
 
-		
 		var cumulative = 0.0;
-		var f = _.map(e.slice().reverse(), function(el, index) { // slice.reverse = non mutated reverse
+		_.map(e.slice().reverse(), function(el, index) { // slice.reverse = non mutated reverse
 			cumulative += el.percentage;
 			e[(e.length - 1) - index].cumulative = cumulative;
 			console.log(el, index, el.percentage, cumulative, e[index].cumulative);
 			return el;
 		});
-		
+
 		console.log(e);
 
 		var title = $('<h2>').text(opts.title);
@@ -71,10 +73,10 @@ var render = function (el, results, opts) {
 
 		title.appendTo($(el));
 		table.appendTo($(el));
-}
+};
 
 module.exports.thisWeek = {
-	
+
 	query: new Keen.Query('count_unique', {
 			timeframe: { start: daysAgo(8), end: daysAgo(1) }, // today will always be skwed, so start from a yesterday
 			target_property: 'time.day',
@@ -91,10 +93,10 @@ module.exports.thisWeek = {
 
 	render: render
 
-}
+};
 
 module.exports.lastWeek = {
-	
+
 	query: new Keen.Query('count_unique', {
 			timeframe: { start: daysAgo(14), end: daysAgo(7) },
 			target_property: 'time.day',
@@ -111,10 +113,10 @@ module.exports.lastWeek = {
 
 	render: render
 
-}
+};
 
 module.exports.thisTimeLastMonth = {
-	
+
 	query: new Keen.Query('count_unique', {
 			timeframe: { start: daysAgo(35), end: daysAgo(28) },
 			target_property: 'time.day',
@@ -131,11 +133,10 @@ module.exports.thisTimeLastMonth = {
 
 	render: render
 
-}
-
+};
 
 module.exports.weekly = {
-	
+
 	query: new Keen.Query('count_unique', {
 			timeframe: { start: daysAgo(22), end: daysAgo(1) },
 			target_property: 'time.week',
@@ -152,10 +153,10 @@ module.exports.weekly = {
 
 	render: render
 
-}
+};
 
 module.exports.weeklyThisTimeLastMonth = {
-	
+
 	query: new Keen.Query('count_unique', {
 			timeframe: { start: daysAgo(49), end: daysAgo(28) },
 			target_property: 'time.week',
@@ -172,4 +173,4 @@ module.exports.weeklyThisTimeLastMonth = {
 
 	render: render
 
-}
+};

@@ -1,3 +1,7 @@
+/* global Keen, $ */
+
+'use strict';
+
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
 
@@ -179,7 +183,7 @@ var query = new Keen.Query("funnel", {
 var render = function (el, results, opts, client) {
 	$('<h1>').text(dashboards[queryParameters.dashboard].title).appendTo(el);
 
-	var chartEl = $('<div>').attr('id', 'metric').appendTo(el);
+	$('<div>').attr('id', 'metric').appendTo(el);
 	client.draw(query, document.getElementById('metric'), {
 		title: 'Count of unique users for the past 14 days',
 		labels: dashboards[queryParameters.dashboard].labels,
@@ -188,7 +192,7 @@ var render = function (el, results, opts, client) {
 			legend: { position: "none" }
 		}
 	});
-}
+};
 
 module.exports = {
 	query:query,

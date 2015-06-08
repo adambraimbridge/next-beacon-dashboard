@@ -1,19 +1,22 @@
+/* global Keen, keen_project, keen_read_key */
+
 "use strict";
+
 
 var client = new Keen({
 	projectId: keen_project,
 	readKey: keen_read_key
 });
 
-var container = document.getElementById("graph__container"); 
+var container = document.getElementById("graph__container");
 
 // Given a query object { query: new Keen.Query(...), render: fn }
 var render = function (keen, opts) {
 	var el = document.createElement('div');
 	container.appendChild(el);
-	
+
 	if (keen.render) {
-	
+
 		console.log('running query!');
 		client.run(keen.query, function (err, results) {
 			console.log('query done, calling render');
@@ -23,20 +26,20 @@ var render = function (keen, opts) {
 	} else {
 		client.draw(keen.query, el, opts);
 	}
-}
+};
 
 Keen.ready(function(){
 
 	switch (location.pathname) {
-		
+
 		case '/graph/ab/aa':
 
-			render(require('./queries/ab/aa'))
+			render(require('./queries/ab/aa'));
 			break;
-		
+
 		case '/graph/ab/homepage-promo':
 
-			render(require('./queries/ab/homepage-promo'))
+			render(require('./queries/ab/homepage-promo'));
 			break;
 
 		case '/graph/opt-in':
@@ -45,29 +48,29 @@ Keen.ready(function(){
 				title: 'Opt-ins over last 24 hours',
 				colors: ['#6FF187']
 			});
-			
-			render(require('./queries/opt-in').outie, { 
+
+			render(require('./queries/opt-in').outie, {
 				title: 'Opt-outs over last 24 hours',
 				colors: ['#FF6060']
 			});
-			
-			render(require('./queries/opt-in').lastWeek, { 
+
+			render(require('./queries/opt-in').lastWeek, {
 				title: 'Opt-in Vs out over the last week',
 				chartType: 'columnchart',
 				colors: ['#6FF187', '#FF6060']
 			});
-			
-			render(require('./queries/opt-in').reasons, { 
+
+			render(require('./queries/opt-in').reasons, {
 				chartType: "areachart",
 				isStacked: 'percent',
-				colors: ['rgb(115, 192, 58)', 'rgb(150, 85, 126)', 'rgb(101, 185, 172)', 'rgb(70, 130, 180)', 'rgb(203, 81, 58)', 'rgb(120, 95, 67)'], 
+				colors: ['rgb(115, 192, 58)', 'rgb(150, 85, 126)', 'rgb(101, 185, 172)', 'rgb(70, 130, 180)', 'rgb(203, 81, 58)', 'rgb(120, 95, 67)'],
 				lineWidth: 0,
 				areaOpacity: 0.9,
 				height: 500,
 				theme: 'maximized'
 			});
-			
-			render(require('./queries/opt-in').difficultNavigation, { 
+
+			render(require('./queries/opt-in').difficultNavigation, {
 				title: 'Navigation feedback detail',
 				chartType: "columnchart"
 			});
@@ -80,7 +83,7 @@ Keen.ready(function(){
 			render(require('./queries/addiction').lastWeek, { title: 'Last week' });
 			render(require('./queries/addiction').thisTimeLastMonth, { title: 'This time last month' });
 			break;
-		
+
 		case '/graph/addiction-weekly':
 
 			render(require('./queries/addiction').weekly, { title: 'Weekly addiction' });
@@ -94,32 +97,32 @@ Keen.ready(function(){
 				chartType: "areachart",
 				titlePosition: 'none',
 				isStacked: 'percent',
-				colors: ['rgb(115, 192, 58)', 'rgb(150, 85, 126)', 'rgb(101, 185, 172)', 'rgb(70, 130, 180)', 'rgb(203, 81, 58)', 'rgb(120, 95, 67)'], 
+				colors: ['rgb(115, 192, 58)', 'rgb(150, 85, 126)', 'rgb(101, 185, 172)', 'rgb(70, 130, 180)', 'rgb(203, 81, 58)', 'rgb(120, 95, 67)'],
 				lineWidth: 0,
 				theme: 'maximized',
 				areaOpacity: 0.8
 			});
 
 			break;
-		
+
 		case '/graph/uniques/by-geo':
 
 			render(require('./queries/uniques/by-geo').continent, {
 				chartType: "areachart",
 				titlePosition: 'none',
 				isStacked: 'percent',
-				colors: ['rgb(115, 192, 58)', 'rgb(150, 85, 126)', 'rgb(101, 185, 172)', 'rgb(70, 130, 180)', 'rgb(203, 81, 58)', 'rgb(120, 95, 67)'], 
+				colors: ['rgb(115, 192, 58)', 'rgb(150, 85, 126)', 'rgb(101, 185, 172)', 'rgb(70, 130, 180)', 'rgb(203, 81, 58)', 'rgb(120, 95, 67)'],
 				lineWidth: 0,
 				theme: 'maximized',
 				areaOpacity: 0.8
 			});
-			
+
 			render(require('./queries/uniques/by-geo').country, {
 				chartType: "table"
 			});
 
 			break;
-		
+
 		case '/graph/uniques/by-device':
 
 			render(require('./queries/uniques/by-device'), {
@@ -129,14 +132,13 @@ Keen.ready(function(){
 
 			break;
 
-
 		case '/graph/uniques/timeline':
-			
+
 			render(require('./queries/uniques/trend'), {
 				chartType: "areachart",
 				titlePosition: 'none',
 				height: 400,
-				colors: ['rgb(115, 192, 58)'], 
+				colors: ['rgb(115, 192, 58)'],
 				lineWidth: 0,
 				theme: 'maximized',
 				areaOpacity: 0.8,

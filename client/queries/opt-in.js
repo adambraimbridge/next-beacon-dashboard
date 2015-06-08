@@ -1,6 +1,9 @@
+/* global Keen */
+
+'use strict';
 
 module.exports.innie = {
-	
+
 	query: new Keen.Query('count_unique', {
 			timeframe: 'this_24_hours',
 			target_property: 'user.uuid',
@@ -18,10 +21,10 @@ module.exports.innie = {
 				}
 			]
 		})
-}
-			
+};
+
 module.exports.outie = {
-	
+
 	query: new Keen.Query('count_unique', {
 			timeframe: 'this_24_hours',
 			target_property: 'user.uuid',
@@ -39,10 +42,10 @@ module.exports.outie = {
 				}
 			]
 		})
-}
-			
+};
+
 module.exports.lastWeek = {
-	
+
 	query: new Keen.Query('count_unique', {
 			timeframe: 'this_7_days',
 			target_property: 'user.uuid',
@@ -56,10 +59,10 @@ module.exports.lastWeek = {
 				}
 			]
 		})
-}
-			
+};
+
 module.exports.reasons = {
-	
+
 	query: new Keen.Query('count_unique', {
 			timeframe: 'this_7_days',
 			target_property: 'user.uuid',
@@ -79,10 +82,10 @@ module.exports.reasons = {
 				}
 			]
 		})
-}
+};
 
 module.exports.difficultNavigation = {
-	
+
 	query: new Keen.Query('count_unique', {
 			timeframe: 'this_7_days',
 			target_property: 'user.uuid',
@@ -111,4 +114,4 @@ module.exports.difficultNavigation = {
 				}
 			]
 		})
-}
+};

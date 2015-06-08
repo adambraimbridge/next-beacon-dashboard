@@ -1,16 +1,18 @@
+/* global Keen, console */
+
 'use strict';
 
 var confidence	= require('ab-test-confidence');
 var _			= require('lodash');
 
 module.exports = {
-	
+
 	/*
 	 * - count unique by erights, group by 'views', 'ab:aa' , then filter every user with n views as 'converted'
 	 * - produce an 'a' and 'b' visitors / conversions
 	 * - push through the ab-test-confidence stats
 	 */
-	
+
 	query: new Keen.Query('count', {
 			timeframe: 'this_14_days',
 			event_collection: 'dwell',
@@ -21,11 +23,11 @@ module.exports = {
 	render: function (el, response, opts, client) {
 
 		var ab = { on: {}, off: {}, confidence: {} };
-		
+
 		// Turn the array of results in to two groups, keyed on the variant of the 'user.ab.aa' key
 		//
 		// So we end up with everyone in 'on' and 'off' in two arrays -> { on: [ ... ], off: [ ... ] }
-		// 
+
 		var c = _.groupBy(response.result, function (user) {
 			return user['user.ab.aa'];
 		});
@@ -36,10 +38,10 @@ module.exports = {
 
 		// control
 		ab.off.visitors = c.off.length;
-		ab.off.conversions = _.filter(c.off, function (user) { 
+		ab.off.conversions = _.filter(c.off, function (user) {
 			return user.result > conversion;
 		}).length;
-		
+
 		// variant
 		ab.on.visitors = c.on.length;
 		ab.on.conversions = _.filter(c.on, function (user) {
@@ -61,7 +63,4 @@ module.exports = {
 		el.innerHTML = JSON.stringify({ confidence: ab });
 
 	}
-}
-
-
-
+};

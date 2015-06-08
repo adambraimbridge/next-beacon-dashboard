@@ -20,11 +20,11 @@ img {
 
 table {
 	width: 100%;
-    border-collapse: collapse;
+	border-collapse: collapse;
 }
 
 .addiction__table tr:nth-child(6) { /* day 5 */
-	background-color: #ddd;
+	background-color: #dddddd;
 }
 
 .addiction__table td,
@@ -34,7 +34,7 @@ table {
 }
 
 .warning {
-	background-color: #ff9;
+	background-color: #ffff99;
 	padding: 5px;
 	text-align: center;
 }
@@ -46,5 +46,3 @@ table {
 .o-techdocs-sidebar {
 	margin-bottom: 20px;
 }
-
-

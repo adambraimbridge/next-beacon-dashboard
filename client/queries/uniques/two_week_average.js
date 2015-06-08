@@ -1,5 +1,9 @@
+/* global Keen */
+
+'use strict';
+
 module.exports = {
-	
+
 	query: new Keen.Query("count_unique", {
 		eventCollection: "dwell",
 		target_property: "user.uuid",
@@ -13,10 +17,10 @@ module.exports = {
 		var sum = results.result.map(function (c) {
 			return c.value;
 		}).reduce(function (a, b) {
-			return a + b
+			return a + b;
 		});
 
-		var chart = new Keen.Dataviz()
+		new Keen.Dataviz()
 			.el(el)
 			.parseRawData({ result: sum / 10 })
 			.chartType("metric")
@@ -24,4 +28,4 @@ module.exports = {
 			.title("14 weekday average uniques")
 			.render();
 	}
-}
+};

@@ -1,3 +1,6 @@
+/* global Keen */
+
+'use strict';
 
 var querystring = require('querystring');
 var qs = querystring.parse(location.search.slice(1));

@@ -1,3 +1,7 @@
+/* global Keen, $ */
+
+'use strict';
+
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
 
@@ -17,7 +21,7 @@ var features = {
 	'pagination':'next-page',
 	'saveForLater':'save-for-later',
 	'search':'search-form'
-}
+};
 
 // Return the ISO string for relative dates
 var daysFromNow = function (offset) {

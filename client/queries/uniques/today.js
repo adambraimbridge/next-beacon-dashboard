@@ -1,3 +1,6 @@
+/* global Keen */
+
+'use strict';
 
 module.exports.query = new Keen.Query("count_unique", {
 	eventCollection: "dwell",
