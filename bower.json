@@ -15,7 +15,6 @@
     "fetch": "^0.8.2",
     "next-sass-setup": "^6.0.0",
     "o-ft-icons": "^2.2.1",
-    "o-fonts": "^2.0.0",
-    "lodash": "~3.5.0"
+    "o-fonts": "^2.0.0"
   }
 }
