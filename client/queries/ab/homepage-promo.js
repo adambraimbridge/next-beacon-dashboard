@@ -1,9 +1,8 @@
-/* global Keen, console */
+/* global Keen, console, _ */
 
 'use strict';
 
 var confidence	= require('ab-test-confidence');
-var _			= require('lodash');
 
 module.exports = {
 

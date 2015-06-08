@@ -1,8 +1,6 @@
-/* global Keen, $ */
+/* global Keen, $, _ */
 
 'use strict';
-
-var _ = require('lodash');
 
 var daysAgo = function (n) {
 	var d = new Date();

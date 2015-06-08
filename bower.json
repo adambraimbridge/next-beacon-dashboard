@@ -7,7 +7,6 @@
     "next-js-setup": "~2.5.1",
     "keen-js": "~3.2.4",
     "querystring": "~3.46.1",
-    "lodash": "~3.5.0",
     "ab-test-confidence": "~1.1.0"
   },
   "resolutions": {
