@@ -1,113 +1,42 @@
+/*jshint node:true*/
 'use strict';
 
-var express = require('express');
-var exphbs = require('express-handlebars');
-var cookieParser = require('cookie-parser');
-var routers = require('./routers');
-var conf = require('./conf');
+var http			= require('http');
+var auth			= require('./middleware/auth');
+var cookieParser	= require('cookie-parser');
+var app				= module.exports = require('ft-next-express')({ layoutsDir: __dirname + '/../views/layouts' });
 
-// Middleware
-var params = require('./middleware/params');
-var auth = require('./middleware/auth');
-var cacheControl = require('./middleware/cacheControl');
+require('es6-promise').polyfill();
 
-var app = module.exports = express();
+var KEEN_PROJECT = process.env.KEEN_PROJECT;
+var KEEN_READ_KEY = process.env.KEEN_READ_KEY;
 
-app.use(express.static(__dirname + '/../static', { maxAge: 3600000 }));
-
-app.engine('handlebars', exphbs({
-	defaultLayout: 'layout',
-	helpers: {
-		formatUrl: require('url').format
-	}
-}));
-
-app.set('view engine', 'handlebars');
-
-app.get('/__gtg', function(req, res) {
-	res.status(200).send();
+app.get('/__gtg', function (req, res) {
+	res.send(200);
 });
 
-// index
+app.get('/hashed-assets/:path*', function(req, res) {
+	var path = 'http://ft-next-hashed-assets-prod.s3-website-eu-west-1.amazonaws.com' + req.path;
+	http.get(path, function(proxyRes) {
+		proxyRes.pipe(res);
+	});
+});
+
 app.get('/', function (req, res) {
-	res.render('index.handlebars', { hideMenu: true, graphs: conf.graphs, ctas: conf.ctas, opts: conf.opts });
+	res.redirect('/graph/uniques')
 });
 
-// Force HTTPS in production
-app.get('*', function(req, res, next) {
-	if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] !== 'https') {
-		res.redirect('https://' + req.headers.host + req.url);
-	} else {
-		next();
-	}
-});
-
-// Authenticate all routes beneath here.
 app.use(cookieParser());
 app.use(auth);
 
-// Simple entry point
-app.get('/enter', function (req, res) {
-	res.redirect('/graph?event_collection=dwell&metric=count_unique&target_property=user.erights&title=Unique%20users%20on%20next');
+app.get('/graph/:name/:sub?', function (req, res) {
+	var tmpl = req.params.name;
+	tmpl += (req.params.sub) ? '-' + req.params.sub : '';
+	res.render(tmpl, { 
+		layout: 'beacon',
+		keen_project: KEEN_PROJECT,
+		keen_read_key: KEEN_READ_KEY
+	});
 });
 
-app.get('/top', require('./routers/top-n'));
-app.get('/content', require('./routers/content'));
-app.get('/search', require('./routers/search'));
-app.get('/user/:erights', function (req, res) { });
-
-// Routes for API calls
-var api = express.Router();
-api.use(cacheControl);
-api.use(params);
-api.get('/export', routers.api.export);
-api.get('/addiction', routers.api.addiction);
-api.get('/search', routers.api.search);
-api.get('/funnel', routers.api.funnel);
-api.get('/ab', routers.api.ab);
-api.get('/', routers.api.query);
-
-// Routes for drawing graphs
-var dashboard = express.Router();
-dashboard.use(params);
-dashboard.get('/', routers.graph);
-
-// Routes for drawing tabular data
-var tables = express.Router();
-tables.use(cacheControl);
-tables.use(params);
-tables.get('/', routers.table);
-
-// Routes for drawing user flow
-var flow = express.Router();
-flow.use(cacheControl);
-flow.use(params);
-flow.get('/', routers.flow);
-
-// Routes for components' analytics
-var components = express.Router();
-components.use(cacheControl);
-components.use(params);
-components.get('/', routers.components);
-
-// Routes for feature flags
-var featureflags = express.Router();
-featureflags.use(cacheControl);
-featureflags.use(params);
-featureflags.get('/', routers.featureflags);
-
-app.use('/api', api);
-app.use('/graph', dashboard);
-app.use('/addiction', routers.addiction);
-app.use('/table', tables);
-app.use('/flow', flow);
-app.use('/components', components);
-app.use('/featureflags', featureflags);
-
-// Opts (in/out) routes
-app.get('/opt-in-out', routers.optInOut.graph);
-
-var port = process.env.PORT || 3001;
-app.listen(port, function() {
-	console.log("Listening on " + port);
-});
+module.exports.listen = app.listen(process.env.PORT || 5028);

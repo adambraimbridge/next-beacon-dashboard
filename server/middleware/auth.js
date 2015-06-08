@@ -4,6 +4,14 @@ var logger = require('ft-next-logger');
 var crypto = require('crypto');
 var NodeRSA = require("node-rsa");
 
+if (!process.env.S3O_PUBLIC_KEY) {
+	throw new Error('Beacon requires S3O_PUBLIC_KEY to be set');
+}
+
+if (!process.env.BEACON_API_KEY) {
+	throw new Error('Beacon requires BEACON_API_KEY to be set');
+}
+
 // The Staff Single Sign On (S3O) public key is available at https://s3o.ft.com/publickey.
 //  — S3O validates only @ft.com google accounts (and a whitelist of non-ft.com accounts).
 //    It displays an error to the user if they try to sign in with an invalid account.
@@ -16,9 +24,9 @@ var NodeRSA = require("node-rsa");
 //    https://dashboard.heroku.com/orgs/financial-times/apps/ft-next-beacon-dashboard/settings
 //  – The intention is that config-vars will push its settings into all apps, so if it changed
 //    we would update manually and it would fix instantly.
+
 var authenticateToken = function(res,username,token) {
 	var publicKey = process.env.S3O_PUBLIC_KEY;
-	if (!publicKey) throw new Error("The ft-next-beacon-dashboard S3O_PUBLIC_KEY heroku environment variable *must* be set. For support contact next.team@ft.com");
 
 	// Convert the publicKey from DER format to PEM format
 	// See: https://www.npmjs.com/package/node-rsa
@@ -79,7 +87,6 @@ var authApi = function(req, res, next) {
 	logger.info("Authenticating API request.");
 
 	var beaconApiKey = process.env.BEACON_API_KEY;
-	if (!beaconApiKey) throw new Error("The BEACON_API_KEY environment variable *must* be set. For support contact next.team@ft.com");
 	var secretHeaderToken = req.headers['x-beacon-api-key'];
 	if (beaconApiKey && secretHeaderToken) {
 		logger.info("API Authentication: Secret header API token detected. ");

@@ -1,0 +1,50 @@
+@import 'o-techdocs/main';
+
+.o-techdocs-layout {
+	padding-top: 20px;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+}
+
+img {
+	display: block;
+	margin: 20px 0;
+}
+
+#graph__container > div {
+	margin-bottom: 20px;
+}
+
+table {
+	width: 100%;
+    border-collapse: collapse;
+}
+
+.addiction__table tr:nth-child(6) { /* day 5 */
+	background-color: #ddd;
+}
+
+.addiction__table td,
+.addiction__table th {
+	text-align: left;
+	padding: 10px;
+}
+
+.warning {
+	background-color: #ff9;
+	padding: 5px;
+	text-align: center;
+}
+
+.o-techdocs-nav {
+	margin-bottom: 10px;
+}
+
+.o-techdocs-sidebar {
+	margin-bottom: 20px;
+}
+
+
