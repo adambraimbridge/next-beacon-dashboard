@@ -5,6 +5,8 @@ var http			= require('http');
 var auth			= require('./middleware/auth');
 var cookieParser	= require('cookie-parser');
 var app				= module.exports = require('ft-next-express')({ layoutsDir: __dirname + '/../views/layouts' });
+var fs 				= require('fs');
+var marked 			= require('marked');
 
 require('es6-promise').polyfill();
 
@@ -36,6 +38,23 @@ app.get('/graph/:name/:sub?', function (req, res) {
 		layout: 'beacon',
 		keen_project: KEEN_PROJECT,
 		keen_read_key: KEEN_READ_KEY
+	});
+});
+
+/* Blog */
+
+var dir = './progress/';
+
+app.get('/progress/:post', function (req, res) {
+	var md = marked(
+		fs.readFileSync(dir + req.params.post + '.md', { encoding: 'utf8' }),
+		{
+			gfm: true
+		}
+	);
+	res.render('blog', {
+		layout: 'beacon',
+		md: md
 	});
 });
 
