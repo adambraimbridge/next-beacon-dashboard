@@ -1,5 +1,5 @@
 {
-  "name": "mattc-beacon",
+  "name": "next-beacon-dashboard",
   "browserify": {
     "transform": [
       "debowerify"
