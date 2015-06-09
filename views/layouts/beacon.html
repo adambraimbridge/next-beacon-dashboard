@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html class="no-js o-hoverable-on" data-next-app="{{__name}}">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<link rel="stylesheet" href="{{#hashedAsset}}main.css{{/hashedAsset}}"/>
+		<title>Beacon - next.ft.com performance dashboard</title>
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
+		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.9.3/lodash.min.js"></script>
+		{{>next-js-setup/templates/ctm}}		
+	</head>
+	<body class"o-techdocs">
+		<header data-o-component="o-header" class="o-header">
+			<div class="o-header__container">
+				<div class="o-header__inner">
+					<div class="o-header__primary">
+						<div class="o-header__primary__left">
+							<a class="o-header__logo o-header__logo--ft" href="/">
+								<abbr title="Financial Times">FT</abbr>
+								<h1 class="o-header__title">Beacon - next.ft.com performance dashboard</h1>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+		<div class="warning">
+			<p>
+				Be advised this is an experimental series of dashboards for next.ft.com, not an audited set of statistics.
+			</p>
+		</div>
+		<div class="o-techdocs-layout">
+			<div class="o-techdocs-sidebar">
+				<ul class="o-techdocs-nav">
+					<li>
+						<a href="/graph/uniques">Uniques</a>
+						<ul class="o-techdocs-nav o-techdocs-nav--sub">
+							<li><a href="/graph/uniques/timeline">Trend</a></li>
+							<li><a href="/graph/uniques/by-page">By page type</a></li>
+							<li><a href="/graph/uniques/by-geo">By country</a></li>
+							<li><a href="/graph/uniques/by-device">By device</a></li>
+						</ul>
+					</li>
+					<li>
+						<a>Addiction</a>
+						<ul class="o-techdocs-nav o-techdocs-nav--sub">
+							<li><a href="/graph/addiction">Daily</a></li>
+							<li><a href="/graph/addiction-weekly">Weekly</a></li>
+						</ul>
+					</li>
+					<li>
+						<a>AB testing</a>
+						<ul class="o-techdocs-nav o-techdocs-nav--sub">
+							<li><a href="/graph/ab/aa">AA</a></li>
+							<li><a href="/graph/ab/homepage-promo">Homepage promo</a></li>
+						</ul>
+					</li>
+					<li>
+						<a href="/graph/opt-in">Opt-ins</a>
+					</li>
+					<li>
+						<a>Active usage</a>
+						<ul class="o-techdocs-nav o-techdocs-nav--sub">
+							<li><a href="/graph/active-usage?feature=globalNavigation">globalNavigation</a></li>
+							<li><a href="/graph/active-usage?feature=homePageLoadMore">homePageLoadMore</a></li>
+							<li><a href="/graph/active-usage?feature=marketDataAPI">marketDataAPI</a></li>
+							<li><a href="/graph/active-usage?feature=articleComments">articleComments</a></li>
+							<li><a href="/graph/active-usage?feature=articleRelatedContent">articleRelatedContent</a></li>
+							<li><a href="/graph/active-usage?feature=articleTOC">articleTOC</a></li>
+							<li><a href="/graph/active-usage?feature=dynamicTertiaryNav">dynamicTertiaryNav</a></li>
+							<li><a href="/graph/active-usage?feature=follow">follow</a></li>
+							<li><a href="/graph/active-usage?feature=homePageMyFTPanel">homePageMyFTPanel</a></li>
+							<li><a href="/graph/active-usage?feature=homePageMyPageFeed">homePageMyPageFeed</a></li>
+							<li><a href="/graph/active-usage?feature=myPageTopicSuggestions">myPageTopicSuggestions</a></li>
+							<li><a href="/graph/active-usage?feature=pagination">pagination</a></li>
+							<li><a href="/graph/active-usage?feature=saveForLater">saveForLater</a></li>
+							<li><a href="/graph/active-usage?feature=search">search</a></li>
+						</ul>
+					</li>
+					<li>
+						<a>Flow</a>
+						<ul class="o-techdocs-nav o-techdocs-nav--sub">
+							<li><a href="/graph/flow?dashboard=Galleries">Galleries</a></li>
+							<li><a href="/graph/flow?dashboard=MyFT">MyFT</a></li>
+							<li><a href="/graph/flow?dashboard=MyPageFeed">MyPageFeed</a></li>
+							<li><a href="/graph/flow?dashboard=AllMyFTNotifications">AllMyFTNotifications</a></li>
+						</ul>
+					</li>
+					<li>
+						<a>Labs</a>
+						<ul class="o-techdocs-nav o-techdocs-nav--sub">
+							<li><a href="https://spoor-sqs-ui.herokuapp.com">Real-time stream</a></li>
+							<li><a href="https://spoor-sqs-ui.herokuapp.com/map">Real-time traffic map</a></li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+			<div class="o-techdocs-main">
+				<div class="o-techdocs-content">
+					{{{body}}}
+				</div>
+			</div>
+			<footer class="o-techdocs-footer">
+				<div class="o-techdocs-footer__inner">
+					<p class="o-techdocs-footer__secondary">
+						<a href="https://financial-times.github.io/next/docs/developer-guide/measuring-next/">More info</a> |
+						<a href="mailto:next.team@ft.com">next.team@ft.com</a> |
+						<a href="https://asknext.ft.com">Ask Next FT Forum</a> | 
+						<a href="https://chrome.google.com/webstore/detail/mollydobbin-tracking-tool/cmhfmieofijgphlefokpckljhgcmaneb">Mollydobbin for Chrome</a>
+					</p>
+				</div>
+			</footer>
+		</div>
+		<script>
+			window.cutsTheMustard = true;
+			window.keen_project = '{{keen_project}}';
+			window.keen_read_key = '{{keen_read_key}}';
+		</script>
+		<script src="//code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
+		<script src="//cdn.jsdelivr.net/keen.js/3.2.3/keen.min.js" type="text/javascript"></script>
+		
+		{{>next-js-setup/templates/script-loader}}
+	</body>
+</html

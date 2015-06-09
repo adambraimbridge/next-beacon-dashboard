@@ -7,3 +7,5 @@ bower_components
 static/main.js
 .DS_Store
 /static
+.sass-cache
+public
