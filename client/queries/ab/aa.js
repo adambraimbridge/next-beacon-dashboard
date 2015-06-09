@@ -2,6 +2,7 @@
 
 'use strict';
 
+var visualise   = require('./visualise');
 var confidence	= require('ab-test-confidence');
 
 module.exports = {
@@ -31,8 +32,6 @@ module.exports = {
 			return user['user.ab.aa'];
 		});
 
-		console.log(c);
-
 		var conversion = 5;
 
 		// control
@@ -59,7 +58,10 @@ module.exports = {
 
 		console.log({ stats: ab, results: c });
 
-		el.innerHTML = JSON.stringify({ confidence: ab });
+		visualise(el, {
+			stats: ab,
+			results: c
+		});
 
 	}
 };
