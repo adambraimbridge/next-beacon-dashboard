@@ -54,7 +54,7 @@ var render = function (el, results, opts) {
 			}).reverse();
 		} else {
 			var date = new Date(week.timeframe.start);
-			if (date.getMonth() == previousMonth.number){
+			if (date.getMonth() === previousMonth.number){
 
 				// Merge the week-chunks into a month, summing the value results
 				previousMonth.value = _.merge(week.value, previousMonth.value, function(a, b) {
