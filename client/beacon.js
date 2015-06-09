@@ -170,6 +170,10 @@ Keen.ready(function(){
 			render(require('./queries/flow'));
 			break;
 
+		case '/graph/searchterms':
+			render(require('./queries/searchterms'));
+			break;
+
 		default:
 			console.log('unknown graph');
 	}
