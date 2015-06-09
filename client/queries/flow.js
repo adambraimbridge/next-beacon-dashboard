@@ -144,7 +144,7 @@ dashboards['MyPageFeed'] = {
 			filters: [{
 				property_name: 'meta.domPath',
 				operator: 'contains',
-				property_value: 'my-page-feed | headline'
+				property_value: 'myft-panel | headline'
 			}]
 		})
 	]
