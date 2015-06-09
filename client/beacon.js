@@ -163,13 +163,15 @@ Keen.ready(function(){
 			break;
 
 		case '/graph/active-usage':
-			render(require('./queries/active-usage'), {
-				title: 'Active usage'
-			});
+			render(require('./queries/active-usage'));
 			break;
 
 		case '/graph/flow':
-			render(require('./queries/flow'), {});
+			render(require('./queries/flow'));
+			break;
+
+		case '/graph/searchterms':
+			render(require('./queries/searchterms'));
 			break;
 
 		default:
