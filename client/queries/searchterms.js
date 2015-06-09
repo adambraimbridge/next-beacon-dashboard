@@ -12,7 +12,8 @@ var daysFromNow = function (offset) {
 	return dateObject.toISOString();
 };
 
-var query = new Keen.Query("count", {
+var query = new Keen.Query("count_unique", {
+	target_property: "user.uuid",
 	eventCollection: "dwell",
 	filters: [{"operator":"eq","property_name":"page.location.type","property_value":"search"},{"operator":"eq","property_name":"user.isStaff","property_value":false}],
 	groupBy: "page.location.search.q",
