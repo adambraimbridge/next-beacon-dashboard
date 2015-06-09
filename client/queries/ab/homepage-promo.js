@@ -1,4 +1,4 @@
-/* global Keen, console, _ */
+/* global Keen, console */
 
 'use strict';
 
@@ -80,4 +80,4 @@ module.exports.render = function (a, b, el) {
 			}
 		});
 
-	}
+	};
