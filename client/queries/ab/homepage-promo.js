@@ -3,57 +3,62 @@
 'use strict';
 
 var confidence	= require('ab-test-confidence');
+var visualise   = require('./visualise');
 
-module.exports = {
-
-	/*
-	 * - count unique by erights, group by 'views', 'ab:aa' , then filter every user with n views as 'converted'
-	 * - produce an 'a' and 'b' visitors / conversions
-	 * - push through the ab-test-confidence stats
-	 */
-
-	// FIXME - step i) everyone who visited the frontpage, ii) % of people clicked 'myft-panel | myft-topic | follow'
-
-	query: new Keen.Query('count', {
-			timeframe: 'this_4_days',
-			event_collection: 'cta',
-			group_by: ['user.ab.homePageProminentFollowAB', 'user.erights'],
+module.exports.on = new Keen.Query("funnel", { steps: [
+		{
+			event_collection: 'dwell',
+			timeframe: { "start" : "2015-06-05T00:00:00.000Z", "end": new Date().toISOString() },
+			actor_property: 'user.uuid',
 			filters: [
 				{"property_name":"page.location.type","operator":"eq","property_value":"frontpage"},
-				{"property_name":"meta.domPath","operator":"eq","property_value":"myft-panel | myft-topic | follow"},
-				{"property_name":"user.isStaff","operator":"eq","property_value":false}
+				{"property_name":"user.isStaff","operator":"eq","property_value":false},
+				{"property_name":"user.ab.homePageProminentFollowAB","operator":"eq","property_value":"on"}
 			]
-		}),
+		},
+		{
+			event_collection: 'cta',
+			timeframe: { "start" : "2015-06-05T00:00:00.000Z", "end": new Date().toISOString() },
+			actor_property: 'user.uuid',
+			filters: [
+				{"property_name":"meta.domPath","operator":"eq","property_value":"myft-panel | myft-topic | follow"},
+			]
+		}
+	]});
 
-	render: function (el, response, opts, client) {
+module.exports.off = new Keen.Query("funnel", { steps: [
+		{
+			event_collection: 'dwell',
+			timeframe: { "start" : "2015-06-05T00:00:00.000Z", "end": new Date().toISOString() },
+			actor_property: 'user.uuid',
+			filters: [
+				{"property_name":"page.location.type","operator":"eq","property_value":"frontpage"},
+				{"property_name":"user.isStaff","operator":"eq","property_value":false},
+				{"property_name":"user.ab.homePageProminentFollowAB","operator":"eq","property_value":"off"}
+			]
+		},
+		{
+			event_collection: 'cta',
+			timeframe: { "start" : "2015-06-05T00:00:00.000Z", "end": new Date().toISOString() },
+			actor_property: 'user.uuid',
+			filters: [
+				{"property_name":"meta.domPath","operator":"eq","property_value":"myft-panel | myft-topic | follow"},
+			]
+		}
+	]});
 
-		console.log(arguments);
-
+module.exports.render = function (a, b, el) {
+		
+		console.log(a, b);
 		var ab = { on: {}, off: {}, confidence: {} };
 
-		// Turn the array of results in to two groups, keyed on the variant of the 'user.ab.aa' key
-		//
-		// So we end up with everyone in 'on' and 'off' in two arrays -> { on: [ ... ], off: [ ... ] }
-
-		var c = _.groupBy(response.result, function (user) {
-			return user['user.ab.homePageProminentFollowAB'];
-		});
-
-		console.log(c);
-
-		var conversion = 1;
-
 		// control
-		ab.off.visitors = c.off.length;
-		ab.off.conversions = _.filter(c.off, function (user) {
-			return user.result > conversion;
-		}).length;
+		ab.off.visitors = a.result[0];
+		ab.off.conversions = a.result[1]; 
 
 		// variant
-		ab.on.visitors = c.on.length;
-		ab.on.conversions = _.filter(c.on, function (user) {
-			return user.result > conversion;
-		}).length;
+		ab.on.visitors = b.result[0];
+		ab.on.conversions = b.result[1]; 
 
 		['on', 'off'].forEach(function (variant) {
 			ab[variant].conversionRate = confidence.conversionRate(ab[variant].visitors, ab[variant].conversions);
@@ -65,7 +70,14 @@ module.exports = {
 			ab.confidence.at99percent = confidence.at99percent(ab.confidence.pValue);
 		});
 
-		console.log({ stats: ab, results: c });
+		console.log({ stats: ab });
+
+		visualise(el, {
+			stats: ab,
+			results: { 
+				a: a,
+				b: b
+			}
+		});
 
 	}
-};

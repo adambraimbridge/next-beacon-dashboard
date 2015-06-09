@@ -39,7 +39,22 @@ Keen.ready(function(){
 
 		case '/graph/ab/homepage-promo':
 
-			render(require('./queries/ab/homepage-promo'));
+			// FIXME - move to Promise.all
+			var on = require('./queries/ab/homepage-promo').on;
+			var off = require('./queries/ab/homepage-promo').off;
+			
+			client.run(off, function (err, results) {
+				console.log('query done');
+				var a = results;
+				client.run(on, function (err, results) {
+					var b = results;
+					var el = document.createElement('div');
+					container.appendChild(el);
+					require('./queries/ab/homepage-promo').render(a, b, el);
+				});	
+			
+			});
+			
 			break;
 
 		case '/graph/opt-in':
