@@ -2,10 +2,13 @@
 
 'use strict';
 
+var qs = require('query-string');
+var q = qs.parse(location.search);
+
 module.exports.innie = {
 
 	query: new Keen.Query('count_unique', {
-			timeframe: 'this_24_hours',
+			timeframe: q.timeframe || 'this_24_hours',
 			target_property: 'user.uuid',
 			event_collection: 'optin',
 			filters: [
@@ -26,7 +29,7 @@ module.exports.innie = {
 module.exports.outie = {
 
 	query: new Keen.Query('count_unique', {
-			timeframe: 'this_24_hours',
+			timeframe: q.timeframe || 'this_24_hours',
 			target_property: 'user.uuid',
 			event_collection: 'optin',
 			filters: [
@@ -47,7 +50,7 @@ module.exports.outie = {
 module.exports.lastWeek = {
 
 	query: new Keen.Query('count_unique', {
-			timeframe: 'this_7_days',
+			timeframe: q.timeframe || 'this_7_days',
 			target_property: 'user.uuid',
 			event_collection: 'optin',
 			group_by: ['meta.type'],
@@ -64,7 +67,7 @@ module.exports.lastWeek = {
 module.exports.reasons = {
 
 	query: new Keen.Query('count_unique', {
-			timeframe: 'this_7_days',
+			timeframe: q.timeframe || 'this_7_days',
 			target_property: 'user.uuid',
 			event_collection: 'optin',
 			group_by: ['meta.reason'],
@@ -79,6 +82,11 @@ module.exports.reasons = {
 					property_name: 'user.isStaff',
 					operator: 'eq',
 					property_value: false
+				},
+				{
+					property_name: 'meta.reason',
+					operator: 'ne',
+					property_value: 'unknown'
 				}
 			]
 		})
@@ -87,7 +95,7 @@ module.exports.reasons = {
 module.exports.difficultNavigation = {
 
 	query: new Keen.Query('count_unique', {
-			timeframe: 'this_7_days',
+			timeframe: q.timeframe || 'this_7_days',
 			target_property: 'user.uuid',
 			event_collection: 'optin',
 			group_by: ['meta.difficultNavReason'],
