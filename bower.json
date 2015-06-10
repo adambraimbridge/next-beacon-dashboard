@@ -1,7 +1,7 @@
 {
   "name": "next-beacon-dashboard",
   "dependencies": {
-    "isomorphic-fetch": "~1.6.1",
+    "isomorphic-fetch": "^2.0.0",
     "sprintf": "~1.0.2",
     "o-techdocs": "^4.0.4",
     "next-js-setup": "~2.5.1",
@@ -10,10 +10,8 @@
     "ab-test-confidence": "~1.2.0"
   },
   "resolutions": {
-    "isomorphic-fetch": "^2.0.2",
-    "fetch": "^0.8.2",
     "next-sass-setup": "^6.0.0",
-    "o-ft-icons": "^2.2.1",
-    "o-fonts": "^2.0.0"
+    "o-fonts": "^2.0.0",
+    "o-ft-icons": "^2.2.1"
   }
 }
