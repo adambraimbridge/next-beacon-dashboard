@@ -41,6 +41,10 @@ app.get('/graph/:name/:sub?', function (req, res) {
 	});
 });
 
+/* Export */
+
+app.get('/api/export', require('./export'));
+
 /* Blog */
 
 var dir = './progress/';
