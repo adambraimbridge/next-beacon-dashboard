@@ -13,7 +13,7 @@ var keen = keenIO.configure({
 // The latest 100 events we've logged
 module.exports = function(req, res) {
 
-    var latest = new keenIO.Query('extraction', {
+	var latest = new keenIO.Query('extraction', {
 		timeframe: req.query.timeframe || 'this_2_days',
 		event_collection: req.query.event_collection || 'dwell',
 		latest: req.query.limit || 1000
@@ -31,7 +31,7 @@ module.exports = function(req, res) {
 		});
 
 		if (req.query.format === 'csv') {
-			
+
 			var cols = csvUtils.columns(flattened);
 			flattened.unshift(cols);
 
