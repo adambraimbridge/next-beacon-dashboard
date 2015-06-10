@@ -10,11 +10,6 @@ var query = new Keen.Query("count_unique", {
 		"property_value":"header"
 	},
 	{
-		"property_name":"meta.domPath",
-		"operator":"not_contains",
-		"property_value":"header-"
-	},
-	{
 		"property_name":"user.isStaff",
 		"operator":"eq",
 		"property_value":false
