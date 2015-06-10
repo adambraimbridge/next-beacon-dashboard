@@ -46,3 +46,31 @@ table {
 .o-techdocs-sidebar {
 	margin-bottom: 20px;
 }
+
+.ab__signficance td,
+.ab__signficance th,
+.ab__results td,
+.ab__results th {
+	padding: 12px 1px;
+	text-align: center;
+}
+
+table {
+	width: 100%;
+}
+
+.ab__significance-no {
+	background-color: red;
+	color: white;
+	text-align: center;
+}
+
+.ab__significance-yes {
+	background-color: green;
+	color: white;
+	text-align: center;
+}
+
+.ab__confidence {
+	text-align: center;
+}

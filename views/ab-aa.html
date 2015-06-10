@@ -1,2 +1,42 @@
-<h1>A/A</h1>
-<section id="graph__container"></section>
+<h1>A/B - A/A</h1>
+<section id="graph__container">
+	
+	<p>
+		This table explains the performance of each variant in the AB test. If the conversion rate
+		of the variant is higher than the control we can use the significant calculations below to 
+		tell us whether we can be confidence in it's out-performance.
+	</p>
+
+	<div id="ab__container"></div>
+
+	<p>
+		This table helps to intpret the significance A/B test results.
+	</p>
+	<p>
+		In general, the smaller the variation between the control and variant the
+		larger the sample or test duration needs to be in order to increase our
+		confidence in the result. 
+	</p>
+	
+	<table class="ab__signficance">
+		<tr>
+			<th colspan="2"></th>
+			<td colspan="3" align="center">Signficance</th>
+		</tr>
+		<tr>
+			<th><a href="http://20bits.com/article/statistical-analysis-and-ab-testing">p-value</a></th>
+			<th><a href="http://20bits.com/article/statistical-analysis-and-ab-testing">z-score</a></th>
+			<th class="ab__confidence">90% confidence</th>
+			<th class="ab__confidence">95% confidence</th>
+			<th class="ab__confidence">99% confidence</th>
+		</tr>
+		<tr>
+			<td class="ab__p-val"></td>
+			<td class="ab__z-score"></td>
+			<td class="ab__confidence-90"></td>
+			<td class="ab__confidence-95"></td>
+			<td class="ab__confidence-99"></td>
+		</tr>
+	</table>
+
+</section>
