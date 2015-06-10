@@ -188,6 +188,10 @@ Keen.ready(function(){
 			render(require('./queries/searchterms'));
 			break;
 
+		case '/graph/navigation':
+			render(require('./queries/navigation'));
+			break;
+
 		default:
 			console.log('unknown graph');
 	}
