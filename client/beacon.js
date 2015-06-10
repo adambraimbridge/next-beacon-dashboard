@@ -188,8 +188,8 @@ Keen.ready(function(){
 			render(require('./queries/searchterms'));
 			break;
 
-		case '/graph/navigation-ctas':
-			render(require('./queries/navigation-ctas'));
+		case '/graph/navigation':
+			render(require('./queries/navigation'));
 			break;
 
 		default:
