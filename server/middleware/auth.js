@@ -40,9 +40,6 @@ var authenticateToken = function(res,username,token) {
 	var result = verifier.verify(publicPem, token, "base64");
 
 	if (result) {
-		var cookieOptions = { maxAge: 900000, httpOnly: true, secure: isSecure };
-		res.cookie('s3o_username', username, cookieOptions);
-		res.cookie('s3o_token', token, cookieOptions);
 		return true;
 	} else {
 		return false;
@@ -51,6 +48,7 @@ var authenticateToken = function(res,username,token) {
 
 var authS3O = function(req, res, next){
 	var s3oUsername, s3oToken;
+	var s3oParametersDetected = false;
 	isSecure = req.protocol === "https"? true : false;
 
 	if (req.cookies.s3o_username && req.cookies.s3o_token) {
@@ -65,6 +63,7 @@ var authS3O = function(req, res, next){
 		// These parameters come from https://s3o.ft.com. It redirects back after it does the google authentication.
 		s3oUsername = req.query.username;
 		s3oToken = req.query.token;
+		s3oParametersDetected = true;
 		logger.info("S3O: Found parameter token for s3o_username: " + s3oUsername);
 	} else {
 
@@ -75,7 +74,15 @@ var authS3O = function(req, res, next){
 
 	if (s3oUsername && s3oToken) {
 		if (authenticateToken(res, s3oUsername, s3oToken)) {
-			next();
+			var cookieOptions = { maxAge: 900000, httpOnly: true, secure: isSecure };
+			res.cookie('s3o_username', s3oUsername, cookieOptions);
+			res.cookie('s3o_token', s3oToken, cookieOptions);
+			if (s3oParametersDetected) {
+				logger.info("S3O: Parameters detected in URL. Redirecting to base path");
+				return res.redirect(req.path);
+			} else {
+				next();
+			}
 		} else {
 			throw new Error("Authentication error. For access contact next.team@ft.com.");
 		}
