@@ -37,7 +37,8 @@ app.get('/graph/:name/:sub?', function (req, res) {
 	res.render(tmpl, {
 		layout: 'beacon',
 		keen_project: KEEN_PROJECT,
-		keen_read_key: KEEN_READ_KEY
+		keen_read_key: KEEN_READ_KEY,
+		page_name:req.params.name
 	});
 });
 
