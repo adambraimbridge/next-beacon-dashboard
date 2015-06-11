@@ -1,4 +1,4 @@
-/* global $ */
+/* global $, page_name */
 
 "use strict";
 
