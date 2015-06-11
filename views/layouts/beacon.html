@@ -6,6 +6,7 @@
 		<link rel="stylesheet" href="{{#hashedAsset}}main.css{{/hashedAsset}}"/>
 		<title>Beacon - next.ft.com performance dashboard</title>
 		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
+		<link rel="stylesheet" href="//build.origami.ft.com/bundles/css?modules=o-fonts@^1.6.7,o-ft-icons@^2.3.6" />
 		<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.9.3/lodash.min.js"></script>
 		{{>next-js-setup/templates/ctm}}
@@ -28,75 +29,78 @@
 		<div class="warning">Be advised this is an experimental series of dashboards for next.ft.com, not an audited set of statistics.</div>
 		<div class="o-techdocs-layout">
 			<div class="o-techdocs-sidebar">
-				<ul class="o-techdocs-nav">
-					<li>
-						<a href="/graph/uniques">Uniques</a>
-						<ul class="o-techdocs-nav o-techdocs-nav--sub">
-							<li><a href="/graph/uniques/timeline">Trend</a></li>
-							<li><a href="/graph/uniques/by-page">By page type</a></li>
-							<li><a href="/graph/uniques/by-geo">By country</a></li>
-							<li><a href="/graph/uniques/by-device">By device</a></li>
-						</ul>
-					</li>
-					<li>
-						<a>Addiction</a>
-						<ul class="o-techdocs-nav o-techdocs-nav--sub">
-							<li><a href="/graph/addiction">Daily</a></li>
-							<li><a href="/graph/addiction-weekly">Weekly</a></li>
-						</ul>
-					</li>
-					<li>
-						<a>AB testing</a>
-						<ul class="o-techdocs-nav o-techdocs-nav--sub">
-							<li><a href="/graph/ab/aa">AA</a></li>
-							<li><a href="/graph/ab/homepage-promo">Homepage promo</a></li>
-						</ul>
-					</li>
-					<li>
-						<a href="/graph/opt-in">Opt-ins</a>
-					</li>
-					<li>
-						<a>Active usage</a>
-						<ul class="o-techdocs-nav o-techdocs-nav--sub">
-							<li><a href="/graph/active-usage?feature=globalNavigation">globalNavigation</a></li>
-							<li><a href="/graph/active-usage?feature=homePageLoadMore">homePageLoadMore</a></li>
-							<li><a href="/graph/active-usage?feature=marketDataAPI">marketDataAPI</a></li>
-							<li><a href="/graph/active-usage?feature=articleComments">articleComments</a></li>
-							<li><a href="/graph/active-usage?feature=articleRelatedContent">articleRelatedContent</a></li>
-							<li><a href="/graph/active-usage?feature=articleTOC">articleTOC</a></li>
-							<li><a href="/graph/active-usage?feature=dynamicTertiaryNav">dynamicTertiaryNav</a></li>
-							<li><a href="/graph/active-usage?feature=follow">follow</a></li>
-							<li><a href="/graph/active-usage?feature=homePageMyFTPanel">homePageMyFTPanel</a></li>
-							<li><a href="/graph/active-usage?feature=homePageMyPageFeed">homePageMyPageFeed</a></li>
-							<li><a href="/graph/active-usage?feature=myPageTopicSuggestions">myPageTopicSuggestions</a></li>
-							<li><a href="/graph/active-usage?feature=pagination">pagination</a></li>
-							<li><a href="/graph/active-usage?feature=saveForLater">saveForLater</a></li>
-							<li><a href="/graph/active-usage?feature=search">search</a></li>
-						</ul>
-					</li>
-					<li>
-						<a>Flow</a>
-						<ul class="o-techdocs-nav o-techdocs-nav--sub">
-							<li><a href="/graph/flow?dashboard=Galleries">Galleries</a></li>
-							<li><a href="/graph/flow?dashboard=MyFT">MyFT</a></li>
-							<li><a href="/graph/flow?dashboard=MyPageFeed">MyPageFeed</a></li>
-							<li><a href="/graph/flow?dashboard=AllMyFTNotifications">AllMyFTNotifications</a></li>
-						</ul>
-					</li>
-					<li>
-						<a>Labs</a>
-						<ul class="o-techdocs-nav o-techdocs-nav--sub">
-							<li><a href="https://spoor-sqs-ui.herokuapp.com">Real-time stream</a></li>
-							<li><a href="https://spoor-sqs-ui.herokuapp.com/map">Real-time traffic map</a></li>
-						</ul>
-					</li>
-					<li>
-						<a href="/graph/searchterms">Most searched-for terms</a>
-					</li>
-					<li>
-						<a href="/graph/navigation">Navigation</a>
-					</li>
-				</ul>
+				<nav class="o-hierarchical-nav" data-o-component="o-hierarchical-nav" data-o-hierarchical-nav-orientiation="vertical">
+					<ul class="o-techdocs-nav" data-o-hierarchical-nav-level="1">
+						<li data-nav-name="uniques" class="o-hierarchical-nav__parent">
+							<a>Uniques <i></i></a>
+							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
+								<li><a href="/graph/uniques">Overview</a></li>
+								<li><a href="/graph/uniques/timeline">Trend</a></li>
+								<li><a href="/graph/uniques/by-page">By page type</a></li>
+								<li><a href="/graph/uniques/by-geo">By country</a></li>
+								<li><a href="/graph/uniques/by-device">By device</a></li>
+							</ul>
+						</li>
+						<li data-nav-name="addiction" class="o-hierarchical-nav__parent">
+							<a>Addiction <i></i></a>
+							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
+								<li><a href="/graph/addiction">Daily</a></li>
+								<li><a href="/graph/addiction-weekly">Weekly</a></li>
+							</ul>
+						</li>
+						<li data-nav-name="ab" class="o-hierarchical-nav__parent">
+							<a>AB testing <i></i></a>
+							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
+								<li><a href="/graph/ab/aa">AA</a></li>
+								<li><a href="/graph/ab/homepage-promo">Homepage promo</a></li>
+							</ul>
+						</li>
+						<li data-nav-name="opt-in">
+							<a href="/graph/opt-in">Opt-ins</a>
+						</li>
+						<li data-nav-name="active-usage" class="o-hierarchical-nav__parent">
+							<a>Active usage <i></i></a>
+							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
+								<li><a href="/graph/active-usage?feature=globalNavigation">globalNavigation</a></li>
+								<li><a href="/graph/active-usage?feature=homePageLoadMore">homePageLoadMore</a></li>
+								<li><a href="/graph/active-usage?feature=marketDataAPI">marketDataAPI</a></li>
+								<li><a href="/graph/active-usage?feature=articleComments">articleComments</a></li>
+								<li><a href="/graph/active-usage?feature=articleRelatedContent">articleRelatedContent</a></li>
+								<li><a href="/graph/active-usage?feature=articleTOC">articleTOC</a></li>
+								<li><a href="/graph/active-usage?feature=dynamicTertiaryNav">dynamicTertiaryNav</a></li>
+								<li><a href="/graph/active-usage?feature=follow">follow</a></li>
+								<li><a href="/graph/active-usage?feature=homePageMyFTPanel">homePageMyFTPanel</a></li>
+								<li><a href="/graph/active-usage?feature=homePageMyPageFeed">homePageMyPageFeed</a></li>
+								<li><a href="/graph/active-usage?feature=myPageTopicSuggestions">myPageTopicSuggestions</a></li>
+								<li><a href="/graph/active-usage?feature=pagination">pagination</a></li>
+								<li><a href="/graph/active-usage?feature=saveForLater">saveForLater</a></li>
+								<li><a href="/graph/active-usage?feature=search">search</a></li>
+							</ul>
+						</li>
+						<li data-nav-name="flow" class="o-hierarchical-nav__parent">
+							<a>Flow <i></i></a>
+							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
+								<li><a href="/graph/flow?dashboard=Galleries">Galleries</a></li>
+								<li><a href="/graph/flow?dashboard=MyFT">MyFT</a></li>
+								<li><a href="/graph/flow?dashboard=MyPageFeed">MyPageFeed</a></li>
+								<li><a href="/graph/flow?dashboard=AllMyFTNotifications">AllMyFTNotifications</a></li>
+							</ul>
+						</li>
+						<li data-nav-name="labs" class="o-hierarchical-nav__parent">
+							<a>Labs <i></i></a>
+							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
+								<li><a href="https://spoor-sqs-ui.herokuapp.com">Real-time stream</a></li>
+								<li><a href="https://spoor-sqs-ui.herokuapp.com/map">Real-time traffic map</a></li>
+							</ul>
+						</li>
+						<li data-nav-name="searchterms">
+							<a href="/graph/searchterms">Most searched-for terms</a>
+						</li>
+						<li data-nav-name="navigation">
+							<a href="/graph/navigation">Navigation</a>
+						</li>
+					</ul>
+				</nav>
 			</div>
 			<div class="o-techdocs-main">
 				<div class="o-techdocs-content">
@@ -118,6 +122,7 @@
 			window.cutsTheMustard = true;
 			window.keen_project = '{{keen_project}}';
 			window.keen_read_key = '{{keen_read_key}}';
+			window.page_name = '{{page_name}}';
 		</script>
 		<script src="//code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
 		<script src="//cdn.jsdelivr.net/keen.js/3.2.3/keen.min.js" type="text/javascript"></script>

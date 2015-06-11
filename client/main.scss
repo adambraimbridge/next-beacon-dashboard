@@ -1,12 +1,29 @@
 @import 'o-techdocs/main';
+@import 'o-hierarchical-nav/main';
 
-.o-techdocs-layout {
-	padding-top: 20px;
+/* Hide any enhanced experience content when in core mode, and vice versa. */
+.core .o--if-js,
+.enhanced .o--if-no-js { display: none !important; }
+
+html {
+	/* Set a font family on the whole document */
+	font-family: BentonSans, sans-serif;
+
+	/* Prevent navigation menus from creating extra space on sides of the page */
+	overflow-x: hidden;
 }
 
 body {
 	margin: 0;
 	padding: 0;
+}
+
+.o-techdocs-layout {
+	padding-top: 20px;
+}
+
+.o-hierarchical-nav {
+	@include oHierarchicalNavVerticalTheme;
 }
 
 img {
@@ -73,4 +90,19 @@ table {
 
 .ab__confidence {
 	text-align: center;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+	position: relative;
+	min-height: 100%;
+}
+body {
+	margin-bottom: 100px !important;
+}
+.o-techdocs-footer {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
 }
