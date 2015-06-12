@@ -205,17 +205,11 @@ dashboards['MyFTRSS'] = {
 			}]
 		}),
 		step({
-			eventCollection: 'cta',
 			filters: [{
-				property_name: 'meta.domPath',
-				operator: 'contains',
-				property_value: 'set-publish-rss-feeds'
-			},
-			{
-				property_name: 'meta.domPressed',
+				property_name: 'user.myft.preferences.publish-rss-feeds',
 				operator: 'eq',
-				property_value: false
-			}]
+				property_value: true
+			}
 		}),
 		step({
 			filters: [{
@@ -250,11 +244,10 @@ dashboards['MyFTEmail'] = {
 			}]
 		}),
 		step({
-			eventCollection: 'cta',
 			filters: [{
-				property_name: 'meta.domPath',
-				operator: 'contains',
-				property_value: 'set-email-daily-digest'
+				property_name: 'user.myft.preferences.email-daily-digest',
+				operator: 'eq',
+				property_value: true
 			},
 			{
 				property_name: 'meta.domPressed',
