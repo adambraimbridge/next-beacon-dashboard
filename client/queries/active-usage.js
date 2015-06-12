@@ -20,7 +20,8 @@ var features = {
 	'myPageTopicSuggestions':'my-page-onboarding',
 	'pagination':'next-page',
 	'saveForLater':'save-for-later',
-	'search':'search-form'
+	'search':'search-form',
+	'myFTReadingListOnArticle': 'myft-reading-list'
 };
 
 // Return the ISO string for relative dates
