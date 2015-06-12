@@ -209,7 +209,7 @@ dashboards['MyFTRSS'] = {
 				property_name: 'user.myft.preferences.publish-rss-feeds',
 				operator: 'eq',
 				property_value: true
-			}
+			}]
 		}),
 		step({
 			filters: [{
