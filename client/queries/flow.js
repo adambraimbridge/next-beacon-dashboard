@@ -106,14 +106,14 @@ dashboards['MyFT'] = {
 			filters: [{
 				property_name: 'page.location.pathname',
 				operator: 'contains',
-				property_value: 'mypage/following'
+				property_value: 'myft/my-news'
 			}]
 		}),
 		step({
 			filters: [{
-				property_name: 'page.referrer.pathname',
+				property_name: 'page.location.hash',
 				operator: 'contains',
-				property_value: 'mypage/following'
+				property_value: 'myft:my-news:page'
 			},
 			{
 				property_name: 'page.location.type',
@@ -142,9 +142,14 @@ dashboards['MyPageFeed'] = {
 		}),
 		step({
 			filters: [{
-				property_name: 'meta.domPath',
+				property_name: 'page.location.hash',
 				operator: 'contains',
-				property_value: 'myft-panel | headline'
+				property_value: 'myft:my-news:homepage-panel'
+			},
+			{
+				property_name: 'page.location.type',
+				operator: 'eq',
+				property_value: 'article'
 			}]
 		})
 	]
@@ -170,7 +175,102 @@ dashboards['AllMyFTNotifications'] = {
 			filters: [{
 				property_name: 'page.location.hash',
 				operator: 'contains',
-				property_value: 'myft:notification'
+				property_value: 'myft'
+			},
+			{
+				property_name: 'page.location.type',
+				operator: 'eq',
+				property_value: 'article'
+			}]
+		})
+	]
+};
+
+dashboards['MyFTRSS'] = {
+	'title' : 'Engagement with myFT RSS feeds',
+	'labels' : [
+		'Visited next.ft.com',
+		'Are following at least one topic',
+		'Have published their RSS feed',
+		'Have come to an article as a result of a myFT RSS feed (NB: This is currently unreliable)',
+
+	],
+	'steps':[
+		step({}),
+		step({
+			filters: [{
+				property_name: 'user.myft.topicsFollowed',
+				operator: 'gte',
+				property_value: 1
+			}]
+		}),
+		step({
+			eventCollection: 'cta',
+			filters: [{
+				property_name: 'meta.domPath',
+				operator: 'contains',
+				property_value: 'set-publish-rss-feeds'
+			},
+			{
+				property_name: 'meta.domPressed',
+				operator: 'eq',
+				property_value: false
+			}]
+		}),
+		step({
+			filters: [{
+				property_name: 'page.location.hash',
+				operator: 'contains',
+				property_value: 'myft'
+			},{
+				property_name: 'page.location.hash',
+				operator: 'contains',
+				property_value: 'rss'
+			}]
+		})
+	]
+};
+
+dashboards['MyFTEmail'] = {
+	'title' : 'Engagement with myFT emails',
+	'labels' : [
+		'Visited next.ft.com',
+		'Are following at least one topic',
+		'Have signed up to emails',
+		'Have come to an article as a result of emails (NB: This is currently unreliable)',
+
+	],
+	'steps':[
+		step({}),
+		step({
+			filters: [{
+				property_name: 'user.myft.topicsFollowed',
+				operator: 'gte',
+				property_value: 1
+			}]
+		}),
+		step({
+			eventCollection: 'cta',
+			filters: [{
+				property_name: 'meta.domPath',
+				operator: 'contains',
+				property_value: 'set-email-daily-digest'
+			},
+			{
+				property_name: 'meta.domPressed',
+				operator: 'eq',
+				property_value: false
+			}]
+		}),
+		step({
+			filters: [{
+				property_name: 'page.location.hash',
+				operator: 'contains',
+				property_value: 'myft'
+			},{
+				property_name: 'page.location.hash',
+				operator: 'contains',
+				property_value: 'email'
 			}]
 		})
 	]
