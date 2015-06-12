@@ -22,7 +22,7 @@ body {
 	padding-top: 20px;
 }
 
-.o-hierarchical-nav {
+[data-o-hierarchical-nav-orientiation="vertical"] {
 	@include oHierarchicalNavVerticalTheme;
 }
 
