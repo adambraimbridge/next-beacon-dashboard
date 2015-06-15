@@ -19,11 +19,11 @@ var keenQuery = function(options) {
 			property_value:false
 		}],
 		maxAge: 3600
-	}
+	};
 
 	// Don't pass any interval parameter if it's explicitly set to false
 	if (options.interval !== false) {
-		parameters['interval'] = options.interval || "daily"
+		parameters['interval'] = options.interval || "daily";
 	}
 	return new Keen.Query("count_unique", parameters);
 };
