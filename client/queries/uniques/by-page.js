@@ -1,4 +1,4 @@
-/* global Keen, _, $ */
+/* global Keen */
 
 'use strict';
 
@@ -78,9 +78,9 @@ var render = function (el, results, opts, client) {
 		.height(500)
 		.prepare();
 
-	var request = client.run(query, function(error, response){
+	client.run(query, function(error, response){
 		if (error) {
-			chart.error(error.message);
+			linechart.error(error.message);
 		}
 		else {
 			linechart
@@ -96,7 +96,7 @@ var render = function (el, results, opts, client) {
 				.render();
 		}
 	});
-}
+};
 
 module.exports = {
 	query:query,
