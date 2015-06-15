@@ -206,6 +206,7 @@ dashboards['MyFTRSS'] = {
 		}),
 		step({
 			filters: [{
+				eventCollection: 'dwell',
 				property_name: 'user.myft.preferences.publish-rss-feeds',
 				operator: 'eq',
 				property_value: true
@@ -245,14 +246,10 @@ dashboards['MyFTEmail'] = {
 		}),
 		step({
 			filters: [{
+				eventCollection: 'dwell',
 				property_name: 'user.myft.preferences.email-daily-digest',
 				operator: 'eq',
 				property_value: true
-			},
-			{
-				property_name: 'meta.domPressed',
-				operator: 'eq',
-				property_value: false
 			}]
 		}),
 		step({
