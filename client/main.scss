@@ -40,6 +40,11 @@ table {
 	border-collapse: collapse;
 }
 
+.chart__container {
+	width: 100%;
+	display: inline-block;
+}
+
 .addiction__table tr:nth-child(6) { /* day 5 */
 	background-color: #dddddd;
 }
