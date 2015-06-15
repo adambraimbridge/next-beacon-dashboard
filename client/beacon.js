@@ -120,21 +120,7 @@ Keen.ready(function(){
 			break;
 
 		case '/graph/uniques/by-geo':
-
-			render(require('./queries/uniques/by-geo').continent, {
-				chartType: "areachart",
-				titlePosition: 'none',
-				isStacked: 'percent',
-				colors: ['rgb(115, 192, 58)', 'rgb(150, 85, 126)', 'rgb(101, 185, 172)', 'rgb(70, 130, 180)', 'rgb(203, 81, 58)', 'rgb(120, 95, 67)'],
-				lineWidth: 0,
-				theme: 'maximized',
-				areaOpacity: 0.8
-			});
-
-			render(require('./queries/uniques/by-geo').country, {
-				chartType: "table"
-			});
-
+			render(require('./queries/uniques/by-geo'));
 			break;
 
 		case '/graph/uniques/by-device':
