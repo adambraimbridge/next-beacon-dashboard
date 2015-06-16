@@ -23,7 +23,7 @@ var keenQuery = function(options) {
 
 	// Don't pass any interval parameter if it's explicitly set to false
 	if (options.interval !== false) {
-		parameters['interval'] = options.interval || "daily";
+		parameters['interval'] = options.interval || queryParameters.interval || "daily";
 	}
 	return new Keen.Query("count_unique", parameters);
 };
@@ -53,7 +53,6 @@ var render = function (el, results, opts, client) {
 			}
 		})
 		.title('Approximate flow over time')
-		.sortGroups("desc")
 		.height(450)
 		.prepare();
 
@@ -70,17 +69,19 @@ var render = function (el, results, opts, client) {
 			}
 		})
 		.title('Daily totals in real numbers')
-		.sortGroups("desc")
 		.height(450)
 		.prepare();
 
-	var columnchart_stacked = new Keen.Dataviz()
-		.el(document.getElementById("columnchart_stacked"))
-		.chartType("columnchart")
+	var barchart_stacked = new Keen.Dataviz()
+		.el(document.getElementById("barchart_stacked"))
+		.chartType("barchart")
 		.chartOptions({
 			isStacked:'percent',
-			hAxis: {
+			vAxis: {
 				format: 'E d'
+			},
+			hAxis: {
+				textPosition: 'none'
 			},
 			chartArea: {
 				left: '10%',
@@ -88,7 +89,6 @@ var render = function (el, results, opts, client) {
 			}
 		})
 		.title('Daily totals as percentages')
-		.sortGroups("desc")
 		.height(500)
 		.prepare();
 
@@ -99,14 +99,17 @@ var render = function (el, results, opts, client) {
 		else {
 			linechart
 				.parseRequest(this)
+				.sortGroups("desc")
 				.render();
 
 			columnchart
 				.parseRequest(this)
+				.sortGroups("desc")
 				.render();
 
-			columnchart_stacked
+			barchart_stacked
 				.parseRequest(this)
+				.sortGroups("desc")
 				.render();
 		}
 	});
