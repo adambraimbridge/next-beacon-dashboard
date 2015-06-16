@@ -139,52 +139,44 @@ var intervalQuery = keenQuery({
 });
 
 var render = function (el, results, opts, client) {
+	var resultTotal = results[0].result;
+	var resultLarge = results[1].result;
+	var resultMedium = results[2].result;
+	var resultSmall = results[3].result;
 
-	client.run([metricTotalQuery, metricLargeQuery, metricMediumQuery, metricSmallQuery, intervalQuery], function(error, response){
-		if (error) {
-			console.log(error.message);
-		}
-		else {
-			var resultTotal = this.data[0].result;
-			var resultLarge = this.data[1].result;
-			var resultMedium = this.data[2].result;
-			var resultSmall = this.data[3].result;
+	var percentageLarge = (100 / resultTotal * resultLarge).toFixed(2);
+	var percentageMedium = (100 / resultTotal * resultMedium).toFixed(2);
+	var percentageSmall = (100 / resultTotal * resultSmall).toFixed(2);
 
-			var percentageLarge = (100 / resultTotal * resultLarge).toFixed(2);
-			var percentageMedium = (100 / resultTotal * resultMedium).toFixed(2);
-			var percentageSmall = (100 / resultTotal * resultSmall).toFixed(2);
+	metric_large
+		.parseRawData({ result:parseFloat(percentageLarge) })
+		.render();
 
-			metric_large
-				.parseRawData({ result:parseFloat(percentageLarge) })
-				.render();
+	metric_medium
+		.parseRawData({ result:parseFloat(percentageMedium) })
+		.render();
 
-			metric_medium
-				.parseRawData({ result:parseFloat(percentageMedium) })
-				.render();
+	metric_small
+		.parseRawData({ result:parseFloat(percentageSmall) })
+		.render();
 
-			metric_small
-				.parseRawData({ result:parseFloat(percentageSmall) })
-				.render();
+	linechart
+		.parseRawData(results[4])
+		.sortGroups("desc")
+		.render();
 
-			linechart
-				.parseRawData(this.data[4])
-				.sortGroups("desc")
-				.render();
+	columnchart
+		.parseRawData(results[4])
+		.sortGroups("desc")
+		.render();
 
-			columnchart
-				.parseRawData(this.data[4])
-				.sortGroups("desc")
-				.render();
-
-			barchart_stacked
-				.parseRawData(this.data[4])
-				.sortGroups("desc")
-				.render();
-		}
-	});
+	barchart_stacked
+		.parseRawData(results[4])
+		.sortGroups("desc")
+		.render();
 };
 
 module.exports = {
-	query:intervalQuery,
+	query:[metricTotalQuery, metricLargeQuery, metricMediumQuery, metricSmallQuery, intervalQuery],
 	render:render
 };
