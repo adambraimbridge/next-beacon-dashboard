@@ -8,9 +8,9 @@ var queryParameters = queryString.parse(location.search);
 var query = new Keen.Query("count_unique", {
 	eventCollection: "dwell",
 	timeframe: queryParameters.timeframe || "this_14_days",
+	interval: queryParameters.interval || "daily",
 	groupBy: "page.location.type",
 	targetProperty: "user.uuid",
-	interval: "daily",
 	timezone: "UTC",
 	filters:[{
 		property_name:"user.isStaff",
@@ -36,7 +36,6 @@ var render = function (el, results, opts, client) {
 			}
 		})
 		.title('Approximate flow over time')
-		.sortGroups("desc")
 		.height(450)
 		.prepare();
 
@@ -53,7 +52,6 @@ var render = function (el, results, opts, client) {
 			}
 		})
 		.title('Daily totals in real numbers')
-		.sortGroups("desc")
 		.height(450)
 		.prepare();
 
@@ -74,7 +72,6 @@ var render = function (el, results, opts, client) {
 			}
 		})
 		.title('Daily totals as percentages')
-		.sortGroups("desc")
 		.height(500)
 		.prepare();
 
@@ -85,14 +82,17 @@ var render = function (el, results, opts, client) {
 		else {
 			linechart
 				.parseRequest(this)
+				.sortGroups("desc")
 				.render();
 
 			columnchart
 				.parseRequest(this)
+				.sortGroups("desc")
 				.render();
 
 			barchart_stacked
 				.parseRequest(this)
+				.sortGroups("desc")
 				.render();
 		}
 	});

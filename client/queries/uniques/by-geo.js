@@ -2,28 +2,148 @@
 
 'use strict';
 
-var querystring = require('querystring');
-var qs = querystring.parse(location.search.slice(1));
+var queryString = require('query-string');
+var queryParameters = queryString.parse(location.search);
 
-module.exports.continent = {
-
-	query: new Keen.Query("count_unique", {
+// This is a base query object, for spawning queries.
+var keenQuery = function(options) {
+	var parameters = {
+		groupBy: options.groupBy,
 		eventCollection: "dwell",
-		timeframe: qs.timeframe || "this_14_days",
+		timeframe: queryParameters.timeframe || "this_14_days",
 		targetProperty: "user.uuid",
-		group_by: ["user.geo.continent"],
-		interval: "daily"
-	})
+		timezone: "UTC",
+		filters:[{
+			property_name:"user.isStaff",
+			operator:"eq",
+			property_value:false
+		}],
+		maxAge: 3600
+	};
 
+	// Don't pass any interval parameter if it's explicitly set to false
+	if (options.interval !== false) {
+		parameters['interval'] = options.interval || queryParameters.interval || "daily";
+	}
+	return new Keen.Query("count_unique", parameters);
 };
 
-module.exports.country = {
+var continentQuery = keenQuery({
+	groupBy:'user.geo.continent'
+});
 
-	query: new Keen.Query("count_unique", {
-		eventCollection: "dwell",
-		timeframe: qs.timeframe || "this_14_days",
-		targetProperty: "user.uuid",
-		group_by: ["user.geo.country_name"]
-	})
+var countryQuery = keenQuery({
+	groupBy:'user.geo.country_name',
+	interval: false
+});
 
+var render = function (el, results, opts, client) {
+
+	var linechart = new Keen.Dataviz()
+		.el(document.getElementById("linechart"))
+		.chartType("linechart")
+		.chartOptions({
+			curveType:'function',
+			hAxis: {
+				format: 'E d'
+			},
+			chartArea: {
+				left: '10%',
+				width: '75%'
+			}
+		})
+		.title('Approximate flow over time')
+		.height(450)
+		.prepare();
+
+	var columnchart = new Keen.Dataviz()
+		.el(document.getElementById("columnchart"))
+		.chartType("columnchart")
+		.chartOptions({
+			hAxis: {
+				format: 'E d'
+			},
+			chartArea: {
+				left: '10%',
+				width: '75%'
+			}
+		})
+		.title('Daily totals in real numbers')
+		.height(450)
+		.prepare();
+
+	var barchart_stacked = new Keen.Dataviz()
+		.el(document.getElementById("barchart_stacked"))
+		.chartType("barchart")
+		.chartOptions({
+			isStacked:'percent',
+			vAxis: {
+				format: 'E d'
+			},
+			hAxis: {
+				textPosition: 'none'
+			},
+			chartArea: {
+				left: '10%',
+				width: '75%'
+			}
+		})
+		.title('Daily totals as percentages')
+		.height(500)
+		.prepare();
+
+	client.run(continentQuery, function(error, response){
+		if (error) {
+			linechart.error(error.message);
+		}
+		else {
+			linechart
+				.parseRequest(this)
+				.sortGroups("desc")
+				.render();
+
+			columnchart
+				.parseRequest(this)
+				.sortGroups("desc")
+				.render();
+
+			barchart_stacked
+				.parseRequest(this)
+				.sortGroups("desc")
+				.render();
+		}
+	});
+
+	var table = new Keen.Dataviz()
+		.el(document.getElementById("table"))
+		.chartType("table")
+		.chartOptions({
+			width:"100%",
+			height:"500",
+			sortAscending:false,
+			sortColumn:1
+		})
+		.prepare();
+
+	client.run(countryQuery, function(error, response){
+		if (error) {
+			table.error(error.message);
+		}
+		else {
+
+			// COMPLEX:Strip the timeframe from (cached?) query results because,
+			// if it's provided, it breaks the table format
+			if (response.result.length === 1 && response.result[0].timeframe) {
+				response.result = response.result[0].value;
+			}
+			table
+				.parseRequest(this)
+				.render();
+		}
+	});
+};
+
+module.exports = {
+	query:continentQuery,
+	render:render
 };
