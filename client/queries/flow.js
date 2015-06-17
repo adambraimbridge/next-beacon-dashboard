@@ -17,15 +17,15 @@ var daysFromNow = function (offset) {
 var step = function(options) {
 	return {
 		eventCollection:options.eventCollection || "dwell",
-		actor_property:"user.erights",
+		actor_property:"user.uuid",
 		timeframe:options.timeframe || {
 			start:daysFromNow(-14), //two weeks whence
 			end:daysFromNow() //now
 		},
 		filters:[{
 			property_name:"user.isStaff",
-			operator:"eq",
-			property_value:false
+			operator:"ne",
+			property_value:true
 		}].concat(options.filters || [])
 	};
 };
@@ -88,13 +88,11 @@ dashboards['Galleries'] = {
 dashboards['MyFT'] = {
 	'title' : 'Engagement with myFT',
 	'labels' : [
-		'Visited next.ft.com',
 		'Are following at least one topic',
 		'Visited their "myFT" page ...',
 		'... then went straight to an article'
 	],
 	'steps':[
-		step({}),
 		step({
 			filters: [{
 				property_name: 'user.myft.topicsFollowed',
@@ -127,12 +125,10 @@ dashboards['MyFT'] = {
 dashboards['MyPageFeed'] = {
 	'title' : 'Engagement with my page feed',
 	'labels' : [
-		'Visited next.ft.com',
 		'Are following at least one topic',
 		'Referred to an article from mypage feed'
 	],
 	'steps':[
-		step({}),
 		step({
 			filters: [{
 				property_name: 'user.myft.topicsFollowed',
@@ -189,14 +185,12 @@ dashboards['AllMyFTNotifications'] = {
 dashboards['MyFTRSS'] = {
 	'title' : 'Engagement with myFT RSS feeds',
 	'labels' : [
-		'Visited next.ft.com',
 		'Are following at least one topic',
 		'Have published their RSS feed',
 		'Have come to an article as a result of a myFT RSS feed (NB: This is currently unreliable)',
 
 	],
 	'steps':[
-		step({}),
 		step({
 			filters: [{
 				property_name: 'user.myft.topicsFollowed',
@@ -229,14 +223,13 @@ dashboards['MyFTRSS'] = {
 dashboards['MyFTEmail'] = {
 	'title' : 'Engagement with myFT emails',
 	'labels' : [
-		'Visited next.ft.com',
 		'Are following at least one topic',
 		'Have signed up to emails',
-		'Have come to an article as a result of emails (NB: This is currently unreliable)',
+		'Have opened an email',
+		'Have clicked on a link in an email',
 
 	],
 	'steps':[
-		step({}),
 		step({
 			filters: [{
 				property_name: 'user.myft.topicsFollowed',
@@ -253,16 +246,21 @@ dashboards['MyFTEmail'] = {
 			}]
 		}),
 		step({
+			eventCollection: 'email',
 			filters: [{
-				property_name: 'page.location.hash',
-				operator: 'contains',
-				property_value: 'myft'
-			},{
-				property_name: 'page.location.hash',
-				operator: 'contains',
-				property_value: 'email'
+				property_name: 'event',
+				operator: 'eq',
+				property_value: 'open'
 			}]
-		})
+		}),
+		step({
+			eventCollection: 'email',
+			filters: [{
+				property_name: 'event',
+				operator: 'eq',
+				property_value: 'click'
+			}]
+		}),
 	]
 };
 
