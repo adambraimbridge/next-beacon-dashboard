@@ -7,282 +7,346 @@ var queryParameters = queryString.parse(location.search);
 
 // Return the ISO string for relative dates
 var daysFromNow = function (offset) {
-	offset = offset || 0;
-	var dateObject = new Date();
-	dateObject.setDate(dateObject.getDate() + offset);
-	return dateObject.toISOString();
+  offset = offset || 0;
+  var dateObject = new Date();
+  dateObject.setDate(dateObject.getDate() + offset);
+  return dateObject.toISOString();
 };
 
-// This is a base step object, for spawning steps.
-var step = function(options) {
-	return {
-		eventCollection:options.eventCollection || "dwell",
-		actor_property:"user.uuid",
-		timeframe:options.timeframe || {
-			start:daysFromNow(-14), //two weeks whence
-			end:daysFromNow() //now
-		},
-		filters:[{
-			property_name:"user.isStaff",
-			operator:"ne",
-			property_value:true
-		}].concat(options.filters || [])
-	};
-};
 
-var dashboards = {};
-dashboards['Galleries'] = {
-	'title' : 'Engagement with galleries',
-	'labels' : [
-		'Visited next.ft.com',
-		'Visited a page with a gallery',
-		'Viewed at least 25%',
-		'Viewed at least 50%',
-		'Viewed at least 75%',
-		'Viewed all the gallery'
-	],
-	'steps':[
-		step({}),
-		step({
-			filters: [{
-				property_name: 'page.capi.hasGallery',
-				operator: 'eq',
-				property_value: true
-			}]
-		}),
-		step({
-			eventCollection: 'gallery',
-			filters: [{
-				property_name: 'meta.percentageThrough',
-				operator: 'gte',
-				property_value: 25
-			}]
-		}),
-		step({
-			eventCollection: 'gallery',
-			filters: [{
-				property_name: 'meta.percentageThrough',
-				operator: 'gte',
-				property_value: 50
-			}]
-		}),
-		step({
-			eventCollection: 'gallery',
-			filters: [{
-				property_name: 'meta.percentageThrough',
-				operator: 'gte',
-				property_value: 75
-			}]
-		}),
-		step({
-			eventCollection: 'gallery',
-			filters: [{
-				property_name: 'meta.percentageThrough',
-				operator: 'gte',
-				property_value: 100
-			}]
-		})
-	]
-};
 
-dashboards['MyFT'] = {
-	'title' : 'Engagement with myFT',
-	'labels' : [
-		'Are following at least one topic',
-		'Visited their "myFT" page ...',
-		'... then went straight to an article'
-	],
-	'steps':[
-		step({
-			filters: [{
-				property_name: 'user.myft.topicsFollowed',
-				operator: 'gte',
-				property_value: 1
-			}]
-		}),
-		step({
-			filters: [{
-				property_name: 'page.location.pathname',
-				operator: 'contains',
-				property_value: 'myft/my-news'
-			}]
-		}),
-		step({
-			filters: [{
-				property_name: 'page.location.hash',
-				operator: 'contains',
-				property_value: 'myft:my-news:page'
-			},
-			{
-				property_name: 'page.location.type',
-				operator: 'eq',
-				property_value: 'article'
-			}]
-		})
-	]
-};
+function getDashboards(offset) {
+  offset = offset || 0;
+  var dashboards = {};
 
-dashboards['MyPageFeed'] = {
-	'title' : 'Engagement with my page feed',
-	'labels' : [
-		'Are following at least one topic',
-		'Referred to an article from mypage feed'
-	],
-	'steps':[
-		step({
-			filters: [{
-				property_name: 'user.myft.topicsFollowed',
-				operator: 'gte',
-				property_value: 1
-			}]
-		}),
-		step({
-			filters: [{
-				property_name: 'page.location.hash',
-				operator: 'contains',
-				property_value: 'myft:my-news:homepage-panel'
-			},
-			{
-				property_name: 'page.location.type',
-				operator: 'eq',
-				property_value: 'article'
-			}]
-		})
-	]
-};
+  // This is a base step object, for spawning steps.
+  var step = function(options) {
+    return {
+      eventCollection:options.eventCollection || "dwell",
+      actor_property:"user.uuid",
+      timeframe:options.timeframe || {
+        start:daysFromNow(offset-14), //two weeks whence
+        end:daysFromNow(offset) //now
+      },
+      filters:[{
+        property_name:"user.isStaff",
+        operator:"ne",
+        property_value:true
+      }].concat(options.filters || [])
+    };
+  };
 
-dashboards['AllMyFTNotifications'] = {
-	'title' : 'Engagement with any myFT notification',
-	'labels' : [
-		'Visited next.ft.com',
-		'Are following at least one topic',
-		'Viewed an article via myft:notification'
-	],
-	'steps':[
-		step({}),
-		step({
-			filters: [{
-				property_name: 'user.myft.topicsFollowed',
-				operator: 'gte',
-				property_value: 1
-			}]
-		}),
-		step({
-			filters: [{
-				property_name: 'page.location.hash',
-				operator: 'contains',
-				property_value: 'myft'
-			},
-			{
-				property_name: 'page.location.type',
-				operator: 'eq',
-				property_value: 'article'
-			}]
-		})
-	]
-};
+  dashboards['Galleries'] = {
+    'title' : 'Engagement with galleries',
+    'labels' : [
+    'Visited next.ft.com',
+    'Visited a page with a gallery',
+    'Viewed at least 25%',
+    'Viewed at least 50%',
+    'Viewed at least 75%',
+    'Viewed all the gallery'
+    ],
+    'steps':[
+    step({}),
+    step({
+      filters: [{
+        property_name: 'page.capi.hasGallery',
+        operator: 'eq',
+        property_value: true
+      }]
+    }),
+    step({
+      eventCollection: 'gallery',
+      filters: [{
+        property_name: 'meta.percentageThrough',
+        operator: 'gte',
+        property_value: 25
+      }]
+    }),
+    step({
+      eventCollection: 'gallery',
+      filters: [{
+        property_name: 'meta.percentageThrough',
+        operator: 'gte',
+        property_value: 50
+      }]
+    }),
+    step({
+      eventCollection: 'gallery',
+      filters: [{
+        property_name: 'meta.percentageThrough',
+        operator: 'gte',
+        property_value: 75
+      }]
+    }),
+    step({
+      eventCollection: 'gallery',
+      filters: [{
+        property_name: 'meta.percentageThrough',
+        operator: 'gte',
+        property_value: 100
+      }]
+    })
+    ]
+  };
 
-dashboards['MyFTRSS'] = {
-	'title' : 'Engagement with myFT RSS feeds',
-	'labels' : [
-		'Are following at least one topic',
-		'Have published their RSS feed',
-		'Have come to an article as a result of a myFT RSS feed (NB: This is currently unreliable)',
+  dashboards['MyFT'] = {
+    'title' : 'Engagement with myFT',
+    'labels' : [
+    'Visited next.ft.com',
+    'Are following at least one topic',
+    'Visited their "myFT" page ...',
+    '... then went straight to an article'
+    ],
+    'steps':[
+    step({}),
+    step({
+      filters: [{
+        property_name: 'user.myft.topicsFollowed',
+        operator: 'gte',
+        property_value: 1
+      }]
+    }),
+    step({
+      filters: [{
+        property_name: 'page.location.pathname',
+        operator: 'contains',
+        property_value: 'myft/my-news'
+      }]
+    }),
+    step({
+      filters: [{
+        property_name: 'page.location.hash',
+        operator: 'contains',
+        property_value: 'myft:my-news:page'
+      },
+      {
+        property_name: 'page.location.type',
+        operator: 'eq',
+        property_value: 'article'
+      }]
+    })
+    ]
+  };
 
-	],
-	'steps':[
-		step({
-			filters: [{
-				property_name: 'user.myft.topicsFollowed',
-				operator: 'gte',
-				property_value: 1
-			}]
-		}),
-		step({
-			filters: [{
-				eventCollection: 'dwell',
-				property_name: 'user.myft.preferences.publish-rss-feeds',
-				operator: 'eq',
-				property_value: true
-			}]
-		}),
-		step({
-			filters: [{
-				property_name: 'page.location.hash',
-				operator: 'contains',
-				property_value: 'myft'
-			},{
-				property_name: 'page.location.hash',
-				operator: 'contains',
-				property_value: 'rss'
-			}]
-		})
-	]
-};
+  dashboards['MyPageFeed'] = {
+    'title' : 'Engagement with my page feed',
+    'labels' : [
+    'Visited next.ft.com',
+    'Are following at least one topic',
+    'Referred to an article from mypage feed'
+    ],
+    'steps':[
+    step({}),
+    step({
+      filters: [{
+        property_name: 'user.myft.topicsFollowed',
+        operator: 'gte',
+        property_value: 1
+      }]
+    }),
+    step({
+      filters: [{
+        property_name: 'page.location.hash',
+        operator: 'contains',
+        property_value: 'myft:my-news:homepage-panel'
+      },
+      {
+        property_name: 'page.location.type',
+        operator: 'eq',
+        property_value: 'article'
+      }]
+    })
+    ]
+  };
 
-dashboards['MyFTEmail'] = {
-	'title' : 'Engagement with myFT emails',
-	'labels' : [
-		'Are following at least one topic',
-		'Have signed up to emails',
-		'Have opened an email',
-		'Have clicked on a link in an email',
+  dashboards['AllMyFTNotifications'] = {
+    'title' : 'Engagement with any myFT notification',
+    'labels' : [
+    'Visited next.ft.com',
+    'Are following at least one topic',
+    'Viewed an article via myft:notification'
+    ],
+    'steps':[
+    step({}),
+    step({
+      filters: [{
+        property_name: 'user.myft.topicsFollowed',
+        operator: 'gte',
+        property_value: 1
+      }]
+    }),
+    step({
+      filters: [{
+        property_name: 'page.location.hash',
+        operator: 'contains',
+        property_value: 'myft'
+      },
+      {
+        property_name: 'page.location.type',
+        operator: 'eq',
+        property_value: 'article'
+      }]
+    })
+    ]
+  };
 
-	],
-	'steps':[
-		step({
-			filters: [{
-				property_name: 'user.myft.topicsFollowed',
-				operator: 'gte',
-				property_value: 1
-			}]
-		}),
-		step({
-			filters: [{
-				eventCollection: 'dwell',
-				property_name: 'user.myft.preferences.email-daily-digest',
-				operator: 'eq',
-				property_value: true
-			}]
-		}),
-		step({
-			eventCollection: 'email',
-			filters: [{
-				property_name: 'event',
-				operator: 'eq',
-				property_value: 'open'
-			}]
-		}),
-		step({
-			eventCollection: 'email',
-			filters: [{
-				property_name: 'event',
-				operator: 'eq',
-				property_value: 'click'
-			}]
-		}),
-	]
-};
+  dashboards['MyFTRSS'] = {
+    'title' : 'Engagement with myFT RSS feeds',
+    'labels' : [
+    'Visited next.ft.com',
+    'Are following at least one topic',
+    'Have published their RSS feed',
+    'Have come to an article as a result of a myFT RSS feed (NB: This is currently unreliable)',
 
-var query = new Keen.Query("funnel", {
-	steps:dashboards[queryParameters.dashboard].steps
-});
+    ],
+    'steps':[
+    step({}),
+    step({
+      filters: [{
+        property_name: 'user.myft.topicsFollowed',
+        operator: 'gte',
+        property_value: 1
+      }]
+    }),
+    step({
+      filters: [{
+        eventCollection: 'dwell',
+        property_name: 'user.myft.preferences.publish-rss-feeds',
+        operator: 'eq',
+        property_value: true
+      }]
+    }),
+    step({
+      filters: [{
+        property_name: 'page.location.hash',
+        operator: 'contains',
+        property_value: 'myft'
+      },{
+        property_name: 'page.location.hash',
+        operator: 'contains',
+        property_value: 'rss'
+      }]
+    })
+    ]
+  };
+
+
+  dashboards['MyFTEmail'] = {
+    'title' : 'Engagement with myFT emails',
+    'labels' : [
+    'Visited next.ft.com',
+    'Are following at least one topic',
+    'Have signed up to emails',
+    'Have opened an email',
+    'Have clicked on a link in an email',
+
+    ],
+    'steps':[
+    step({}),
+    step({
+      filters: [{
+        property_name: 'user.myft.topicsFollowed',
+        operator: 'gte',
+        property_value: 1
+      }]
+    }),
+    step({
+      filters: [{
+        eventCollection: 'dwell',
+        property_name: 'user.myft.preferences.email-daily-digest',
+        operator: 'eq',
+        property_value: true
+      }]
+    }),
+    step({
+      eventCollection: 'email',
+      filters: [{
+        property_name: 'event',
+        operator: 'eq',
+        property_value: 'open'
+      }]
+    }),
+    step({
+      eventCollection: 'email',
+      filters: [{
+        property_name: 'event',
+        operator: 'eq',
+        property_value: 'click'
+      }]
+    }),
+    ]
+  };
+
+  return dashboards;
+}
+
+
+
+
+function getFunnelForOffset(offset) {
+
+  var dashboards = getDashboards(offset);
+  var query = new Keen.Query("funnel", {
+    steps:dashboards[queryParameters.dashboard].steps,
+    maxAge: 3600
+  });
+
+  console.log('dashboard ', dashboards[queryParameters.dashboard]);
+
+  return query;
+}
+
+var queries = [getFunnelForOffset(0), getFunnelForOffset(-7), getFunnelForOffset(-14), getFunnelForOffset(-21)];
 
 var render = function (el, results, opts, client) {
-	$('<h1>').text(dashboards[queryParameters.dashboard].title).appendTo(el);
+  var dashboards = getDashboards(0);
+  var currentDashboard = dashboards[queryParameters.dashboard];
+  var historicData = [];
+  if(results) {
+    $('<h1>').text(currentDashboard.title).appendTo(el);
+    $('<div>').attr('id', 'funnel').appendTo(el);
+    $('<div>').attr('id', 'historic').appendTo(el);
 
-	$('<div>').attr('id', 'metric').appendTo(el);
-	client.draw(query, document.getElementById('metric'), {
-		title: 'Count of unique users for the past 14 days',
-		labels: dashboards[queryParameters.dashboard].labels,
-		chartOptions: {
-			chartArea: { left: "30%" },
-			legend: { position: "none" }
-		}
-	});
+    client.draw(queries[0], document.getElementById('funnel'), {
+      title: 'Count of unique users for this 14 days',
+      labels: currentDashboard.labels,
+      chartOptions: {
+        chartArea: { left: "30%" },
+        legend: { position: "none" }
+      }
+    });
+
+    var historicChart = new Keen.Dataviz()
+      .chartType("columnchart")
+      .el(document.getElementById('historic'))
+      .title("% " + currentDashboard.labels[currentDashboard.labels.length -1] + ' - over the last month')
+      .chartOptions({
+          legend: { position: "none" },
+          vAxis: { format: '#,###.#%' },
+          hAxis: { format:'MMM d'}
+      })
+      .prepare();
+
+    results.forEach(function(response, index) {
+      var percentage = response.result[response.result.length - 1]/response.result[0]
+      historicData.push({
+        "value" : percentage,
+        "timeframe" : {
+          "start" : response.steps[0].timeframe["start"],
+          "end" : response.steps[0].timeframe["end"]
+        }
+      });
+    });
+
+historicChart
+  .parseRawData({ result: historicData })
+  .render();
+  }
+
 };
 
 module.exports = {
-	query:query,
-	render:render
+	query: queries,
+	render: render
 };
