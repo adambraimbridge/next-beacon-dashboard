@@ -133,18 +133,7 @@ Keen.ready(function(){
 			break;
 
 		case '/graph/uniques/timeline':
-
-			render(require('./queries/uniques/trend'), {
-				chartType: "areachart",
-				titlePosition: 'none',
-				height: 400,
-				colors: ['rgb(115, 192, 58)'],
-				lineWidth: 0,
-				theme: 'maximized',
-				areaOpacity: 0.8,
-				labels: ['unique users']
-			});
-
+			require('./queries/uniques/trend');
 			break;
 
 		case '/graph/uniques':
