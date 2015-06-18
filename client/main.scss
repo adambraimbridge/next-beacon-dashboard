@@ -97,6 +97,10 @@ table {
 	text-align: center;
 }
 
+.metric__container {
+	min-height: 140px;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -110,4 +114,8 @@ body {
 	position: absolute;
 	bottom: 0;
 	width: 100%;
+}
+.o-techdocs-footer__inner {
+	width: 907px;
+	float: right;
 }
