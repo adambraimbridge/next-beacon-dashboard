@@ -13,35 +13,40 @@ var daysFromNow = function (offset) {
 	return dateObject.toISOString();
 };
 
-// This is a base step object, for spawning steps.
-var step = function(options) {
-	return {
-		eventCollection:options.eventCollection || "dwell",
-		actor_property:"user.erights",
-		timeframe:options.timeframe || {
-			start:daysFromNow(-14), //two weeks whence
-			end:daysFromNow() //now
-		},
-		filters:[{
-			property_name:"user.isStaff",
-			operator:"eq",
-			property_value:false
-		}].concat(options.filters || [])
-	};
-};
 
-var dashboards = {};
-dashboards['Galleries'] = {
-	'title' : 'Engagement with galleries',
-	'labels' : [
+
+function getDashboards(offset) {
+	offset = offset || 0;
+	var dashboards = {};
+
+	// This is a base step object, for spawning steps.
+	var step = function(options) {
+		return {
+			eventCollection:options.eventCollection || "dwell",
+			actor_property:"user.uuid",
+			timeframe:options.timeframe || {
+				start:daysFromNow(offset-14), //two weeks whence
+				end:daysFromNow(offset) //now
+			},
+			filters:[{
+				property_name:"user.isStaff",
+				operator:"ne",
+				property_value:true
+			}].concat(options.filters || [])
+		};
+	};
+
+	dashboards['Galleries'] = {
+		'title' : 'Engagement with galleries',
+		'labels' : [
 		'Visited next.ft.com',
 		'Visited a page with a gallery',
 		'Viewed at least 25%',
 		'Viewed at least 50%',
 		'Viewed at least 75%',
 		'Viewed all the gallery'
-	],
-	'steps':[
+		],
+		'steps':[
 		step({}),
 		step({
 			filters: [{
@@ -82,18 +87,18 @@ dashboards['Galleries'] = {
 				property_value: 100
 			}]
 		})
-	]
-};
+		]
+	};
 
-dashboards['MyFT'] = {
-	'title' : 'Engagement with myFT',
-	'labels' : [
+	dashboards['MyFT'] = {
+		'title' : 'Engagement with myFT',
+		'labels' : [
 		'Visited next.ft.com',
 		'Are following at least one topic',
 		'Visited their "myFT" page ...',
 		'... then went straight to an article'
-	],
-	'steps':[
+		],
+		'steps':[
 		step({}),
 		step({
 			filters: [{
@@ -121,17 +126,17 @@ dashboards['MyFT'] = {
 				property_value: 'article'
 			}]
 		})
-	]
-};
+		]
+	};
 
-dashboards['MyPageFeed'] = {
-	'title' : 'Engagement with my page feed',
-	'labels' : [
+	dashboards['MyPageFeed'] = {
+		'title' : 'Engagement with my page feed',
+		'labels' : [
 		'Visited next.ft.com',
 		'Are following at least one topic',
 		'Referred to an article from mypage feed'
-	],
-	'steps':[
+		],
+		'steps':[
 		step({}),
 		step({
 			filters: [{
@@ -152,17 +157,17 @@ dashboards['MyPageFeed'] = {
 				property_value: 'article'
 			}]
 		})
-	]
-};
+		]
+	};
 
-dashboards['AllMyFTNotifications'] = {
-	'title' : 'Engagement with any myFT notification',
-	'labels' : [
+	dashboards['AllMyFTNotifications'] = {
+		'title' : 'Engagement with any myFT notification',
+		'labels' : [
 		'Visited next.ft.com',
 		'Are following at least one topic',
 		'Viewed an article via myft:notification'
-	],
-	'steps':[
+		],
+		'steps':[
 		step({}),
 		step({
 			filters: [{
@@ -183,19 +188,19 @@ dashboards['AllMyFTNotifications'] = {
 				property_value: 'article'
 			}]
 		})
-	]
-};
+		]
+	};
 
-dashboards['MyFTRSS'] = {
-	'title' : 'Engagement with myFT RSS feeds',
-	'labels' : [
+	dashboards['MyFTRSS'] = {
+		'title' : 'Engagement with myFT RSS feeds',
+		'labels' : [
 		'Visited next.ft.com',
 		'Are following at least one topic',
 		'Have published their RSS feed',
 		'Have come to an article as a result of a myFT RSS feed (NB: This is currently unreliable)',
 
-	],
-	'steps':[
+		],
+		'steps':[
 		step({}),
 		step({
 			filters: [{
@@ -223,19 +228,21 @@ dashboards['MyFTRSS'] = {
 				property_value: 'rss'
 			}]
 		})
-	]
-};
+		]
+	};
 
-dashboards['MyFTEmail'] = {
-	'title' : 'Engagement with myFT emails',
-	'labels' : [
+
+	dashboards['MyFTEmail'] = {
+		'title' : 'Engagement with myFT emails',
+		'labels' : [
 		'Visited next.ft.com',
 		'Are following at least one topic',
 		'Have signed up to emails',
-		'Have come to an article as a result of emails (NB: This is currently unreliable)',
+		'Have opened an email',
+		'Have clicked on a link in an email',
 
-	],
-	'steps':[
+		],
+		'steps':[
 		step({}),
 		step({
 			filters: [{
@@ -253,38 +260,93 @@ dashboards['MyFTEmail'] = {
 			}]
 		}),
 		step({
+			eventCollection: 'email',
 			filters: [{
-				property_name: 'page.location.hash',
-				operator: 'contains',
-				property_value: 'myft'
-			},{
-				property_name: 'page.location.hash',
-				operator: 'contains',
-				property_value: 'email'
+				property_name: 'event',
+				operator: 'eq',
+				property_value: 'open'
 			}]
-		})
-	]
-};
+		}),
+		step({
+			eventCollection: 'email',
+			filters: [{
+				property_name: 'event',
+				operator: 'eq',
+				property_value: 'click'
+			}]
+		}),
+		]
+	};
 
-var query = new Keen.Query("funnel", {
-	steps:dashboards[queryParameters.dashboard].steps
-});
+	return dashboards;
+}
+
+
+
+
+function getFunnelForOffset(offset) {
+
+	var dashboards = getDashboards(offset);
+	var query = new Keen.Query("funnel", {
+		steps:dashboards[queryParameters.dashboard].steps,
+		maxAge: 3600
+	});
+
+	console.log('dashboard ', dashboards[queryParameters.dashboard]);
+
+	return query;
+}
+
+var queries = [getFunnelForOffset(0), getFunnelForOffset(-7), getFunnelForOffset(-14), getFunnelForOffset(-21)];
 
 var render = function (el, results, opts, client) {
-	$('<h1>').text(dashboards[queryParameters.dashboard].title).appendTo(el);
+	var dashboards = getDashboards(0);
+	var currentDashboard = dashboards[queryParameters.dashboard];
+	var historicData = [];
+	if(results) {
+		$('<h1>').text(currentDashboard.title).appendTo(el);
+		$('<div>').attr('id', 'funnel').appendTo(el);
+		$('<div>').attr('id', 'historic').appendTo(el);
 
-	$('<div>').attr('id', 'metric').appendTo(el);
-	client.draw(query, document.getElementById('metric'), {
-		title: 'Count of unique users for the past 14 days',
-		labels: dashboards[queryParameters.dashboard].labels,
-		chartOptions: {
-			chartArea: { left: "30%" },
-			legend: { position: "none" }
-		}
-	});
+		client.draw(queries[0], document.getElementById('funnel'), {
+			title: 'Count of unique users for this 14 days',
+			labels: currentDashboard.labels,
+			chartOptions: {
+				chartArea: { left: "30%" },
+				legend: { position: "none" }
+			}
+		});
+
+		var historicChart = new Keen.Dataviz()
+			.chartType("columnchart")
+			.el(document.getElementById('historic'))
+			.title("% " + currentDashboard.labels[currentDashboard.labels.length -1] + ' - over the last month')
+			.chartOptions({
+					legend: { position: "none" },
+					vAxis: { format: '#,###.#%' },
+					hAxis: { format:'MMM d'}
+			})
+			.prepare();
+
+		results.forEach(function(response, index) {
+			var percentage = response.result[response.result.length - 1]/response.result[0];
+			historicData.push({
+				"value" : percentage,
+				"timeframe" : {
+					"start" : response.steps[0].timeframe["start"],
+					"end" : response.steps[0].timeframe["end"]
+				}
+			});
+		});
+
+historicChart
+	.parseRawData({ result: historicData })
+	.render();
+	}
+
 };
 
 module.exports = {
-	query:query,
-	render:render
+	query: queries,
+	render: render
 };
