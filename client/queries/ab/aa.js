@@ -17,7 +17,8 @@ module.exports = {
 			timeframe: 'this_14_days',
 			event_collection: 'dwell',
 			latest: 10000,
-			group_by: ['user.ab.aa', 'user.erights']
+			group_by: ['user.ab.aa', 'user.erights'],
+			maxAge: 3600
 		}),
 
 	render: function (el, response, opts, client) {

@@ -15,7 +15,8 @@ module.exports.on = new Keen.Query("funnel", { steps: [
 				{"property_name":"page.location.type","operator":"eq","property_value":"frontpage"},
 				{"property_name":"user.isStaff","operator":"eq","property_value":false},
 				{"property_name":"user.ab.homePageProminentFollowAB","operator":"eq","property_value":"on"}
-			]
+			],
+			maxAge: 3600
 		},
 		{
 			event_collection: 'cta',
@@ -23,7 +24,8 @@ module.exports.on = new Keen.Query("funnel", { steps: [
 			actor_property: 'user.uuid',
 			filters: [
 				{"property_name":"meta.domPath","operator":"eq","property_value":"myft-panel | myft-topic | follow"},
-			]
+			],
+			maxAge: 3600
 		}
 	]});
 
@@ -36,7 +38,8 @@ module.exports.off = new Keen.Query("funnel", { steps: [
 				{"property_name":"page.location.type","operator":"eq","property_value":"frontpage"},
 				{"property_name":"user.isStaff","operator":"eq","property_value":false},
 				{"property_name":"user.ab.homePageProminentFollowAB","operator":"eq","property_value":"off"}
-			]
+			],
+			maxAge: 3600
 		},
 		{
 			event_collection: 'cta',
@@ -44,7 +47,8 @@ module.exports.off = new Keen.Query("funnel", { steps: [
 			actor_property: 'user.uuid',
 			filters: [
 				{"property_name":"meta.domPath","operator":"eq","property_value":"myft-panel | myft-topic | follow"},
-			]
+			],
+			maxAge: 3600
 		}
 	]});
 

@@ -9,7 +9,8 @@ module.exports = {
 		target_property: "user.uuid",
 		timeframe: "last_14_days",
 		interval: "daily",
-		filters: [{ "property_name":"time.weekday", "operator":"eq", "property_value":true }]
+		filters: [{ "property_name":"time.weekday", "operator":"eq", "property_value":true }],
+		maxAge: 3600
 	}),
 
 	render: function (el, results) {

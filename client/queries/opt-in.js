@@ -22,7 +22,8 @@ module.exports.innie = {
 					operator: 'eq',
 					property_value: false
 				}
-			]
+			],
+			maxAge: 3600
 		})
 };
 
@@ -43,7 +44,8 @@ module.exports.outie = {
 					operator: 'eq',
 					property_value: false
 				}
-			]
+			],
+			maxAge: 3600
 		})
 };
 
@@ -60,7 +62,8 @@ module.exports.lastWeek = {
 					operator: 'eq',
 					property_value: false
 				}
-			]
+			],
+			maxAge: 3600
 		})
 };
 
@@ -88,7 +91,8 @@ module.exports.reasons = {
 					operator: 'ne',
 					property_value: 'unknown'
 				}
-			]
+			],
+			maxAge: 3600
 		})
 };
 
@@ -120,6 +124,7 @@ module.exports.difficultNavigation = {
 					operator: 'eq',
 					property_value: false
 				}
-			]
+			],
+			maxAge: 3600
 		})
 };

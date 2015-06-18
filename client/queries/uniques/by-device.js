@@ -113,7 +113,8 @@ var metricLargeQuery = new keenQuery({
 		"property_name":"user.layout",
 		"operator":"in",
 		"property_value":["XXL","XL","L"]
-	}]
+	}],
+	maxAge: 3600
 });
 
 var metricMediumQuery = new keenQuery({
@@ -122,7 +123,8 @@ var metricMediumQuery = new keenQuery({
 		"property_name":"user.layout",
 		"operator":"in",
 		"property_value":["M"]
-	}]
+	}],
+	maxAge: 3600
 });
 
 var metricSmallQuery = new keenQuery({
@@ -131,7 +133,8 @@ var metricSmallQuery = new keenQuery({
 		"property_name":"user.layout",
 		"operator":"in",
 		"property_value":["S","XS", "default"]
-	}]
+	}],
+	maxAge: 3600
 });
 
 var intervalQuery = keenQuery({

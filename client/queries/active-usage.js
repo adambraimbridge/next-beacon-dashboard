@@ -53,14 +53,16 @@ var activeUserStepsForFeature = function (cta) {
 			timeframe: {
 				start:daysFromNow(-14), //two weeks whence
 				end:daysFromNow(-7) //one week whence
-			}
+			},
+			maxAge: 3600
 		}),
 		// Users who visited next.ft in the last 7 days
 		step({
 			timeframe: {
 				start:daysFromNow(-7), //one week whence
 				end:daysFromNow() //now
-			}
+			},
+			maxAge: 3600
 		}),
 		// Users who clicked the given CTA in the past two weeks
 		step({
@@ -73,7 +75,8 @@ var activeUserStepsForFeature = function (cta) {
 				property_name:"meta.domPath",
 				operator:"contains",
 				property_value:cta
-			}]
+			}],
+			maxAge: 3600
 		})
 	];
 };
