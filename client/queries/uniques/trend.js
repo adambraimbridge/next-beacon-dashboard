@@ -1,9 +1,14 @@
-/* global Keen */
+/* global Keen, keen_project, keen_read_key */
 
-'use strict';
+"use strict";
 
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
+
+var client = new Keen({
+	projectId: keen_project,
+	readKey: keen_read_key
+});
 
 var query = new Keen.Query("count_unique", {
 	eventCollection: "dwell",
@@ -19,60 +24,48 @@ var query = new Keen.Query("count_unique", {
 	maxAge: 3600
 });
 
-var render = function (el, results, opts, client) {
-
-	var linechart = new Keen.Dataviz()
-		.el(document.getElementById("linechart"))
-		.chartType("linechart")
-		.chartOptions({
-			curveType:'function',
-			hAxis: {
-				format: 'E d'
-			},
-			chartArea: {
-				left: '10%',
-				width: '75%'
+client.draw(query, document.getElementById("linechart"), {
+	chartType: "linechart",
+	title: 'Approximate trend over time',
+	chartOptions: {
+		height: 450,
+		trendlines: {
+			0: {
+				color: 'green',
+				type: 'polynomial',
+				degree: 6
 			}
-		})
-		.title('Approximate flow over time')
-		.height(450)
-		.prepare();
+		},
+		curveType:'function',
+		hAxis: {
+			format: 'E d'
+		},
+		chartArea: {
+			left: '10%',
+			width: '75%'
+		}
+	}
+});
 
-	var columnchart = new Keen.Dataviz()
-		.el(document.getElementById("columnchart"))
-		.chartType("columnchart")
-		.chartOptions({
-			hAxis: {
-				format: 'E d'
-			},
-			chartArea: {
-				left: '10%',
-				width: '75%'
+client.draw(query, document.getElementById("columnchart"), {
+	chartType: "columnchart",
+	title: 'Daily totals in real numbers',
+	chartOptions: {
+		height: 450,
+		trendlines: {
+			0: {
+				color: 'green',
+				type: 'polynomial',
+				degree: 6
 			}
-		})
-		.title('Daily totals in real numbers')
-		.height(450)
-		.prepare();
-
-	client.run(query, function(error, response){
-		if (error) {
-			linechart.error(error.message);
+		},
+		hAxis: {
+			format: 'E d'
+		},
+		chartArea: {
+			left: '10%',
+			width: '75%'
 		}
-		else {
-			linechart
-				.parseRequest(this)
-				.sortGroups("desc")
-				.render();
+	}
+});
 
-			columnchart
-				.parseRequest(this)
-				.sortGroups("desc")
-				.render();
-		}
-	});
-};
-
-module.exports = {
-	query:query,
-	render:render
-};

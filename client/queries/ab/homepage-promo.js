@@ -1,3 +1,4 @@
+
 /* global Keen, console */
 
 'use strict';
@@ -48,17 +49,17 @@ module.exports.off = new Keen.Query("funnel", { steps: [
 	]});
 
 module.exports.render = function (a, b, el) {
-		
+
 		console.log(a, b);
 		var ab = { on: {}, off: {}, confidence: {} };
 
 		// control
 		ab.off.visitors = a.result[0];
-		ab.off.conversions = a.result[1]; 
+		ab.off.conversions = a.result[1];
 
 		// variant
 		ab.on.visitors = b.result[0];
-		ab.on.conversions = b.result[1]; 
+		ab.on.conversions = b.result[1];
 
 		['on', 'off'].forEach(function (variant) {
 			ab[variant].conversionRate = confidence.conversionRate(ab[variant].visitors, ab[variant].conversions);
@@ -74,7 +75,7 @@ module.exports.render = function (a, b, el) {
 
 		visualise(el, {
 			stats: ab,
-			results: { 
+			results: {
 				a: a,
 				b: b
 			}
