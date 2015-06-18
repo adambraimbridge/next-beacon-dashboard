@@ -297,40 +297,42 @@ function getFunnelForOffset(offset) {
 
 var queries = [getFunnelForOffset(0), getFunnelForOffset(-7), getFunnelForOffset(-14), getFunnelForOffset(-21)];
 
-var render = function (el, results, opts, client) {
 	var dashboards = getDashboards(0);
 	var currentDashboard = dashboards[queryParameters.dashboard];
+
+	$('h1').text(currentDashboard.title);
+
+	var funnel = new Keen.Dataviz()
+			.el(document.getElementById("funnel"))
+			.title("Count of unique users for this 14 days")
+			.colors([ Keen.Dataviz.defaults.colors[4] ])
+			.chartOptions({
+					chartArea: { left: "30%" },
+					legend: { position: "none" }
+			})
+			.prepare();
+
+	var historicChart = new Keen.Dataviz()
+		.chartType("columnchart")
+		.el(document.getElementById('historic'))
+		.title("% " + currentDashboard.labels[currentDashboard.labels.length -1] + ' - over the last month')
+		.chartOptions({
+				legend: { position: "none" },
+				vAxis: { format: '#,###.#%' },
+				hAxis: { format:'MMM d'}
+		})
+		.prepare();
+
+var render = function (el, results, opts, client) {
 	var historicData = [];
 	if(results) {
-		$('<h1>').text(currentDashboard.title).appendTo(el);
-		$('<div>').attr('id', 'funnel').appendTo(el);
-		$('<div>').attr('id', 'historic').appendTo(el);
-
-		var funnel = new Keen.Dataviz()
-				.el(document.getElementById("funnel"))
-				.title("Count of unique users for this 14 days")
-				.colors([ Keen.Dataviz.defaults.colors[4] ])
-				.chartOptions({
-						chartArea: { left: "30%" },
-						legend: { position: "none" }
-				})
-				.prepare();
 
 		funnel
 				.parseRawData(results[0])
 				.labels(currentDashboard.labels)
 				.render();
 
-		var historicChart = new Keen.Dataviz()
-			.chartType("columnchart")
-			.el(document.getElementById('historic'))
-			.title("% " + currentDashboard.labels[currentDashboard.labels.length -1] + ' - over the last month')
-			.chartOptions({
-					legend: { position: "none" },
-					vAxis: { format: '#,###.#%' },
-					hAxis: { format:'MMM d'}
-			})
-			.prepare();
+
 
 		results.forEach(function(response, index) {
 			var percentage = response.result[response.result.length - 1]/response.result[0];
