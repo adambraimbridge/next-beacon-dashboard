@@ -18,7 +18,7 @@ var query = new Keen.Query("count_unique", {
 	filters: [{"operator":"eq","property_name":"page.location.type","property_value":"search"},{"operator":"eq","property_name":"user.isStaff","property_value":false}],
 	groupBy: "page.location.search.q",
 	interval: "weekly",
-	targetProperty: "user.erights",
+	targetProperty: "user.uuid",
 	timeframe: "this_2_months",
 	timezone: "UTC",
 	maxAge: 3600

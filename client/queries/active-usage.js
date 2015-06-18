@@ -36,7 +36,7 @@ var daysFromNow = function (offset) {
 var step = function(options) {
 	return {
 		eventCollection:options.eventCollection || "dwell",
-		actor_property:"user.erights",
+		actor_property:"user.uuid",
 		timeframe:options.timeframe,
 		filters:[{
 			property_name:"user.isStaff",
