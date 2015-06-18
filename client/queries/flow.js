@@ -197,8 +197,7 @@ function getDashboards(offset) {
 		'Visited next.ft.com',
 		'Are following at least one topic',
 		'Have published their RSS feed',
-		'Have come to an article as a result of a myFT RSS feed (NB: This is currently unreliable)',
-
+		'Have come to an article as a result of a myFT RSS feed (NB: This is currently unreliable)'
 		],
 		'steps':[
 		step({}),
@@ -239,8 +238,7 @@ function getDashboards(offset) {
 		'Are following at least one topic',
 		'Have signed up to emails',
 		'Have opened an email',
-		'Have clicked on a link in an email',
-
+		'Have clicked on a link in an email'
 		],
 		'steps':[
 		step({}),
@@ -308,14 +306,20 @@ var render = function (el, results, opts, client) {
 		$('<div>').attr('id', 'funnel').appendTo(el);
 		$('<div>').attr('id', 'historic').appendTo(el);
 
-		client.draw(queries[0], document.getElementById('funnel'), {
-			title: 'Count of unique users for this 14 days',
-			labels: currentDashboard.labels,
-			chartOptions: {
-				chartArea: { left: "30%" },
-				legend: { position: "none" }
-			}
-		});
+		var funnel = new Keen.Dataviz()
+				.el(document.getElementById("funnel"))
+				.title("Count of unique users for this 14 days")
+				.colors([ Keen.Dataviz.defaults.colors[4] ])
+				.chartOptions({
+						chartArea: { left: "30%" },
+						legend: { position: "none" }
+				})
+				.prepare();
+
+		funnel
+				.parseRawData(results[0])
+				.labels(currentDashboard.labels)
+				.render();
 
 		var historicChart = new Keen.Dataviz()
 			.chartType("columnchart")
