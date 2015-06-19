@@ -44,7 +44,17 @@ table {
 	width: 100%;
 	display: inline-block;
 }
+.chart__container--half {
+	width: 50%;
+	float: left;
+	padding: 0 5px;
+  box-sizing: border-box;
+}
 
+.chart__container__metrics {
+	overflow: hidden;
+	margin: 10px 0;
+}
 .addiction__table tr:nth-child(6) { /* day 5 */
 	background-color: #dddddd;
 }

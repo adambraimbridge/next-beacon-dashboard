@@ -28,6 +28,7 @@ var render = function (keen, opts) {
 	}
 };
 
+
 Keen.ready(function(){
 
 	switch (location.pathname) {
@@ -165,6 +166,14 @@ Keen.ready(function(){
 
 		case '/graph/navigation':
 			render(require('./queries/navigation'));
+			break;
+
+		case '/graph/frequency-recency':
+			require('./queries/frequency-recency').init(client);
+			break;
+
+		case '/graph/myft':
+			require('./queries/myft').init(client);
 			break;
 
 		default:
