@@ -1,4 +1,4 @@
-/* global Keen, keen_project, keen_read_key */
+/* global Keen, keen_project, keen_read_key, _ */
 
 "use strict";
 
@@ -12,7 +12,7 @@ var client = new Keen({
 
 // This is a base query object, for spawning queries.
 var keenQuery = function(options) {
-	var options = options || {};
+	options = options || {};
 	var parameters = {
 		eventCollection: "dwell",
 		timeframe: queryParameters.timeframe || "this_14_days",
