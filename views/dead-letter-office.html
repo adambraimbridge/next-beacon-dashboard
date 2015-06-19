@@ -1,0 +1,22 @@
+
+<h1>Dead Letter Office</h1>
+
+<p class="o-techdocs-leadbody">Sometimes pages can't be found. How many next.ft.com URLs lead to a <a href="https://youtu.be/-OpQ5fWjlhw" target="_blank">dead letter office?</a></p>
+
+<p>
+	Timeframe:
+	<a href="./dead-letter-office">14 days</a> |
+	<a href="?timeframe=this_30_days">30 days</a> |
+	<a href="?timeframe=this_60_days">60 days</a> |
+	<a href="?timeframe=this_90_days">90 days</a>
+</p>
+
+<h2>Error pages</h2>
+<div class="explanation">
+	<p>When a page can't be loaded, next.ft.com shows an error page. We can track this via a <i>page.location.pathname</i> of "errors/page". <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes#4xx_Client_Error" target="_blank">This page on Wikipedia</a> will tell you what the different error numbers mean.</p>
+</div>
+<span class="chart__container" id="linechart"></span>
+
+<h2>Broken URLs</h2>
+<p>The <i>page.referrer.pathname</i> is the URL that triggered the <i>page.location.pathname</i> (that is, the page that triggered the error).
+<span class="chart__container o-table" id="table"></span>
