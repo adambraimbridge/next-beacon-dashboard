@@ -70,12 +70,25 @@ function init(client) {
 		filters: [{"operator":"contains","property_name":"page.location.hash","property_value":"myft"}],
 		groupBy: "page.location.hash",
 		interval: "daily",
-		targetProperty: "user.uuid",
+		targetProperty: "user.uuid"
 	});
 
+	var queryMyFTReferredArticlesSnapshot = keenQuery({
+		filters: [{"operator":"contains","property_name":"page.location.hash","property_value":"myft"}],
+		groupBy: "page.location.hash",
+		targetProperty: "user.uuid",
+		interval: false
+	});
+
+
 	client.draw(queryMyFTReferredArticles, document.getElementById("myft-referred-articles"), {
+		height: 400,
+	});
+
+	client.draw(queryMyFTReferredArticlesSnapshot, document.getElementById("myft-referred-articles-pie"), {
 		height: 400
 	});
+
 
 	client.run([articleViewsByHash, articleViewsByHashPrevious], function(err, results) {
 		if(!err) {
