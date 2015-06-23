@@ -7,6 +7,7 @@ module.exports = function(el, data) {
 	var table = $('<table>').addClass('ab__results');
 
 	var tr = $('<tr>')
+		.append($('<th>').text('Variant'))
 		.append($('<th>').text('Visitors'))
 		.append($('<th>').text('Conversions'))
 		.append($('<th>').text('Conversion rate'))
@@ -16,6 +17,7 @@ module.exports = function(el, data) {
 
 	['on', 'off'].forEach(function(variant) {
 		var tr = $('<tr>')
+			.append($('<th>').text(variant))
 			.append($('<td>').text(data.stats[variant].visitors))
 			.append($('<td>').text(data.stats[variant].conversions))
 			.append($('<td>').text(data.stats[variant].conversionRate))
