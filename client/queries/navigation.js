@@ -35,6 +35,17 @@ var metric_tertiary_article = new Keen.Dataviz()
 	.height(140)
 	.prepare();
 
+var table = new Keen.Dataviz()
+	.el(document.getElementById("table"))
+	.chartType("table")
+	.chartOptions({
+		width:"100%",
+		height:"500",
+		sortAscending:false,
+		sortColumn:1
+	})
+	.prepare();
+
 // This is a base query object, for spawning queries.
 var keenQuery = function(options) {
 	var parameters = {
@@ -127,6 +138,17 @@ var metricTertiaryArticleQuery = new keenQuery({
 	}]
 });
 
+var tableQuery = new keenQuery({
+	eventCollection: "cta",
+	interval: false,
+	filters: [{
+		"property_name":"meta.domPath",
+		"operator":"contains",
+		"property_value":"header"
+	}],
+	groupBy: "meta.domPath"
+});
+
 var render = function (el, results, opts, client) {
 	var resultTotal = results[0].result;
 	var resultPrimary = results[1].result;
@@ -134,6 +156,7 @@ var render = function (el, results, opts, client) {
 	var resultSecondaryHeader = results[3].result;
 	var resultTertiaryStream = results[4].result;
 	var resultTertiaryArticle = results[5].result;
+	var resultTable = results[6];
 
 	var percentagePrimary = parseFloat((100 / resultTotal * resultPrimary).toFixed(2));
 	var percentageSecondaryHover = parseFloat((100 / resultTotal * resultSecondaryHover).toFixed(2));
@@ -165,6 +188,10 @@ var render = function (el, results, opts, client) {
 		.title(percentageTertiaryArticle+"% <small>clicked at least one <b>tertiary-article</b> menu item (" + resultTertiaryArticle + " out of " + resultTotal + ")</small>")
 		.parseRawData({ result:percentageTertiaryArticle })
 		.render();
+
+	table
+		.parseRawData(resultTable)
+		.render();
 };
 
 module.exports = {
@@ -174,7 +201,8 @@ module.exports = {
 		metricSecondaryHoverQuery,
 		metricSecondaryHeaderQuery,
 		metricTertiaryStreamQuery,
-		metricTertiaryArticleQuery
+		metricTertiaryArticleQuery,
+		tableQuery
 	],
 	render:render
 };
