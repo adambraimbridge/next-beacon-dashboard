@@ -29,6 +29,8 @@ var render = function (keen, opts) {
 };
 
 Keen.ready(function(){
+	var on;
+	var off;
 
 	switch (location.pathname) {
 
@@ -40,8 +42,8 @@ Keen.ready(function(){
 		case '/graph/ab/engaged-follow':
 
 			// FIXME - move to Promise.all
-			var on = require('./queries/ab/engaged-follow').on;
-			var off = require('./queries/ab/engaged-follow').off;
+			on = require('./queries/ab/engaged-follow').on;
+			off = require('./queries/ab/engaged-follow').off;
 
 			client.run(off, function (err, results) {
 				console.log('query done');
@@ -59,8 +61,8 @@ Keen.ready(function(){
 		case '/graph/ab/homepage-promo':
 
 			// FIXME - move to Promise.all
-			var on = require('./queries/ab/homepage-promo').on;
-			var off = require('./queries/ab/homepage-promo').off;
+			on = require('./queries/ab/homepage-promo').on;
+			off = require('./queries/ab/homepage-promo').off;
 
 			client.run(off, function (err, results) {
 				console.log('query done');
