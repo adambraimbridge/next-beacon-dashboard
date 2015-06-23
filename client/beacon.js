@@ -29,6 +29,8 @@ var render = function (keen, opts) {
 };
 
 Keen.ready(function(){
+	var on;
+	var off;
 
 	switch (location.pathname) {
 
@@ -37,11 +39,30 @@ Keen.ready(function(){
 			render(require('./queries/ab/aa'));
 			break;
 
+		case '/graph/ab/engaged-follow':
+
+			// FIXME - move to Promise.all
+			on = require('./queries/ab/engaged-follow').on;
+			off = require('./queries/ab/engaged-follow').off;
+
+			client.run(off, function (err, results) {
+				console.log('query done');
+				var a = results;
+				client.run(on, function (err, results) {
+					var b = results;
+					var el = document.createElement('div');
+					container.appendChild(el);
+					require('./queries/ab/engaged-follow').render(a, b, el);
+				});
+			});
+
+			break;
+
 		case '/graph/ab/homepage-promo':
 
 			// FIXME - move to Promise.all
-			var on = require('./queries/ab/homepage-promo').on;
-			var off = require('./queries/ab/homepage-promo').off;
+			on = require('./queries/ab/homepage-promo').on;
+			off = require('./queries/ab/homepage-promo').off;
 
 			client.run(off, function (err, results) {
 				console.log('query done');
