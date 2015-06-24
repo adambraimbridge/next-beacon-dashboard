@@ -14,9 +14,7 @@ clean:
 	git clean -fxd
 
 run:
-	export S3O_PUBLIC_KEY=`cat ~/.s3o_public_key`; \
 	export PORT=5028; \
-	export BEACON_API_KEY=abc123; \
 	nbt run
 
 test:
