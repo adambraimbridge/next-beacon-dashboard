@@ -7,4 +7,3 @@ module.exports.query = new Keen.Query("count_unique", {
 	target_property: "user.uuid",
 	timeframe: "today"
 });
-
