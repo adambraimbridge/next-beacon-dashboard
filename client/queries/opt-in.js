@@ -106,11 +106,6 @@ module.exports.difficultNavigation = {
 					property_value: 'difficult-nav'
 				},
 				{
-					property_name: 'meta.reason',
-					operator: 'exists',
-					property_value: true
-				},
-				{
 					property_name: 'meta.type',
 					operator: 'eq',
 					property_value: 'out'
@@ -119,6 +114,11 @@ module.exports.difficultNavigation = {
 					property_name: 'user.isStaff',
 					operator: 'eq',
 					property_value: false
+				},
+				{
+					property_name: 'meta.difficultNavReason',
+					operator: 'exists',
+					property_value: true
 				}
 			]
 		})
