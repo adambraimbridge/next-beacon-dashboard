@@ -106,11 +106,6 @@ module.exports.difficultNavigation = {
 					property_value: 'difficult-nav'
 				},
 				{
-					property_name: 'meta.reason',
-					operator: 'exists',
-					property_value: true
-				},
-				{
 					property_name: 'meta.type',
 					operator: 'eq',
 					property_value: 'out'
