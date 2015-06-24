@@ -68,4 +68,3 @@ client.draw(query, document.getElementById("columnchart"), {
 		}
 	}
 });
-
