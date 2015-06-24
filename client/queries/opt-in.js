@@ -119,6 +119,11 @@ module.exports.difficultNavigation = {
 					property_name: 'user.isStaff',
 					operator: 'eq',
 					property_value: false
+				},
+				{
+					property_name: 'meta.difficultNavReason',
+					operator: 'exists',
+					property_value: true
 				}
 			]
 		})
