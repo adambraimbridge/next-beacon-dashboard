@@ -1,12 +1,8 @@
-/* global Keen, keen_project, keen_read_key */
+/* global Keen */
 
 "use strict";
 
-
-var client = new Keen({
-	projectId: keen_project,
-	readKey: keen_read_key
-});
+var client = require('./lib/wrapped-keen');
 
 var container = document.getElementById("graph__container");
 
