@@ -1,3 +1,5 @@
+/* global Keen, keen_project, keen_read_key */
+
 'use strict';
 
 var client = new Keen({
@@ -17,16 +19,16 @@ var client = new Keen({
 		return new Promise(function (resolve, reject) {
 			args[func.length - 1] = function (err, res) {
 				if (err) {
-					Promise.reject(err);
+					reject(err);
 					cb.call(this, err);
 				} else {
-					Promise.resolve(res);
+					resolve(res);
 					cb.call(this, null, res);
 				}
-			}
+			};
 			func.apply(client, args);
 		});
-	}
+	};
 });
 
 module.exports = client;

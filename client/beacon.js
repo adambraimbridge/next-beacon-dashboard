@@ -1,8 +1,8 @@
-/* global Keen, keen_project, keen_read_key */
+/* global Keen */
 
 "use strict";
 
-var client = require('./lib/promisey-client');
+var client = require('./lib/wrapped-keen');
 
 var container = document.getElementById("graph__container");
 
