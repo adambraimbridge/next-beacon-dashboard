@@ -18,10 +18,10 @@ var client = new Keen({
 			args[func.length - 1] = function (err, res) {
 				if (err) {
 					Promise.reject(err);
-					cb(err);
+					cb.call(this, err);
 				} else {
 					Promise.resolve(res);
-					cb(null, res);
+					cb.call(this, null, res);
 				}
 			}
 			func.apply(client, args);
