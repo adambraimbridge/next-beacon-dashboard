@@ -17,7 +17,7 @@ var keenQuery = function(options) {
 			property_name:"user.isStaff",
 			operator:"eq",
 			property_value:false
-		}],
+		}].concat(options.filters || []),
 		maxAge: 3600
 	};
 
