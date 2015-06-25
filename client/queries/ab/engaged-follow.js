@@ -9,17 +9,17 @@ var visualise   = require('./visualise');
 module.exports.on = new Keen.Query("funnel", { steps: [
 		{
 			event_collection: 'dwell',
-			timeframe: { "start" : "2015-06-24T15:00:00.000Z", "end": new Date().toISOString() },
+			timeframe: { "start" : "2015-06-25T00:00:00.000Z", "end": new Date().toISOString() },
 			actor_property: 'user.uuid',
 			filters: [
 				{"property_name":"page.location.type","operator":"eq","property_value":"stream"},
 				{"property_name":"user.isStaff","operator":"eq","property_value":false},
-				{"property_name":"user.ab.myftEngagedFollow","operator":"eq","property_value":"on"}
+				// {"property_name":"user.ab.myftEngagedFollow","operator":"eq","property_value":"on"}
 			]
 		},
 		{
 			event_collection: 'cta',
-			timeframe: { "start" : "2015-06-24T15:00:00.000Z", "end": new Date().toISOString() },
+			timeframe: { "start" : "2015-06-25T00:00:00.000Z", "end": new Date().toISOString() },
 			actor_property: 'user.uuid',
 			filters: [
 				{"property_name":"meta.domPath","operator":"eq","property_value":"myft-engaged-cta | follow"},
@@ -30,21 +30,22 @@ module.exports.on = new Keen.Query("funnel", { steps: [
 module.exports.off = new Keen.Query("funnel", { steps: [
 		{
 			event_collection: 'dwell',
-			timeframe: { "start" : "2015-06-24T15:00:00.000Z", "end": new Date().toISOString() },
+			timeframe: { "start" : "2015-06-25T00:00:00.000Z", "end": new Date().toISOString() },
 			actor_property: 'user.uuid',
 			filters: [
 				{"property_name":"page.location.type","operator":"eq","property_value":"stream"},
 				{"property_name":"user.isStaff","operator":"eq","property_value":false},
-				{"property_name":"user.myft.isEngagedTopic","operator":"eq","property_value":true},
-				{"property_name":"user.ab.myftEngagedFollow","operator":"eq","property_value":"off"}
+				{"property_name":"user.myft.isEngagedTopic","operator":"exists","property_value":true},
+				// {"property_name":"user.ab.myftEngagedFollow","operator":"eq","property_value":"off"}
 			]
 		},
 		{
 			event_collection: 'cta',
-			timeframe: { "start" : "2015-06-24T15:00:00.000Z", "end": new Date().toISOString() },
+			timeframe: { "start" : "2015-06-25T00:00:00.000Z", "end": new Date().toISOString() },
 			actor_property: 'user.uuid',
 			filters: [
-				{"property_name":"meta.domPath","operator":"in","property_value":["sub-header | follow","follow"]},
+				{"property_name":"meta.domPath","operator":"contains","property_value": "follow"},
+				{"property_name":"meta.domPath","operator":"not_contains","property_value":"myft-engaged-cta"}
 			]
 		}
 	]});
