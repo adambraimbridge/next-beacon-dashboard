@@ -5,7 +5,7 @@ var queryParameters = queryString.parse(location.search);
 var queryTimeframe = queryParameters.timeframe || "this_14_days";
 var previousTimeframe  = queryTimeframe.replace('this', 'previous');
 
-var keenQuery = function(options) {
+var queryRealUsers = function(options) {
 	var query = options.query || 'count_unique';
 	var parameters = {
 		eventCollection: options.eventCollection || "dwell",
@@ -35,6 +35,92 @@ var keenQuery = function(options) {
 
 function init (client) {
 
+
+	var thisAllUsers = queryRealUsers({
+		eventCollection: "dwell",
+		targetProperty: "user.uuid",
+		interval: false
+	});
+
+	var prevAllUsers = queryRealUsers({
+		eventCollection: "dwell",
+		targetProperty: "user.uuid",
+		timeframe: previousTimeframe,
+		interval: false
+	});
+
+	var thisFollowUsers = queryRealUsers({
+		eventCollection: "dwell",
+		filters: [{"operator":"exists","property_name":"user.myft.topicsFollowed","property_value":true}],
+		groupBy: "user.myft.topicsFollowed",
+		targetProperty: "user.uuid",
+		interval: false
+	});
+
+	var prevFollowUsers = queryRealUsers({
+		eventCollection: "dwell",
+		filters: [{"operator":"exists","property_name":"user.myft.topicsFollowed","property_value":true}],
+		groupBy: "user.myft.topicsFollowed",
+		targetProperty: "user.uuid",
+		timeframe: previousTimeframe,
+		interval: false
+	});
+
+	client.run([thisFollowUsers, prevFollowUsers, thisAllUsers, prevAllUsers], function (err, [thisFollowUsers, prevFollowUsers, thisAllUsers, prevAllUsers]) {
+		if(!err) {
+
+			function extractCount (resultSet, i) {
+				return (resultSet.result.find(r => r['user.myft.topicsFollowed'] === i) || {result: 0}).result;
+			}
+
+			function aggregatedAverages (start, finish) {
+				var thisUserCount = 0;
+				var thisArticleViewCount = 0;
+				var prevUserCount = 0;
+				var prevArticleViewCount = 0;
+				for (var i = start, il = finish + 1; i < il; i++) {
+					thisUserCount += extractCount(thisFollowUsers, i);
+					prevUserCount += extractCount(prevFollowUsers, i);
+				};
+				return {
+      		label: start === finish ? ''+start : [start, finish].join(' - '),
+					values: [
+						{
+							label: "Now",
+							result: thisUserCount/thisAllUsers.result
+						},
+						{
+							label: "Prev",
+							result: prevUserCount/prevAllUsers.result
+						}
+					]
+				};
+			}
+
+			var groupedResults = [
+				aggregatedAverages(1, 1),
+				aggregatedAverages(2, 5),
+				aggregatedAverages(6, 10),
+				aggregatedAverages(11, 20),
+				aggregatedAverages(21, 50),
+				aggregatedAverages(51, 100)
+			];
+
+
+			drawMultiColumnChart({
+				title: 'Follows per user',
+				data: groupedResults,
+				id: "bar_follows_user",
+				h: {
+					label: 'Topics Followed'
+				},
+				v: {
+					label: '% of users'
+				}
+			});
+		}
+	});
+
 	var piechart = new Keen.Dataviz()
 		.el(document.getElementById("pie_articles_myft"))
 		.chartType("piechart")
@@ -51,13 +137,14 @@ function init (client) {
 
 	var piecharts = [piechart, piechartPrevious];
 
-	var articleViewsByHash = new Keen.Query("count", {
+	var articleViewsByHash = queryRealUsers({
+		query: 'count',
 		eventCollection: "dwell",
 		groupBy: "page.location.hash",
-		timeframe: queryTimeframe,
 		timezone: "UTC"
 	});
-	var articleViewsByHashPrevious = new Keen.Query("count", {
+	var articleViewsByHashPrevious = queryRealUsers({
+		query: 'count',
 		eventCollection: "dwell",
 		groupBy: "page.location.hash",
 		timeframe: previousTimeframe,
@@ -93,39 +180,35 @@ function init (client) {
 	});
 
 	var articlesPerUserQueries = {
-		thisUsers: new Keen.Query("count_unique", {
+		thisUsers: queryRealUsers({
 			eventCollection: "dwell",
 			filters: [{"operator":"exists","property_name":"user.myft.topicsFollowed","property_value":true}],
 			groupBy: "user.myft.topicsFollowed",
 			targetProperty: "user.uuid",
-			timeframe: queryTimeframe,
-			timezone: "UTC",
-			maxAge: 3600
+			interval: false
 		}),
-		thisArticleViews: new Keen.Query("count", {
+		thisArticleViews: queryRealUsers({
+			query: 'count',
 			eventCollection: "dwell",
 			filters: [{"operator":"eq","property_name":"page.location.type","property_value":"article"},{"operator":"exists","property_name":"user.myft.topicsFollowed","property_value":true}],
 			groupBy: "user.myft.topicsFollowed",
-			timeframe: queryTimeframe,
-			timezone: "UTC",
-			maxAge: 3600
+			interval: false
 		}),
-		prevUsers: new Keen.Query("count_unique", {
+		prevUsers: queryRealUsers({
 			eventCollection: "dwell",
 			filters: [{"operator":"exists","property_name":"user.myft.topicsFollowed","property_value":true}],
 			groupBy: "user.myft.topicsFollowed",
 			targetProperty: "user.uuid",
 			timeframe: previousTimeframe,
-			timezone: "UTC",
-			maxAge: 3600
+			interval: false
 		}),
-		prevArticleViews: new Keen.Query("count", {
+		prevArticleViews: queryRealUsers({
+			query: 'count',
 			eventCollection: "dwell",
 			filters: [{"operator":"eq","property_name":"page.location.type","property_value":"article"},{"operator":"exists","property_name":"user.myft.topicsFollowed","property_value":true}],
 			groupBy: "user.myft.topicsFollowed",
 			timeframe: previousTimeframe,
-			timezone: "UTC",
-			maxAge: 3600
+			interval: false
 		})
 	};
 
@@ -152,14 +235,14 @@ function init (client) {
 					prevArticleViewCount += extractCount(prevArticleViews, i);
 				};
 				return {
-      		topicsFollowed: start === finish ? ''+start : [start, finish].join(' - '),
+      		label: start === finish ? ''+start : [start, finish].join(' - '),
 					values: [
 						{
-							period: "Now",
+							label: "Now",
 							result: thisArticleViewCount/thisUserCount
 						},
 						{
-							period: "Prev",
+							label: "Prev",
 							result: prevArticleViewCount/prevUserCount
 						}
 					]
@@ -176,13 +259,22 @@ function init (client) {
 				aggregatedAverages(51, 100)
 			];
 
-
-			drawMultiColumnChart('Proportion of articles viewed from myFT', groupedResults);
+			drawMultiColumnChart({
+				title: 'Article views per user, grouped by follow engagement',
+				data: groupedResults,
+				id: "bar_articles_user",
+				h: {
+					label: 'Topics Followed'
+				},
+				v: {
+					label: 'Articles per user'
+				}
+			});
 
 		}
 	});
 
-	var queryMyFTReferredArticles = keenQuery({
+	var queryMyFTReferredArticles = queryRealUsers({
 		filters: [
 			{"operator":"contains","property_name":"page.location.hash","property_value":"myft"},
 			{"operator":"eq","property_name":"page.location.type","property_value":"article"}
@@ -192,7 +284,7 @@ function init (client) {
 		targetProperty: "user.uuid"
 	});
 
-	var queryMyFTReferredArticlesSnapshot = keenQuery({
+	var queryMyFTReferredArticlesSnapshot = queryRealUsers({
 		filters: [
 			{"operator":"contains","property_name":"page.location.hash","property_value":"myft"},
 			{"operator":"eq","property_name":"page.location.type","property_value":"article"}
@@ -211,20 +303,27 @@ function init (client) {
 		height: 400
 	});
 
+
+
+
 }
 
 
-function drawMultiColumnChart(title, results) {
-  var data = new google.visualization.DataTable();
 
-  data.addColumn('string', 'Topics Followed');
 
-  results[0].values.forEach(function (val) {
-  	data.addColumn('number', val.period);
+
+
+function drawMultiColumnChart({title, data, id, v, h}) {
+  var tabulatedData = new google.visualization.DataTable();
+
+  tabulatedData.addColumn('string', h.label);
+
+  data[0].values.forEach(function (val) {
+  	tabulatedData.addColumn('number', val.label);
   });
 
-  data.addRows(results.map(function (res) {
-  	return [res.topicsFollowed, res.values[0].result, res.values[1].result];
+  tabulatedData.addRows(data.map(function (res) {
+  	return [res.label].concat(res.values.map(v => v.result));
   }));
 
   var options = {
@@ -238,20 +337,23 @@ function drawMultiColumnChart(title, results) {
       }
     },
     hAxis: {
-      title: 'Topics followed',
+      title: h.label,
       viewWindow: {
         min: [7, 30, 0],
         max: [17, 30, 0]
       }
     },
     vAxis: {
-      title: 'Articles per user'
+      title: v.label
     }
   };
 
-  var chart = new google.visualization.ColumnChart(document.getElementById("bar_articles_user"));
-  chart.draw(data, options);
+  var chart = new google.visualization.ColumnChart(document.getElementById(id));
+  chart.draw(tabulatedData, options);
 }
+
+
+
 
 
 
