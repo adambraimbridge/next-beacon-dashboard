@@ -1,3 +1,4 @@
+/* global Keen, _ */
 'use strict';
 
 var queryString = require('query-string');
@@ -97,7 +98,7 @@ function init(client) {
 
 		});
 
-	}
+	};
 	generateFrequencyRecencyStats(queryTimeframe);
 	generateFrequencyRecencyStats(queryTimeframe.replace('this', 'previous'), '--previous');
 
@@ -105,7 +106,7 @@ function init(client) {
 		property_name:"user.myft.topicsFollowed",
 		operator:"gte",
 		property_value:1
-	}
+	};
 	generateFrequencyRecencyStats(queryTimeframe, '--following', [isFollowing]);
 	generateFrequencyRecencyStats(queryTimeframe.replace('this', 'previous'), '--following--previous', [isFollowing]);
 
@@ -115,4 +116,3 @@ function init(client) {
 module.exports = {
 	init: init
 };
-

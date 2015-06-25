@@ -191,13 +191,14 @@ Keen.ready(function(){
 
 		case '/graph/myft':
 			require('./queries/myft').init(client);
-
+			break;
 		case '/graph/dead-letter-office':
 			require('./queries/dead-letter-office');
 			break;
 
 		default:
 			console.log('unknown graph');
+
 	}
 
 });
