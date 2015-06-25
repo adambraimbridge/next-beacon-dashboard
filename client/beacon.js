@@ -24,6 +24,7 @@ var render = function (keen, opts) {
 	}
 };
 
+
 Keen.ready(function(){
 	var on;
 	var off;
@@ -184,12 +185,20 @@ Keen.ready(function(){
 			render(require('./queries/navigation'));
 			break;
 
+		case '/graph/frequency-recency':
+			require('./queries/frequency-recency').init(client);
+			break;
+
+		case '/graph/myft':
+			require('./queries/myft').init(client);
+			break;
 		case '/graph/dead-letter-office':
 			require('./queries/dead-letter-office');
 			break;
 
 		default:
 			console.log('unknown graph');
+
 	}
 
 });
