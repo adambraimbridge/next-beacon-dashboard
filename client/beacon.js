@@ -2,11 +2,7 @@
 
 "use strict";
 
-
-var client = new Keen({
-	projectId: keen_project,
-	readKey: keen_read_key
-});
+var client = require('./lib/promisey-client');
 
 var container = document.getElementById("graph__container");
 

@@ -1,4 +1,5 @@
+'use strict';
 
-require('o-techdocs');
+require('array-find');
 require('./global-navigation');
 require('./beacon');
