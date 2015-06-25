@@ -30,8 +30,12 @@
 			<div class="o-techdocs-sidebar">
 				<nav class="o-hierarchical-nav" data-o-component="o-hierarchical-nav" data-o-hierarchical-nav-orientiation="vertical">
 					<ul class="o-techdocs-nav" data-o-hierarchical-nav-level="1">
-						<li data-nav-name="progress">
-							<a href="/progress/2015-06-16">Progress report</a>
+						<li data-nav-name="progress"  class="o-hierarchical-nav__parent">
+							<a>Progress <i></i></a>
+							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
+								<li><a href="/progress/2015-06-23">week 25</a></li>
+								<li><a href="/progress/2015-06-16">week 24</a></li>
+							</ul>
 						</li>
 						<li data-nav-name="uniques" class="o-hierarchical-nav__parent">
 							<a>Uniques <i></i></a>
@@ -55,6 +59,7 @@
 							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
 								<li><a href="/graph/ab/aa">AA</a></li>
 								<li><a href="/graph/ab/homepage-promo">Homepage promo</a></li>
+								<li><a href="/graph/ab/engaged-follow">Engaged follow</a></li>
 							</ul>
 						</li>
 						<li data-nav-name="opt-in">
@@ -111,6 +116,8 @@
 								<li><a href="/graph/myft">How are people using myFT?</a></li>
 								<li><a href="/graph/follow">How are people following?</a></li>
 							</ul>
+						<li data-nav-name="dead-letter-office">
+							<a href="/graph/dead-letter-office">Dead letter office</a>
 						</li>
 					</ul>
 				</nav>
@@ -143,7 +150,7 @@
 		</script>
 		<script src="//code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
 		<script src="//cdn.jsdelivr.net/keen.js/3.2.4/keen.min.js" type="text/javascript"></script>
-
+		<script src="//build.origami.ft.com/bundles/js?modules=o-techdocs@^4.0.4"></script>
 		{{>next-js-setup/templates/script-loader}}
 	</body>
-</html
+</html>
