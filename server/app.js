@@ -37,16 +37,14 @@ app.get('/graph/:name/:sub?', function (req, res) {
 	var tmpl = req.params.name;
 	tmpl += (req.params.sub) ? '-' + req.params.sub : '';
 
-	// originalUrl and urlID are used for o-chat.
+	// Using http://blogs.ft.com/ intentionally here as it's the only way to get
+	// o-chat to work. http://blogs.ft.com/ redirects to ft.com anyway, so it's harmless.
+	// NOTE: When this can be changed to https://beacon.ft.com/, consider that
+	// all comments will need to be migrated, and that would be a super hassle.
 	var articleid = 'beacon-dashboard-' + tmpl;
 	Object.keys(req.query).forEach(function(key) {
 		articleid += '-' + req.query[key];
 	});
-
-	// Using http://blogs.ft.com/ intentionally here as it's the only way to get
-	// o-chat to work. http://blogs.ft.com/ redirects to ft.com anyway, so it's harmless.
-	// NOTE: When this can be changed to https://beacon.ft.com/, consider that
-	// all comments will need to me migrated, and that would be a super hassle.
 	var oChatParameters = {
 		articleid: articleid.toLowerCase(),
 		url: 'http://blogs.ft.com/' + req.originalUrl
