@@ -40,14 +40,14 @@ app.get('/graph/:name/:sub?', function (req, res) {
 	// Using http://blogs.ft.com/ intentionally here as it's the only way to get
 	// o-chat to work. http://blogs.ft.com/ redirects to ft.com anyway, so it's harmless.
 	// NOTE: When this can be changed to https://beacon.ft.com/, consider that
-	// all comments will need to be migrated, and that would be a super hassle.
+	// all comments *might* need to be migrated, and that would be a super hassle.
 	var articleid = 'beacon-dashboard-' + tmpl;
 	Object.keys(req.query).forEach(function(key) {
 		articleid += '-' + req.query[key];
 	});
 	var oChatParameters = {
 		articleid: articleid.toLowerCase(),
-		url: 'http://blogs.ft.com/' + req.originalUrl
+		url: 'http://blogs.ft.com/beacon-ft-com' + req.originalUrl
 	};
 
 	res.render(tmpl, {
