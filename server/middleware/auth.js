@@ -1,8 +1,15 @@
+
 'use strict';
+
+// TODO:ADAM:20150626 — Refactor the code that strips username and token out
+// of the URL, and instead make s3o redirect to a cookie-setting endpoint
+// which in turn redirects to the appropriate URL.
+
 var isSecure;
 var logger = require('ft-next-logger');
 var crypto = require('crypto');
 var NodeRSA = require("node-rsa");
+var url = require('url');
 
 if (!process.env.S3O_PUBLIC_KEY) {
 	throw new Error('Beacon requires S3O_PUBLIC_KEY to be set');
@@ -48,22 +55,23 @@ var authenticateToken = function(res,username,token) {
 
 var authS3O = function(req, res, next){
 	var s3oUsername, s3oToken;
-	var s3oParametersDetected = false;
-	isSecure = req.protocol === "https"? true : false;
 
+	// Check for s3o username/token URL parameters.
+	// These parameters come from https://s3o.ft.com. It redirects back after it does the google authentication.
+	var s3oParametersDetected = (req.query.username && req.query.token);
+
+	isSecure = req.protocol === "https"? true : false;
 	if (req.cookies.s3o_username && req.cookies.s3o_token) {
 
-		// Check for s3o username/token cookies
+		// Cookies are first priority
 		s3oUsername = req.cookies.s3o_username;
 		s3oToken = req.cookies.s3o_token;
 		logger.info("S3O: Found cookie token for s3o_username: " + s3oUsername);
-	} else if (req.query.username && req.query.token) {
+	} else if (s3oParametersDetected) {
 
-		// Check for s3o username/token URL parameters.
-		// These parameters come from https://s3o.ft.com. It redirects back after it does the google authentication.
+		// URL parameters are second priority
 		s3oUsername = req.query.username;
 		s3oToken = req.query.token;
-		s3oParametersDetected = true;
 		logger.info("S3O: Found parameter token for s3o_username: " + s3oUsername);
 	} else {
 
@@ -78,8 +86,15 @@ var authS3O = function(req, res, next){
 			res.cookie('s3o_username', s3oUsername, cookieOptions);
 			res.cookie('s3o_token', s3oToken, cookieOptions);
 			if (s3oParametersDetected) {
+
+				// Strip the username and token from the URL (but keep any other params)
+				delete req.query['username'];
+				delete req.query['token'];
+				var cleanURL = url.parse(req.path);
+				cleanURL.query = req.query;
+
 				logger.info("S3O: Parameters detected in URL. Redirecting to base path");
-				return res.redirect(req.path);
+				return res.redirect(url.format(cleanURL));
 			} else {
 				next();
 			}
