@@ -77,7 +77,7 @@ var authS3O = function(req, res, next){
 
 		// Send the user to s3o to authenticate
 		logger.info("S3O: No token/s3o_username found. Redirecting to https://s3o.ft.com/authenticate … ");
-		res.redirect("https://s3o.ft.com/authenticate?redirect="+ encodeURIComponent(req.protocol + "://"+ req.headers.host + req.url));
+		return res.redirect("https://s3o.ft.com/authenticate?redirect="+ encodeURIComponent(req.protocol + "://"+ req.headers.host + req.url));
 	}
 
 	if (s3oUsername && s3oToken) {
