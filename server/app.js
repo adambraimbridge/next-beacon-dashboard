@@ -37,25 +37,20 @@ app.get('/graph/:name/:sub?', function (req, res) {
 	var tmpl = req.params.name;
 	tmpl += (req.params.sub) ? '-' + req.params.sub : '';
 
-	// Using http://blogs.ft.com/ intentionally here as it's the only way to get
-	// o-chat to work. http://blogs.ft.com/ redirects to ft.com anyway, so it's harmless.
-	// NOTE: When this can be changed to https://beacon.ft.com/, consider that
-	// all comments *might* need to be migrated, and that would be a super hassle.
-	var articleid = 'beacon-dashboard-' + tmpl;
+	var article_id = 'beacon-dashboard-' + tmpl;
 	Object.keys(req.query).forEach(function(key) {
-		articleid += '-' + req.query[key];
+		article_id += '-' + req.query[key];
 	});
-	var oChatParameters = {
-		articleid: articleid.toLowerCase(),
-		url: 'http://blogs.ft.com/beacon-ft-com' + req.originalUrl
-	};
+	article_id = article_id.toLowerCase();
 
 	res.render(tmpl, {
 		layout: 'beacon',
 		keen_project: KEEN_PROJECT,
 		keen_read_key: KEEN_READ_KEY,
 		page_name:req.params.name,
-		oChatParameters: oChatParameters
+		original_url: req.originalUrl,
+		article_id: article_id,
+		__isProduction: res.locals.__isProduction
 	});
 });
 
