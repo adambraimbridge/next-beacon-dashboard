@@ -6,7 +6,8 @@
 var confidence	= require('ab-test-confidence');
 var visualise   = require('./visualise');
 
-module.exports.on = new Keen.Query("funnel", { steps: [
+module.exports.on = new Keen.Query("funnel", {
+	steps: [
 		{
 			event_collection: 'dwell',
 			timeframe: { "start" : "2015-06-25T00:00:00.000Z", "end": new Date().toISOString() },
@@ -25,9 +26,12 @@ module.exports.on = new Keen.Query("funnel", { steps: [
 				{"property_name":"meta.domPath","operator":"eq","property_value":"myft-engaged-cta | follow"},
 			]
 		}
-	]});
+	],
+	maxAge: 10800
+});
 
-module.exports.off = new Keen.Query("funnel", { steps: [
+module.exports.off = new Keen.Query("funnel", {
+	steps: [
 		{
 			event_collection: 'dwell',
 			timeframe: { "start" : "2015-06-25T00:00:00.000Z", "end": new Date().toISOString() },
@@ -48,7 +52,9 @@ module.exports.off = new Keen.Query("funnel", { steps: [
 				{"property_name":"meta.domPath","operator":"not_contains","property_value":"myft-engaged-cta"}
 			]
 		}
-	]});
+	],
+	maxAge: 10800
+});
 
 module.exports.render = function (a, b, el) {
 

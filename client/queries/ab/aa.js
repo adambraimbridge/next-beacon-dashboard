@@ -14,11 +14,12 @@ module.exports = {
 	 */
 
 	query: new Keen.Query('count', {
-			timeframe: 'this_14_days',
-			event_collection: 'dwell',
-			latest: 10000,
-			group_by: ['user.ab.aa', 'user.erights']
-		}),
+		timeframe: 'this_14_days',
+		event_collection: 'dwell',
+		latest: 10000,
+		group_by: ['user.ab.aa', 'user.erights'],
+		maxAge: 10800
+	}),
 
 	render: function (el, response, opts, client) {
 

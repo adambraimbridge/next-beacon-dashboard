@@ -86,7 +86,8 @@ module.exports.thisWeek = {
 					operator: 'eq',
 					property_value: false
 				}
-			]
+			],
+			maxAge: 10800
 		}),
 
 	render: render
@@ -106,7 +107,8 @@ module.exports.lastWeek = {
 					operator: 'eq',
 					property_value: false
 				}
-			]
+			],
+			maxAge: 10800
 		}),
 
 	render: render
@@ -126,7 +128,8 @@ module.exports.thisTimeLastMonth = {
 					operator: 'eq',
 					property_value: false
 				}
-			]
+			],
+			maxAge: 10800
 		}),
 
 	render: render
@@ -146,7 +149,8 @@ module.exports.weekly = {
 					operator: 'eq',
 					property_value: false
 				}
-			]
+			],
+			maxAge: 10800
 		}),
 
 	render: render
@@ -166,7 +170,8 @@ module.exports.weeklyThisTimeLastMonth = {
 					operator: 'eq',
 					property_value: false
 				}
-			]
+			],
+			maxAge: 10800
 		}),
 
 	render: render

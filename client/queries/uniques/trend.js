@@ -21,7 +21,7 @@ var query = new Keen.Query("count_unique", {
 		operator:"eq",
 		property_value:false
 	}],
-	maxAge: 3600
+	maxAge: 10800
 });
 
 client.draw(query, document.getElementById("linechart"), {

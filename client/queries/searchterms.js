@@ -21,7 +21,7 @@ var query = new Keen.Query("count_unique", {
 	targetProperty: "user.erights",
 	timeframe: "this_2_months",
 	timezone: "UTC",
-	maxAge: 3600
+	maxAge: 10800
 });
 
 // The results of the query comes as an array of objects,
