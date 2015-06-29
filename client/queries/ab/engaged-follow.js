@@ -14,7 +14,7 @@ module.exports.on = new Keen.Query("funnel", { steps: [
 			filters: [
 				{"property_name":"page.location.type","operator":"eq","property_value":"stream"},
 				{"property_name":"user.isStaff","operator":"eq","property_value":false},
-				// {"property_name":"user.ab.myftEngagedFollow","operator":"eq","property_value":"on"}
+				{"property_name":"user.ab.myftEngagedFollow","operator":"eq","property_value":"on"}
 			]
 		},
 		{
@@ -35,8 +35,7 @@ module.exports.off = new Keen.Query("funnel", { steps: [
 			filters: [
 				{"property_name":"page.location.type","operator":"eq","property_value":"stream"},
 				{"property_name":"user.isStaff","operator":"eq","property_value":false},
-				{"property_name":"user.myft.isEngagedTopic","operator":"exists","property_value":true},
-				// {"property_name":"user.ab.myftEngagedFollow","operator":"eq","property_value":"off"}
+				{"property_name":"user.ab.myftEngagedFollow","operator":"eq","property_value":"off"}
 			]
 		},
 		{
@@ -45,6 +44,7 @@ module.exports.off = new Keen.Query("funnel", { steps: [
 			actor_property: 'user.uuid',
 			filters: [
 				{"property_name":"meta.domPath","operator":"contains","property_value": "follow"},
+				{"property_name":"user.myft.isEngagedTopic","operator":"exists","property_value":true},
 				{"property_name":"meta.domPath","operator":"not_contains","property_value":"myft-engaged-cta"}
 			]
 		}
