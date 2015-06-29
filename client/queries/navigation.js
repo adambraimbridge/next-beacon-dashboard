@@ -58,7 +58,7 @@ var keenQuery = function(options) {
 			operator:"eq",
 			property_value:false
 		}].concat(options.filters || []),
-		maxAge: 3600
+		maxAge: 10800
 	};
 
 	if (options.groupBy) {

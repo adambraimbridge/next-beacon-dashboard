@@ -128,7 +128,8 @@ var renderDashboard = function (el, results, opts) {
 
 module.exports = {
 	query: new Keen.Query("funnel", {
-		steps:activeUserStepsForFeature(features[queryParameters.feature])
+		steps:activeUserStepsForFeature(features[queryParameters.feature]),
+		maxAge: 10800
 	}),
 	render:renderDashboard
 };

@@ -287,7 +287,7 @@ function getFunnelForOffset(offset) {
 	var dashboards = getDashboards(offset);
 	var query = new Keen.Query("funnel", {
 		steps:dashboards[queryParameters.dashboard].steps,
-		maxAge: 3600
+		maxAge: 10800
 	});
 
 	console.log('dashboard ', dashboards[queryParameters.dashboard]);

@@ -29,7 +29,7 @@ var keenQuery = function(options) {
 			operator:"contains",
 			property_value:"errors/page"
 		}],
-		maxAge: 3600
+		maxAge: 10800
 	};
 
 	// Don't pass any interval parameter if it's explicitly set to false
