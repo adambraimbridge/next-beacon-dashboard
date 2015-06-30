@@ -1,4 +1,4 @@
-/* global Keen, keen_project, keen_read_key, _ */
+/* global Keen, keen_project, keen_read_key */
 
 "use strict";
 
