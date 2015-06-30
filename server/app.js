@@ -49,8 +49,7 @@ app.get('/graph/:name/:sub?', function (req, res) {
 		keen_read_key: KEEN_READ_KEY,
 		page_name:req.params.name,
 		original_url: req.originalUrl,
-		article_id: article_id,
-		__isProduction: res.locals.__isProduction
+		article_id: article_id
 	});
 });
 
