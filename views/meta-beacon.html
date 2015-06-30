@@ -1,0 +1,38 @@
+
+<h1>Meta Beacon</h1>
+
+<p class="o-techdocs-leadbody">Beacon.ft.com shows us usage of next.ft.com. <a href="https://en.wikipedia.org/wiki/Quis_custodiet_ipsos_custodes">But what data do we have about beacon.ft.com?</a></p>
+
+<p>
+	Timeframe:
+	<a href="./dead-letter-office">14 days</a> |
+	<a href="?timeframe=this_30_days">30 days</a> |
+	<a href="?timeframe=this_60_days">60 days</a> |
+	<a href="?timeframe=this_90_days">90 days</a>
+</p>
+
+<h2>Unique users</h2>
+<div class="explanation">
+	<p>How many people visit beacon.ft.com?</p>
+</div>
+<span class="chart__container" id="linechart"></span>
+
+<h2>Performance</h2>
+<p>How long does it take to load a beacon dashboard?</p>
+
+<div id="beacon-dashboard-load-times">
+	<img src="https://www.hostedgraphite.com/bbaf3ccf/569381f9-6a60-4c33-a0be-b2272aa7a4a5/graphite/render/?target=sortByTotal(aliasByNode(wpt.beacon_ft_com.dulles_va.chrome.*.fullyLoaded%2C4))&from=-14days&until=now&format=png&width=890&height=450&lineMode=connected&yMin=0&bgcolor=ffffff&fgcolor=000000&hideLegend=false&xFormat=%25a%20%25w&vtitle=Milliseconds&title=Page%20load%20times%20for%20beacon.ft.com%20dashboards" />
+</div>
+
+<p>How do we get that data?</p>
+<p>The answer to this gets a bit tricky. Strap yourself in.</p>
+<p>We use a service called <a href="http://www.webpagetest.org/">http://www.webpagetest.org/</a>. It lets us "run a free website speed test from multiple locations around the globe using real browsers (IE and Chrome) and at real consumer connection speeds." Basically it loads any web page you want and measures how long it takes.<p>
+<p>We want to measure the page load speed every day, but webpagetest doesn't run automatically. So we use an automation service called Jenkins to run webpagetest once every 24 hours. You can see the results of the latest Jenkins session here: <a href="http://ftjen06392-lvpr-uk-p.osb.ft.com:8181/job/webpage-test-to-graphite-beacon-dashboard/lastBuild/console">http://ftjen06392-lvpr-uk-p.osb.ft.com:8181/job/webpage-test-to-graphite-beacon-dashboard/lastBuild/console</a><p>
+<p><i>Advanced:</i> If you want to see the webpagetest reports, you need to manually build the URL. Here's how:</p>
+<ol>
+	<li>Go to the <a href="http://ftjen06392-lvpr-uk-p.osb.ft.com:8181/job/webpage-test-to-graphite-beacon-dashboard/lastBuild/console">console results of a Jenkins session</a></li>
+	<li>Copy one of the "Polling test" IDs (e.g. Polling test #150629_ES_30eea411d08d2ff0de5ba6a42be7538d)</li>
+	<li>Cut everything after the "#" and append it to "http://www.webpagetest.org/result/" (e.g. <a href="http://www.webpagetest.org/result/150629_ES_30eea411d08d2ff0de5ba6a42be7538d">http://www.webpagetest.org/result/150629_ES_30eea411d08d2ff0de5ba6a42be7538d</a>)</li>
+</ol>
+<p>Jenkins sends some of the webpagetest data to a service called Graphite. You can make dashboards from Graphite data using something called Grafana, and that's where the dashboard above comes from.</p>
+<p><i>Are all beacon dashboard pages measured?</i> No. You can add to the list of pages we want to measure <a href="https://github.com/Financial-Times/next-wpt-to-graphite/blob/master/tests-beacon-dashboard.js">here</a>.</p>
