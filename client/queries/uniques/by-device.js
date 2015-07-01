@@ -6,19 +6,28 @@ var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
 
 var metric_large = new Keen.Dataviz()
-	.title("% Large (XL and L)")
+	.chartOptions({
+		suffix: '%'
+	})
+	.title("Large (XL and L)")
 	.el(document.getElementById("metric_large"))
 	.chartType("metric")
 	.prepare();
 
 var metric_medium = new Keen.Dataviz()
-	.title("% Medium (M)")
+	.chartOptions({
+		suffix: '%'
+	})
+	.title("Medium (M)")
 	.el(document.getElementById("metric_medium"))
 	.chartType("metric")
 	.prepare();
 
 var metric_small = new Keen.Dataviz()
-	.title("% Small (S, XS and default)")
+	.chartOptions({
+		suffix: '%'
+	})
+	.title("Small (S, XS and default)")
 	.el(document.getElementById("metric_small"))
 	.chartType("metric")
 	.prepare();
