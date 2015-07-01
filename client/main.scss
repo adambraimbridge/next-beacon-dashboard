@@ -91,6 +91,13 @@ table {
 	width: 100%;
 }
 
+.explanation,
+.explanation tr,
+.explanation td {
+	border: none !important;
+	padding: 0px !important;
+}
+
 .ab__significance-no {
 	background-color: red;
 	color: white;
@@ -115,6 +122,9 @@ table {
 	min-height: 450px;
 }
 
+.keen-metric-suffix {
+	font-size: smaller;
+}
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
