@@ -90,7 +90,9 @@ table {
 table {
 	width: 100%;
 }
-table.explanation, table.explanation tr, table.explanation td {
+.explanation,
+.explanation tr,
+.explanation td {
 	border: none !important;
 	padding: 0px !important;
 }
