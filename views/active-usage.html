@@ -1,10 +1,39 @@
+<h1>Active usage of <span class="feature-name">feature</span></h1>
+
 <div class="metric__container" id="metric_all"></div>
 
-<section id="graph__container"></section>
+<h3>How this is calculated:</h3>
+
+<table class='explanation'>
+	<tr>
+		<td>How many users visited next.ft in a one-week period, two weeks ago?</td>
+		<td><b><span id="resultsAll0"></span> users</b></td>
+	</tr>
+	<tr>
+		<td>Of those users, how many visited next.ft in the last seven days?</td>
+		<td><span id="resultsAll1"></span> <i>active</i> users</td>
+	</tr>
+	<tr>
+		<td>How many of those active users used <i><span class="feature-name">this feature</span></i>?*</td>
+		<td><span id="resultsAll2"></span> <i>active, feature-clicking</i> users</td>
+	</tr>
+	<tr>
+		<td>What's that as a percentage?</td>
+		<td><span id="percentageAll"></span>%</td>
+	</tr>
+</table>
+<p><small>* These users clicked at least one <a class="beacon-href" href="#" target="_blank">"<span class="feature-cta"></span>" trackable element</a> in the last two weeks.</small></p>
+
+<h2>Active usage for different device sizes</h2>
+<p>Is the active usage different for different size devices? Let's apply the exact same logic as above, except the first question becomes this:</p>
+<p>How many users visited next.ft in a one-week period, two weeks ago, <b>on a specific device size?</b> (Large, medium or small)</p>
+<p>Then of those users, how many visited next.ft in the last seven days, and how many of <i>those</i> users used <i><span class="feature-name">this feature</span></i>?*</p>
 
 <div class="chart__container__metrics o-grid-row">
 	<span data-o-grid-colspan="one-third" class="chart__container" id="metric_large"></span>
 	<span data-o-grid-colspan="one-third" class="chart__container" id="metric_medium"></span>
 	<span data-o-grid-colspan="one-third" class="chart__container" id="metric_small"></span>
 </div>
+
+<section id="graph__container"></section>
 

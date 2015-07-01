@@ -90,6 +90,10 @@ table {
 table {
 	width: 100%;
 }
+table.explanation, table.explanation tr, table.explanation td {
+	border: none !important;
+	padding: 0px !important;
+}
 
 .ab__significance-no {
 	background-color: red;

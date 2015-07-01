@@ -24,6 +24,12 @@ var features = {
 	'myFTReadingListOnArticle': 'myft-reading-list'
 };
 
+$('.feature-name').fadeOut(function(){ $(this).text(queryParameters.feature).fadeIn(); });
+$('.feature-cta').fadeOut(function(){ $(this).text(features[queryParameters.feature]).fadeIn(); });
+
+var beaconHref = 'https://beacon.ft.com/graph?event_collection=cta&metric=count&group_by=meta.domPath&timeframe=this_14_days&title=Trackable%20element:%20'+ features[queryParameters.feature] +'&domPathContains='+ features[queryParameters.feature];
+$('.beacon-href').attr('href',beaconHref);
+
 // Return the ISO string for relative dates
 var daysFromNow = function (offset) {
 	offset = offset || 0;
@@ -178,7 +184,11 @@ var renderDashboard = function (el, results, opts) {
 	var percentageMedium = parseFloat((100 / resultsMedium.result[1] * resultsMedium.result[2]).toFixed(2));
 	var percentageSmall = parseFloat((100 / resultsSmall.result[1] * resultsSmall.result[2]).toFixed(2));
 
-	// See: https://github.com/keen/keen-js/blob/master/docs/visualization.md#pass-in-your-own-data-to-charts
+	$('#resultsAll0').text(resultsAll.result[0]);
+	$('#resultsAll1').text(resultsAll.result[1]);
+	$('#resultsAll2').text(resultsAll.result[2]);
+	$('#percentageAll').text(percentageAll);
+
 	metric_all
 		.parseRawData({ result:percentageAll })
 		.render();
@@ -194,41 +204,6 @@ var renderDashboard = function (el, results, opts) {
 	metric_small
 		.parseRawData({ result:percentageSmall })
 		.render();
-
-	$('<h1>').text('Feature: ' + queryParameters.feature).appendTo(el);
-
-	$('<div>').attr('id', 'metric')
-		.appendTo(el);
-
-	$('<h3>').text('How this is calculated:').appendTo(el);
-
-	var table = $('<table>').addClass('explanation');
-
-	$('<tr>')
-		.append($('<td>').text('How many users visited next.ft in a one-week period, two weeks ago?'))
-		.append($('<td>').html('<b>' + resultsAll.result[0] + ' users</b>'))
-		.appendTo(table);
-
-	$('<tr>')
-		.append($('<td>').text('Of those users, how many visited next.ft in the last seven days?'))
-		.append($('<td>').html(resultsAll.result[1] + ' <i>active</i> users'))
-		.appendTo(table);
-
-	$('<tr>')
-		.append($('<td>').text('How many of those active users used ' + queryParameters.feature + '?*'))
-		.append($('<td>').html(resultsAll.result[2] + ' <i>active, feature-clicking</i> users'))
-		.appendTo(table);
-
-	$('<tr>')
-		.append($('<td>').text("What's that as a percentage?"))
-		.append($('<td>').text(percentageAll + '%'))
-		.appendTo(table);
-
-	table.appendTo(el);
-
-	var beaconHref = 'https://beacon.ft.com/graph?event_collection=cta&metric=count&group_by=meta.domPath&timeframe=this_14_days&title=Trackable%20element:%20'+ features[queryParameters.feature] +'&domPathContains='+ features[queryParameters.feature];
-	$('<p>').html('<small>* These users clicked at least one <a href="' + beaconHref + '" target="_blank">"' + features[queryParameters.feature] + '" trackable element</a> in the last two weeks.</small>')
-		.appendTo(el);
 };
 
 module.exports = {
