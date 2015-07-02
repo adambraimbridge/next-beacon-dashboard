@@ -5,6 +5,11 @@
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
 
+// Degrade gracefully if parameter is missing. Not ideal, but at least it loads something.
+if (!queryParameters.feature) {
+	queryParameters.feature = 'articleComments';
+}
+
 // feature name : cta
 var features = {
 	'articleComments':'view-comments',
