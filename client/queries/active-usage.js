@@ -5,13 +5,15 @@
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
 
-// feature name : cta
+// The pattern here is [feature name] : [cta]
+// [feature name] comes from https://next.ft.com/__toggler
+// [cta] is the data-trackable attribute that the feature exposes
 var features = {
 	'articleComments':'view-comments',
 	'articleRelatedContent':'more-on',
 	'articleTOC':'toc',
 	'dynamicTertiaryNav':'dynamic-tags',
-	'linkedDataOrganisationSummary': 'organisation-summary',
+	'capiV2LinkedDataOrganisationHeader': 'organisation-summary',
 	'follow':'follow',
 	'globalNavigation':'primary-nav',
 	'homePageLoadMore':'toggle-more-stories',
