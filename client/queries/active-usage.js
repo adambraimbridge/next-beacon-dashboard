@@ -11,6 +11,7 @@ var features = {
 	'articleRelatedContent':'more-on',
 	'articleTOC':'toc',
 	'dynamicTertiaryNav':'dynamic-tags',
+	'linkedDataOrganisationSummary': 'organisation-summary',
 	'follow':'follow',
 	'globalNavigation':'primary-nav',
 	'homePageLoadMore':'toggle-more-stories',
