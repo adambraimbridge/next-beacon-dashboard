@@ -5,6 +5,11 @@
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
 
+// Degrade gracefully if parameter is missing. Not ideal, but at least it loads something.
+if (!queryParameters.feature) {
+	queryParameters.feature = 'articleComments';
+}
+
 // The pattern here is [feature name] : [cta]
 // [feature name] comes from https://next.ft.com/__toggler
 // [cta] is the data-trackable attribute that the feature exposes
