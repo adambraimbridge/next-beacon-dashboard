@@ -3,6 +3,7 @@ var isSecure;
 var logger = require('ft-next-logger');
 var crypto = require('crypto');
 var NodeRSA = require("node-rsa");
+var url = require('url');
 
 if (!process.env.S3O_PUBLIC_KEY) {
 	throw new Error('Beacon requires S3O_PUBLIC_KEY to be set');
@@ -24,6 +25,9 @@ if (!process.env.BEACON_API_KEY) {
 //    https://dashboard.heroku.com/orgs/financial-times/apps/ft-next-beacon-dashboard/settings
 //  – The intention is that config-vars will push its settings into all apps, so if it changed
 //    we would update manually and it would fix instantly.
+//
+// To see the logs, run this at a bash prompt:
+// heroku logs -ta ft-next-beacon-dashboard | grep S3O
 var authenticateToken = function(res, username, token) {
 	var publicKey = process.env.S3O_PUBLIC_KEY;
 
@@ -81,8 +85,15 @@ var authS3O = function(req, res, next) {
 			res.cookie('s3o_username', s3oUsername, cookieOptions);
 			res.cookie('s3o_token', s3oToken, cookieOptions);
 			if (s3oParametersDetected) {
+
+				// Strip the username and token from the URL (but keep any other parameters)
+				delete req.query['username'];
+				delete req.query['token'];
+				var cleanURL = url.parse(req.path);
+				cleanURL.query = req.query;
+
 				logger.info("S3O: Parameters detected in URL. Redirecting to base path");
-				return res.redirect(req.path);
+				return res.redirect(url.format(cleanURL));
 			} else {
 				next();
 			}
