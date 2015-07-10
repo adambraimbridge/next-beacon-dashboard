@@ -14,6 +14,7 @@
   "resolutions": {
     "next-sass-setup": "^6.0.0",
     "o-fonts": "^2.0.0",
-    "o-ft-icons": "^2.2.1"
+    "o-ft-icons": "^2.2.1",
+    "next-buttons": "~2.0.0"
   }
 }

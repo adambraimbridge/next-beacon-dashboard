@@ -63,7 +63,13 @@ function init (client) {
 				],
 				eventCollection: "dwell",
 				interval: false
-			}
+			},
+			usedReadingList: {
+				targetProperty: "user.uuid",
+				eventCollection: "cta",
+				filters: [{"operator":"contains","property_name":"meta.domPath","property_value":'myft-reading-list'}],
+				interval: false
+			},
 		}
 	});
 
@@ -74,6 +80,7 @@ function init (client) {
 	require('./article-referrals')(data);
 
 	require('./articles-by-hash')(client);
+	require('./used-reading-list')(data);
 
 }
 

@@ -192,8 +192,13 @@ Keen.ready(function(){
 		case '/graph/myft':
 			require('./queries/myft').init(client);
 			break;
+
 		case '/graph/dead-letter-office':
 			require('./queries/dead-letter-office');
+			break;
+
+		case '/graph/meta-beacon':
+			require('./queries/meta-beacon');
 			break;
 
 		default:
