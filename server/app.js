@@ -25,7 +25,7 @@ app.get('/hashed-assets/:path*', function(req, res) {
 });
 
 app.get('/', function (req, res) {
-	res.redirect('/graph/uniques');
+	return res.redirect('/graph/uniques');
 });
 
 app.use(cookieParser());

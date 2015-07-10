@@ -64,13 +64,14 @@ var authenticateToken = function(res, username, token) {
 };
 
 var authS3O = function(req, res, next) {
+	logger.info("S3O: Start.");
 
 	// Check for s3o username/token URL parameters.
 	// These parameters come from https://s3o.ft.com. It redirects back after it does the google authentication.
 	if (req.query.username && req.query.token) {
 		logger.info("S3O: Found parameter token for s3o_username: " + req.query.username);
 
-		if (authenticateToken(res, req.query.username, req.query.token)) {
+		if (authenticateToken(res, req.query.username, req.query.token) === true) {
 
 			// Strip the username and token from the URL (but keep any other parameters)
 			delete req.query['username'];
@@ -78,7 +79,7 @@ var authS3O = function(req, res, next) {
 			var cleanURL = url.parse(req.path);
 			cleanURL.query = req.query;
 
-			logger.info("S3O: Parameters for " + req.query.username + " detected in URL. Redirecting to base path: " + url.format(cleanURL));
+			logger.info("S3O: Parameters detected in URL. Redirecting to base path: " + url.format(cleanURL));
 			return res.redirect(url.format(cleanURL));
 		}
 	}
