@@ -78,7 +78,7 @@ var authS3O = function(req, res, next) {
 			var cleanURL = url.parse(req.path);
 			cleanURL.query = req.query;
 
-			logger.info("S3O: Parameters detected in URL. Redirecting to base path");
+			logger.info("S3O: Parameters for " + username + " detected in URL. Redirecting to base path: " + url.format(cleanURL));
 			return res.redirect(url.format(cleanURL));
 		}
 	}
