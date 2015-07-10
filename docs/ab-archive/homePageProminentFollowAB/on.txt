@@ -1,0 +1,56 @@
+{
+  "steps": [
+    {
+      "with_actors": false,
+      "actor_property": "user.uuid",
+      "filters": [
+        {
+          "operator": "eq",
+          "property_name": "page.location.type",
+          "property_value": "frontpage"
+        },
+        {
+          "operator": "eq",
+          "property_name": "user.isStaff",
+          "property_value": false
+        },
+        {
+          "operator": "eq",
+          "property_name": "user.ab.homePageProminentFollowAB",
+          "property_value": "on"
+        }
+      ],
+      "timeframe": {
+        "start": "2015-06-05T00:00:00+00:00",
+        "end": "2015-07-10T07:36:52.616000+00:00"
+      },
+      "timezone": null,
+      "event_collection": "dwell",
+      "optional": false,
+      "inverted": false
+    },
+    {
+      "with_actors": false,
+      "actor_property": "user.uuid",
+      "filters": [
+        {
+          "operator": "eq",
+          "property_name": "meta.domPath",
+          "property_value": "myft-panel | myft-topic | follow"
+        }
+      ],
+      "timeframe": {
+        "start": "2015-06-05T00:00:00+00:00",
+        "end": "2015-07-10T07:36:52.616000+00:00"
+      },
+      "timezone": null,
+      "event_collection": "cta",
+      "optional": false,
+      "inverted": false
+    }
+  ],
+  "result": [
+    8629,
+    890
+  ]
+}
