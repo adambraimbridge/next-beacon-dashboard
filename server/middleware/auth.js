@@ -78,7 +78,7 @@ var authS3O = function(req, res, next) {
 			var cleanURL = url.parse(req.path);
 			cleanURL.query = req.query;
 
-			logger.info("S3O: Parameters for " + username + " detected in URL. Redirecting to base path: " + url.format(cleanURL));
+			logger.info("S3O: Parameters for " + req.query.username + " detected in URL. Redirecting to base path: " + url.format(cleanURL));
 			return res.redirect(url.format(cleanURL));
 		}
 	}
@@ -100,7 +100,7 @@ var authS3O = function(req, res, next) {
 
 // Use a BEACON_API_KEY token environment variable for API authentication
 var authApi = function(req, res, next) {
-	logger.info("Authenticating API request.");
+	logger.info("S3O: Authenticating API request.");
 
 	var beaconApiKey = process.env.BEACON_API_KEY;
 	var secretHeaderToken = req.headers['x-beacon-api-key'];
@@ -115,7 +115,7 @@ var authApi = function(req, res, next) {
 
 		// The beacon dashboard fetch()es api URLs but doesn't provide the API token.
 		// In this case it is better to fall back to the same S3O auth used by all other endpoints.
-		logger.info("Missing 'x-beacon-api-key' header token in API request. Falling back to S3O.");
+		logger.info("S3O: Missing 'x-beacon-api-key' header token in API request. Falling back to S3O.");
 		authS3O(req, res, next);
 	}
 };
