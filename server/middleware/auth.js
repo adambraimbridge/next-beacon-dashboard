@@ -47,8 +47,7 @@ var authenticateToken = function(res, username, token) {
 	if (result) {
 		logger.info("S3O: Authentication successful: " + username);
 		var cookieOptions = {
-			maxAge: 900000,
-			httpOnly: true
+			maxAge: 900000
 		};
 		res.cookie('s3o_username', username, cookieOptions);
 		res.cookie('s3o_token', token, cookieOptions);
@@ -73,9 +72,13 @@ var authS3O = function(req, res, next) {
 
 		if (authenticateToken(res, req.query.username, req.query.token) === true) {
 
+			logger.info("S3O: URL: " + JSON.stringify(req.originalUrl));
+			logger.info("S3O: Parameters: " + JSON.stringify(req.query));
+
 			// Strip the username and token from the URL (but keep any other parameters)
 			delete req.query['username'];
 			delete req.query['token'];
+
 			var cleanURL = url.parse(req.path);
 			cleanURL.query = req.query;
 
