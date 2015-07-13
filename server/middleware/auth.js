@@ -47,7 +47,8 @@ var authenticateToken = function(res, username, token) {
 	if (result) {
 		logger.info("S3O: Authentication successful: " + username);
 		var cookieOptions = {
-			maxAge: 900000
+			maxAge: 900000,
+			httpOnly: true
 		};
 		res.cookie('s3o_username', username, cookieOptions);
 		res.cookie('s3o_token', token, cookieOptions);
@@ -72,17 +73,18 @@ var authS3O = function(req, res, next) {
 
 		if (authenticateToken(res, req.query.username, req.query.token) === true) {
 
-			logger.info("S3O: URL: " + JSON.stringify(req.originalUrl));
-			logger.info("S3O: Parameters: " + JSON.stringify(req.query));
-
 			// Strip the username and token from the URL (but keep any other parameters)
 			delete req.query['username'];
 			delete req.query['token'];
-
 			var cleanURL = url.parse(req.path);
 			cleanURL.query = req.query;
 
 			logger.info("S3O: Parameters detected in URL. Redirecting to base path: " + url.format(cleanURL));
+
+			// Don't cache any redirection responses.
+			res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+			res.header("Pragma", "no-cache");
+			res.header("Expires", 0);
 			return res.redirect(url.format(cleanURL));
 		}
 	}
@@ -100,6 +102,11 @@ var authS3O = function(req, res, next) {
 		var protocol = (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'] === "https") ? "https" : req.protocol;
 		var s3o_url = "https://s3o.ft.com/authenticate?redirect=" + encodeURIComponent(protocol + "://" + req.headers.host + req.url);
 		logger.info("S3O: No token/s3o_username found. Redirecting to " + s3o_url);
+
+		// Don't cache any redirection responses.
+		res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+		res.header("Pragma", "no-cache");
+		res.header("Expires", 0);
 		return res.redirect(s3o_url);
 	}
 };
