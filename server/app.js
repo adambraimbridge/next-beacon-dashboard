@@ -17,6 +17,13 @@ app.get('/__gtg', function (req, res) {
 	res.send(200);
 });
 
+app.get('/__debug-ssl', function(req, res) {
+	res.json({
+		protocol: req.protocol,
+		headers: req.headers
+	});
+});
+
 app.get('/hashed-assets/:path*', function(req, res) {
 	var path = 'http://ft-next-hashed-assets-prod.s3-website-eu-west-1.amazonaws.com' + req.path;
 	http.get(path, function(proxyRes) {
