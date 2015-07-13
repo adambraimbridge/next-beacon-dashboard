@@ -39,7 +39,7 @@ app.use(cookieParser());
 app.use(auth);
 
 app.get('/', function (req, res) {
-	return res.redirect('/graph/uniques');
+	return res.send('<a href="/graph/uniques">Enter</a>');
 });
 
 // TODO:ADAM:20150626 — Allow for :sub urls without requiring a template file
