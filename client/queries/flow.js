@@ -90,6 +90,31 @@ function getDashboards(offset) {
 		]
 	};
 
+	dashboards['TOC'] = {
+		'title' : 'Engagement with Table of Contents',
+		'labels' : [
+		'Visited a page with a TOC',
+		'Clicked on a chapter link'
+		],
+		'steps':[
+		step({
+			filters: [{
+				property_name: 'page.capi.hasTOC',
+				operator: 'eq',
+				property_value: true
+			}]
+		}),
+		step({
+			eventCollection: 'cta',
+			filters: [{
+				property_name: 'meta.domPath',
+				operator: 'eq',
+				property_value: 'article | header | toc'
+			}]
+		})
+		]
+	};
+
 	dashboards['MyFT'] = {
 		'title' : 'Engagement with myFT',
 		'labels' : [
