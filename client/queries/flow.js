@@ -91,7 +91,7 @@ function getDashboards(offset) {
 	};
 
 	dashboards['TOC'] = {
-		'title' : 'Table of Contents',
+		'title' : 'Engagement with Table of Contents',
 		'labels' : [
 		'Visited a page with a TOC',
 		'Clicked on a chapter link'
