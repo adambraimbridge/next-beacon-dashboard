@@ -109,7 +109,7 @@ function getDashboards(offset) {
 			filters: [{
 				property_name: 'meta.domPath',
 				operator: 'eq',
-				property_value: 'article | header | toc'
+				property_value: '| toc'
 			}]
 		})
 		]
