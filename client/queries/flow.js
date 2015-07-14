@@ -108,7 +108,7 @@ function getDashboards(offset) {
 			eventCollection: 'cta',
 			filters: [{
 				property_name: 'meta.domPath',
-				operator: 'eq',
+				operator: 'contains',
 				property_value: '| toc'
 			}]
 		})
