@@ -34,3 +34,6 @@ provision:
 	next-build-tools configure ft-next-beacon-dashboard ${TEST_HOST} --overrides "NODE_ENV=branch"
 	next-build-tools deploy-hashed-assets
 	next-build-tools deploy ${TEST_HOST} --skip-enable-preboot
+	
+tidy:
+	next-build-tools destroy ${TEST_HOST}
