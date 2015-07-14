@@ -1,6 +1,5 @@
 GIT_HASH := $(shell git rev-parse --short HEAD)
-TEST_HOST := "ft-radiator-branch-${GIT_HASH}"
-TEST_URL := "http://ft-radiator-branch-${GIT_HASH}.herokuapp.com/__gtg"
+TEST_HOST := "ft-beacon-branch-${GIT_HASH}"
 
 .PHONY: test
 
@@ -29,3 +28,9 @@ deploy:
 
 watch:
 	nbt build --dev --watch
+
+provision:
+	next-build-tools provision ${TEST_HOST}
+	next-build-tools configure ft-next-beacon-dashboard ${TEST_HOST} --overrides "NODE_ENV=branch"
+	next-build-tools deploy-hashed-assets
+	next-build-tools deploy ${TEST_HOST} --skip-enable-preboot
