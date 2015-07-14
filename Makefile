@@ -23,6 +23,7 @@ test:
 	nbt build
 
 deploy:
+	next-build-tools configure --no-splunk
 	nbt deploy-hashed-assets
 	nbt deploy
 
@@ -30,7 +31,7 @@ watch:
 	nbt build --dev --watch
 
 provision:
-	next-build-tools provision ${TEST_HOST}
+	next-build-tools provision ${TEST_HOST} --no-splunk
 	next-build-tools configure ft-next-beacon-dashboard ${TEST_HOST} --overrides "NODE_ENV=branch"
 	next-build-tools deploy-hashed-assets
 	next-build-tools deploy ${TEST_HOST} --skip-enable-preboot
