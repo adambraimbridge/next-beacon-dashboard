@@ -80,12 +80,13 @@ var authS3O = function(req, res, next) {
 			cleanURL.query = req.query;
 
 			logger.info("S3O: Parameters detected in URL. Redirecting to base path: " + url.format(cleanURL));
+			logger.info("S3O: " + JSON.stringify(req.path));
 
 			// Don't cache any redirection responses.
 			res.header("Cache-Control", "no-cache, no-store, must-revalidate");
 			res.header("Pragma", "no-cache");
 			res.header("Expires", 0);
-			return res.redirect(url.format(cleanURL));
+			//return res.redirect(url.format(cleanURL));
 		}
 	}
 	// Check for s3o username/token cookies
