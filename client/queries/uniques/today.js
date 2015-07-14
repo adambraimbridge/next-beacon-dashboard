@@ -14,5 +14,3 @@ module.exports.query = new Keen.Query("count_unique", {
 	}],
 	maxAge: 10800
 });
-
-
