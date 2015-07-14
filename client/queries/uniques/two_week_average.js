@@ -27,10 +27,9 @@ module.exports = {
 
 		new Keen.Dataviz()
 			.el(el)
-			.parseRawData({ result: sum / 10 })
+			.parseRawData({ result: parseInt((sum / 10).toFixed()) })
 			.chartType("metric")
-			.colors(["#92CBC2"])
-			.title("14 weekday average uniques")
+			.title("Average daily total <small>(excluding weekends)<br/>Calculated from unique user counts for the previous 14 days, excluding today and weekends.</small>")
 			.render();
 	}
 };
