@@ -98,4 +98,3 @@ client.draw(referrers, document.getElementById("referrers"), {
 		]
 	}
 });
-

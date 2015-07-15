@@ -40,4 +40,3 @@ client.run(pagesVisited, function(err, response){
 	document.querySelector('.loading-pageviews').style['display'] = 'none';
 
 });
-
