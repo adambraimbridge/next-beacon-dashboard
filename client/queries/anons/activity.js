@@ -28,7 +28,7 @@ client.run(pagesVisited, function(err, response){
 		.sort((a, b) => b.result - a.result)
 		.slice(0,20)
 		.forEach((item) => {
-			var url = ('https://next.ft.com/' + item['page.location.pathname']).replace(/\/{2}/g, '/');
+			var url = 'https://' + ('next.ft.com/' + item['page.location.pathname']).replace(/\/{2}/g, '/');
 			var percentage = Math.round( (item.result / total) * 100) + '%';
 			ul.insertAdjacentHTML(
 				'beforeend',
