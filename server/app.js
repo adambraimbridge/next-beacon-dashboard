@@ -13,8 +13,19 @@ require('es6-promise').polyfill();
 var KEEN_PROJECT = process.env.KEEN_PROJECT;
 var KEEN_READ_KEY = process.env.KEEN_READ_KEY;
 
+// Indicates the app is behind a front-facing proxy, and to use the X-Forwarded-* headers to determine the connection and the IP address of the client. NOTE: X-Forwarded-* headers are easily spoofed and the detected IP addresses are unreliable.
+// See: http://expressjs.com/api.html
+app.enable('trust proxy');
+
 app.get('/__gtg', function (req, res) {
 	res.send(200);
+});
+
+app.get('/__debug-ssl', function(req, res) {
+	res.json({
+		protocol: req.protocol,
+		headers: req.headers
+	});
 });
 
 app.get('/hashed-assets/:path*', function(req, res) {
@@ -24,12 +35,12 @@ app.get('/hashed-assets/:path*', function(req, res) {
 	});
 });
 
-app.get('/', function (req, res) {
-	res.redirect('/graph/uniques');
-});
-
 app.use(cookieParser());
 app.use(auth);
+
+app.get('/', function (req, res) {
+	return res.redirect('/graph/uniques');
+});
 
 // TODO:ADAM:20150626 — Allow for :sub urls without requiring a template file
 // (so that the :sub can be used as a kind of query parameter for the :name parent)

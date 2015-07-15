@@ -175,6 +175,8 @@ Keen.ready(function(){
 
 			render(require('./queries/uniques/two_week_average'));
 
+			render(require('./queries/uniques/fourteen_day_average'));
+
 			break;
 
 		case '/graph/active-usage':

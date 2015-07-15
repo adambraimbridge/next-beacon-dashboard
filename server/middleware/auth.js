@@ -64,13 +64,14 @@ var authenticateToken = function(res, username, token) {
 };
 
 var authS3O = function(req, res, next) {
+	logger.info("S3O: Start.");
 
 	// Check for s3o username/token URL parameters.
 	// These parameters come from https://s3o.ft.com. It redirects back after it does the google authentication.
 	if (req.query.username && req.query.token) {
 		logger.info("S3O: Found parameter token for s3o_username: " + req.query.username);
 
-		if (authenticateToken(res, req.query.username, req.query.token)) {
+		if (authenticateToken(res, req.query.username, req.query.token) === true) {
 
 			// Strip the username and token from the URL (but keep any other parameters)
 			delete req.query['username'];
@@ -78,8 +79,14 @@ var authS3O = function(req, res, next) {
 			var cleanURL = url.parse(req.path);
 			cleanURL.query = req.query;
 
-			logger.info("S3O: Parameters detected in URL. Redirecting to base path");
-			return res.redirect(url.format(cleanURL));
+			logger.info("S3O: Parameters detected in URL. Redirecting to base path: " + url.format(cleanURL));
+			logger.info("S3O: " + JSON.stringify(req.path));
+
+			// Don't cache any redirection responses.
+			res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+			res.header("Pragma", "no-cache");
+			res.header("Expires", 0);
+			//return res.redirect(url.format(cleanURL));
 		}
 	}
 	// Check for s3o username/token cookies
@@ -93,14 +100,21 @@ var authS3O = function(req, res, next) {
 	else {
 
 		// Send the user to s3o to authenticate
-		logger.info("S3O: No token/s3o_username found. Redirecting to https://s3o.ft.com/authenticate … ");
-		return res.redirect("https://s3o.ft.com/authenticate?redirect=" + encodeURIComponent(req.protocol + "://" + req.headers.host + req.url));
+		var protocol = (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'] === "https") ? "https" : req.protocol;
+		var s3o_url = "https://s3o.ft.com/authenticate?redirect=" + encodeURIComponent(protocol + "://" + req.headers.host + req.url);
+		logger.info("S3O: No token/s3o_username found. Redirecting to " + s3o_url);
+
+		// Don't cache any redirection responses.
+		res.header("Cache-Control", "no-cache, no-store, must-revalidate");
+		res.header("Pragma", "no-cache");
+		res.header("Expires", 0);
+		return res.redirect(s3o_url);
 	}
 };
 
 // Use a BEACON_API_KEY token environment variable for API authentication
 var authApi = function(req, res, next) {
-	logger.info("Authenticating API request.");
+	logger.info("S3O: Authenticating API request.");
 
 	var beaconApiKey = process.env.BEACON_API_KEY;
 	var secretHeaderToken = req.headers['x-beacon-api-key'];
@@ -115,7 +129,7 @@ var authApi = function(req, res, next) {
 
 		// The beacon dashboard fetch()es api URLs but doesn't provide the API token.
 		// In this case it is better to fall back to the same S3O auth used by all other endpoints.
-		logger.info("Missing 'x-beacon-api-key' header token in API request. Falling back to S3O.");
+		logger.info("S3O: Missing 'x-beacon-api-key' header token in API request. Falling back to S3O.");
 		authS3O(req, res, next);
 	}
 };

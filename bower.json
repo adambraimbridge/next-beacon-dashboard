@@ -2,13 +2,13 @@
   "name": "next-beacon-dashboard",
   "dependencies": {
     "isomorphic-fetch": "^2.0.0",
-    "sprintf": "~1.0.2",
+    "sprintf": "^1.0.2",
     "o-techdocs": "^4.0.4",
-    "next-js-setup": "~2.5.1",
-    "keen-js": "~3.2.4",
-    "querystring": "~3.46.1",
-    "ab-test-confidence": "~1.2.0",
-    "o-hierarchical-nav": "~2.0.4",
+    "next-js-setup": "^2.5.1",
+    "keen-js": "^3.2.4",
+    "querystring": "^3.46.1",
+    "ab-test-confidence": "^1.2.0",
+    "o-hierarchical-nav": "^2.0.4",
     "array-find": "^1.0.1"
   },
   "resolutions": {
@@ -16,6 +16,7 @@
     "o-fonts": "^2.0.0",
     "o-ft-icons": "^2.2.1",
     "next-buttons": "^2.1.0",
-    "next-myft-ui": "^3.0.0"
+    "next-myft-ui": "^3.0.0",
+    "o-buttons": "v3"
   }
 }
