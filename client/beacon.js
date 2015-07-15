@@ -154,6 +154,14 @@ Keen.ready(function(){
 			require('./queries/uniques/trend');
 			break;
 
+		case '/graph/anons/visitors':
+			require('./queries/anons/trend');
+			break;
+
+		case '/graph/anons/activity':
+			require('./queries/anons/activity');
+			break;
+
 		case '/graph/uniques':
 
 			render(require('./queries/uniques/today'), {
