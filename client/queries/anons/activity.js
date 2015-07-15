@@ -24,7 +24,6 @@ var pagesVisited = new Keen.Query("count_unique", {
 client.run(pagesVisited, function(err, response){
 	var ul = document.getElementById('pageViews');
 	var total = response.result.reduce((previous, current) => previous + current.result, 0);
-	console.log('total', total);
 	response.result
 		.sort((a, b) => b.result - a.result)
 		.slice(0,20)
