@@ -9,28 +9,37 @@ var client = new Keen({
 	readKey: keen_read_key
 });
 
-var barrierCTAClicks = new Keen.Query("funnel", {
-	steps : [
-		{
-			eventCollection: "barrier",
-			groupBy: "meta.type",
-			actorProperty: "user.device_id"
-		},
-		{
-			eventCollection: "cta",
-			filters: [{"operator":"contains","property_name":"meta.domPath","property_value":"subscribe-"}],
-			targetProperty: "meta.domPath",
-			actorProperty: "user.device_id"
-		},
-		{
-			eventCollection: "cta",
-			filters: [{"operator":"contains","property_name":"meta.domPath","property_value":"sign-in"}],
-			targetProperty: "meta.domPath",
-			actorProperty: "user.device_id"
-		}
-	],
-	timeframe: queryParameters.timeframe || "this_14_days",
-	timezone: "UTC"
+
+
+
+function barrierSteppedQuery(step){
+	return new Keen.Query("funnel", {
+		steps : [
+			{
+				eventCollection: "barrier",
+				filters: [{"operator":"eq","property_name":"meta.type","property_value":"shown"}],
+				groupBy: "meta.type",
+				actorProperty: "user.device_id"
+			},
+			step
+		],
+		timeframe: queryParameters.timeframe || "this_14_days",
+		timezone: "UTC"
+	});
+}
+
+var barrierSubscribeClicks = barrierSteppedQuery({
+	eventCollection: "cta",
+	filters: [{"operator":"contains","property_name":"meta.domPath","property_value":"subscribe-"}],
+	targetProperty: "meta.domPath",
+	actorProperty: "user.device_id"
+});
+
+var barrierSignInClicks = barrierSteppedQuery({
+	eventCollection: "cta",
+	filters: [{"operator":"contains","property_name":"meta.domPath","property_value":"sign-in"}],
+	targetProperty: "meta.domPath",
+	actorProperty: "user.device_id"
 });
 
 var barrierCTAClicksChart = new Keen.Dataviz()
@@ -39,25 +48,25 @@ var barrierCTAClicksChart = new Keen.Dataviz()
 	.height(450)
 	.prepare();
 
-client.run(barrierCTAClicks, function(err, response){
-	console.log('error', err);
-	console.log('result', response);
-	barrierCTAClicksChart.parseRawData(
-		{
-			result : [
-				{
-					name: 'Clicks subscribe link',
-					value : response.result[1]
-				},
-				{
-					name: 'Clicks sign-up link',
-					value : response.result[2]
-				},
-				{
-					name: 'Clicks outside of the barrier',
-					value: response.result[0] - (response.result[1] + response.result[2])
-				}
-			]
-		}
-	).render();
-});
+client.run([
+		barrierSubscribeClicks,
+		barrierSignInClicks
+	], function(err, response){
+		console.log('error', err);
+		console.log('result', response);
+		barrierCTAClicksChart.parseRawData(
+			{
+				result : [
+					{
+						name: 'Clicks subscribe link',
+						value : response[0].result[1]
+					},
+					{
+						name: 'Clicks sign-up link',
+						value : response[1].result[1]
+					}
+				]
+			}
+		).render();
+	}
+);
