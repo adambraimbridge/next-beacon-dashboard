@@ -2,6 +2,8 @@
 
 'use strict';
 
+var client = require('../lib/wrapped-keen');
+
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
 
@@ -32,9 +34,11 @@ var features = {
 	'myFTReadingListOnArticle': 'myft-reading-list'
 };
 
+// Replace some text placeholders with appropriate content
 $('.feature-name').fadeOut(function(){ $(this).text(queryParameters.feature).fadeIn(); });
 $('.feature-cta').fadeOut(function(){ $(this).text(features[queryParameters.feature]).fadeIn(); });
 
+// Apply an appropriate href to placeholder links
 var beaconHref = 'https://beacon.ft.com/graph?event_collection=cta&metric=count&group_by=meta.domPath&timeframe=this_14_days&title=Trackable%20element:%20'+ features[queryParameters.feature] +'&domPathContains='+ features[queryParameters.feature];
 $('.beacon-href').attr('href',beaconHref);
 
@@ -93,58 +97,55 @@ var activeUserStepsForFeature = function (options) {
 	];
 };
 
-var prepareQuery = (function () {
-	var queryAll = new Keen.Query("funnel", {
-		steps:activeUserStepsForFeature({
-			cta: features[queryParameters.feature]
-		}),
-		maxAge: 10800
-	});
+// --
+// Keen queries
+// --
+var queryAll = new Keen.Query("funnel", {
+	steps:activeUserStepsForFeature({
+		cta: features[queryParameters.feature]
+	}),
+	maxAge: 10800
+});
 
-	var queryLargeDevices = new Keen.Query("funnel", {
-		steps:activeUserStepsForFeature({
-			cta: features[queryParameters.feature],
-			filters: [{
-				property_name:"user.layout",
-				operator:"in",
-				property_value:["XL","L"]
-			}]
-		}),
-		maxAge: 10800
-	});
+var queryLargeDevices = new Keen.Query("funnel", {
+	steps:activeUserStepsForFeature({
+		cta: features[queryParameters.feature],
+		filters: [{
+			property_name:"user.layout",
+			operator:"in",
+			property_value:["XL","L"]
+		}]
+	}),
+	maxAge: 10800
+});
 
-	var queryMediumDevices = new Keen.Query("funnel", {
-		steps:activeUserStepsForFeature({
-			cta: features[queryParameters.feature],
-			filters: [{
-				property_name:"user.layout",
-				operator:"in",
-				property_value:["M"]
-			}]
-		}),
-		maxAge: 10800
-	});
+var queryMediumDevices = new Keen.Query("funnel", {
+	steps:activeUserStepsForFeature({
+		cta: features[queryParameters.feature],
+		filters: [{
+			property_name:"user.layout",
+			operator:"in",
+			property_value:["M"]
+		}]
+	}),
+	maxAge: 10800
+});
 
-	var querySmallDevices = new Keen.Query("funnel", {
-		steps:activeUserStepsForFeature({
-			cta: features[queryParameters.feature],
-			filters: [{
-				property_name:"user.layout",
-				operator:"in",
-				property_value:["XS","S","default"]
-			}]
-		}),
-		maxAge: 10800
-	});
+var querySmallDevices = new Keen.Query("funnel", {
+	steps:activeUserStepsForFeature({
+		cta: features[queryParameters.feature],
+		filters: [{
+			property_name:"user.layout",
+			operator:"in",
+			property_value:["XS","S","default"]
+		}]
+	}),
+	maxAge: 10800
+});
 
-	return [
-		queryAll,
-		queryLargeDevices,
-		queryMediumDevices,
-		querySmallDevices
-	];
-}());
-
+// --
+// Graph containers
+// --
 var metric_all = new Keen.Dataviz()
 	.chartOptions({
 		suffix: '%'
@@ -181,40 +182,48 @@ var metric_small = new Keen.Dataviz()
 	.chartType("metric")
 	.prepare();
 
-var renderDashboard = function (el, results, opts) {
-	var resultsAll = results[0];
-	var resultsLarge = results[1];
-	var resultsMedium = results[2];
-	var resultsSmall = results[3];
+// --
+// Rendering
+// --
+client.run([
+	queryAll,
+	queryLargeDevices,
+	queryMediumDevices,
+	querySmallDevices
+], function(error, response){
+	if (error) {
+		throw new Error("Keen query error: " + error.message);
+	}
+	else {
+		var resultsAll = response[0];
+		var resultsLarge = response[1];
+		var resultsMedium = response[2];
+		var resultsSmall = response[3];
 
-	var percentageAll = parseFloat((100 / resultsAll.result[1] * resultsAll.result[2]).toFixed(2));
-	var percentageLarge = parseFloat((100 / resultsLarge.result[1] * resultsLarge.result[2]).toFixed(2));
-	var percentageMedium = parseFloat((100 / resultsMedium.result[1] * resultsMedium.result[2]).toFixed(2));
-	var percentageSmall = parseFloat((100 / resultsSmall.result[1] * resultsSmall.result[2]).toFixed(2));
+		var percentageAll = parseFloat((100 / resultsAll.result[1] * resultsAll.result[2]).toFixed(2));
+		var percentageLarge = parseFloat((100 / resultsLarge.result[1] * resultsLarge.result[2]).toFixed(2));
+		var percentageMedium = parseFloat((100 / resultsMedium.result[1] * resultsMedium.result[2]).toFixed(2));
+		var percentageSmall = parseFloat((100 / resultsSmall.result[1] * resultsSmall.result[2]).toFixed(2));
 
-	$('#resultsAll0').text(resultsAll.result[0]);
-	$('#resultsAll1').text(resultsAll.result[1]);
-	$('#resultsAll2').text(resultsAll.result[2]);
-	$('#percentageAll').text(percentageAll);
+		$('#resultsAll0').text(resultsAll.result[0]);
+		$('#resultsAll1').text(resultsAll.result[1]);
+		$('#resultsAll2').text(resultsAll.result[2]);
+		$('#percentageAll').text(percentageAll);
 
-	metric_all
-		.parseRawData({ result:percentageAll })
-		.render();
+		metric_all
+			.parseRawData({ result:percentageAll })
+			.render();
 
-	metric_large
-		.parseRawData({ result:percentageLarge })
-		.render();
+		metric_large
+			.parseRawData({ result:percentageLarge })
+			.render();
 
-	metric_medium
-		.parseRawData({ result:percentageMedium })
-		.render();
+		metric_medium
+			.parseRawData({ result:percentageMedium })
+			.render();
 
-	metric_small
-		.parseRawData({ result:percentageSmall })
-		.render();
-};
-
-module.exports = {
-	query:prepareQuery,
-	render:renderDashboard
-};
+		metric_small
+			.parseRawData({ result:percentageSmall })
+			.render();
+	}
+});
