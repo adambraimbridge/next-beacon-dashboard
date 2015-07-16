@@ -155,7 +155,7 @@ Keen.ready(function(){
 			break;
 
 		case '/graph/anons/visitors':
-			require('./queries/anons/trend');
+			require('./queries/anons/visitors');
 			break;
 
 		case '/graph/anons/activity':

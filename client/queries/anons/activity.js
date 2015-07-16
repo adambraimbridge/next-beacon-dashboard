@@ -78,8 +78,8 @@ client.run(pagesVisited, function(err, response){
 				'beforeend',
 				`<tr>
 					<td><a target="_blank" href="${url}" style="padding-right:3em">${url}</a></td>
-				 	<td>${item.result}</td>
-				 	<td>${percentage}</td>
+					<td>${item.result}</td>
+					<td>${percentage}</td>
 				</tr>`);
 	});
 	document.querySelector('.loading-pageviews').style['display'] = 'none';
