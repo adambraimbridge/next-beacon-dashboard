@@ -9,7 +9,7 @@ module.exports.on = new Keen.Query("funnel", {
 	steps: [
 		{
 			event_collection: 'dwell',
-			timeframe: { "start" : "2015-06-25T00:00:00.000Z", "end": new Date().toISOString() },
+			timeframe: { "start" : "2015-07-17T00:00:00.000Z", "end": new Date().toISOString() },
 			actor_property: 'user.uuid',
 			filters: [
 				{"property_name":"page.location.type","operator":"eq","property_value":"article"},
@@ -20,7 +20,7 @@ module.exports.on = new Keen.Query("funnel", {
 		},
 		{
 			event_collection: 'dwell',
-			timeframe: { "start" : "2015-06-25T00:00:00.000Z", "end": new Date().toISOString() },
+			timeframe: { "start" : "2015-07-17T00:00:00.000Z", "end": new Date().toISOString() },
 			actor_property: 'user.uuid',
 			filters: [
 			]
@@ -33,7 +33,7 @@ module.exports.off = new Keen.Query("funnel", {
 	steps: [
 		{
 			event_collection: 'dwell',
-			timeframe: { "start" : "2015-06-25T00:00:00.000Z", "end": new Date().toISOString() },
+			timeframe: { "start" : "2015-07-17T00:00:00.000Z", "end": new Date().toISOString() },
 			actor_property: 'user.uuid',
 			filters: [
 				{"property_name":"page.location.type","operator":"eq","property_value":"article"},
@@ -44,7 +44,7 @@ module.exports.off = new Keen.Query("funnel", {
 		},
 		{
 			event_collection: 'cta',
-			timeframe: { "start" : "2015-06-25T00:00:00.000Z", "end": new Date().toISOString() },
+			timeframe: { "start" : "2015-07-17T00:00:00.000Z", "end": new Date().toISOString() },
 			actor_property: 'user.uuid',
 			filters: [
 			]
