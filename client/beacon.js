@@ -180,7 +180,7 @@ Keen.ready(function(){
 			break;
 
 		case '/graph/active-usage':
-			render(require('./queries/active-usage'));
+			require('./queries/active-usage');
 			break;
 
 		case '/graph/flow':
