@@ -155,7 +155,7 @@ Keen.ready(function(){
 			break;
 
 		case '/graph/anons/visitors':
-			require('./queries/anons/trend');
+			require('./queries/anons/visitors');
 			break;
 
 		case '/graph/anons/activity':
@@ -188,7 +188,7 @@ Keen.ready(function(){
 			break;
 
 		case '/graph/active-usage':
-			render(require('./queries/active-usage'));
+			require('./queries/active-usage');
 			break;
 
 		case '/graph/flow':

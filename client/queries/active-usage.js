@@ -2,6 +2,10 @@
 
 'use strict';
 
+var client = require('../lib/wrapped-keen');
+
+var humanize = require('humanize');
+
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
 
@@ -32,9 +36,11 @@ var features = {
 	'myFTReadingListOnArticle': 'myft-reading-list'
 };
 
+// Replace some text placeholders with appropriate content
 $('.feature-name').fadeOut(function(){ $(this).text(queryParameters.feature).fadeIn(); });
 $('.feature-cta').fadeOut(function(){ $(this).text(features[queryParameters.feature]).fadeIn(); });
 
+// Apply an appropriate href to placeholder links
 var beaconHref = 'https://beacon.ft.com/graph?event_collection=cta&metric=count&group_by=meta.domPath&timeframe=this_14_days&title=Trackable%20element:%20'+ features[queryParameters.feature] +'&domPathContains='+ features[queryParameters.feature];
 $('.beacon-href').attr('href',beaconHref);
 
@@ -61,28 +67,32 @@ var step = function(options) {
 };
 
 var activeUserStepsForFeature = function (options) {
+
+	// Accept an offset to enable a history for the same active-usage funnel
+	// (e.g. this week, last week, two weeks ago, three weeks ago)
+	var historicOffset = options.historicOffset || 0;
 	return [
 		// Users who visited next.ft in a one-week period, two weeks whence
 		step({
 			timeframe: {
-				start:daysFromNow(-14), //two weeks whence
-				end:daysFromNow(-7) //one week whence
+				start:daysFromNow(historicOffset -14), //two weeks whence
+				end:daysFromNow(historicOffset -7) //one week whence
 			},
 			filters: options.filters
 		}),
 		// Users who visited next.ft in the last 7 days
 		step({
 			timeframe: {
-				start:daysFromNow(-7), //one week whence
-				end:daysFromNow() //now
+				start:daysFromNow(historicOffset -7), //one week whence
+				end:daysFromNow(historicOffset) //now
 			}
 		}),
 		// Users who clicked the given CTA in the past two weeks
 		step({
 			eventCollection: "cta",
 			timeframe: {
-				start:daysFromNow(-14), //two weeks whence
-				end:daysFromNow() //now
+				start:daysFromNow(historicOffset -14), //two weeks whence
+				end:daysFromNow(historicOffset) //now
 			},
 			filters: [{
 				property_name:"meta.domPath",
@@ -93,58 +103,55 @@ var activeUserStepsForFeature = function (options) {
 	];
 };
 
-var prepareQuery = (function () {
-	var queryAll = new Keen.Query("funnel", {
-		steps:activeUserStepsForFeature({
-			cta: features[queryParameters.feature]
-		}),
-		maxAge: 10800
-	});
+// --
+// Keen queries
+// --
+var queryAll = new Keen.Query("funnel", {
+	steps:activeUserStepsForFeature({
+		cta: features[queryParameters.feature]
+	}),
+	maxAge: 10800
+});
 
-	var queryLargeDevices = new Keen.Query("funnel", {
-		steps:activeUserStepsForFeature({
-			cta: features[queryParameters.feature],
-			filters: [{
-				property_name:"user.layout",
-				operator:"in",
-				property_value:["XL","L"]
-			}]
-		}),
-		maxAge: 10800
-	});
+var queryLargeDevices = new Keen.Query("funnel", {
+	steps:activeUserStepsForFeature({
+		cta: features[queryParameters.feature],
+		filters: [{
+			property_name:"user.layout",
+			operator:"in",
+			property_value:["XL","L"]
+		}]
+	}),
+	maxAge: 10800
+});
 
-	var queryMediumDevices = new Keen.Query("funnel", {
-		steps:activeUserStepsForFeature({
-			cta: features[queryParameters.feature],
-			filters: [{
-				property_name:"user.layout",
-				operator:"in",
-				property_value:["M"]
-			}]
-		}),
-		maxAge: 10800
-	});
+var queryMediumDevices = new Keen.Query("funnel", {
+	steps:activeUserStepsForFeature({
+		cta: features[queryParameters.feature],
+		filters: [{
+			property_name:"user.layout",
+			operator:"in",
+			property_value:["M"]
+		}]
+	}),
+	maxAge: 10800
+});
 
-	var querySmallDevices = new Keen.Query("funnel", {
-		steps:activeUserStepsForFeature({
-			cta: features[queryParameters.feature],
-			filters: [{
-				property_name:"user.layout",
-				operator:"in",
-				property_value:["XS","S","default"]
-			}]
-		}),
-		maxAge: 10800
-	});
+var querySmallDevices = new Keen.Query("funnel", {
+	steps:activeUserStepsForFeature({
+		cta: features[queryParameters.feature],
+		filters: [{
+			property_name:"user.layout",
+			operator:"in",
+			property_value:["XS","S","default"]
+		}]
+	}),
+	maxAge: 10800
+});
 
-	return [
-		queryAll,
-		queryLargeDevices,
-		queryMediumDevices,
-		querySmallDevices
-	];
-}());
-
+// --
+// Graph containers
+// --
 var metric_all = new Keen.Dataviz()
 	.chartOptions({
 		suffix: '%'
@@ -181,40 +188,133 @@ var metric_small = new Keen.Dataviz()
 	.chartType("metric")
 	.prepare();
 
-var renderDashboard = function (el, results, opts) {
-	var resultsAll = results[0];
-	var resultsLarge = results[1];
-	var resultsMedium = results[2];
-	var resultsSmall = results[3];
+// --
+// Rendering
+// --
+client.run([
+	queryAll,
+	queryLargeDevices,
+	queryMediumDevices,
+	querySmallDevices
+], function(error, response){
+	if (error) {
+		throw new Error("Keen query error: " + error.message);
+	}
+	else {
+		var resultsAll = response[0];
+		var resultsLarge = response[1];
+		var resultsMedium = response[2];
+		var resultsSmall = response[3];
 
-	var percentageAll = parseFloat((100 / resultsAll.result[1] * resultsAll.result[2]).toFixed(2));
-	var percentageLarge = parseFloat((100 / resultsLarge.result[1] * resultsLarge.result[2]).toFixed(2));
-	var percentageMedium = parseFloat((100 / resultsMedium.result[1] * resultsMedium.result[2]).toFixed(2));
-	var percentageSmall = parseFloat((100 / resultsSmall.result[1] * resultsSmall.result[2]).toFixed(2));
+		var percentageAll = parseFloat((100 / resultsAll.result[1] * resultsAll.result[2]).toFixed(2));
+		var percentageLarge = parseFloat((100 / resultsLarge.result[1] * resultsLarge.result[2]).toFixed(2));
+		var percentageMedium = parseFloat((100 / resultsMedium.result[1] * resultsMedium.result[2]).toFixed(2));
+		var percentageSmall = parseFloat((100 / resultsSmall.result[1] * resultsSmall.result[2]).toFixed(2));
 
-	$('#resultsAll0').text(resultsAll.result[0]);
-	$('#resultsAll1').text(resultsAll.result[1]);
-	$('#resultsAll2').text(resultsAll.result[2]);
-	$('#percentageAll').text(percentageAll);
+		$('#resultsAll0').text(resultsAll.result[0]);
+		$('#resultsAll1').text(resultsAll.result[1]);
+		$('#resultsAll2').text(resultsAll.result[2]);
+		$('#percentageAll').text(percentageAll);
 
-	metric_all
-		.parseRawData({ result:percentageAll })
-		.render();
+		metric_all
+			.parseRawData({ result:percentageAll })
+			.render();
 
-	metric_large
-		.parseRawData({ result:percentageLarge })
-		.render();
+		metric_large
+			.parseRawData({ result:percentageLarge })
+			.render();
 
-	metric_medium
-		.parseRawData({ result:percentageMedium })
-		.render();
+		metric_medium
+			.parseRawData({ result:percentageMedium })
+			.render();
 
-	metric_small
-		.parseRawData({ result:percentageSmall })
-		.render();
-};
+		metric_small
+			.parseRawData({ result:percentageSmall })
+			.render();
+	}
+});
 
-module.exports = {
-	query:prepareQuery,
-	render:renderDashboard
-};
+
+// --
+// Show the same active-usage funnel, only older.
+// --
+var metric_all_three_weeks_ago = new Keen.Dataviz()
+	.chartOptions({
+		suffix: '%'
+	})
+	.el(document.getElementById("metric_all_three_weeks_ago"))
+	.chartType("metric")
+	.prepare();
+
+var metric_all_two_weeks_ago = new Keen.Dataviz()
+	.chartOptions({
+		suffix: '%'
+	})
+	.el(document.getElementById("metric_all_two_weeks_ago"))
+	.chartType("metric")
+	.prepare();
+
+var metric_all_one_week_ago = new Keen.Dataviz()
+	.chartOptions({
+		suffix: '%'
+	})
+	.el(document.getElementById("metric_all_one_week_ago"))
+	.chartType("metric")
+	.prepare();
+
+var queryThreeWeeksAgo = new Keen.Query("funnel", {
+	steps:activeUserStepsForFeature({
+		cta: features[queryParameters.feature],
+		historicOffset: -21
+	}),
+	maxAge: 10800
+});
+var queryTwoWeeksAgo = new Keen.Query("funnel", {
+	steps:activeUserStepsForFeature({
+		cta: features[queryParameters.feature],
+		historicOffset: -14
+	}),
+	maxAge: 10800
+});
+var queryOneWeekAgo = new Keen.Query("funnel", {
+	steps:activeUserStepsForFeature({
+		cta: features[queryParameters.feature],
+		historicOffset: -7
+	}),
+	maxAge: 10800
+});
+
+client.run([
+	queryThreeWeeksAgo,
+	queryTwoWeeksAgo,
+	queryOneWeekAgo
+], function(error, response){
+	if (error) {
+		throw new Error("Keen query error: " + error.message);
+	}
+	else {
+		var resultsAllThreeWeeksAgo = response[2];
+		var resultsAllTwoWeeksAgo = response[1];
+		var resultsAllOneWeekAgo = response[0];
+
+		var percentageAllThreeWeeksAgo = parseFloat((100 / resultsAllThreeWeeksAgo.result[1] * resultsAllThreeWeeksAgo.result[2]).toFixed(2));
+		var percentageAllTwoWeeksAgo = parseFloat((100 / resultsAllTwoWeeksAgo.result[1] * resultsAllTwoWeeksAgo.result[2]).toFixed(2));
+		var percentageAllOneWeekAgo = parseFloat((100 / resultsAllOneWeekAgo.result[1] * resultsAllOneWeekAgo.result[2]).toFixed(2));
+
+		metric_all_three_weeks_ago
+			.parseRawData({ result:percentageAllThreeWeeksAgo })
+			.title("Three weeks ago <br/><small>(" + humanize.date('D jS', new Date(resultsAllThreeWeeksAgo.steps[1].timeframe.start)) + " to " + humanize.date('D jS M', new Date(resultsAllThreeWeeksAgo.steps[1].timeframe.end)) + ")</<small>")
+			.render();
+
+		metric_all_two_weeks_ago
+			.parseRawData({ result:percentageAllTwoWeeksAgo })
+			.title("Two weeks ago <br/><small>(" + humanize.date('D jS', new Date(resultsAllTwoWeeksAgo.steps[1].timeframe.start)) + " to " + humanize.date('D jS M', new Date(resultsAllTwoWeeksAgo.steps[1].timeframe.end)) + ")</<small>")
+			.render();
+
+		metric_all_one_week_ago
+			.parseRawData({ result:percentageAllOneWeekAgo })
+			.title("One week ago <br/><small>(" + humanize.date('D jS', new Date(resultsAllOneWeekAgo.steps[1].timeframe.start)) + " to " + humanize.date('D jS M', new Date(resultsAllOneWeekAgo.steps[1].timeframe.end)) + ")</<small>")
+			.render();
+
+	}
+});
