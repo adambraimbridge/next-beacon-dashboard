@@ -55,6 +55,25 @@ Keen.ready(function(){
 
 			break;
 
+		case '/graph/ab/ratings-metadata':
+
+			// FIXME - move to Promise.all
+			on = require('./queries/ab/ratings-metadata').on;
+			off = require('./queries/ab/ratings-metadata').off;
+
+			client.run(off, function (err, results) {
+				console.log('query done');
+				var a = results;
+				client.run(on, function (err, results) {
+					var b = results;
+					var el = document.createElement('div');
+					container.appendChild(el);
+					require('./queries/ab/ratings-metadata').render(a, b, el);
+				});
+			});
+
+			break;
+
 		case '/graph/ab/homepage-promo':
 
 			// FIXME - move to Promise.all
