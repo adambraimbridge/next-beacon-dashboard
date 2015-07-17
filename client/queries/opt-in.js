@@ -263,7 +263,6 @@ var barchart_stacked_difficult_navigation = new Keen.Dataviz()
 	.prepare();
 
 var optOutReasonByNavigationQuery = new keenQuery({
-	queryType: 'count',
 	groupBy: 'meta.difficultNavReason',
 	filters: [{
 		property_name:'meta.reason',
