@@ -75,38 +75,7 @@ Keen.ready(function(){
 			break;
 
 		case '/graph/opt-in':
-
-			render(require('./queries/opt-in').innie, {
-				title: 'Opt-ins over last 24 hours',
-				colors: ['#6FF187']
-			});
-
-			render(require('./queries/opt-in').outie, {
-				title: 'Opt-outs over last 24 hours',
-				colors: ['#FF6060']
-			});
-
-			render(require('./queries/opt-in').lastWeek, {
-				title: 'Opt-in Vs out over the last week',
-				chartType: 'columnchart',
-				colors: ['#6FF187', '#FF6060']
-			});
-
-			render(require('./queries/opt-in').reasons, {
-				chartType: "areachart",
-				isStacked: 'percent',
-				colors: ['rgb(115, 192, 58)', 'rgb(150, 85, 126)', 'rgb(101, 185, 172)', 'rgb(70, 130, 180)', 'rgb(203, 81, 58)', 'rgb(120, 95, 67)'],
-				lineWidth: 0,
-				areaOpacity: 0.9,
-				height: 500,
-				theme: 'maximized'
-			});
-
-			render(require('./queries/opt-in').difficultNavigation, {
-				title: 'Navigation feedback detail',
-				chartType: "columnchart"
-			});
-
+			require('./queries/opt-in');
 			break;
 
 		case '/graph/addiction':

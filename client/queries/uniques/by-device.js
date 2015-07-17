@@ -148,7 +148,7 @@ var render = function (el, results, opts, client) {
 		.parseRawData({ result:percentageSmall })
 		.render();
 
-	$('#percentage_remainer').html('With a ' + percentageRemainder + '% remainder ("none" and "null" values)');
+	$('#percentage_remainder').html('With a ' + percentageRemainder + '% remainder ("none" and "null" values)');
 
 	linechart
 		.parseRawData(resultInterval)
