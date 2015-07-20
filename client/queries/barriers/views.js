@@ -55,4 +55,3 @@ client.draw(barrierTypes, document.getElementById("barrierTypes"), {
 client.run(barriersRendered, function(err, result){
 	console.log(result);
 });
-

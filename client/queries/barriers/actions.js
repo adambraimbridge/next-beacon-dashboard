@@ -107,7 +107,7 @@ client.run([
 						result: response[1].result[index].value = response[3].result[index].value -response[2].result[index].value
 					}
 				]
-			}
+			};
 		});
 		barrierInteractionsChart.parseRawData({result:data}).render();
 	}
@@ -116,4 +116,3 @@ client.run([
 client.draw(barrierClicksByElementQuery, document.getElementById('barrierInteractionsByElement'), {
 	height: 450
 });
-
