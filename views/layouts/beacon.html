@@ -68,22 +68,9 @@
 						<li data-nav-name="active-usage" class="o-hierarchical-nav__parent">
 							<a>Active usage <i></i></a>
 							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
-								<li><a href="/graph/active-usage?feature=globalNavigation">globalNavigation</a></li>
-								<li><a href="/graph/active-usage?feature=homePageLoadMore">homePageLoadMore</a></li>
-								<li><a href="/graph/active-usage?feature=marketDataAPI">marketDataAPI</a></li>
-								<li><a href="/graph/active-usage?feature=articleComments">articleComments</a></li>
-								<li><a href="/graph/active-usage?feature=articleRelatedContent">articleRelatedContent</a></li>
-								<li><a href="/graph/active-usage?feature=articleTOC">articleTOC</a></li>
-								<li><a href="/graph/active-usage?feature=dynamicTertiaryNav">dynamicTertiaryNav</a></li>
-								<li><a href="/graph/active-usage?feature=capiV2LinkedDataOrganisationHeader">capiV2LinkedDataOrganisationHeader</a></li>
-								<li><a href="/graph/active-usage?feature=follow">follow</a></li>
-								<li><a href="/graph/active-usage?feature=homePageMyFTPanel">homePageMyFTPanel</a></li>
-								<li><a href="/graph/active-usage?feature=homePageMyPageFeed">homePageMyPageFeed</a></li>
-								<li><a href="/graph/active-usage?feature=myPageTopicSuggestions">myPageTopicSuggestions</a></li>
-								<li><a href="/graph/active-usage?feature=pagination">pagination</a></li>
-								<li><a href="/graph/active-usage?feature=saveForLater">saveForLater</a></li>
-								<li><a href="/graph/active-usage?feature=search">search</a></li>
-								<li><a href="/graph/active-usage?feature=myFTReadingListOnArticle">myFTReadingListOnArticle</a></li>
+							{{#each @root.featureNavigationItems}}
+								<li><a href="/graph/active-usage?feature={{.}}">{{.}}</a></li>
+							{{/each}}
 							</ul>
 						</li>
 						<li data-nav-name="flow" class="o-hierarchical-nav__parent">
@@ -167,6 +154,7 @@
 			window.page_name = '{{page_name}}';
 			window.article_id = '{{article_id}}';
 			window.original_url = '{{original_url}}';
+			window.activeUsageFeatures = {{{json @root.activeUsageFeatures}}};
 		</script>
 		<script src="//code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
 		<script src="//cdn.jsdelivr.net/keen.js/3.2.4/keen.min.js" type="text/javascript"></script>

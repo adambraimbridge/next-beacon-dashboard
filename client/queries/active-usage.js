@@ -1,4 +1,4 @@
-/* global Keen, $ */
+/* global Keen, $, _ */
 
 'use strict';
 
@@ -14,34 +14,28 @@ if (!queryParameters.feature) {
 	queryParameters.feature = 'articleComments';
 }
 
-// The pattern here is [feature name] : [cta]
-// [feature name] comes from https://next.ft.com/__toggler
-// [cta] is the data-trackable attribute that the feature exposes
-var features = {
-	'articleComments':'view-comments',
-	'articleRelatedContent':'more-on',
-	'articleTOC':'toc',
-	'dynamicTertiaryNav':'dynamic-tags',
-	'capiV2LinkedDataOrganisationHeader': 'organisation-summary',
-	'follow':'follow',
-	'globalNavigation':'primary-nav',
-	'homePageLoadMore':'toggle-more-stories',
-	'homePageMyFTPanel':'myft-panel',
-	'homePageMyPageFeed':'myft-panel | myft-topic | follow',
-	'marketDataAPI':'markets-link',
-	'myPageTopicSuggestions':'my-page-onboarding',
-	'pagination':'next-page',
-	'saveForLater':'save-for-later',
-	'search':'search-form',
-	'myFTReadingListOnArticle': 'myft-reading-list'
-};
+// See server/middleware/active-usage.js for details
+var feature = _.find(window.activeUsageFeatures, function(feature) {
+	return feature.flagName === queryParameters.feature;
+});
 
 // Replace some text placeholders with appropriate content
-$('.feature-name').fadeOut(function(){ $(this).text(queryParameters.feature).fadeIn(); });
-$('.feature-cta').fadeOut(function(){ $(this).text(features[queryParameters.feature]).fadeIn(); });
+$('.feature-name').fadeOut(function(){ $(this).text(feature.flagName).fadeIn(); });
+$('.feature-cta').fadeOut(function(){ $(this).text(feature.cta).fadeIn(); });
+
+// TODO: Expose feature.expiry and feature.state
+console.log(feature);
+
+var FEATURE_FLAG_NOT_FOUND = "404";
+if (feature.state === false) {
+	// TODO: Display appropriate message.
+}
+else if (feature.state === FEATURE_FLAG_NOT_FOUND) {
+	// TODO: Display appropriate message.
+}
 
 // Apply an appropriate href to placeholder links
-var beaconHref = 'https://beacon.ft.com/graph?event_collection=cta&metric=count&group_by=meta.domPath&timeframe=this_14_days&title=Trackable%20element:%20'+ features[queryParameters.feature] +'&domPathContains='+ features[queryParameters.feature];
+var beaconHref = 'https://beacon.ft.com/graph?event_collection=cta&metric=count&group_by=meta.domPath&timeframe=this_14_days&title=Trackable%20element:%20'+ feature.cta +'&domPathContains='+ feature.cta;
 $('.beacon-href').attr('href',beaconHref);
 
 // Return the ISO string for relative dates
@@ -108,14 +102,14 @@ var activeUserStepsForFeature = function (options) {
 // --
 var queryAll = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
-		cta: features[queryParameters.feature]
+		cta: feature.cta
 	}),
 	maxAge: 10800
 });
 
 var queryLargeDevices = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
-		cta: features[queryParameters.feature],
+		cta: feature.cta,
 		filters: [{
 			property_name:"user.layout",
 			operator:"in",
@@ -127,7 +121,7 @@ var queryLargeDevices = new Keen.Query("funnel", {
 
 var queryMediumDevices = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
-		cta: features[queryParameters.feature],
+		cta: feature.cta,
 		filters: [{
 			property_name:"user.layout",
 			operator:"in",
@@ -139,7 +133,7 @@ var queryMediumDevices = new Keen.Query("funnel", {
 
 var querySmallDevices = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
-		cta: features[queryParameters.feature],
+		cta: feature.cta,
 		filters: [{
 			property_name:"user.layout",
 			operator:"in",
@@ -264,21 +258,21 @@ var metric_all_one_week_ago = new Keen.Dataviz()
 
 var queryThreeWeeksAgo = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
-		cta: features[queryParameters.feature],
+		cta: feature.cta,
 		historicOffset: -21
 	}),
 	maxAge: 10800
 });
 var queryTwoWeeksAgo = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
-		cta: features[queryParameters.feature],
+		cta: feature.cta,
 		historicOffset: -14
 	}),
 	maxAge: 10800
 });
 var queryOneWeekAgo = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
-		cta: features[queryParameters.feature],
+		cta: feature.cta,
 		historicOffset: -7
 	}),
 	maxAge: 10800
