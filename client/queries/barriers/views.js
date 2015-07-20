@@ -18,6 +18,16 @@ var barriersRendered = new Keen.Query("count_unique", {
 	timezone: "UTC"
 });
 
+var barrierTypes = new Keen.Query("count", {
+	eventCollection: "barrier",
+	filters: [
+		{"operator":"eq","property_name":"meta.type","property_value":"shown"},
+		{"operator":"exists","property_name":"meta.barrierType","property_value":true}],
+	groupBy: "meta.barrierType",
+	timeframe: queryParameters.timeframe || "this_14_days",
+	timezone: "UTC"
+});
+
 client.draw(barriersRendered, document.getElementById("barriersRendered"), {
 	chartType: "areachart",
 	title: 'Compared with "first click free" and failed barrier attempts',
@@ -29,3 +39,20 @@ client.draw(barriersRendered, document.getElementById("barriersRendered"), {
 		}
 	}
 });
+
+client.draw(barrierTypes, document.getElementById("barrierTypes"), {
+	chartType: "piechart",
+	title: 'Percentage of users seeing which barrier types',
+	chartOptions: {
+		height: 450,
+		chartArea: {
+			left: '10%',
+			width: '75%'
+		}
+	}
+});
+
+client.run(barriersRendered, function(err, result){
+	console.log(result);
+});
+
