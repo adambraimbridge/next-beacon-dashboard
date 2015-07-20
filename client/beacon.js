@@ -131,6 +131,14 @@ Keen.ready(function(){
 			require('./queries/anons/activity');
 			break;
 
+		case '/graph/barriers/views':
+			require('./queries/barriers/views');
+			break;
+
+		case '/graph/barriers/actions':
+			require('./queries/barriers/actions');
+			break;
+
 		case '/graph/uniques':
 
 			render(require('./queries/uniques/today'), {
