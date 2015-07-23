@@ -10,28 +10,36 @@ var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
 
 // Degrade gracefully if parameter is missing. Not ideal, but at least it loads something.
-if (!queryParameters.feature) {
-	queryParameters.feature = 'articleComments';
-}
-
 // See server/middleware/active-usage.js for details
-var feature = _.find(window.activeUsageFeatures, function(feature) {
-	return feature.flagName === queryParameters.feature;
-});
+var feature;
+if (!queryParameters.feature) {
+	feature = window.activeUsageFeatures[0];
+} else {
+	feature = _.find(window.activeUsageFeatures, function(feature) {
+		return feature.flagName === queryParameters.feature;
+	});
+}
 
 // Replace some text placeholders with appropriate content
 $('.feature-name').fadeOut(function(){ $(this).text(feature.flagName).fadeIn(); });
 $('.feature-cta').fadeOut(function(){ $(this).text(feature.cta).fadeIn(); });
 
-// TODO: Expose feature.expiry and feature.state
-console.log(feature);
-
-var FEATURE_FLAG_NOT_FOUND = "404";
-if (feature.state === false) {
-	// TODO: Display appropriate message.
+if (feature.state === "404") {
+	$('.feature-expiry-date').fadeOut(function(){ $(this).html('Note: This feature was not found in the <a target="_blank" href="https://github.com/Financial-Times/next-feature-flags-api/blob/master/models/flags.js">feature-flags API</a>.').fadeIn(); });
 }
-else if (feature.state === FEATURE_FLAG_NOT_FOUND) {
-	// TODO: Display appropriate message.
+else {
+	$('.feature-expiry-date').fadeOut(function(){ $(this).text("Feature expiry date: " + humanize.date('D jS M Y', new Date(feature.expiry))).fadeIn(); });
+
+	if (feature.state === false) {
+		$('.feature-is-off').text("This feature is currently switched off in next.ft.com.");
+	}
+
+	if (feature.image_src) {
+		$('.feature-image').append($('<img/>', {
+			"class":"feature-image",
+			"src":feature.image_src
+		}));
+	}
 }
 
 // Apply an appropriate href to placeholder links
