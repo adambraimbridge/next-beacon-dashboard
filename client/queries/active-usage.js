@@ -1,4 +1,4 @@
-/* global Keen, $ */
+/* global Keen, $, _ */
 
 'use strict';
 
@@ -10,38 +10,40 @@ var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
 
 // Degrade gracefully if parameter is missing. Not ideal, but at least it loads something.
+// See server/middleware/active-usage.js for details
+var feature;
 if (!queryParameters.feature) {
-	queryParameters.feature = 'articleComments';
+	feature = window.activeUsageFeatures[0];
+} else {
+	feature = _.find(window.activeUsageFeatures, function(feature) {
+		return feature.flagName === queryParameters.feature;
+	});
 }
 
-// The pattern here is [feature name] : [cta]
-// [feature name] comes from https://next.ft.com/__toggler
-// [cta] is the data-trackable attribute that the feature exposes
-var features = {
-	'articleComments':'view-comments',
-	'articleRelatedContent':'more-on',
-	'articleTOC':'toc',
-	'dynamicTertiaryNav':'dynamic-tags',
-	'capiV2LinkedDataOrganisationHeader': 'organisation-summary',
-	'follow':'follow',
-	'globalNavigation':'primary-nav',
-	'homePageLoadMore':'toggle-more-stories',
-	'homePageMyFTPanel':'myft-panel',
-	'homePageMyPageFeed':'myft-panel | myft-topic | follow',
-	'marketDataAPI':'markets-link',
-	'myPageTopicSuggestions':'my-page-onboarding',
-	'pagination':'next-page',
-	'saveForLater':'save-for-later',
-	'search':'search-form',
-	'myFTReadingListOnArticle': 'myft-reading-list'
-};
-
 // Replace some text placeholders with appropriate content
-$('.feature-name').fadeOut(function(){ $(this).text(queryParameters.feature).fadeIn(); });
-$('.feature-cta').fadeOut(function(){ $(this).text(features[queryParameters.feature]).fadeIn(); });
+$('.feature-name').fadeOut(function(){ $(this).text(feature.flagName).fadeIn(); });
+$('.feature-cta').fadeOut(function(){ $(this).text(feature.cta).fadeIn(); });
+
+if (feature.state === "404") {
+	$('.feature-expiry-date').fadeOut(function(){ $(this).html('Note: This feature was not found in the <a target="_blank" href="https://github.com/Financial-Times/next-feature-flags-api/blob/master/models/flags.js">feature-flags API</a>.').fadeIn(); });
+}
+else {
+	$('.feature-expiry-date').fadeOut(function(){ $(this).text("Feature expiry date: " + humanize.date('D jS M Y', new Date(feature.expiry))).fadeIn(); });
+
+	if (feature.state === false) {
+		$('.feature-is-off').text("This feature is currently switched off in next.ft.com.");
+	}
+
+	if (feature.image_src) {
+		$('.feature-image').append($('<img/>', {
+			"class":"feature-image",
+			"src":feature.image_src
+		}));
+	}
+}
 
 // Apply an appropriate href to placeholder links
-var beaconHref = 'https://beacon.ft.com/graph?event_collection=cta&metric=count&group_by=meta.domPath&timeframe=this_14_days&title=Trackable%20element:%20'+ features[queryParameters.feature] +'&domPathContains='+ features[queryParameters.feature];
+var beaconHref = 'https://beacon.ft.com/graph?event_collection=cta&metric=count&group_by=meta.domPath&timeframe=this_14_days&title=Trackable%20element:%20'+ feature.cta +'&domPathContains='+ feature.cta;
 $('.beacon-href').attr('href',beaconHref);
 
 // Return the ISO string for relative dates
@@ -108,14 +110,14 @@ var activeUserStepsForFeature = function (options) {
 // --
 var queryAll = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
-		cta: features[queryParameters.feature]
+		cta: feature.cta
 	}),
 	maxAge: 10800
 });
 
 var queryLargeDevices = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
-		cta: features[queryParameters.feature],
+		cta: feature.cta,
 		filters: [{
 			property_name:"user.layout",
 			operator:"in",
@@ -127,7 +129,7 @@ var queryLargeDevices = new Keen.Query("funnel", {
 
 var queryMediumDevices = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
-		cta: features[queryParameters.feature],
+		cta: feature.cta,
 		filters: [{
 			property_name:"user.layout",
 			operator:"in",
@@ -139,7 +141,7 @@ var queryMediumDevices = new Keen.Query("funnel", {
 
 var querySmallDevices = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
-		cta: features[queryParameters.feature],
+		cta: feature.cta,
 		filters: [{
 			property_name:"user.layout",
 			operator:"in",
@@ -264,21 +266,21 @@ var metric_all_one_week_ago = new Keen.Dataviz()
 
 var queryThreeWeeksAgo = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
-		cta: features[queryParameters.feature],
+		cta: feature.cta,
 		historicOffset: -21
 	}),
 	maxAge: 10800
 });
 var queryTwoWeeksAgo = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
-		cta: features[queryParameters.feature],
+		cta: feature.cta,
 		historicOffset: -14
 	}),
 	maxAge: 10800
 });
 var queryOneWeekAgo = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
-		cta: features[queryParameters.feature],
+		cta: feature.cta,
 		historicOffset: -7
 	}),
 	maxAge: 10800
