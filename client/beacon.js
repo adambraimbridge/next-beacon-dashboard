@@ -188,6 +188,22 @@ Keen.ready(function(){
 			require('./queries/meta-beacon');
 			break;
 
+		case '/graph/article/views':
+			require('./queries/article/views');
+			render(require('./queries/article/last-week-average'));
+			require('./queries/article/trend');
+			break;
+
+		case '/graph/article/by-subscriber-by-day':
+			render(require('./queries/article/per_user_per_day').lastWeek, {title: 'Last Seven Days'});
+			render(require('./queries/article/per_user_per_day').fourWeeksPrior, {title: 'Four Weeks Prior'});
+
+			break;
+
+		case '/graph/article/actions':
+			require('./queries/article/actions');
+			break;
+
 		default:
 			console.log('unknown graph');
 
