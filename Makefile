@@ -1,5 +1,4 @@
-GIT_HASH := $(shell git rev-parse --short HEAD)
-TEST_HOST := "ft-beacon-branch-${GIT_HASH}"
+TEST_HOST := "ft-beacon-branch-${CIRCLE_BUILD_NUM}"
 
 .PHONY: test
 
@@ -8,33 +7,31 @@ install:
 
 build:
 	nbt build
+	nbt about
 
 clean:
 	git clean -fxd
 
-# Note: Environment variables can be found at ~/.next-development-keys.json
-# https://github.com/Financial-Times/next-build-tools/blob/master/tasks/download-development-keys.js
 run:
 	export PORT=5028; \
 	nbt run --local
 
-test:
+test: build
 	nbt verify --skip-layout-checks
-	nbt build
 
 deploy:
-	next-build-tools configure --no-splunk
+	nbt configure --no-splunk
 	nbt deploy-hashed-assets
-	nbt deploy
+	nbt deploy --docker
 
 watch:
 	nbt build --dev --watch
 
 provision:
-	next-build-tools provision ${TEST_HOST}
-	next-build-tools configure ft-next-beacon-dashboard ${TEST_HOST} --overrides "NODE_ENV=branch" --no-splunk
-	next-build-tools deploy-hashed-assets
-	next-build-tools deploy ${TEST_HOST} --skip-enable-preboot
+	nbt provision ${TEST_HOST}
+	nbt configure ft-next-beacon-dashboard ${TEST_HOST} --overrides "NODE_ENV=branch" --no-splunk
+	nbt deploy-hashed-assets
+	nbt deploy ${TEST_HOST} --skip-enable-preboot --docker
 	
 tidy:
-	next-build-tools destroy ${TEST_HOST}
+	nbt destroy ${TEST_HOST}
