@@ -188,6 +188,38 @@ Keen.ready(function(){
 			require('./queries/meta-beacon');
 			break;
 
+		case '/graph/article/views':
+			require('./queries/article/views');
+			render(require('./queries/article/last-week-average'));
+			require('./queries/article/trend');
+			break;
+
+		case '/graph/article/by-subscriber-by-day-trend':
+			render(require('./queries/article/per_user_per_day-trend'));
+			break;
+
+		case '/graph/article/actions':
+			require('./queries/article/actions');
+			break;
+
+		case '/graph/stream/views':
+			require('./queries/stream/views');
+			render(require('./queries/stream/last-week-average'));
+			require('./queries/stream/trend');
+			break;
+
+		case '/graph/stream/by-subscriber-by-day':
+			render(require('./queries/stream/per_user_per_day-trend'));
+			break;
+
+		case '/graph/stream/most-popular':
+			render(require('./queries/stream/most-popular'));
+			break;
+
+		case '/graph/stream/actions':
+			require('./queries/stream/actions');
+			break;
+
 		default:
 			console.log('unknown graph');
 
