@@ -7,6 +7,9 @@ install:
 
 build:
 	nbt build
+
+build-production:
+	nbt build
 	nbt about
 
 clean:
@@ -16,7 +19,7 @@ run:
 	export PORT=5028; \
 	nbt run --local
 
-test: build
+test: build-production
 	nbt verify --skip-layout-checks
 
 deploy:
