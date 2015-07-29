@@ -18,7 +18,7 @@ var trendLineChartQuery = new Keen.Query("count", {
 			"property_value":false},
 			{"operator":"eq",
 			"property_name":"page.location.type",
-			"property_value":"article"}
+			"property_value":"stream"}
 		],
 		interval: "daily",
 		targetProperty: "time.day",
