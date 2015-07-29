@@ -75,38 +75,7 @@ Keen.ready(function(){
 			break;
 
 		case '/graph/opt-in':
-
-			render(require('./queries/opt-in').innie, {
-				title: 'Opt-ins over last 24 hours',
-				colors: ['#6FF187']
-			});
-
-			render(require('./queries/opt-in').outie, {
-				title: 'Opt-outs over last 24 hours',
-				colors: ['#FF6060']
-			});
-
-			render(require('./queries/opt-in').lastWeek, {
-				title: 'Opt-in Vs out over the last week',
-				chartType: 'columnchart',
-				colors: ['#6FF187', '#FF6060']
-			});
-
-			render(require('./queries/opt-in').reasons, {
-				chartType: "areachart",
-				isStacked: 'percent',
-				colors: ['rgb(115, 192, 58)', 'rgb(150, 85, 126)', 'rgb(101, 185, 172)', 'rgb(70, 130, 180)', 'rgb(203, 81, 58)', 'rgb(120, 95, 67)'],
-				lineWidth: 0,
-				areaOpacity: 0.9,
-				height: 500,
-				theme: 'maximized'
-			});
-
-			render(require('./queries/opt-in').difficultNavigation, {
-				title: 'Navigation feedback detail',
-				chartType: "columnchart"
-			});
-
+			require('./queries/opt-in');
 			break;
 
 		case '/graph/addiction':
@@ -155,11 +124,19 @@ Keen.ready(function(){
 			break;
 
 		case '/graph/anons/visitors':
-			require('./queries/anons/trend');
+			require('./queries/anons/visitors');
 			break;
 
 		case '/graph/anons/activity':
 			require('./queries/anons/activity');
+			break;
+
+		case '/graph/barriers/views':
+			require('./queries/barriers/views');
+			break;
+
+		case '/graph/barriers/actions':
+			require('./queries/barriers/actions');
 			break;
 
 		case '/graph/uniques':
@@ -180,7 +157,7 @@ Keen.ready(function(){
 			break;
 
 		case '/graph/active-usage':
-			render(require('./queries/active-usage'));
+			require('./queries/active-usage');
 			break;
 
 		case '/graph/flow':
@@ -209,6 +186,38 @@ Keen.ready(function(){
 
 		case '/graph/meta-beacon':
 			require('./queries/meta-beacon');
+			break;
+
+		case '/graph/article/views':
+			require('./queries/article/views');
+			render(require('./queries/article/last-week-average'));
+			require('./queries/article/trend');
+			break;
+
+		case '/graph/article/by-subscriber-by-day-trend':
+			render(require('./queries/article/per_user_per_day-trend'));
+			break;
+
+		case '/graph/article/actions':
+			require('./queries/article/actions');
+			break;
+
+		case '/graph/stream/views':
+			require('./queries/stream/views');
+			render(require('./queries/stream/last-week-average'));
+			require('./queries/stream/trend');
+			break;
+
+		case '/graph/stream/by-subscriber-by-day':
+			render(require('./queries/stream/per_user_per_day-trend'));
+			break;
+
+		case '/graph/stream/most-popular':
+			render(require('./queries/stream/most-popular'));
+			break;
+
+		case '/graph/stream/actions':
+			require('./queries/stream/actions');
 			break;
 
 		default:

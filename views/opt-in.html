@@ -1,8 +1,36 @@
 
-<h1>Opt-in</h1>
+<h1>Opting in and opting out</h1>
 
-<p class="o-techdocs-leadbody">
-	Opt-in ...	
+<p class="o-techdocs-leadbody">These charts show the total amount of unique users who opted in and out of Next FT.</p>
+
+<p>
+	Timeframe:
+	<a href="./opt-in">14 days</a> |
+	<a href="?timeframe=this_30_days">30 days</a> |
+	<a href="?timeframe=this_60_days">60 days</a> |
+	<a href="?timeframe=this_90_days">90 days</a>
 </p>
 
-<section id="graph__container"></section>
+<div class="chart__container__metrics o-grid-row">
+	<span data-o-grid-colspan="one-half" class="chart__container" id="piechart"></span>
+	<span data-o-grid-colspan="one-half" class="chart__container" id="piechart_24_hours"></span>
+</div>
+
+<p>
+	<b>What if the same user was to opt in and out multiple times?</b><br />
+	We're counting all users who opt in — <i>and</i> all users who opt out. If the same user is in both lists (because they've opted in and out one or more times), there might be a negligible effect in these charts, but it wouldn't be noticable.
+<p>
+<p>
+	<b>Where's all the opt-out feedback?</b><br />
+	When users opt out, they have the option to leave some feedback, which lives in <a target="_blank" href="https://groups.google.com/a/ft.com/forum/#!forum/next.feedback">this google forum</a>.
+<p>
+
+
+<span class="chart__container" id="linechart"></span>
+<span class="chart__container" id="areachart_stacked"></span>
+<span class="chart__container" id="columnchart"></span>
+<span class="chart__container" id="barchart_stacked"></span>
+
+<p><b>Total opt-out counts by reason</b></p>
+<span class="chart__container o-table" id="table"></span>
+<span class="chart__container" id="barchart_stacked_difficult_navigation"></span>

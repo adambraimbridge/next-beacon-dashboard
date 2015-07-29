@@ -3,6 +3,7 @@
 
 var http			= require('http');
 var auth			= require('./middleware/auth');
+var activeUsage			= require('./middleware/active-usage');
 var cookieParser	= require('cookie-parser');
 var app				= module.exports = require('ft-next-express')({ layoutsDir: __dirname + '/../views/layouts' });
 var fs 				= require('fs');
@@ -53,8 +54,12 @@ app.get('/hashed-assets/:path*', function(req, res) {
 app.use(cookieParser());
 app.use(auth);
 
+app.use(activeUsage);
+
 app.get('/', function (req, res) {
-	res.send('<a href="/graph/uniques">Enter beacon</a>');
+	res.render('home', {
+		layout: 'beacon'
+	});
 });
 
 // TODO:ADAM:20150626 — Allow for :sub urls without requiring a template file

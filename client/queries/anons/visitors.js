@@ -1,5 +1,4 @@
 /* global Keen, keen_project, keen_read_key */
-
 "use strict";
 
 var queryString = require('query-string');
@@ -9,6 +8,15 @@ var client = new Keen({
 	projectId: keen_project,
 	readKey: keen_read_key
 });
+
+var optOutMetric = new Keen.Dataviz()
+	.chartOptions({
+		suffix: '%'
+	})
+	.title("Percentage of users opted-in via akamai who then opt-out")
+	.el(document.getElementById("optOuts"))
+	.chartType("metric")
+	.prepare();
 
 var counts = new Keen.Query("count_unique", {
 	eventCollection: "dwell",
@@ -35,7 +43,33 @@ var referrers = new Keen.Query("count_unique", {
 	timezone: "UTC"
 });
 
-client.draw(counts, document.getElementById("linechart"), {
+
+var anonOptOuts = new Keen.Query("funnel", {
+	steps : [
+		{
+			eventCollection: 'optin',
+			filters: [
+				{"operator":"exists","property_name":"meta.anon","property_value":true},
+				{"operator":"eq","property_name":"meta.type","property_value":"in"}
+			],
+			timeframe: queryParameters.timeframe || "this_14_days",
+			timezone: "UTC",
+			actorProperty : 'user.device_id'
+		},
+		{
+			eventCollection: 'optin',
+			filters: [
+				{"operator":"eq","property_name":"meta.type","property_value":"out"}
+			],
+			timeframe: queryParameters.timeframe || "this_14_days",
+			timezone: "UTC",
+			actorProperty : 'user.device_id'
+		}
+	],
+
+});
+
+client.draw(counts, document.getElementById("trend"), {
 	chartType: "linechart",
 	title: 'Approximate Trend Over Time',
 	chartOptions: {
@@ -58,7 +92,7 @@ client.draw(counts, document.getElementById("linechart"), {
 	}
 });
 
-client.draw(counts, document.getElementById("columnchart"), {
+client.draw(counts, document.getElementById("dailyTotals"), {
 	chartType: "columnchart",
 	title: 'Daily Totals in Real Numbers',
 	chartOptions: {
@@ -83,7 +117,7 @@ client.draw(counts, document.getElementById("columnchart"), {
 
 client.draw(referrers, document.getElementById("referrers"), {
 	chartType: "piechart",
-	title: 'Where Do They Come From?',
+	title: 'Anons by referrer',
 	chartOptions : {
 		height: 450,
 		colors : [
@@ -97,4 +131,14 @@ client.draw(referrers, document.getElementById("referrers"), {
 			'#f3dee3'
 		]
 	}
+});
+
+client.run(anonOptOuts, function(err, response){
+	if(err){
+		console.error(err);
+		return;
+	}
+
+	var percentage = Math.ceil((response.result[1] / response.result[0]) * 100);
+	optOutMetric.parseRawData({result:percentage}).render();
 });

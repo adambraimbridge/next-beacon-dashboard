@@ -9,3 +9,4 @@ static/main.js
 /static
 .sass-cache
 public
+.env

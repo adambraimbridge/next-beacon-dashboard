@@ -1,6 +1,12 @@
 <h1>Active usage of <span class="feature-name">feature</span></h1>
 
-<div class="metric__container" id="metric_all"></div>
+<div class="chart__container__metrics o-grid-row">
+	<div data-o-grid-colspan="one-half" class="metric__container" id="metric_all"></div>
+	<div data-o-grid-colspan="one-half">
+		<span class="feature-image"></span>
+		<p><span class="feature-is-off"></span> <span class="feature-expiry-date"></span></p>
+	</div>
+</div>
 
 <h3>How this is calculated:</h3>
 
@@ -35,5 +41,11 @@
 	<span data-o-grid-colspan="one-third" class="chart__container" id="metric_small"></span>
 </div>
 
-<section id="graph__container"></section>
-
+<h2>Historical active usage of <span class="feature-name">feature</span> (all devices)</h2>
+<p>How has active usage faired each week for the past three weeks?</p>
+<p>These numbers represent the same thing as "Active usage (all devices)" above, except for different times in the past.</p>
+<div class="chart__container__metrics o-grid-row">
+	<span data-o-grid-colspan="one-third" class="chart__container" id="metric_all_three_weeks_ago"></span>
+	<span data-o-grid-colspan="one-third" class="chart__container" id="metric_all_two_weeks_ago"></span>
+	<span data-o-grid-colspan="one-third" class="chart__container" id="metric_all_one_week_ago"></span>
+</div>
