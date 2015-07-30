@@ -16,7 +16,7 @@ clean:
 	git clean -fxd
 
 run:
-	export PORT=5028; \
+	@export KEEN_EXPLORER=`cat ~/.keen-io-explorer`; export PORT=5028; \
 	nbt run --local
 
 test: build-production
