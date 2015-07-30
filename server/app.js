@@ -13,6 +13,7 @@ require('es6-promise').polyfill();
 
 var KEEN_PROJECT = process.env.KEEN_PROJECT;
 var KEEN_READ_KEY = process.env.KEEN_READ_KEY;
+var keen_explorer = process.env.KEEN_EXPLORER;
 
 // Indicates the app is behind a front-facing proxy, and to use the X-Forwarded-* headers to determine the connection and the IP address of the client. NOTE: X-Forwarded-* headers are easily spoofed and the detected IP addresses are unreliable.
 // See: http://expressjs.com/api.html
@@ -26,6 +27,20 @@ app.get('/__debug-ssl', function(req, res) {
 	res.json({
 		protocol: req.protocol,
 		headers: req.headers
+	});
+});
+
+app.get('/dist/*', function(req, res) {
+	var path = 'http://' + keen_explorer + req.path;
+	http.get(path, function(proxyRes) {
+		proxyRes.pipe(res);
+	});
+});
+
+app.get('/explorer', function(req, res) {
+	var path = 'http://' + keen_explorer + req.path;
+	http.get(path, function(proxyRes) {
+		proxyRes.pipe(res);
 	});
 });
 
