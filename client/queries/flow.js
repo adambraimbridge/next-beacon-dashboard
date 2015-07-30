@@ -301,6 +301,46 @@ function getDashboards(offset) {
 		]
 	};
 
+	dashboards['MyFTTray'] = {
+		'title' : 'Engagement with myFT Tray',
+		'labels' : [
+		'Visited next.ft.com',
+		'Seen the tray',
+		'Clicked on the tray',
+		'Clicked on an article from the tray'
+		],
+		'steps':[
+		step({}),
+		step({
+			filters: [{
+				property_name: 'user.myft.topicsFollowed',
+				operator: 'gte',
+				property_value: 1
+			},
+			{
+				property_name: 'page.location.type',
+				operator: 'in',
+				property_value: ['article', 'stream', 'search']
+			}]
+		}),
+		step({
+			eventCollection: 'cta',
+			filters: [{
+				property_name: 'meta.domPath',
+				operator: 'contains',
+				property_value: 'myft-tray | cta'
+			}]
+		}),
+		step({
+			eventCollection: 'cta',
+			filters: [{
+				property_name: 'meta.domPath',
+				operator: 'contains',
+				property_value: 'myft-tray | myft-feed | article-card | headline'
+			}]
+		})
+		]
+	};
 	return dashboards;
 }
 
