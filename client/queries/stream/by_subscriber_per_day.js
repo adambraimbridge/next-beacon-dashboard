@@ -2,27 +2,24 @@
 
 'use strict';
 
+var queryString = require('query-string');
+var queryParameters = queryString.parse(location.search);
+
 var render = function (el, results, opts) {
 
 	var resultArray = [];
-
 	results.result.map(function(result) {
 		resultArray.push({streams: result.result, week: result["time.week"]});
 	});
 
-	var flagsWeeks = [];
 	var weeks = [];
-
 	resultArray.forEach(function(result) {
-		if (flagsWeeks[result.week]) {
-			return;
+		if (weeks.indexOf(result.week) === -1) {
+			weeks.push(result.week);
 		}
-		flagsWeeks[result.week] = true;
-		weeks.push(result.week);
 	});
 
 	var weeksSummary = [];
-
 	weeks.forEach(function(week) {
 		weeksSummary.push({week: week,
 			subscribers: resultArray.filter(function(result) {
@@ -32,7 +29,6 @@ var render = function (el, results, opts) {
 	});
 
 	var weeksBuckets = [];
-
 	weeks.forEach(function(week) {
 		weeksBuckets.push({week: week, bucket: [
 			{bMin: 1, bMax: 1, bFreq: 0, bPercent: 0},
@@ -67,7 +63,8 @@ var render = function (el, results, opts) {
 	});
 
 	var title = $('<h2>').text('Trend of article views by subscriber by day');
-	var table = $('<table>');
+	var table = $('<table>')
+		.addClass("o-table o-table--horizontal-lines o-table--vertical-lines o-table--horizontal-borders o-table--vertical-borders");
 
 	var tr = $('<tr>')
 		.append($('<th>').text('Week'))
@@ -77,13 +74,13 @@ var render = function (el, results, opts) {
 
 	tr = $('<tr>')
 		.append($('<th>').text('Latest top'))
-		.append($('<th>').text('1'))
-		.append($('<th>').text('2'))
-		.append($('<th>').text('3'))
-		.append($('<th>').text('4 to 6'))
-		.append($('<th>').text('7 to 9'))
-		.append($('<th>').text('10 to 19'))
-		.append($('<th>').text('20+'));
+		.append($('<th data-o-table-data-type="numeric">').text('1'))
+		.append($('<th data-o-table-data-type="numeric">').text('2'))
+		.append($('<th data-o-table-data-type="numeric">').text('3'))
+		.append($('<th data-o-table-data-type="numeric">').text('4 to 6'))
+		.append($('<th data-o-table-data-type="numeric">').text('7 to 9'))
+		.append($('<th data-o-table-data-type="numeric">').text('10 to 19'))
+		.append($('<th data-o-table-data-type="numeric">').text('20+'));
 
 	tr.appendTo(table);
 
@@ -93,9 +90,9 @@ var render = function (el, results, opts) {
 
 	weeksBuckets.map(function(weekBucket) {
 		tr = $('<tr>')
-			.append($('<td>').text(weekBucket.week));
+			.append($('<td>').text(weekBucket.week.substr(0,4)+'-'+weekBucket.week.substr(-2)));
 		weekBucket.bucket.forEach(function(bucket) {
-			tr.append($('<td>').text(Math.round(bucket.bPercent * 100) + '%'));
+			tr.append($('<td data-o-table-data-type="numeric">').text(Math.round(bucket.bPercent * 100) + '%'));
 		});
 		tr.appendTo(table);
 	});
@@ -119,7 +116,7 @@ module.exports = {
 		],
 		groupBy: ["user.uuid", "time.day", "time.week"],
 		targetProperty: "time.day",
-		timeframe: "previous_8_weeks",
+		timeframe: queryParameters.timeframe || "previous_2_weeks",
 		timezone: "UTC"
 	}),
 	render: render

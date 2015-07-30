@@ -9,7 +9,8 @@
     "querystring": "^3.46.1",
     "ab-test-confidence": "^1.2.0",
     "o-hierarchical-nav": "^2.0.4",
-    "array-find": "^1.0.1"
+    "array-find": "^1.0.1",
+    "o-table": "^1.7.2"
   },
   "resolutions": {
     "next-sass-setup": "^6.0.0",
