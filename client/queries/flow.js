@@ -115,75 +115,6 @@ function getDashboards(offset) {
 		]
 	};
 
-	dashboards['MyFT'] = {
-		'title' : 'Engagement with myFT',
-		'labels' : [
-		'Visited next.ft.com',
-		'Are following at least one topic',
-		'Visited their "myFT" page ...',
-		'... then went straight to an article'
-		],
-		'steps':[
-		step({}),
-		step({
-			filters: [{
-				property_name: 'user.myft.topicsFollowed',
-				operator: 'gte',
-				property_value: 1
-			}]
-		}),
-		step({
-			filters: [{
-				property_name: 'page.location.pathname',
-				operator: 'contains',
-				property_value: 'myft/my-news'
-			}]
-		}),
-		step({
-			filters: [{
-				property_name: 'page.location.hash',
-				operator: 'contains',
-				property_value: 'myft:my-news:page'
-			},
-			{
-				property_name: 'page.location.type',
-				operator: 'eq',
-				property_value: 'article'
-			}]
-		})
-		]
-	};
-
-	dashboards['MyPageFeed'] = {
-		'title' : 'Engagement with my page feed',
-		'labels' : [
-		'Visited next.ft.com',
-		'Are following at least one topic',
-		'Referred to an article from mypage feed'
-		],
-		'steps':[
-		step({}),
-		step({
-			filters: [{
-				property_name: 'user.myft.topicsFollowed',
-				operator: 'gte',
-				property_value: 1
-			}]
-		}),
-		step({
-			filters: [{
-				property_name: 'page.location.hash',
-				operator: 'contains',
-				property_value: 'myft:my-news:homepage-panel'
-			},
-			{
-				property_name: 'page.location.type',
-				operator: 'eq',
-				property_value: 'article'
-			}]
-		})
-		]
-	};
 
 	dashboards['AllMyFTNotifications'] = {
 		'title' : 'Engagement with any myFT notification',
@@ -216,16 +147,52 @@ function getDashboards(offset) {
 		]
 	};
 
+
+	dashboards['MyFT'] = {
+		'title' : 'Engagement with myFT page',
+		'labels' : [
+		'Are following at least one topic',
+		'Visited their "myFT" page ...',
+		'... then went straight to an article'
+		],
+		'steps':[
+		step({
+			filters: [{
+				property_name: 'user.myft.topicsFollowed',
+				operator: 'gte',
+				property_value: 1
+			}]
+		}),
+		step({
+			filters: [{
+				property_name: 'page.location.pathname',
+				operator: 'contains',
+				property_value: 'myft/my-news'
+			}]
+		}),
+		step({
+			filters: [{
+				property_name: 'page.location.hash',
+				operator: 'contains',
+				property_value: 'myft:my-news:page'
+			},
+			{
+				property_name: 'page.location.type',
+				operator: 'eq',
+				property_value: 'article'
+			}]
+		})
+		]
+	};
+
 	dashboards['MyFTRSS'] = {
 		'title' : 'Engagement with myFT RSS feeds',
 		'labels' : [
-		'Visited next.ft.com',
 		'Are following at least one topic',
 		'Have published their RSS feed',
 		'Have come to an article as a result of a myFT RSS feed (NB: This is currently unreliable)'
 		],
 		'steps':[
-		step({}),
 		step({
 			filters: [{
 				property_name: 'user.myft.topicsFollowed',
@@ -259,14 +226,12 @@ function getDashboards(offset) {
 	dashboards['MyFTEmail'] = {
 		'title' : 'Engagement with myFT emails',
 		'labels' : [
-		'Visited next.ft.com',
 		'Are following at least one topic',
 		'Have signed up to emails',
 		'Have opened an email',
 		'Have clicked on a link in an email'
 		],
 		'steps':[
-		step({}),
 		step({
 			filters: [{
 				property_name: 'user.myft.topicsFollowed',
@@ -304,13 +269,19 @@ function getDashboards(offset) {
 	dashboards['MyFTTray'] = {
 		'title' : 'Engagement with myFT Tray',
 		'labels' : [
-		'Visited next.ft.com',
+		'Are following at least one topic',
 		'Seen the tray',
 		'Clicked on the tray',
 		'Clicked on an article from the tray'
 		],
 		'steps':[
-		step({}),
+		step({
+			filters: [{
+				property_name: 'user.myft.topicsFollowed',
+				operator: 'gte',
+				property_value: 1
+			}]
+		}),
 		step({
 			filters: [{
 				property_name: 'user.myft.topicsFollowed',
