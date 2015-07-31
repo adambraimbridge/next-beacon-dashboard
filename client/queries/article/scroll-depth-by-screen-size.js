@@ -10,22 +10,27 @@ var client = new Keen({
 	readKey: keen_read_key
 });
 
+var commonFilters = [
+	{"operator":"eq",
+	"property_name":"user.isStaff",
+	"property_value":false},
+	{"operator":"eq",
+	"property_name":"page.location.type",
+	"property_value":"article"},
+	{"operator":"ne",
+	"property_name":"user.layout",
+	"property_value":""},
+	{"operator":"ne",
+	"property_name":"user.layout",
+	"property_value":"none"},
+	{"operator":"contains",
+	"property_name":"user.uuid",
+	"property_value":"-"}
+];
+
 var scrollDepth = new Keen.Query("count", {
 	eventCollection: "scrolldepth",
-	filters: [
-		{"operator":"eq",
-		"property_name":"user.isStaff",
-		"property_value":false},
-		{"operator":"eq",
-		"property_name":"page.location.type",
-		"property_value":"article"},
-		{"operator":"ne",
-		"property_name":"user.layout",
-		"property_value":""},
-		{"operator":"ne",
-		"property_name":"user.layout",
-		"property_value":"none"}
-	],
+	filters: commonFilters,
 	groupBy: ["user.layout", "meta.percentageViewed"],
 	targetProperty: "user.uuid",
 	timeframe: queryParameters.timeframe || "previous_14_days",
@@ -35,20 +40,7 @@ var scrollDepth = new Keen.Query("count", {
 
 var totalArticles = new Keen.Query("count", {
 	eventCollection: "dwell",
-	filters: [
-		{"operator":"eq",
-		"property_name":"user.isStaff",
-		"property_value":false},
-		{"operator":"eq",
-		"property_name":"page.location.type",
-		"property_value":"article"},
-		{"operator":"ne",
-		"property_name":"user.layout",
-		"property_value":""},
-		{"operator":"ne",
-		"property_name":"user.layout",
-		"property_value":"none"}
-	],
+	filters: commonFilters,
 	groupBy: ["user.layout"],
 	targetProperty: "user.uuid",
 	timeframe: queryParameters.timeframe || "previous_14_days",
