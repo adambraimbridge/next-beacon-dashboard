@@ -22,7 +22,7 @@ var trendLineChartQuery = new Keen.Query("count", {
 		],
 		interval: "daily",
 		targetProperty: "time.day",
-		timeframe: queryParameters.timeframe || "this_14_days",
+		timeframe: queryParameters.timeframe || "previous_14_days",
 		timezone: "UTC",
 		maxAge:10800
 });

@@ -191,33 +191,45 @@ Keen.ready(function(){
 		case '/graph/article/views':
 			require('./queries/article/views');
 			render(require('./queries/article/last-week-average'));
-			require('./queries/article/trend');
+			require('./queries/article/views-trend');
 			break;
 
-		case '/graph/article/by-subscriber-by-day-trend':
-			render(require('./queries/article/per_user_per_day-trend'));
+		case '/graph/article/by-subscriber-per-day':
+			render(require('./queries/article/by_subscriber_per_day'));
 			break;
 
-		case '/graph/article/actions':
-			require('./queries/article/actions');
+		case '/graph/article/actions-by-component':
+			require('./queries/article/actions-by-component');
+			break;
+
+		case '/graph/article/actions-by-type':
+			require('./queries/article/actions-by-type');
+			break;
+
+		case '/graph/article/scroll-depth-by-screen-size':
+			render(require('./queries/article/scroll-depth-by-screen-size'));
 			break;
 
 		case '/graph/stream/views':
 			require('./queries/stream/views');
 			render(require('./queries/stream/last-week-average'));
-			require('./queries/stream/trend');
+			require('./queries/stream/views-trend');
 			break;
 
-		case '/graph/stream/by-subscriber-by-day':
-			render(require('./queries/stream/per_user_per_day-trend'));
+		case '/graph/stream/by-subscriber-per-day':
+			render(require('./queries/stream/by_subscriber_per_day'));
 			break;
 
 		case '/graph/stream/most-popular':
 			render(require('./queries/stream/most-popular'));
 			break;
 
-		case '/graph/stream/actions':
-			require('./queries/stream/actions');
+		case '/graph/stream/actions-by-component':
+			require('./queries/stream/actions-by-component');
+			break;
+
+		case '/graph/stream/actions-by-type':
+			require('./queries/stream/actions-by-type');
 			break;
 
 		default:

@@ -1,5 +1,6 @@
 @import 'o-techdocs/main';
 @import 'o-hierarchical-nav/main';
+@import 'o-table/main';
 
 /* Hide any enhanced experience content when in core mode, and vice versa. */
 .core .o--if-js,
@@ -96,10 +97,6 @@ table {
 .ab__results th {
 	padding: 12px 1px;
 	text-align: center;
-}
-
-table {
-	width: 100%;
 }
 
 .explanation,
