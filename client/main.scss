@@ -140,12 +140,13 @@ html {
 	min-height: 100%;
 }
 body {
-	margin-bottom: 100px !important;
+	margin-bottom: 150px !important;
 }
 .o-techdocs-footer {
 	position: absolute;
 	bottom: 0;
 	width: 100%;
+	max-width: 100%;
 }
 .o-techdocs-footer__inner {
 	width: 907px;
