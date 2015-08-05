@@ -11,7 +11,7 @@ var marked 			= require('marked');
 
 require('es6-promise').polyfill();
 
-var KEEN_PROJECT = process.env.KEEN_PROJECT;
+var KEEN_PROJECT_ID = process.env.KEEN_PROJECT_ID;
 var KEEN_READ_KEY = process.env.KEEN_READ_KEY;
 var keen_explorer = process.env.KEEN_EXPLORER;
 
@@ -76,7 +76,7 @@ app.get('/graph/:name/:sub?', function (req, res) {
 
 	res.render(tmpl, {
 		layout: 'beacon',
-		keen_project: KEEN_PROJECT,
+		keen_project: KEEN_PROJECT_ID,
 		keen_read_key: KEEN_READ_KEY,
 		page_name:req.params.name,
 		original_url: req.originalUrl,
