@@ -6,7 +6,7 @@ var csv			= require('csv');
 var csvUtils	= require('./lib/csv-utils');
 
 var keen = keenIO.configure({
-	projectId: process.env['KEEN_PROJECT'],
+	projectId: process.env['KEEN_PROJECT_ID'],
 	readKey: process.env['KEEN_READ_KEY']
 });
 
