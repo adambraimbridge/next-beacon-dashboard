@@ -331,7 +331,8 @@ function getFunnelForOffset(offset) {
 	return query;
 }
 
-var queries = [getFunnelForOffset(0), getFunnelForOffset(-7), getFunnelForOffset(-14), getFunnelForOffset(-21)];
+var initialOffset = parseInt(queryParameters.offset) || 0;
+var queries = [getFunnelForOffset(initialOffset), getFunnelForOffset(initialOffset-7), getFunnelForOffset(initialOffset-14), getFunnelForOffset(initialOffset-21)];
 
 	var dashboards = getDashboards(0);
 	var currentDashboard = dashboards[queryParameters.dashboard];
@@ -340,7 +341,7 @@ var queries = [getFunnelForOffset(0), getFunnelForOffset(-7), getFunnelForOffset
 
 	var funnel = new Keen.Dataviz()
 			.el(document.getElementById("funnel"))
-			.title("Count of unique users for this 14 days")
+			.title("Count of unique users for 14 days (" + daysFromNow(initialOffset - 14) + " to " +  daysFromNow(initialOffset) + ")" )
 			.colors([ Keen.Dataviz.defaults.colors[4] ])
 			.chartOptions({
 					chartArea: { left: "30%" },
