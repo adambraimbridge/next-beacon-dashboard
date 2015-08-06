@@ -84,6 +84,15 @@ app.get('/graph/:name/:sub?', function (req, res) {
 	});
 });
 
+/* Generic */
+
+app.get('/gallery', function (req, res) {
+	res.render('gallery', {
+		layout: 'beacon',
+		article_id: 'beacon-dashboard-gallery'
+	});
+});
+
 /* Export */
 
 app.get('/api/export', require('./export'));
