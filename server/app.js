@@ -30,6 +30,16 @@ app.get('/__debug-ssl', function(req, res) {
 	});
 });
 
+app.get('/hashed-assets/:path*', function(req, res) {
+	var path = 'http://ft-next-hashed-assets-prod.s3-website-eu-west-1.amazonaws.com' + req.path;
+	http.get(path, function(proxyRes) {
+		proxyRes.pipe(res);
+	});
+});
+
+app.use(cookieParser());
+app.use(auth);
+
 app.get('/dist/*', function(req, res) {
 	var path = 'http://' + keen_explorer + req.path;
 	http.get(path, function(proxyRes) {
@@ -43,16 +53,6 @@ app.get('/explorer', function(req, res) {
 		proxyRes.pipe(res);
 	});
 });
-
-app.get('/hashed-assets/:path*', function(req, res) {
-	var path = 'http://ft-next-hashed-assets-prod.s3-website-eu-west-1.amazonaws.com' + req.path;
-	http.get(path, function(proxyRes) {
-		proxyRes.pipe(res);
-	});
-});
-
-app.use(cookieParser());
-app.use(auth);
 
 app.use(activeUsage);
 
