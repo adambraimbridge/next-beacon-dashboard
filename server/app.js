@@ -87,7 +87,7 @@ app.get('/graph/:name/:sub?', function (req, res) {
 /* Generic */
 
 app.get('/gallery', function (req, res) {
-	res.render('gallery', {
+	res.render('pages/gallery', {
 		layout: 'beacon',
 		article_id: 'beacon-dashboard-gallery'
 	});
