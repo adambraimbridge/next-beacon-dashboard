@@ -29,7 +29,7 @@ module.exports = {
 			.el(el)
 			.parseRawData({ result: parseInt((sum / 10).toFixed()) })
 			.chartType("metric")
-			.title("Average daily total <small>(excluding weekends)<br/>Calculated from unique user counts for the previous 14 days, excluding today and weekends.</small>")
+			.title("Average daily total <small title='* Calculated from unique user counts for the previous 14 days, excluding today and weekends.'>(excluding weekends *)</small>")
 			.render();
 	}
 };

@@ -119,7 +119,20 @@ Keen.ready(function(){
 
 			break;
 
-		case '/graph/uniques/timeline':
+		case '/graph/uniques':
+			render(require('./queries/uniques/today'), {
+				title: 'Unique users so far today'}
+			);
+
+			render(require('./queries/uniques/yesterday'), {
+				title: 'Unique users yesterday',
+				colors: ['#77C9BC']
+			});
+
+			render(require('./queries/uniques/two_week_average'));
+
+			render(require('./queries/uniques/fourteen_day_average'));
+
 			require('./queries/uniques/trend');
 			break;
 
@@ -137,23 +150,6 @@ Keen.ready(function(){
 
 		case '/graph/barriers/actions':
 			require('./queries/barriers/actions');
-			break;
-
-		case '/graph/uniques':
-
-			render(require('./queries/uniques/today'), {
-				title: 'Unique users so far today'}
-			);
-
-			render(require('./queries/uniques/yesterday'), {
-				title: 'Unique users yesterday',
-				colors: ['#77C9BC']
-			});
-
-			render(require('./queries/uniques/two_week_average'));
-
-			render(require('./queries/uniques/fourteen_day_average'));
-
 			break;
 
 		case '/graph/active-usage':

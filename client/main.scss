@@ -138,7 +138,21 @@ table {
 	margin: 0 0 1em 0;
 }
 
-
+.uniques_metric_halved > div {
+	display: block;
+	min-width: 50%;
+	max-width: 50%;
+	width: 50%;
+	position: relative;
+	padding-left: 5px;
+	padding-right: 5px;
+	float: left;
+	box-sizing: border-box;
+	-webkit-box-flex: 1;
+	-webkit-flex: 1 1 0;
+	-ms-flex: 1 1 0;
+	flex: 1 1 0%;
+}
 
 /* Sticky footer styles
 -------------------------------------------------- */
