@@ -6,7 +6,7 @@
 		<link rel="stylesheet" href="{{#hashedAsset}}main.css{{/hashedAsset}}"/>
 		<title>Beacon - next.ft.com performance dashboard</title>
 		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
-		<link rel="stylesheet" href="//build.origami.ft.com/bundles/css?modules=o-fonts@^1.6.7,o-ft-icons@^2.3.6,o-table@^1.7.2,o-grid@^3.1.6" />
+		<link rel="stylesheet" href="//build.origami.ft.com/bundles/css?modules=o-ft-icons@^2.3.6,o-table@^1.7.2,o-grid@^3.1.6,o-aside-panel@^1.3.2" />
 		<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.9.3/lodash.min.js"></script>
 		{{>next-js-setup/templates/ctm}}
 	</head>
@@ -29,122 +29,19 @@
 		<div class="o-techdocs-layout">
 			<div class="o-techdocs-sidebar">
 				<nav class="o-hierarchical-nav" data-o-component="o-hierarchical-nav" data-o-hierarchical-nav-orientiation="vertical">
+					<h3>Core</h3>
+					<ul class="o-techdocs-nav" data-o-hierarchical-nav-level="1">
+						<li data-nav-name="uniques" class="o-hierarchical-nav__parent">
+							<a href="/graph/uniques">Users</a>
+						</li>
+					</ul>
+					<h3>Explore</h3>
 					<ul class="o-techdocs-nav" data-o-hierarchical-nav-level="1">
 						<li data-nav-name="explorer">
-							<a href="/explorer">Explorer</a>
+							<a href="/explorer">Data explorer</a>
 						</li>
-						<li data-nav-name="uniques" class="o-hierarchical-nav__parent">
-							<a>Uniques <i></i></a>
-							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
-								<li><a href="/graph/uniques">Overview</a></li>
-								<li><a href="/graph/uniques/timeline">Trend</a></li>
-								<li><a href="/graph/uniques/by-page">By page type</a></li>
-								<li><a href="/graph/uniques/by-geo">Geographically</a></li>
-								<li><a href="/graph/uniques/by-device">By device</a></li>
-							</ul>
-						</li>
-						<li data-nav-name="addiction" class="o-hierarchical-nav__parent">
-							<a>Addiction <i></i></a>
-							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
-								<li><a href="/graph/addiction">Daily</a></li>
-								<li><a href="/graph/addiction-weekly">Weekly</a></li>
-							</ul>
-						</li>
-						<li data-nav-name="ab" class="o-hierarchical-nav__parent">
-							<a>AB testing <i></i></a>
-							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
-								<li><a href="/graph/ab/aa">AA</a></li>
-								<li><a href="/graph/ab/engaged-follow">Engaged follow</a></li>
-								<li><a href="/graph/ab/homepage-promo" class="archived">Homepage promo - complete</a></li>
-							</ul>
-						</li>
-						<li data-nav-name="opt-in">
-							<a href="/graph/opt-in">Opt-ins</a>
-						</li>
-						<li data-nav-name="active-usage" class="o-hierarchical-nav__parent">
-							<a>Active usage <i></i></a>
-							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
-							{{#each @root.featureNavigationItems}}
-								<li><a href="/graph/active-usage?feature={{.}}">{{.}}</a></li>
-							{{/each}}
-							</ul>
-						</li>
-						<li data-nav-name="flow" class="o-hierarchical-nav__parent">
-							<a>Flow <i></i></a>
-							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
-								<li><a href="/graph/flow?dashboard=Galleries">Galleries</a></li>
-								<li><a href="/graph/flow?dashboard=TOC">Table of Contents</a></li>
-								<li><a href="/graph/flow?dashboard=AllMyFTNotifications">Overall engagement with myFT</a></li>
-								<li><a href="/graph/flow?dashboard=MyFT">MyFT Page</a></li>
-								<li><a href="/graph/flow?dashboard=MyFTEmail">MyFT Emails</a></li>
-								<li><a href="/graph/flow?dashboard=MyFTRSS">MyFT RSS Feeds</a></li>
-								<li><a href="/graph/flow?dashboard=MyFTTray">MyFT Tray</a></li>
-							</ul>
-						</li>
-						<li data-nav-name="anons" class="o-hierarchical-nav__parent">
-							<a>Anons <i></i></a>
-							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
-								<li><a href="/graph/anons/visitors">Visitors</a></li>
-								<li><a href="/graph/anons/activity">Activity</a></li>
-							</ul>
-						</li>
-						<li data-nav-name="barriers" class="o-hierarchical-nav__parent">
-							<a>Barriers <i></i></a>
-							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
-								<li><a href="/graph/barriers/views">Views</a></li>
-								<li><a href="/graph/barriers/actions">Actions</a></li>
-							</ul>
-						</li>
-						<li data-nav-name="labs" class="o-hierarchical-nav__parent">
-							<a>Labs <i></i></a>
-							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
-								<li><a href="https://spoor-sqs-ui.herokuapp.com">Real-time stream</a></li>
-								<li><a href="https://spoor-sqs-ui.herokuapp.com/search">Real-time user searches</a></li>
-								<li><a href="https://spoor-sqs-ui.herokuapp.com/map">Real-time traffic map</a></li>
-							</ul>
-						</li>
-						<li data-nav-name="searchterms">
-							<a href="/graph/searchterms">Most searched-for terms</a>
-						</li>
-						<li data-nav-name="navigation">
-							<a href="/graph/navigation">Navigation</a>
-						</li>
-						<li data-nav-name="labs" class="o-hierarchical-nav__parent">
-							<a>Frequency/Recency <i></i></a>
-							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
-								<li><a href="/graph/frequency-recency">Frequency/Recency</a></li>
-								<li><a href="/graph/myft">How are people using myFT?</a></li>
-								<li><a href="/graph/flow?dashboard=AllMyFTNotifications">Overall engagement with myFT</a></li>
-								<li><a href="/graph/flow?dashboard=MyFT">MyFT Page</a></li>
-								<li><a href="/graph/flow?dashboard=MyFTEmail">MyFT Emails</a></li>
-								<li><a href="/graph/flow?dashboard=MyFTRSS">MyFT RSS Feeds</a></li>
-								<li><a href="/graph/flow?dashboard=MyFTTray">MyFT Tray</a></li>
-							</ul>
-						<li data-nav-name="dead-letter-office">
-							<a href="/graph/dead-letter-office">Dead letter office</a>
-						</li>
-						<li data-nav-name="meta-beacon">
-							<a href="/graph/meta-beacon">Meta beacon</a>
-						</li>
-						<li data-nav-name="article"class="o-hierarchical-nav__parent">
-							<a>Article <i></i></a>
-							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
-								<li><a href="/graph/article/views">Views</a></li>
-								<li><a href="/graph/article/by-subscriber-per-day">By Subscriber per day</a></li>
-								<li><a href="/graph/article/actions-by-component">Actions - by component</a></li>
-								<li><a href="/graph/article/actions-by-type">Actions - by type</a></li>
-								<li><a href="/graph/article/scroll-depth-by-screen-size">Scroll depth - unverified</a></li>
-							</ul>
-						</li>
-						<li data-nav-name="stream"class="o-hierarchical-nav__parent">
-							<a>Stream <i></i></a>
-							<ul data-o-hierarchical-nav-level="2" class="o-techdocs-nav o-techdocs-nav--sub">
-								<li><a href="/graph/stream/views">Views</a></li>
-								<li><a href="/graph/stream/by-subscriber-per-day">By Subscriber per day</a></li>
-								<li><a href="/graph/stream/most-popular">Top 20 Stream pages</a></li>
-								<li><a href="/graph/stream/actions-by-component">Actions - by component</a></li>
-								<li><a href="/graph/stream/actions-by-type">Actions - by type</a></li>
-							</ul>
+						<li data-nav-name="gallery">
+							<a href="/gallery">Dashboard gallery</a>
 						</li>
 					</ul>
 				</nav>
@@ -154,21 +51,19 @@
 					{{{body}}}
 				</div>
 			</div>
-			<footer class="o-techdocs-footer">
-				<div class="o-techdocs-footer__inner">
-					<p style="float:left; padding-right:2em;">
-						Can this dashboard be better? Ask about usage at <a href="http://asknext.ft.com">http://asknext.ft.com</a><br />
-						Where does the data live? You'll need access for <a href="https://keen.io/project/5486efb559949a0a311510fa/explorer">Keen IO</a><br />
-						Fancy a chat? Join the slack channel for <a href="https://financialtimes.slack.com/messages/ft-next-usage/">#ft-next-usage</a><br />
-					</p>
-					<p>
-						Thinking of making your own dashboard? See the developers' guide to <a href="https://financial-times.github.io/next/docs/developer-guide/measuring-next/">Measuring Next</a><br />
-						Want real-time data in next.ft.com? Install <a href="https://chrome.google.com/webstore/detail/mollydobbin-tracking-tool/cmhfmieofijgphlefokpckljhgcmaneb">Mollydobbin for Chrome</a><br />
-						More questions? Email <a href="mailto:next.team@ft.com">next.team@ft.com</a>
-					</p>
-				</div>
-			</footer>
 		</div>
+		<footer class="o-techdocs-footer">
+			<div>
+				Can this dashboard be better? Ask about usage at <a href="http://asknext.ft.com">http://asknext.ft.com</a><br />
+				Where does the data live? You'll need access for <a href="https://keen.io/project/5486efb559949a0a311510fa/explorer">Keen IO</a><br />
+				Fancy a chat? Join the slack channel for <a href="https://financialtimes.slack.com/messages/ft-next-usage/">#ft-next-usage</a><br />
+			</div>
+			<div>
+				Thinking of making your own dashboard? See the developers' guide to <a href="https://financial-times.github.io/next/docs/developer-guide/measuring-next/">Measuring Next</a><br />
+				Want real-time data in next.ft.com? Install <a href="https://chrome.google.com/webstore/detail/mollydobbin-tracking-tool/cmhfmieofijgphlefokpckljhgcmaneb">Mollydobbin for Chrome</a><br />
+				More questions? Email <a href="mailto:next.team@ft.com">next.team@ft.com</a>
+			</div>
+		</footer>
 		<script>
 			window.cutsTheMustard = true;
 			window.keen_project = '{{keen_project}}';

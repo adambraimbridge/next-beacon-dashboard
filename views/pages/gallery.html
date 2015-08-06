@@ -1,0 +1,140 @@
+<h1>Dashboard gallery</h1>
+
+<div data-o-component="o-aside-panel" class="o-aside-panel">
+	<div class="o-aside-panel__header">
+		<strong class="o-aside-panel__heading">Users</strong>
+	</div>
+	<div class="o-aside-panel__body">
+		<div><a data-o-grid-colspan="2" href="/graph/uniques">Overview</a> These charts show counts of unique users of next.ft.com</div>
+		<div><a data-o-grid-colspan="2" href="/graph/uniques/by-page">Page type</a> Total amount of unique users who visited Next FT, broken down by page type.</div>
+		<div><a data-o-grid-colspan="2" href="/graph/uniques/by-geo">Geography</a> Unique users who visited Next FT, broken down by continent.</div>
+		<div><a data-o-grid-colspan="2" href="/graph/uniques/by-device">Device</a> Unique users who visited Next FT, broken down by device size.</div>
+	</div>
+</div>
+
+<div data-o-component="o-aside-panel" class="o-aside-panel">
+	<div class="o-aside-panel__header">
+		<strong class="o-aside-panel__heading">Addiction</strong>
+	</div>
+	<div class="o-aside-panel__body">
+		<div><a data-o-grid-colspan="4" href="/graph/addiction">Daily</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/addiction-weekly">Weekly</a></div>
+	</div>
+</div>
+
+<div data-o-component="o-aside-panel" class="o-aside-panel">
+	<div class="o-aside-panel__header">
+		<strong class="o-aside-panel__heading">AB testing</strong>
+	</div>
+	<div class="o-aside-panel__body">
+		<div><a data-o-grid-colspan="4" href="/graph/ab/aa">AA</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/ab/engaged-follow">Engaged follow</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/ab/homepage-promo" class="archived">Homepage promo - complete</a></div>
+	</div>
+</div>
+
+<div data-o-component="o-aside-panel" class="o-aside-panel">
+	<div class="o-aside-panel__header">
+		<strong class="o-aside-panel__heading">Active usage</strong>
+	</div>
+	<div class="o-aside-panel__body">
+		{{#each @root.featureNavigationItems}}
+			<div><a data-o-grid-colspan="4" href="/graph/active-usage?feature={{.}}">{{.}}</a></div>
+		{{/each}}
+	</div>
+</div>
+
+<div data-o-component="o-aside-panel" class="o-aside-panel">
+	<div class="o-aside-panel__header">
+		<strong class="o-aside-panel__heading">Flow</strong>
+	</div>
+	<div class="o-aside-panel__body">
+		<div><a data-o-grid-colspan="4" href="/graph/flow?dashboard=Galleries">Galleries</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/flow?dashboard=TOC">Table of Contents</a></div>
+	</div>
+</div>
+
+<div data-o-component="o-aside-panel" class="o-aside-panel">
+	<div class="o-aside-panel__header">
+		<strong class="o-aside-panel__heading">MyFT</strong>
+	</div>
+	<div class="o-aside-panel__body">
+		<div><a data-o-grid-colspan="4" href="/graph/myft">How are people using myFT?</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/flow?dashboard=AllMyFTNotifications">Overall engagement with myFT</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/flow?dashboard=MyFT">MyFT Page</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/flow?dashboard=MyFTEmail">MyFT Emails</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/flow?dashboard=MyFTRSS">MyFT RSS Feeds</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/flow?dashboard=MyFTTray">MyFT Tray</a></div>
+	</div>
+</div>
+
+<div data-o-component="o-aside-panel" class="o-aside-panel">
+	<div class="o-aside-panel__header">
+		<strong class="o-aside-panel__heading">Anons</strong>
+	</div>
+	<div class="o-aside-panel__body">
+		<div><a data-o-grid-colspan="4" href="/graph/anons/visitors">Visitors</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/anons/activity">Activity</a></div>
+	</div>
+</div>
+
+<div data-o-component="o-aside-panel" class="o-aside-panel">
+	<div class="o-aside-panel__header">
+		<strong class="o-aside-panel__heading">Barriers</strong>
+	</div>
+	<div class="o-aside-panel__body">
+		<div><a data-o-grid-colspan="4" href="/graph/barriers/views">Views</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/barriers/actions">Actions</a></div>
+	</div>
+</div>
+
+<div data-o-component="o-aside-panel" class="o-aside-panel">
+	<div class="o-aside-panel__header">
+		<strong class="o-aside-panel__heading">Real-time data</strong>
+	</div>
+	<div class="o-aside-panel__body">
+		<div><a data-o-grid-colspan="4" href="https://spoor-sqs-ui.herokuapp.com">Real-time stream</a></div>
+		<div><a data-o-grid-colspan="4" href="https://spoor-sqs-ui.herokuapp.com/search">Real-time user searches</a></div>
+		<div><a data-o-grid-colspan="4" href="https://spoor-sqs-ui.herokuapp.com/map">Real-time traffic map</a></div>
+	</div>
+</div>
+
+<div data-o-component="o-aside-panel" class="o-aside-panel">
+	<div class="o-aside-panel__header">
+		<strong class="o-aside-panel__heading">Articles</strong>
+	</div>
+	<div class="o-aside-panel__body">
+		<div><a data-o-grid-colspan="4" href="/graph/article/views">Article views</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/article/by-subscriber-per-day">By Subscriber per day</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/article/actions-by-component">Actions - by component</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/article/actions-by-type">Actions - by type</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/article/scroll-depth-by-screen-size">Scroll depth (unverified)</a></div>
+	</div>
+</div>
+
+<div data-o-component="o-aside-panel" class="o-aside-panel">
+	<div class="o-aside-panel__header">
+		<strong class="o-aside-panel__heading">Streams</strong>
+	</div>
+	<div class="o-aside-panel__body">
+		<div><a data-o-grid-colspan="4" href="/graph/stream/views">Stream views</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/stream/by-subscriber-per-day">By Subscriber per day</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/stream/most-popular">Top 20 Stream pages</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/stream/actions-by-component">Actions - by component</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/stream/actions-by-type">Actions - by type</a></div>
+	</div>
+</div>
+
+<div data-o-component="o-aside-panel" class="o-aside-panel">
+	<div class="o-aside-panel__header">
+		<strong class="o-aside-panel__heading">More</strong>
+	</div>
+	<div class="o-aside-panel__body">
+		<div><a data-o-grid-colspan="4" href="/graph/opt-in">Opt-ins</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/searchterms">Most searched-for terms</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/navigation">Navigation</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/dead-letter-office">Dead letter office</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/meta-beacon">Meta beacon</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/frequency-recency">Frequency/Recency</a></div>
+	</div>
+</div>

@@ -15,7 +15,7 @@ var marked 			= require('marked');
 
 require('es6-promise').polyfill();
 
-var KEEN_PROJECT = process.env.KEEN_PROJECT;
+var KEEN_PROJECT_ID = process.env.KEEN_PROJECT_ID;
 var KEEN_READ_KEY = process.env.KEEN_READ_KEY;
 var keen_explorer = process.env.KEEN_EXPLORER;
 
@@ -34,6 +34,16 @@ app.get('/__debug-ssl', function(req, res) {
 	});
 });
 
+app.get('/hashed-assets/:path*', function(req, res) {
+	var path = 'http://ft-next-hashed-assets-prod.s3-website-eu-west-1.amazonaws.com' + req.path;
+	http.get(path, function(proxyRes) {
+		proxyRes.pipe(res);
+	});
+});
+
+app.use(cookieParser());
+app.use(auth);
+
 app.get('/dist/*', function(req, res) {
 	var path = 'http://' + keen_explorer + req.path;
 	http.get(path, function(proxyRes) {
@@ -47,16 +57,6 @@ app.get('/explorer', function(req, res) {
 		proxyRes.pipe(res);
 	});
 });
-
-app.get('/hashed-assets/:path*', function(req, res) {
-	var path = 'http://ft-next-hashed-assets-prod.s3-website-eu-west-1.amazonaws.com' + req.path;
-	http.get(path, function(proxyRes) {
-		proxyRes.pipe(res);
-	});
-});
-
-app.use(cookieParser());
-app.use(auth);
 
 app.use(activeUsage);
 
@@ -80,11 +80,20 @@ app.get('/graph/:name/:sub?', function (req, res) {
 
 	res.render(tmpl, {
 		layout: 'beacon',
-		keen_project: KEEN_PROJECT,
+		keen_project: KEEN_PROJECT_ID,
 		keen_read_key: KEEN_READ_KEY,
 		page_name:req.params.name,
 		original_url: req.originalUrl,
 		article_id: article_id
+	});
+});
+
+/* Generic */
+
+app.get('/gallery', function (req, res) {
+	res.render('pages/gallery', {
+		layout: 'beacon',
+		article_id: 'beacon-dashboard-gallery'
 	});
 });
 

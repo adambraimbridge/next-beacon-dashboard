@@ -16,7 +16,7 @@ clean:
 	git clean -fxd
 
 run:
-	@export KEEN_EXPLORER=`cat ~/.keen-io-explorer`; export PORT=5028; \
+	export PORT=5028; \
 	nbt run --local
 
 test: build-production
@@ -35,6 +35,6 @@ provision:
 	nbt configure ft-next-beacon-dashboard ${TEST_HOST} --overrides "NODE_ENV=branch" --no-splunk
 	nbt deploy-hashed-assets
 	nbt deploy ${TEST_HOST} --skip-enable-preboot --docker
-	
+
 tidy:
 	nbt destroy ${TEST_HOST}
