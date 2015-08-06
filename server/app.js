@@ -5,7 +5,11 @@ var http			= require('http');
 var auth			= require('./middleware/auth');
 var activeUsage			= require('./middleware/active-usage');
 var cookieParser	= require('cookie-parser');
-var app				= module.exports = require('ft-next-express')({ layoutsDir: __dirname + '/../views/layouts' });
+var app				= module.exports = require('ft-next-express')({
+	layoutsDir: __dirname + '/../views/layouts',
+	withBackendAuthentication: false
+});
+
 var fs 				= require('fs');
 var marked 			= require('marked');
 
