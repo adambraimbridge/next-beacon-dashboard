@@ -137,6 +137,9 @@ table {
 .o-aside-panel {
 	margin: 0 0 1em;
 }
+.o-aside-panel__body {
+	overflow: auto;
+}
 
 .uniques_metric_halved > div {
 	display: block;

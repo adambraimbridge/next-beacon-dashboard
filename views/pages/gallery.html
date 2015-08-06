@@ -5,12 +5,10 @@
 		<strong class="o-aside-panel__heading">Users</strong>
 	</div>
 	<div class="o-aside-panel__body">
-		<ul>
-			<li><a href="/graph/uniques">Overview</a></li>
-			<li><a href="/graph/uniques/by-page">Grouped by page type</a></li>
-			<li><a href="/graph/uniques/by-geo">Grouped geographically</a></li>
-			<li><a href="/graph/uniques/by-device">Grouped by device</a></li>
-		</ul>
+		<div><a data-o-grid-colspan="2" href="/graph/uniques">Overview</a> These charts show counts of unique users of next.ft.com</div>
+		<div><a data-o-grid-colspan="2" href="/graph/uniques/by-page">Page type</a> Total amount of unique users who visited Next FT, broken down by page type.</div>
+		<div><a data-o-grid-colspan="2" href="/graph/uniques/by-geo">Geography</a> Unique users who visited Next FT, broken down by continent.</div>
+		<div><a data-o-grid-colspan="2" href="/graph/uniques/by-device">Device</a> Unique users who visited Next FT, broken down by device size.</div>
 	</div>
 </div>
 
@@ -19,10 +17,8 @@
 		<strong class="o-aside-panel__heading">Addiction</strong>
 	</div>
 	<div class="o-aside-panel__body">
-		<ul>
-			<li><a href="/graph/addiction">Daily</a></li>
-			<li><a href="/graph/addiction-weekly">Weekly</a></li>
-		</ul>
+		<div><a data-o-grid-colspan="4" href="/graph/addiction">Daily</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/addiction-weekly">Weekly</a></div>
 	</div>
 </div>
 
@@ -31,11 +27,9 @@
 		<strong class="o-aside-panel__heading">AB testing</strong>
 	</div>
 	<div class="o-aside-panel__body">
-		<ul>
-			<li><a href="/graph/ab/aa">AA</a></li>
-			<li><a href="/graph/ab/engaged-follow">Engaged follow</a></li>
-			<li><a href="/graph/ab/homepage-promo" class="archived">Homepage promo - complete</a></li>
-		</ul>
+		<div><a data-o-grid-colspan="4" href="/graph/ab/aa">AA</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/ab/engaged-follow">Engaged follow</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/ab/homepage-promo" class="archived">Homepage promo - complete</a></div>
 	</div>
 </div>
 
@@ -44,9 +38,8 @@
 		<strong class="o-aside-panel__heading">Active usage</strong>
 	</div>
 	<div class="o-aside-panel__body">
-		<ul>
 		{{#each @root.featureNavigationItems}}
-			<li><a href="/graph/active-usage?feature={{.}}">{{.}}</a></li>
+			<div><a data-o-grid-colspan="4" href="/graph/active-usage?feature={{.}}">{{.}}</a></div>
 		{{/each}}
 	</div>
 </div>
@@ -56,10 +49,8 @@
 		<strong class="o-aside-panel__heading">Flow</strong>
 	</div>
 	<div class="o-aside-panel__body">
-		<ul>
-			<li><a href="/graph/flow?dashboard=Galleries">Galleries</a></li>
-			<li><a href="/graph/flow?dashboard=TOC">Table of Contents</a></li>
-		</ul>
+		<div><a data-o-grid-colspan="4" href="/graph/flow?dashboard=Galleries">Galleries</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/flow?dashboard=TOC">Table of Contents</a></div>
 	</div>
 </div>
 
@@ -68,14 +59,12 @@
 		<strong class="o-aside-panel__heading">MyFT</strong>
 	</div>
 	<div class="o-aside-panel__body">
-		<ul>
-			<li><a href="/graph/myft">How are people using myFT?</a></li>
-			<li><a href="/graph/flow?dashboard=AllMyFTNotifications">Overall engagement with myFT</a></li>
-			<li><a href="/graph/flow?dashboard=MyFT">MyFT Page</a></li>
-			<li><a href="/graph/flow?dashboard=MyFTEmail">MyFT Emails</a></li>
-			<li><a href="/graph/flow?dashboard=MyFTRSS">MyFT RSS Feeds</a></li>
-			<li><a href="/graph/flow?dashboard=MyFTTray">MyFT Tray</a></li>
-		</ul>
+		<div><a data-o-grid-colspan="4" href="/graph/myft">How are people using myFT?</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/flow?dashboard=AllMyFTNotifications">Overall engagement with myFT</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/flow?dashboard=MyFT">MyFT Page</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/flow?dashboard=MyFTEmail">MyFT Emails</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/flow?dashboard=MyFTRSS">MyFT RSS Feeds</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/flow?dashboard=MyFTTray">MyFT Tray</a></div>
 	</div>
 </div>
 
@@ -84,10 +73,8 @@
 		<strong class="o-aside-panel__heading">Anons</strong>
 	</div>
 	<div class="o-aside-panel__body">
-		<ul>
-			<li><a href="/graph/anons/visitors">Visitors</a></li>
-			<li><a href="/graph/anons/activity">Activity</a></li>
-		</ul>
+		<div><a data-o-grid-colspan="4" href="/graph/anons/visitors">Visitors</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/anons/activity">Activity</a></div>
 	</div>
 </div>
 
@@ -96,10 +83,8 @@
 		<strong class="o-aside-panel__heading">Barriers</strong>
 	</div>
 	<div class="o-aside-panel__body">
-		<ul>
-			<li><a href="/graph/barriers/views">Views</a></li>
-			<li><a href="/graph/barriers/actions">Actions</a></li>
-		</ul>
+		<div><a data-o-grid-colspan="4" href="/graph/barriers/views">Views</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/barriers/actions">Actions</a></div>
 	</div>
 </div>
 
@@ -108,11 +93,9 @@
 		<strong class="o-aside-panel__heading">Real-time data</strong>
 	</div>
 	<div class="o-aside-panel__body">
-		<ul>
-			<li><a href="https://spoor-sqs-ui.herokuapp.com">Real-time stream</a></li>
-			<li><a href="https://spoor-sqs-ui.herokuapp.com/search">Real-time user searches</a></li>
-			<li><a href="https://spoor-sqs-ui.herokuapp.com/map">Real-time traffic map</a></li>
-		</ul>
+		<div><a data-o-grid-colspan="4" href="https://spoor-sqs-ui.herokuapp.com">Real-time stream</a></div>
+		<div><a data-o-grid-colspan="4" href="https://spoor-sqs-ui.herokuapp.com/search">Real-time user searches</a></div>
+		<div><a data-o-grid-colspan="4" href="https://spoor-sqs-ui.herokuapp.com/map">Real-time traffic map</a></div>
 	</div>
 </div>
 
@@ -121,13 +104,11 @@
 		<strong class="o-aside-panel__heading">Articles</strong>
 	</div>
 	<div class="o-aside-panel__body">
-		<ul>
-			<li><a href="/graph/article/views">Article views</a></li>
-			<li><a href="/graph/article/by-subscriber-per-day">By Subscriber per day</a></li>
-			<li><a href="/graph/article/actions-by-component">Actions - by component</a></li>
-			<li><a href="/graph/article/actions-by-type">Actions - by type</a></li>
-			<li><a href="/graph/article/scroll-depth-by-screen-size">Scroll depth (unverified)</a></li>
-		</ul>
+		<div><a data-o-grid-colspan="4" href="/graph/article/views">Article views</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/article/by-subscriber-per-day">By Subscriber per day</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/article/actions-by-component">Actions - by component</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/article/actions-by-type">Actions - by type</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/article/scroll-depth-by-screen-size">Scroll depth (unverified)</a></div>
 	</div>
 </div>
 
@@ -136,13 +117,11 @@
 		<strong class="o-aside-panel__heading">Streams</strong>
 	</div>
 	<div class="o-aside-panel__body">
-		<ul>
-			<li><a href="/graph/stream/views">Stream views</a></li>
-			<li><a href="/graph/stream/by-subscriber-per-day">By Subscriber per day</a></li>
-			<li><a href="/graph/stream/most-popular">Top 20 Stream pages</a></li>
-			<li><a href="/graph/stream/actions-by-component">Actions - by component</a></li>
-			<li><a href="/graph/stream/actions-by-type">Actions - by type</a></li>
-		</ul>
+		<div><a data-o-grid-colspan="4" href="/graph/stream/views">Stream views</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/stream/by-subscriber-per-day">By Subscriber per day</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/stream/most-popular">Top 20 Stream pages</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/stream/actions-by-component">Actions - by component</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/stream/actions-by-type">Actions - by type</a></div>
 	</div>
 </div>
 
@@ -151,13 +130,11 @@
 		<strong class="o-aside-panel__heading">More</strong>
 	</div>
 	<div class="o-aside-panel__body">
-		<ul>
-			<li><a href="/graph/opt-in">Opt-ins</a></li>
-			<li><a href="/graph/searchterms">Most searched-for terms</a></li>
-			<li><a href="/graph/navigation">Navigation</a></li>
-			<li><a href="/graph/dead-letter-office">Dead letter office</a></li>
-			<li><a href="/graph/meta-beacon">Meta beacon</a></li>
-			<li><a href="/graph/frequency-recency">Frequency/Recency</a></li>
-		</ul>
+		<div><a data-o-grid-colspan="4" href="/graph/opt-in">Opt-ins</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/searchterms">Most searched-for terms</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/navigation">Navigation</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/dead-letter-office">Dead letter office</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/meta-beacon">Meta beacon</a></div>
+		<div><a data-o-grid-colspan="4" href="/graph/frequency-recency">Frequency/Recency</a></div>
 	</div>
 </div>
