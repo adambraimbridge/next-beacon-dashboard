@@ -59,8 +59,12 @@ var charts = [
 				{"operator":"in",
 				"property_name":"meta.domPath",
 				"property_value":[
-					"article | more-on-inline | articles | title",
-					"story-package | articles | title"
+					"article | more-on-inline | articles | title", // can remove after Nov 7 2015
+					"story-package | articles | title", // can remove after Nov 7 2015
+					"article | more-on-inline | articles | article-card | headline",
+					"article | more-on-inline | articles | image",
+					"story-package | articles | article-card | headline",
+					"story-package | articles | image"
 					]
 				}
 			]
