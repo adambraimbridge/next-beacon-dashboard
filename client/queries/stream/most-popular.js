@@ -26,7 +26,10 @@ var decodeTable = {
 	"https://next.ft.com/stream/topicsId/ZmEzMmRmNDAtNDc0Zi00ODk3LWE2ZmQtZWFmYzJlZTRjZTVk-VG9waWNz": "Greece Debt Crisis",
 	"https://next.ft.com/stream/sectionsId/Mg==-U2VjdGlvbnM=": "US & Canada",
 	"https://next.ft.com/stream/brandId/QnJhbmRzXzExMg==-QnJhbmRz": "Person in the News",
-	"https://next.ft.com/stream/sectionsId/MTAz-U2VjdGlvbnM=": "Currencies"
+	"https://next.ft.com/stream/sectionsId/MTAz-U2VjdGlvbnM=": "Currencies",
+	"https://next.ft.com/stream/brandId/ZWI2YTE0YjgtOTIyYy00OTIyLWExOTYtZmRmNzk0YzA4NGFk-QnJhbmRz": "Global Market Overview",
+	"https://next.ft.com/stream/sectionsId/MTA3-U2VjdGlvbnM=": "Global Economy",
+	"https://next.ft.com/stream/sectionsId/NzI=-U2VjdGlvbnM=": "FTfm Fund Management"
 };
 
 var render = function (el, results, opts) {
