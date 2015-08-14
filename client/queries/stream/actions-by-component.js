@@ -44,9 +44,15 @@ var charts = [
 		elId: ["hot-topics-trend-linechart", "hot-topics-trend-areachart"],
 		options: {
 			filters: [
-				{"operator":"contains",
+				{"operator":"in",
 				"property_name":"meta.domPath",
-				"property_value":"stream-hot-topic |"}
+				"property_value":[
+					"stream-hot-topic | topic-link",
+					"stream-hot-topic | headline",
+					"hot-comment-link-opinion",
+					"hot-comment-link-analysis"
+					]
+				}
 			]
 	}},
 	{queryName: "articleCardQuery",
