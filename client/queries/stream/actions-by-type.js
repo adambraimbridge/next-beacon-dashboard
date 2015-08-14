@@ -46,6 +46,8 @@ var charts = [
 				{"operator":"in",
 				"property_name":"meta.domPath",
 				"property_value":[
+					"hot-comment-link-opinion",
+					"hot-comment-link-analysis",
 					"stream-hot-topic | headline",
 					"stream | article-card | headline",
 					"stream | article-card | image",
