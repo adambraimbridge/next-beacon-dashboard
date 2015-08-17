@@ -92,8 +92,8 @@ var render = (el, results, opts) => {
 		.prepare()
 		.data({
 			result: weeks
-	 	})
-	 	.render();
+		})
+		.render();
 };
 
 module.exports = {
