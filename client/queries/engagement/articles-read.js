@@ -8,6 +8,16 @@ var render = (el, results, opts) => {
 	var weeks = [];
 	// in days
 	var groupSize = 14;
+	var buckets = [
+		{
+			min: 1.5,
+			label: 'At least 1.5 articles read',
+		},
+		{
+			max: 1.5,
+			label: 'Less than 1.5 articles read',
+		}
+	];
 	// pull out days
 	results.result
 		.map(result => result['time.day'])
@@ -17,20 +27,14 @@ var render = (el, results, opts) => {
 		.forEach((day, index) => {
 			if (index % groupSize === 0) {
 				weeks.unshift({
-					periodEnd: day,
+					timeframe: {
+						end: day
+					},
 					// two buckets, < 1.5 and >= 1.5
-					buckets: [
-						{
-							min: 1.5,
-							name: '>= 1.5',
-							value: 0
-						},
-						{
-							max: 1.5,
-							name: '< 1.5',
-							value: 0
-						}
-					],
+					value: buckets.map(bucket => ({
+						label: bucket.label,
+						result: 0
+					})),
 					users: {}
 				});
 			}
@@ -52,13 +56,14 @@ var render = (el, results, opts) => {
 	weeks.forEach(week => {
 		Object.keys(week.users).forEach(userId => {
 			var averageReadCount = week.users[userId].reduce((prev, current) => prev + current) / week.users[userId].length;
-			week.buckets.some(bucket => {
+			week.value.some((value, index) => {
+				var bucket = buckets[index];
 				if (bucket.min && averageReadCount < bucket.min) {
 					return false;
 				} else if (bucket.max && averageReadCount >= bucket.max) {
 					return false;
 				}
-				bucket.value++;
+				value.result++;
 				return true;
 			});
 		});
@@ -66,8 +71,11 @@ var render = (el, results, opts) => {
 
 	// calculate value as a percentage
 	weeks.forEach(week => {
-		var totalCount = week.buckets.reduce((prev, bucket) => prev + bucket.value, 0);
-		week.buckets.forEach(bucket => bucket.percentage = (100 / totalCount) * bucket.value);
+		var totalCount = week.value.reduce((prev, value) => prev + value.result, 0);
+		week.value.forEach(value => {
+			// convert result to percentage
+			value.result = ((100 / totalCount) * value.result).toFixed(2);
+		});
 	});
 
 	// create a chart
@@ -82,21 +90,8 @@ var render = (el, results, opts) => {
 			pointSize: 5
 		})
 		.prepare()
-		// change the data to the format it expects
 		.data({
-			result: weeks.map(week => {
-				return {
-					value: week.buckets.map(bucket => {
-						return {
-							result: bucket.percentage.toFixed(2),
-							label: bucket.name
-						};
-					}),
-					timeframe: {
-						end: week.periodEnd
-					}
-				};
-			})
+			result: weeks
 	 	})
 	 	.render();
 };
@@ -118,7 +113,7 @@ module.exports = {
 		],
 		groupBy: ['user.uuid', 'time.day'],
 		// 10 weeks
-		timeframe: queryParameters.timeframe || 'previous_70_day',
+		timeframe: queryParameters.timeframe || 'previous_84_days',
 		timezone: 'UTC'
 	}),
 	render: render
