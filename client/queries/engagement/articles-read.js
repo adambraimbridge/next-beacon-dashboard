@@ -42,10 +42,10 @@ var render = (el, results, opts) => {
 				.filter(result => day === result['time.day'])
 				.forEach(result => {
 					var count = result.result;
-					var uuid = result['user.uuid'];
-					if (!count || !uuid) {
+					if (!count) {
 						return;
 					}
+					var uuid = result['user.uuid'];
 					var user = data[0].users[uuid];
 					if (!user) {
 						data[0].users[uuid] = {
@@ -121,6 +121,11 @@ module.exports = {
 				operator: 'eq',
 				property_name: 'page.location.type',
 				property_value: 'article'
+			},
+			{
+				operator: 'exists',
+				property_name: 'user.uuid',
+				property_value: true
 			}
 		],
 		groupBy: ['user.uuid', 'time.day'],
