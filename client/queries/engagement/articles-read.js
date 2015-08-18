@@ -61,10 +61,14 @@ var render = (el, results, opts) => {
 				});
 		});
 
-	data.forEach(week => {
-		Object.keys(week.users).forEach(userId => {
-			var averageReadCount = week.users[userId].average;
-			week.value.some((value, index) => {
+	data.forEach(result => {
+		Object.keys(result.users).forEach((uuid, index) => {
+			// take our set of users from the initial period (i.e. ignore any new users)
+			if (index !== 0 && !data[0].users[uuid]) {
+				return delete result.users[uuid];
+			}
+			var averageReadCount = result.users[uuid].average;
+			result.value.some((value, index) => {
 				var bucket = buckets[index];
 				if (bucket.min && averageReadCount < bucket.min) {
 					return false;
@@ -78,9 +82,9 @@ var render = (el, results, opts) => {
 	});
 
 	// calculate value as a percentage
-	data.forEach(week => {
-		var totalCount = week.value.reduce((prev, value) => prev + value.result, 0);
-		week.value.forEach(value => {
+	data.forEach(result => {
+		var totalCount = result.value.reduce((prev, value) => prev + value.result, 0);
+		result.value.forEach(value => {
 			// convert result to percentage
 			value.result = ((100 / totalCount) * value.result).toFixed(2);
 		});
@@ -120,7 +124,7 @@ module.exports = {
 			}
 		],
 		groupBy: ['user.uuid', 'time.day'],
-		// 12 data
+		// 12 days
 		timeframe: queryParameters.timeframe || 'previous_84_days',
 		timezone: 'UTC'
 	}),
