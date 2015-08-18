@@ -5,7 +5,7 @@ var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
 
 var render = (el, results, opts) => {
-	var weeks = [];
+	var data = [];
 	// in days
 	var groupSize = 14;
 	var buckets = [
@@ -26,7 +26,7 @@ var render = (el, results, opts) => {
 		.reverse()
 		.forEach((day, index) => {
 			if (index % groupSize === 0) {
-				weeks.unshift({
+				data.unshift({
 					timeframe: {
 						end: day
 					},
@@ -42,18 +42,18 @@ var render = (el, results, opts) => {
 				.filter(result => day === result['time.day'])
 				.forEach(result => {
 					var count = result.result;
-					if (!count) {
+					var user = result['user.uuid'];
+					if (!count || !user) {
 						return;
 					}
-					var user = result['user.uuid'];
-					if (!weeks[0].users[user]) {
-						weeks[0].users[user] = [];
+					if (!data[0].users[user]) {
+						data[0].users[user] = [];
 					}
-					weeks[0].users[user].push(count);
+					data[0].users[user].push(count);
 				});
 		});
 
-	weeks.forEach(week => {
+	data.forEach(week => {
 		Object.keys(week.users).forEach(userId => {
 			var averageReadCount = week.users[userId].reduce((prev, current) => prev + current) / week.users[userId].length;
 			week.value.some((value, index) => {
@@ -70,7 +70,7 @@ var render = (el, results, opts) => {
 	});
 
 	// calculate value as a percentage
-	weeks.forEach(week => {
+	data.forEach(week => {
 		var totalCount = week.value.reduce((prev, value) => prev + value.result, 0);
 		week.value.forEach(value => {
 			// convert result to percentage
@@ -91,7 +91,7 @@ var render = (el, results, opts) => {
 		})
 		.prepare()
 		.data({
-			result: weeks
+			result: data
 		})
 		.render();
 };
@@ -112,7 +112,7 @@ module.exports = {
 			}
 		],
 		groupBy: ['user.uuid', 'time.day'],
-		// 10 weeks
+		// 12 data
 		timeframe: queryParameters.timeframe || 'previous_84_days',
 		timezone: 'UTC'
 	}),
