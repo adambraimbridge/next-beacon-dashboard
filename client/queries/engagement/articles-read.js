@@ -8,6 +8,7 @@ var render = (el, results, opts) => {
 	var data = [];
 	// in days
 	var groupSize = 14;
+	// two buckets, < 1.5 and >= 1.5
 	var buckets = [
 		{
 			min: 1.5,
@@ -30,7 +31,6 @@ var render = (el, results, opts) => {
 					timeframe: {
 						end: day
 					},
-					// two buckets, < 1.5 and >= 1.5
 					value: buckets.map(bucket => ({
 						label: bucket.label,
 						result: 0
@@ -42,20 +42,28 @@ var render = (el, results, opts) => {
 				.filter(result => day === result['time.day'])
 				.forEach(result => {
 					var count = result.result;
-					var user = result['user.uuid'];
-					if (!count || !user) {
+					var uuid = result['user.uuid'];
+					if (!count || !uuid) {
 						return;
 					}
-					if (!data[0].users[user]) {
-						data[0].users[user] = [];
+					var user = data[0].users[uuid];
+					if (!user) {
+						data[0].users[uuid] = {
+							average: count,
+							totalDays: 1
+						};
+					} else {
+						// update average
+						var newTotalDays = user.totalDays + 1;
+						user.average = ((user.average * user.totalDays) + count) / newTotalDays;
+						user.totalDays = newTotalDays;
 					}
-					data[0].users[user].push(count);
 				});
 		});
 
 	data.forEach(week => {
 		Object.keys(week.users).forEach(userId => {
-			var averageReadCount = week.users[userId].reduce((prev, current) => prev + current) / week.users[userId].length;
+			var averageReadCount = week.users[userId].average;
 			week.value.some((value, index) => {
 				var bucket = buckets[index];
 				if (bucket.min && averageReadCount < bucket.min) {
