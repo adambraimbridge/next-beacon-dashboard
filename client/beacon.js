@@ -228,6 +228,10 @@ Keen.ready(function(){
 			require('./queries/stream/actions-by-type');
 			break;
 
+		case '/graph/engagement/articles-read':
+			render(require('./queries/engagement/articles-read'));
+			break;
+
 		default:
 			console.log('unknown graph');
 

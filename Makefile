@@ -25,7 +25,7 @@ test: build-production
 deploy:
 	nbt configure --no-splunk
 	nbt deploy-hashed-assets
-	nbt deploy --docker
+	nbt deploy
 
 watch:
 	nbt build --dev --watch
@@ -34,7 +34,7 @@ provision:
 	nbt provision ${TEST_HOST}
 	nbt configure ft-next-beacon-dashboard ${TEST_HOST} --overrides "NODE_ENV=branch" --no-splunk
 	nbt deploy-hashed-assets
-	nbt deploy ${TEST_HOST} --skip-enable-preboot --docker
+	nbt deploy ${TEST_HOST} --skip-enable-preboot
 
 tidy:
 	nbt destroy ${TEST_HOST}
