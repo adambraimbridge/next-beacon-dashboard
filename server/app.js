@@ -41,6 +41,14 @@ app.get('/hashed-assets/:path*', function(req, res) {
 	});
 });
 
+// pipe through to an AWS bucket containing Redshift exports
+app.get('/redshift/:path*', function(req, res) {
+	var path = process.env.REDSHIFT_S3_BUCKET + req.path;
+	http.get(path, function(proxyRes) {
+		proxyRes.pipe(res);
+	});
+});
+
 app.use(cookieParser());
 app.use(auth);
 
