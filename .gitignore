@@ -10,3 +10,4 @@ static/main.js
 .sass-cache
 public
 .env
+.idea
