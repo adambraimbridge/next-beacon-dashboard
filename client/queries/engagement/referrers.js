@@ -98,7 +98,7 @@ var render = (el, results) => {
 			el.appendChild(chartEl);
 			chart
 				.el(chartEl)
-				.height(500)
+				.height(400)
 				.title(`${bucket.label} referrers`)
 				.chartOptions({
 					pointSize: 5
