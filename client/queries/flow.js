@@ -223,13 +223,13 @@ function getDashboards(offset) {
 	};
 
 
-	dashboards['MyFTEmail'] = {
-		'title' : 'Engagement with myFT emails',
+	dashboards['MyFTDailyEmail'] = {
+		'title' : 'Engagement with myFT daily emails',
 		'labels' : [
 		'Are following at least one topic',
-		'Have signed up to emails',
-		'Have opened an email',
-		'Have clicked on a link in an email'
+		'Have recieved daily emails',
+		'Have opened a daily email',
+		'Have clicked on a link in a daily email'
 		],
 		'steps':[
 		step({
@@ -240,16 +240,27 @@ function getDashboards(offset) {
 			}]
 		}),
 		step({
-			filters: [{
-				eventCollection: 'dwell',
-				property_name: 'user.myft.preferences.email-daily-digest',
+			eventCollection: 'email',
+			filters: [
+			{
+				property_name: 'meta.emailType',
 				operator: 'eq',
-				property_value: true
+				property_value: 'daily'
+			}, {
+				property_name: 'event',
+				operator: 'eq',
+				property_value: 'delivery'
 			}]
 		}),
 		step({
 			eventCollection: 'email',
-			filters: [{
+
+			filters: [
+			{
+				property_name: 'meta.emailType',
+				operator: 'eq',
+				property_value: 'daily'
+			}, {
 				property_name: 'event',
 				operator: 'eq',
 				property_value: 'open'
@@ -258,6 +269,10 @@ function getDashboards(offset) {
 		step({
 			eventCollection: 'email',
 			filters: [{
+				property_name: 'meta.emailType',
+				operator: 'eq',
+				property_value: 'daily'
+			},{
 				property_name: 'event',
 				operator: 'eq',
 				property_value: 'click'
@@ -265,6 +280,65 @@ function getDashboards(offset) {
 		}),
 		]
 	};
+
+	dashboards['MyFTWeeklyEmail'] = {
+		'title' : 'Engagement with myFT weekly digest emails',
+		'labels' : [
+		'Are following at least one topic',
+		'Have recieved a weekly email',
+		'Have opened a weekly email',
+		'Have clicked on a link in a weekly email'
+		],
+		'steps':[
+		step({
+			filters: [{
+				property_name: 'user.myft.topicsFollowed',
+				operator: 'gte',
+				property_value: 1
+			}]
+		}),
+		step({
+			eventCollection: 'email',
+			filters: [
+			{
+				property_name: 'meta.emailType',
+				operator: 'eq',
+				property_value: 'weekly'
+			}, {
+				property_name: 'event',
+				operator: 'eq',
+				property_value: 'delivery'
+			}]
+		}),
+		step({
+			eventCollection: 'email',
+
+			filters: [
+			{
+				property_name: 'meta.emailType',
+				operator: 'eq',
+				property_value: 'weekly'
+			}, {
+				property_name: 'event',
+				operator: 'eq',
+				property_value: 'open'
+			}]
+		}),
+		step({
+			eventCollection: 'email',
+			filters: [{
+				property_name: 'meta.emailType',
+				operator: 'eq',
+				property_value: 'weekly'
+			},{
+				property_name: 'event',
+				operator: 'eq',
+				property_value: 'click'
+			}]
+		}),
+		]
+	};
+
 
 	dashboards['MyFTTray'] = {
 		'title' : 'Engagement with myFT Tray',
