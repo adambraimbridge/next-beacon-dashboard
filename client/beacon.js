@@ -232,6 +232,10 @@ Keen.ready(function(){
 			render(require('./queries/engagement/articles-read'));
 			break;
 
+		case '/graph/engagement/referrers':
+			render(require('./queries/engagement/referrers'));
+			break;
+
 		default:
 			console.log('unknown graph');
 
