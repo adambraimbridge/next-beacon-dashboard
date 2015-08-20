@@ -10,6 +10,7 @@ var render = (el, results) => {
 	var cohortsData = engagementCohorts.extract(results);
 
 	// create query for referrers
+	var wrappedKeen = require('../../lib/wrapped-keen');
 	var latestUsers = cohortsData.slice(-1)[0].users;
 	engagementCohorts.buckets.forEach(bucket => {
 		var users = Object.keys(latestUsers).filter(uuid => {
@@ -50,12 +51,43 @@ var render = (el, results) => {
 			timeframe,
 			timezone: 'UTC'
 		});
-		require('../../lib/wrapped-keen').run(query, (err, results) => {
-			// order, and take the top 10
-			var data = results.result
+		wrappedKeen.run(query, (err, results) => {
+			var groupedHosts = [
+				{
+					name: 'google',
+					hosts: ['\.google\.']
+				},
+				{
+					name: 'twitter',
+					hosts: ['^t\.co$', '\.twitter\.']
+				},
+				{
+					name: 'facebook',
+					hosts: ['\.facebook\.']
+				}
+			];
+			var data = groupedHosts.map(host => ({
+				'page.referrer.hostname': host.name,
+				result: 0
+			}));
+			// group by similar hosts
+			results.result.forEach(result => {
+				var grouped = groupedHosts.some(host => {
+					if (result['page.referrer.hostname'].search(host.hosts.join('|')) > -1) {
+						data.find(item => item['page.referrer.hostname'] === host.name).result += result.result;
+						return true;
+					}
+				});
+				if (!grouped) {
+					data.push(result);
+				}
+			});
+			// filter out internal referrers, order, and take the top 10
+			data = data
 				.filter(result => !result['page.referrer.hostname'].endsWith('.ft.com'))
 				.sort((resultOne, resultTwo) => resultTwo.result - resultOne.result)
 				.slice(0, 10);
+
 			// create a chart
 			var chart = new Keen.Dataviz();
 			var chartEl = document.createElement('div');
