@@ -64,6 +64,10 @@ var render = (el, results) => {
 				{
 					name: 'facebook',
 					hosts: ['\.facebook\.']
+				},
+				{
+					name: 'ft',
+					hosts: ['\.ft\.com$']
 				}
 			];
 			var data = groupedHosts.map(host => ({
@@ -84,7 +88,7 @@ var render = (el, results) => {
 			});
 			// filter out internal referrers, order, and take the top 10
 			data = data
-				.filter(result => !result['page.referrer.hostname'].endsWith('.ft.com'))
+				.filter(result => result['page.referrer.hostname'] !== 'ft')
 				.sort((resultOne, resultTwo) => resultTwo.result - resultOne.result)
 				.slice(0, 10);
 
