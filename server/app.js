@@ -2,6 +2,7 @@
 'use strict';
 
 var http			= require('http');
+var https			= require('https');
 var auth			= require('./middleware/auth');
 var activeUsage			= require('./middleware/active-usage');
 var cookieParser	= require('cookie-parser');
@@ -42,9 +43,9 @@ app.get('/hashed-assets/:path*', function(req, res) {
 });
 
 // pipe through to an AWS bucket containing Redshift exports
-app.get('/redshift/:path*', function(req, res) {
-	var path = process.env.REDSHIFT_S3_BUCKET + req.path;
-	http.get(path, function(proxyRes) {
+app.get('/reports/*', function(req, res) {
+	var path = process.env.S3_HOST + '/' + req.params[0];
+	https.get(path, function(proxyRes) {
 		proxyRes.pipe(res);
 	});
 });
