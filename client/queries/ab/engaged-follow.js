@@ -14,7 +14,6 @@ module.exports.on = new Keen.Query("funnel", {
 			actor_property: 'user.uuid',
 			filters: [
 				{"property_name":"page.location.type","operator":"eq","property_value":"stream"},
-				{"property_name":"user.isStaff","operator":"eq","property_value":false},
 				{"property_name":"user.ab.myftEngagedFollow","operator":"eq","property_value":"on"}
 			]
 		},
@@ -38,7 +37,6 @@ module.exports.off = new Keen.Query("funnel", {
 			actor_property: 'user.uuid',
 			filters: [
 				{"property_name":"page.location.type","operator":"eq","property_value":"stream"},
-				{"property_name":"user.isStaff","operator":"eq","property_value":false},
 				{"property_name":"user.ab.myftEngagedFollow","operator":"eq","property_value":"off"}
 			]
 		},

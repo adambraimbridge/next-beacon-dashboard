@@ -15,7 +15,7 @@ var daysFromNow = function (offset) {
 var query = new Keen.Query("count_unique", {
 	target_property: "user.uuid",
 	eventCollection: "dwell",
-	filters: [{"operator":"eq","property_name":"page.location.type","property_value":"search"},{"operator":"eq","property_name":"user.isStaff","property_value":false}],
+	filters: [{"operator":"eq","property_name":"page.location.type","property_value":"search"}],
 	groupBy: "page.location.search.q",
 	interval: "weekly",
 	targetProperty: "user.erights",

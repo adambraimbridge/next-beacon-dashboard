@@ -13,11 +13,7 @@ var keenQuery = function(options) {
 		timeframe: queryParameters.timeframe || "this_14_days",
 		targetProperty: "user.uuid",
 		timezone: "UTC",
-		filters:[{
-			property_name:"user.isStaff",
-			operator:"eq",
-			property_value:false
-		}],
+		filters:options.filters || [],
 		maxAge: 10800
 	};
 

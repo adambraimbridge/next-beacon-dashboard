@@ -60,11 +60,7 @@ var step = function(options) {
 		eventCollection:options.eventCollection || "dwell",
 		actor_property:"user.uuid",
 		timeframe:options.timeframe,
-		filters:[{
-			property_name:"user.isStaff",
-			operator:"eq",
-			property_value:false
-		}].concat(options.filters || [])
+		filters:options.filters || [],
 	};
 };
 

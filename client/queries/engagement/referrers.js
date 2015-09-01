@@ -118,6 +118,7 @@ module.exports = {
 		eventCollection: 'dwell',
 		filters: [
 			// {
+			// filter removed as deprecated (temporarily?)
 			// 	operator: 'eq',
 			// 	property_name: 'user.isStaff',
 			// 	property_value: false

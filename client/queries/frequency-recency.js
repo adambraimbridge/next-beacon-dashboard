@@ -13,11 +13,7 @@ var keenQuery = function(options) {
 		timeframe: options.timeframe || queryTimeframe,
 		targetProperty: options.targetProperty,
 		timezone: "UTC",
-		filters:[{
-			property_name:"user.isStaff",
-			operator:"eq",
-			property_value:false
-		}].concat(options.filters || []),
+		filters:options.filters || [],
 		maxAge: 10800
 	};
 
