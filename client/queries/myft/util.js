@@ -13,11 +13,7 @@ var queryRealUsers = function(options, timeshift) {
 		timeframe: options.timeframe || (timeshift ? previousTimeframe : queryTimeframe),
 		targetProperty: options.targetProperty,
 		timezone: "UTC",
-		filters:[{
-			property_name:"user.isStaff",
-			operator:"eq",
-			property_value:false
-		}].concat(options.filters || []),
+		filters:options.filters || [],
 		maxAge: 10800
 	};
 

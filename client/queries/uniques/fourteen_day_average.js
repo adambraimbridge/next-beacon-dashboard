@@ -9,11 +9,6 @@ module.exports = {
 		target_property: "user.uuid",
 		timeframe: "previous_14_days",
 		timezone: "UTC",
-		filters:[{
-			property_name:"user.isStaff",
-			operator:"eq",
-			property_value:false
-		}],
 		maxAge: 10800
 	}),
 

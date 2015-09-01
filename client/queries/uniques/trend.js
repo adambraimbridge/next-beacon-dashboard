@@ -16,11 +16,6 @@ var query = new Keen.Query("count_unique", {
 	interval: queryParameters.interval || "daily",
 	targetProperty: "user.uuid",
 	timezone: "UTC",
-	filters:[{
-		property_name:"user.isStaff",
-		operator:"eq",
-		property_value:false
-	}],
 	maxAge: 10800
 });
 

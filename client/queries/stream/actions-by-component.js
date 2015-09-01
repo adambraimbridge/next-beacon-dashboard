@@ -13,12 +13,7 @@ var client = new Keen({
 var keenQuery =	function(options) {
 	var parameters = {
 		eventCollection: "cta",
-		filters: [
-			{"operator":"eq",
-			"property_name":"user.isStaff",
-			"property_value":false}].concat(
-				options.filters
-			),
+		filters:options.filters || [],
 		groupBy: "meta.domPath",
 		interval: "daily",
 		targetProperty: "time.day",

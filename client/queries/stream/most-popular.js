@@ -96,9 +96,6 @@ module.exports = {
 		eventCollection: "dwell",
 		filters: [
 			{"operator":"eq",
-			"property_name":"user.isStaff",
-			"property_value":false},
-			{"operator":"eq",
 			"property_name":"page.location.type",
 			"property_value":"stream"}],
 		groupBy: "page.location.href",
