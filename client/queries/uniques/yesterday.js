@@ -7,10 +7,5 @@ module.exports.query = new Keen.Query("count_unique", {
 	target_property: "user.uuid",
 	timeframe: "previous_1_days",
 	timezone: "UTC",
-	filters:[{
-		property_name:"user.isStaff",
-		operator:"eq",
-		property_value:false
-	}],
 	maxAge: 10800
 });

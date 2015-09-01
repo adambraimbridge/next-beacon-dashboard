@@ -28,11 +28,7 @@ function getDashboards(offset) {
 				start:daysFromNow(offset-14), //two weeks whence
 				end:daysFromNow(offset) //now
 			},
-			filters:[{
-				property_name:"user.isStaff",
-				operator:"ne",
-				property_value:true
-			}].concat(options.filters || [])
+			filters:options.filters || [],
 		};
 	};
 

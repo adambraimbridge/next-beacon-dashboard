@@ -20,11 +20,6 @@ var keenQuery = function(options) {
 		groupBy: options.groupBy,
 		timezone: "UTC",
 		filters:[{
-			property_name:"user.isStaff",
-			operator:"eq",
-			property_value:false
-		},
-		{
 			property_name:"page.location.pathname",
 			operator:"contains",
 			property_value:"errors/page"

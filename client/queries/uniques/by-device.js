@@ -93,11 +93,7 @@ var keenQuery = function(options) {
 		targetProperty: "user.uuid",
 		groupBy: "user.layout",
 		timezone: "UTC",
-		filters:[{
-			property_name:"user.isStaff",
-			operator:"eq",
-			property_value:false
-		}].concat(options.filters || []),
+		filters:options.filters || [],
 		maxAge: 10800
 	};
 

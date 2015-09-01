@@ -80,13 +80,6 @@ module.exports.thisWeek = {
 			target_property: 'time.day',
 			event_collection: 'dwell',
 			group_by: ['user.uuid'],
-			filters: [
-				{
-					property_name: 'user.isStaff',
-					operator: 'eq',
-					property_value: false
-				}
-			],
 			maxAge: 10800
 		}),
 
@@ -101,13 +94,6 @@ module.exports.lastWeek = {
 			target_property: 'time.day',
 			event_collection: 'dwell',
 			group_by: ['user.uuid'],
-			filters: [
-				{
-					property_name: 'user.isStaff',
-					operator: 'eq',
-					property_value: false
-				}
-			],
 			maxAge: 10800
 		}),
 
@@ -122,13 +108,6 @@ module.exports.thisTimeLastMonth = {
 			target_property: 'time.day',
 			event_collection: 'dwell',
 			group_by: ['user.uuid'],
-			filters: [
-				{
-					property_name: 'user.isStaff',
-					operator: 'eq',
-					property_value: false
-				}
-			],
 			maxAge: 10800
 		}),
 
@@ -143,13 +122,6 @@ module.exports.weekly = {
 			target_property: 'time.week',
 			event_collection: 'dwell',
 			group_by: ['user.uuid'],
-			filters: [
-				{
-					property_name: 'user.isStaff',
-					operator: 'eq',
-					property_value: false
-				}
-			],
 			maxAge: 10800
 		}),
 
@@ -164,13 +136,6 @@ module.exports.weeklyThisTimeLastMonth = {
 			target_property: 'time.week',
 			event_collection: 'dwell',
 			group_by: ['user.uuid'],
-			filters: [
-				{
-					property_name: 'user.isStaff',
-					operator: 'eq',
-					property_value: false
-				}
-			],
 			maxAge: 10800
 		}),
 

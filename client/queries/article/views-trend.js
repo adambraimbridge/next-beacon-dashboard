@@ -14,9 +14,6 @@ var trendLineChartQuery = new Keen.Query("count", {
 		eventCollection: "dwell",
 		filters: [
 			{"operator":"eq",
-			"property_name":"user.isStaff",
-			"property_value":false},
-			{"operator":"eq",
 			"property_name":"page.location.type",
 			"property_value":"article"}
 		],
