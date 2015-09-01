@@ -115,18 +115,18 @@ var runQuery = function(options) {
 		else {
 			// divide actions by articles to get click rate
 			var queryActions = res[0].result;
-	    var articlesLoaded = res[1].result;
+			var articlesLoaded = res[1].result;
 
-	    queryActions.map(function(queryAction) {
-	      var articlesLoadedDate = articlesLoaded.filter(function(el) {
-	        return JSON.stringify(el.timeframe) === JSON.stringify(queryAction.timeframe);
-	      });
-	      queryAction.value.map(function(el) {
-	        el.result = (el.result/articlesLoadedDate[0].value).toFixed(4) * 100;
-	      });
-	    });
+			queryActions.map(function(queryAction) {
+				var articlesLoadedDate = articlesLoaded.filter(function(el) {
+					return JSON.stringify(el.timeframe) === JSON.stringify(queryAction.timeframe);
+				});
+				queryAction.value.map(function(el) {
+					el.result = (el.result/articlesLoadedDate[0].value).toFixed(4) * 100;
+				});
+			});
 
-	    chart({chartEl: options.chartEl, chartTitle: options.chartTitle})
+			chart({chartEl: options.chartEl, chartTitle: options.chartTitle})
 				.parseRawData({
 					result: queryActions
 				})
