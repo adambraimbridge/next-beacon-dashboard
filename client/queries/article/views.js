@@ -12,9 +12,10 @@ var keenQuery = function(options) {
 		eventCollection: "dwell",
 		targetProperty: "page.location.pathname",
 		filters: [
-			{operator:"eq",
-			property_name:"user.isStaff",
-			property_value:false},
+			// filter removed as deprecated (temporarily?)
+			// {operator:"eq",
+			// property_name:"user.isStaff",
+			// property_value:false},
 			{operator:"eq",
 			property_name:"page.location.type",
 			property_value:"article"}

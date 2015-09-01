@@ -2,6 +2,7 @@
 
 'use strict';
 
+var filters = require('./engagement-filters');
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
 
@@ -14,12 +15,13 @@ var keenQuery =	function(options) {
 	var parameters = {
 		eventCollection: "cta",
 		filters: [
-			{"operator":"eq",
-			"property_name":"user.isStaff",
-			"property_value":false},
-			{"operator":"eq",
-			"property_name":"page.location.type",
-			"property_value":"article"}
+			// filters removed for staff and also page type as deprecated in CTA
+			// {"operator":"eq",
+			// "property_name":"user.isStaff",
+			// "property_value":false},
+			// {"operator":"eq",
+			// "property_name":"page.location.type",
+			// "property_value":"article"}
 			].concat(
 				options.filters
 			),
@@ -42,22 +44,7 @@ var charts = [
 			"article-links-trend-percent-areachart"
 		],
 		options: {
-			filters: [
-				{"operator":"in",
-				"property_name":"meta.domPath",
-				"property_value":[
-					"article | link",
-					"article | promobox | link",
-					"article | more-on-inline | articles | title", // can remove after Nov 7 2015
-					"story-package | articles | title", // can remove after Nov 7 2015
-					"article | more-on-inline | articles | article-card | headline",
-					"article | more-on-inline | articles | image",
-					"story-package | articles | article-card | headline",
-					"story-package | articles | image",
-					"more-on | article-card | headline",
-					"myft-tray | myft-feed | article-card | headline"
-				]}
-			]
+			filters: filters.articleLinksFilters
 	}},
 	{queryName: "topiclinksQuery",
 		elId: [
@@ -66,17 +53,7 @@ var charts = [
 			"topic-links-trend-percent-areachart"
 		],
 		options: {
-			filters: [
-				{"operator":"in",
-				"property_name":"meta.domPath",
-				"property_value":[
-					"article | header | section-link",
-					"article | header | author",
-					"article | header | tags | tag",
-					"more-on | topic-link",
-					"myft-tray | topic-link"
-				]}
-			]
+			filters: filters.topicLinksFilters
 	}},
 	{queryName: "shareQuery",
 		elId: [
@@ -85,16 +62,7 @@ var charts = [
 			"share-trend-percent-areachart"
 		],
 		options: {
-			filters: [
-				{"operator":"in",
-				"property_name":"meta.domPath",
-				"property_value":[
-					"share | facebook",
-					"share | linkedin",
-					"share | twitter",
-					"share | whatsapp"
-				]}
-			]
+			filters: filters.shareLinksFilters
 	}}
 ];
 

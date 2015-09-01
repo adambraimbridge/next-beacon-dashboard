@@ -196,6 +196,7 @@ Keen.ready(function(){
 
 		case '/graph/article/actions-by-component':
 			require('./queries/article/actions-by-component');
+			require('./queries/article/actions-by-component-click-rate');
 			break;
 
 		case '/graph/article/actions-by-type':

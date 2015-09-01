@@ -14,12 +14,13 @@ var keenQuery =	function(options) {
 	var parameters = {
 		eventCollection: "cta",
 		filters: [
-			{"operator":"eq",
-			"property_name":"user.isStaff",
-			"property_value":false},
-			{"operator":"eq",
-			"property_name":"page.location.type",
-			"property_value":"stream"}
+			// filters removed for staff and also page type as deprecated in CTA
+			// {"operator":"eq",
+			// "property_name":"user.isStaff",
+			// "property_value":false},
+			// {"operator":"eq",
+			// "property_name":"page.location.type",
+			// "property_value":"stream"}
 			].concat(
 				options.filters
 			),
