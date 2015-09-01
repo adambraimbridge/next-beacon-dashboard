@@ -2,6 +2,7 @@
 
 'use strict';
 
+var filters = require('./engagement-filters');
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
 
@@ -14,9 +15,14 @@ var keenQuery =	function(options) {
 	var parameters = {
 		eventCollection: "cta",
 		filters: [
-			{"operator":"eq",
-			"property_name":"page.location.type",
-			"property_value":"article"}].concat(
+			// filters removed for staff and also page type as deprecated in CTA
+			// {"operator":"eq",
+			// "property_name":"user.isStaff",
+			// "property_value":false},
+			// {"operator":"eq",
+			// "property_name":"page.location.type",
+			// "property_value":"article"}
+		].concat(
 				options.filters
 			),
 		groupBy: "meta.domPath",
@@ -34,64 +40,32 @@ var charts = [
 	{queryName: "articleHeaderQuery",
 		elId: ["article-header-trend-linechart", "article-header-trend-areachart"],
 		options: {
-			filters: [
-				{"operator":"contains",
-				"property_name":"meta.domPath",
-				"property_value":"article | header | "}
-			]
+			filters: filters.articleHeaderFilters
 	}},
 	{queryName: "moreOnQuery",
 		elId: ["more-on-trend-linechart", "more-on-trend-areachart"],
 		options: {
-			filters: [
-				{"operator":"contains",
-				"property_name":"meta.domPath",
-				"property_value":"more-on | "}
-			]
+			filters: filters.moreOnFilters
 	}},
 	{queryName: "relatedSoriesQuery",
 		elId: ["related-stories-trend-linechart", "related-stories-trend-areachart"],
 		options: {
-			filters: [
-				{"operator":"in",
-				"property_name":"meta.domPath",
-				"property_value":[
-					"article | more-on-inline | articles | title", // can remove after Nov 7 2015
-					"story-package | articles | title", // can remove after Nov 7 2015
-					"article | more-on-inline | articles | article-card | headline",
-					"article | more-on-inline | articles | image",
-					"story-package | articles | article-card | headline",
-					"story-package | articles | image"
-					]
-				}
-			]
+			filters: filters.relatedStoriesFilters
 	}},
 	{queryName: "promoboxQuery",
 		elId: ["promo-box-trend-linechart", "promo-box-trend-areachart"],
 		options: {
-			filters: [
-				{"operator":"contains",
-				"property_name":"meta.domPath",
-				"property_value":"article | promobox | "}
-			]
+			filters: filters.promoboxFilters
 	}},
 	{queryName: "linksQuery",
 		elId: ["links-trend-linechart"],
 		options: {
-			filters: [
-				{"operator":"eq",
-				"property_name":"meta.domPath",
-				"property_value":"article | link"}
-			]
+			filters: filters.linksFilters
 	}},
 	{queryName: "tocQuery",
 		elId: ["toc-trend-linechart"],
 		options: {
-			filters: [
-				{"operator":"eq",
-				"property_name":"meta.domPath",
-				"property_value":"article | table-of-contents | toc"}
-			]
+			filters: filters.tocFilters
 	}}
 ];
 
