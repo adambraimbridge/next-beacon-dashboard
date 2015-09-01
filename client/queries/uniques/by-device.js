@@ -90,7 +90,7 @@ var keenQuery = function(options) {
 	var parameters = {
 		eventCollection: "dwell",
 		timeframe: queryParameters.timeframe || "this_14_days",
-		targetProperty: "user.uuid",
+		target_property: queryParameters.target_property || "user.uuid",
 		groupBy: "user.layout",
 		timezone: "UTC",
 		filters:options.filters || [],

@@ -14,7 +14,7 @@ var query = new Keen.Query("count_unique", {
 	eventCollection: "dwell",
 	timeframe: queryParameters.timeframe || "this_14_days",
 	interval: queryParameters.interval || "daily",
-	targetProperty: "user.uuid",
+	target_property: queryParameters.target_property || "user.uuid",
 	timezone: "UTC",
 	maxAge: 10800
 });

@@ -11,7 +11,7 @@ var keenQuery = function(options) {
 		groupBy: options.groupBy,
 		eventCollection: "dwell",
 		timeframe: queryParameters.timeframe || "this_14_days",
-		targetProperty: "user.uuid",
+		target_property: queryParameters.target_property || "user.uuid",
 		timezone: "UTC",
 		filters:options.filters || [],
 		maxAge: 10800
