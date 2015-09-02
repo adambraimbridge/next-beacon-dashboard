@@ -1,0 +1,20 @@
+<div class="demo-container visible" style="float:right;">
+	<div class="demo-header">
+		<span class="demo-title">For all charts, "unique users" includes:</span>
+	</div>
+
+	<div class="demo-frame-container">
+		<div>
+			<input disabled type="checkbox" name="include_staff" class="o-forms-checkbox o-forms-checkbox--small o-forms-checkbox--highlight" id="include_staff" {{#if included_data_ui.include_staff}}checked{{/if}}></input>
+			<label for="include_staff" class="o-forms-label">FT staff</label>
+		</div>
+		<div>
+			<input disabled type="checkbox" name="include_identified_users" class="o-forms-checkbox o-forms-checkbox--small o-forms-checkbox--highlight" id="include_identified_users" {{#if included_data_ui.include_identified_users}}checked{{/if}}></input>
+			<label for="include_identified_users" class="o-forms-label">Identified users</label>
+		</div>
+		<div>
+			<input type="checkbox" name="include_unidentified_visitors" class="o-forms-checkbox o-forms-checkbox--small" id="include_unidentified_visitors" {{#if included_data_ui.include_unidentified_visitors}}checked{{/if}}></input>
+			<label for="include_unidentified_visitors" class="o-forms-label">Unidentified visitors</label>
+		</div>
+	</div>
+</div>

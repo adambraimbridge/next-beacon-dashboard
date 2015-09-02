@@ -6,6 +6,7 @@ var https			= require('https');
 var auth			= require('./middleware/auth');
 var activeUsage			= require('./middleware/active-usage');
 var cookieParser	= require('cookie-parser');
+var includedDataUi = require('./middleware/included-data-ui');
 var app				= module.exports = require('ft-next-express')({
 	layoutsDir: __dirname + '/../views/layouts',
 	withBackendAuthentication: false
@@ -68,6 +69,7 @@ app.get('/explorer', function(req, res) {
 });
 
 app.use(activeUsage);
+app.use(includedDataUi);
 
 app.get('/', function (req, res) {
 	res.render('home', {
@@ -78,6 +80,9 @@ app.get('/', function (req, res) {
 // TODO:ADAM:20150626 — Allow for :sub urls without requiring a template file
 // (so that the :sub can be used as a kind of query parameter for the :name parent)
 app.get('/graph/:name/:sub?', function (req, res) {
+
+console.log(req.included_data_ui);
+
 	var tmpl = req.params.name;
 	tmpl += (req.params.sub) ? '-' + req.params.sub : '';
 
@@ -93,7 +98,8 @@ app.get('/graph/:name/:sub?', function (req, res) {
 		keen_read_key: KEEN_READ_KEY,
 		page_name:req.params.name,
 		original_url: req.originalUrl,
-		article_id: article_id
+		article_id: article_id,
+		included_data_ui: req.included_data_ui
 	});
 });
 
