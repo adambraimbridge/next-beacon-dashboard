@@ -54,8 +54,14 @@ var charts = [
 				"property_value":[
 					"stream-hot-topic | topic-link",
 					"stream-hot-topic | headline",
-					"hot-comment-link-opinion",
-					"hot-comment-link-analysis"
+					"hot-comment--brand-link-opinion",
+					"hot-comment--brand-link-analysis",
+					"hot-comment--topic-link-opinion",
+					"hot-comment--topic-link-analysis",
+					"hot-comment--headline-link-opinion",
+					"hot-comment--headline-link-analysis",
+					"hot-comment--image-link-opinion",
+					"hot-comment--image-link-analysis"
 					]
 				}
 			]
