@@ -55,19 +55,33 @@ function init (client) {
 				filters: [{"operator":"eq","property_name":"page.location.type","property_value":"article"}],
 				interval: false
 			},
-			articleViewsFromMyFt: {
+			uniqueArticleViewsByHash: {
+				query: 'count_unique',
+				targetProperty: 'user.uuid',
+				filters: [
+					{"operator":"contains","property_name":"page.location.hash","property_value":"myft"},
+					{"operator":"eq","property_name":"page.location.type","property_value":"article"}
+				],
+				groupBy: "page.location.hash",
+				eventCollection: "dwell",
+				interval: false
+			},
+			articleViewsByHash: {
 				query: 'count',
 				filters: [
 					{"operator":"contains","property_name":"page.location.hash","property_value":"myft"},
 					{"operator":"eq","property_name":"page.location.type","property_value":"article"}
 				],
+				groupBy: "page.location.hash",
 				eventCollection: "dwell",
 				interval: false
 			},
-			usedReadingList: {
-				targetProperty: "user.uuid",
-				eventCollection: "cta",
-				filters: [{"operator":"contains","property_name":"meta.domPath","property_value":'myft-reading-list'}],
+			articleViewsFromMyFt: {
+				query: 'count',
+				filters: [
+					{"operator":"eq","property_name":"page.location.type","property_value":"article"}
+				],
+				eventCollection: "dwell",
 				interval: false
 			},
 		}
@@ -80,7 +94,7 @@ function init (client) {
 	require('./article-referrals')(data);
 
 	require('./articles-by-hash')(client);
-	require('./used-reading-list')(data);
+	require('./feature-comparison')(data, client);
 
 }
 
