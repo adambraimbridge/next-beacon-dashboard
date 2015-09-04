@@ -5,7 +5,6 @@ var http			= require('http');
 var https			= require('https');
 var auth			= require('./middleware/auth');
 var activeUsage			= require('./middleware/active-usage');
-var cookieParser	= require('cookie-parser');
 var includedDataUi = require('./middleware/included-data-ui');
 var app				= module.exports = require('ft-next-express')({
 	layoutsDir: __dirname + '/../views/layouts',
@@ -43,7 +42,6 @@ app.get('/hashed-assets/:path*', function(req, res) {
 	});
 });
 
-app.use(cookieParser());
 app.use(auth);
 
 // pipe through to an AWS bucket containing Redshift exports
