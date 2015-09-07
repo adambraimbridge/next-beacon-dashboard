@@ -10,13 +10,18 @@ module.exports = {
 		{"operator":"in",
 		"property_name":"meta.domPath",
 		"property_value": [
-			"more-on | article-card | headline",
+			"more-on | article-card | headline", // can remove after Dec 7 2015
+			"more-on | headline",
+			"more-on | image",
 			"more-on | follow",
-			"more-on | more-related-topics | topic-link",
-			"more-on | related-organisations | topic-link",
-			"more-on | related-people | topic-link",
-			"more-on | related-regions | topic-link",
-			"more-on | topic-link"
+			"more-on | more-related-topics | topic-link", // can remove after Dec 7 2015
+			"more-on | related-organisations | topic-link", // can remove after Dec 7 2015
+			"more-on | related-people | topic-link", // can remove after Dec 7 2015
+			"more-on | related-regions | topic-link", // can remove after Dec 7 2015
+			"more-on | tag",
+			"more-on | topic-link",
+			"mentions | tag",
+			"mentions | follow"
 			]
 		}
 	],
@@ -26,10 +31,16 @@ module.exports = {
 		"property_value":[
 			"article | more-on-inline | articles | title", // can remove after Nov 7 2015
 			"story-package | articles | title", // can remove after Nov 7 2015
-			"article | more-on-inline | articles | article-card | headline",
-			"article | more-on-inline | articles | image",
-			"story-package | articles | article-card | headline",
-			"story-package | articles | image"
+			"article | more-on-inline | articles | article-card | headline", // can remove after Dec 7 2015
+			"article | more-on-inline | articles | image", // can remove after Dec 7 2015
+			"article | more-on-inline | headline",
+			"article | more-on-inline | image",
+			"article | more-on-inline | tag",
+			"story-package | articles | article-card | headline", // can remove after Dec 7 2015
+			"story-package | articles | image", // can remove after Dec 7 2015
+			"story-package | headline",
+			"story-package | image",
+			"story-package | tag"
 			]
 		}
 	],
@@ -56,12 +67,18 @@ module.exports = {
 			"article | promobox | link",
 			"article | more-on-inline | articles | title", // can remove after Nov 7 2015
 			"story-package | articles | title", // can remove after Nov 7 2015
-			"article | more-on-inline | articles | article-card | headline",
-			"article | more-on-inline | articles | image",
-			"story-package | articles | article-card | headline",
-			"story-package | articles | image",
-			"more-on | article-card | headline",
-			"myft-tray | myft-feed | article-card | headline"
+			"article | more-on-inline | articles | article-card | headline", // can remove after Dec 7 2015
+			"article | more-on-inline | articles | image", // can remove after Dec 7 2015
+			"story-package | articles | article-card | headline", // can remove after Dec 7 2015
+			"story-package | articles | image", // can remove after Dec 7 2015
+			"more-on | article-card | headline", // can remove after Dec 7 2015
+			"myft-tray | myft-feed | article-card | headline",
+			"more-on | headline",
+			"more-on | image",
+			"article | more-on-inline | headline",
+			"article | more-on-inline | image",
+			"story-package | headline",
+			"story-package | image"
 		]}
 	],
 	topicLinksFilters: [
@@ -72,7 +89,11 @@ module.exports = {
 			"article | header | author",
 			"article | header | tags | tag",
 			"more-on | topic-link",
-			"myft-tray | topic-link"
+			"myft-tray | topic-link",
+			"more-on | tag",
+			"mentions | tag",
+			"article | more-on-inline | tag",
+			"story-package | tag"
 		]}
 	],
 	shareLinksFilters: [
