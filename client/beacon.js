@@ -242,6 +242,10 @@ Keen.ready(function(){
 			require('./pages/surveycohorts');
 			break;
 
+		case '/graph/front-page/ctr':
+			render(require('./queries/front-page/ctr'));
+			break;
+
 		default:
 			console.log('unknown graph');
 
