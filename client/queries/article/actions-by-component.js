@@ -12,6 +12,7 @@ var client = new Keen({
 });
 
 var keenQuery =	function(options) {
+
 	var parameters = {
 		eventCollection: "cta",
 		filters: [
@@ -40,32 +41,32 @@ var charts = [
 	{queryName: "articleHeaderQuery",
 		elId: ["article-header-trend-linechart", "article-header-trend-areachart"],
 		options: {
-			filters: filters.articleHeaderFilters
+			filters: filters.articleHeaderActionFilters
 	}},
 	{queryName: "moreOnQuery",
 		elId: ["more-on-trend-linechart", "more-on-trend-areachart"],
 		options: {
-			filters: filters.moreOnFilters
+			filters: filters.moreOnActionFilters
 	}},
 	{queryName: "relatedSoriesQuery",
 		elId: ["related-stories-trend-linechart", "related-stories-trend-areachart"],
 		options: {
-			filters: filters.relatedStoriesFilters
+			filters: filters.relatedStoriesActionFilters
 	}},
 	{queryName: "promoboxQuery",
 		elId: ["promo-box-trend-linechart", "promo-box-trend-areachart"],
 		options: {
-			filters: filters.promoboxFilters
+			filters: filters.promoboxActionFilters
 	}},
 	{queryName: "linksQuery",
 		elId: ["links-trend-linechart"],
 		options: {
-			filters: filters.linksFilters
+			filters: filters.linksActionFilters
 	}},
 	{queryName: "tocQuery",
 		elId: ["toc-trend-linechart"],
 		options: {
-			filters: filters.tocFilters
+			filters: filters.tocActionFilters
 	}}
 ];
 

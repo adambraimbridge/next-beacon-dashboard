@@ -1,12 +1,13 @@
 "use strict";
 
 module.exports = {
-	articleHeaderFilters: [
+	allArticlesBaseFilters: [],
+	articleHeaderActionFilters: [
 		{"operator":"contains",
 		"property_name":"meta.domPath",
 		"property_value":"article | header | "}
 	],
-	moreOnFilters: [
+	moreOnActionFilters: [
 		{"operator":"in",
 		"property_name":"meta.domPath",
 		"property_value": [
@@ -25,7 +26,7 @@ module.exports = {
 			]
 		}
 	],
-	relatedStoriesFilters: [
+	relatedStoriesActionFilters: [
 		{"operator":"in",
 		"property_name":"meta.domPath",
 		"property_value":[
@@ -44,20 +45,40 @@ module.exports = {
 			]
 		}
 	],
-	promoboxFilters: [
+	relatedStoriesBaseFilters: [
+		{"operator":"eq",
+		"property_name":"content_v1.flags.hasStoryPackage",
+		"property_value":true}
+	],
+	promoboxActionFilters: [
 		{"operator":"contains",
 		"property_name":"meta.domPath",
 		"property_value":"article | promobox | "}
 	],
-	linksFilters: [
+	promoboxBaseFilters: [
+		{"operator":"eq",
+		"property_name":"content_v1.flags.hasPromoBox",
+		"property_value":true}
+	],
+	linksActionFilters: [
 		{"operator":"eq",
 		"property_name":"meta.domPath",
 		"property_value":"article | link"}
 	],
-	tocFilters: [
+	linksBaseFilters: [
+		{"operator":"eq",
+		"property_name":"content_v1.flags.hasLinksInBody",
+		"property_value":true}
+	],
+	tocActionFilters: [
 		{"operator":"eq",
 		"property_name":"meta.domPath",
 		"property_value":"article | table-of-contents | toc"}
+	],
+	tocBaseFilters: [
+		{"operator":"eq",
+		"property_name":"content_v1.flags.hasTableOfContents",
+		"property_value":true}
 	],
 	articleLinksFilters: [
 		{"operator":"in",

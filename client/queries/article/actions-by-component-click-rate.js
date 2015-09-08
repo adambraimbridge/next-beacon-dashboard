@@ -11,7 +11,7 @@ var client = new Keen({
 	readKey: keen_read_key
 });
 
-var keenQuery = function(options) {
+var actionsQuery = function(options) {
 	var parameters = {
 		eventCollection: "cta",
 		filters: [
@@ -29,63 +29,50 @@ var keenQuery = function(options) {
 	return new Keen.Query("count", parameters);
 };
 
-var articlesLoadedQuery = new Keen.Query("count", {
-	eventCollection: "dwell",
-	filters: [
-		{"operator":"eq",
-		"property_name":"page.location.type",
-		"property_value":"article"}
-	],
-	interval: "daily",
-	targetProperty: "time.day",
-	timeframe: queryParameters.timeframe || 'previous_14_days',
-	timezone: "UTC",
-	maxAge:10800
-});
+var baseQuery = function(options) {
+	var parameters = {
+		eventCollection: "dwell",
+		filters: [
+			{"operator":"eq",
+			"property_name":"page.location.type",
+			"property_value":"article"}
+		].concat(
+			options.filters
+		),
+		interval: "daily",
+		timeframe: queryParameters.timeframe || 'previous_14_days',
+		timezone: "UTC",
+		maxAge:10800
+	};
 
-var promoboxActions = keenQuery({
-	filters: filters.promoboxFilters
-});
-
-var moreOnActions = keenQuery({
-	filters: filters.moreOnFilters
-});
-
-var articleHeaderActions = keenQuery({
-	filters: filters.articleHeaderFilters
-});
-
-var relatedStoriesActions = keenQuery({
-	filters: filters.relatedStoriesFilters
-});
-
-var linksActions = keenQuery({
-	filters: filters.linksFilters
-});
-
-var tocActions = keenQuery({
-	filters: filters.tocFilters
-});
+	return new Keen.Query("count", parameters);
+};
 
 var reportsToRun = [
-	{query: promoboxActions,
+	{filterActions: {filters: filters.promoboxActionFilters},
+	filterBase: {filters: filters.promoboxBaseFilters},
 	chartEl: "promo-box-trend-clickrate",
-	chartTitle: "Promobox Actions as % Articles Loaded (NOTE: not all articles have a promobox)"},
-	{query: moreOnActions,
+	chartTitle: "Promobox Actions as % Articles Loaded That Have A Promobox"},
+	{filterActions: {filters: filters.moreOnActionFilters},
+	filterBase: {filters: filters.allArticlesBaseFilters},
 	chartEl: "more-on-trend-clickrate",
-	chartTitle: "More On Actions as % Articles Loaded"},
-	{query: articleHeaderActions,
+	chartTitle: "More On Actions as % All Articles Loaded"},
+	{filterActions: {filters: filters.articleHeaderActionFilters},
+	filterBase: {filters: filters.allArticlesBaseFilters},
 	chartEl: "article-header-trend-clickrate",
-	chartTitle: "Article Header Actions as % Articles Loaded"},
-	{query: relatedStoriesActions,
+	chartTitle: "Article Header Actions as % All Articles Loaded"},
+	{filterActions: {filters: filters.relatedStoriesActionFilters},
+	filterBase: {filters: filters.relatedStoriesBaseFilters},
 	chartEl: "related-stories-trend-clickrate",
-	chartTitle: "Related Stories Actions as % Articles Loaded (NOTE: not all articles have related stories)"},
-	{query: linksActions,
+	chartTitle: "Related Stories Actions as % Articles Loaded That Have A Story Package"},
+	{filterActions: {filters: filters.linksActionFilters},
+	filterBase: {filters: filters.linksBaseFilters},
 	chartEl: "links-trend-clickrate",
-	chartTitle: "Article Body Links Actions as % Articles Loaded"},
-	{query: tocActions,
+	chartTitle: "Article Body Links Actions as % Articles Loaded That Have At Least 1 In Article Link"},
+	{filterActions: {filters: filters.tocActionFilters},
+	filterBase: {filters: filters.tocBaseFilters},
 	chartEl: "toc-trend-clickrate",
-	chartTitle: "Table of Contents Actions as % Articles Loaded (NOTE: not all articles have table of contents)"}
+	chartTitle: "Table of Contents Actions as % Articles Loaded That Have A Table Of Contents"}
 ];
 
 var chart = function(options) {
@@ -108,21 +95,21 @@ var chart = function(options) {
 };
 
 var runQuery = function(options) {
-	client.run([options.query, articlesLoadedQuery], function(err, res){
+	client.run([actionsQuery(options.filterActions), baseQuery(options.filterBase)], function(err, res){
 		if (err) {
-			chart.error(err.message);
+			console.log(err.message);
 		}
 		else {
 			// divide actions by articles to get click rate
 			var queryActions = res[0].result;
-			var articlesLoaded = res[1].result;
+			var queryBase = res[1].result;
 
 			queryActions.map(function(queryAction) {
-				var articlesLoadedDate = articlesLoaded.filter(function(el) {
+				var queryBaseDate = queryBase.filter(function(el) {
 					return JSON.stringify(el.timeframe) === JSON.stringify(queryAction.timeframe);
 				});
 				queryAction.value.map(function(el) {
-					el.result = (el.result/articlesLoadedDate[0].value).toFixed(4) * 100;
+					el.result = (el.result/queryBaseDate[0].value).toFixed(4) * 100;
 				});
 			});
 
