@@ -201,6 +201,7 @@ Keen.ready(function(){
 
 		case '/graph/article/actions-by-type':
 			require('./queries/article/actions-by-type');
+			require('./queries/article/actions-by-type-aggregated');
 			break;
 
 		case '/graph/article/scroll-depth-by-screen-size':
