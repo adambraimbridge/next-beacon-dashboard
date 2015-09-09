@@ -39,43 +39,34 @@ var keenQuery =	function(options) {
 
 var charts = [
 	{queryName: "articleHeaderQuery",
-		elId: ["article-header-trend-linechart", "article-header-trend-areachart"],
+		elId: "article-header-trend-areachart",
 		options: {
 			filters: filters.articleHeaderActionFilters
 	}},
 	{queryName: "moreOnQuery",
-		elId: ["more-on-trend-linechart", "more-on-trend-areachart"],
+		elId: "more-on-trend-areachart",
 		options: {
 			filters: filters.moreOnActionFilters
 	}},
 	{queryName: "relatedSoriesQuery",
-		elId: ["related-stories-trend-linechart", "related-stories-trend-areachart"],
+		elId: "related-stories-trend-areachart",
 		options: {
 			filters: filters.relatedStoriesActionFilters
 	}},
 	{queryName: "promoboxQuery",
-		elId: ["promo-box-trend-linechart", "promo-box-trend-areachart"],
+		elId: "promo-box-trend-areachart",
 		options: {
 			filters: filters.promoboxActionFilters
-	}},
-	{queryName: "linksQuery",
-		elId: ["links-trend-linechart"],
-		options: {
-			filters: filters.linksActionFilters
-	}},
-	{queryName: "tocQuery",
-		elId: ["toc-trend-linechart"],
-		options: {
-			filters: filters.tocActionFilters
 	}}
 ];
 
 charts.forEach(function(chart) {
-	client.draw(keenQuery(chart.options), document.getElementById(chart.elId[0]), {
-		chartType: "linechart",
-		title: 'Approximate trend over time',
+	client.draw(keenQuery(chart.options), document.getElementById(chart.elId), {
+		chartType: "areachart",
+		title: 'Approximate trend over time - percentage share',
 		chartOptions: {
 			height: 450,
+			isStacked: 'percent',
 			curveType:'function',
 			hAxis: {
 				format: 'E d'
@@ -86,25 +77,4 @@ charts.forEach(function(chart) {
 			}
 		}
 	});
-});
-
-charts.forEach(function(chart) {
-	if(chart.elId.length > 1) {
-		client.draw(keenQuery(chart.options), document.getElementById(chart.elId[1]), {
-			chartType: "areachart",
-			title: 'Approximate trend over time - percentage share',
-			chartOptions: {
-				height: 450,
-				isStacked: 'percent',
-				curveType:'function',
-				hAxis: {
-					format: 'E d'
-				},
-				chartArea: {
-					left: '10%',
-					width: '75%'
-				}
-			}
-		});
-	}
 });
