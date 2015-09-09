@@ -38,73 +38,25 @@ var keenQuery =	function(options) {
 
 var charts = [
 	{queryName: "articleLinksQuery",
-		elId: [
-			"article-links-trend-linechart",
-			"article-links-trend-areachart",
-			"article-links-trend-percent-areachart"
-		],
+		elId: "article-links-trend-percent-areachart",
 		options: {
 			filters: filters.articleLinksFilters
 	}},
 	{queryName: "topiclinksQuery",
-		elId: [
-			"topic-links-trend-linechart",
-			"topic-links-trend-areachart",
-			"topic-links-trend-percent-areachart"
-		],
+		elId: "topic-links-trend-percent-areachart",
 		options: {
 			filters: filters.topicLinksFilters
 	}},
 	{queryName: "shareQuery",
-		elId: [
-			"share-trend-linechart",
-			"share-trend-areachart",
-			"share-trend-percent-areachart"
-		],
+		elId: "share-trend-percent-areachart",
 		options: {
 			filters: filters.shareLinksFilters
 	}}
 ];
 
-charts.forEach(function(chart) {
-	client.draw(keenQuery(chart.options), document.getElementById(chart.elId[0]), {
-		chartType: "linechart",
-		title: 'Approximate trend over time',
-		chartOptions: {
-			height: 450,
-			curveType:'function',
-			hAxis: {
-				format: 'E d'
-			},
-			chartArea: {
-				left: '10%',
-				width: '75%'
-			}
-		}
-	});
-});
 
 charts.forEach(function(chart) {
-	client.draw(keenQuery(chart.options), document.getElementById(chart.elId[1]), {
-		chartType: "areachart",
-		title: 'Approximate trend over time - stacked',
-		isStacked: true,
-		chartOptions: {
-			height: 450,
-			curveType:'function',
-			hAxis: {
-				format: 'E d'
-			},
-			chartArea: {
-				left: '10%',
-				width: '75%'
-			}
-		}
-	});
-});
-
-charts.forEach(function(chart) {
-	client.draw(keenQuery(chart.options), document.getElementById(chart.elId[2]), {
+	client.draw(keenQuery(chart.options), document.getElementById(chart.elId), {
 		chartType: "areachart",
 		title: 'Approximate trend over time - percentage share',
 		chartOptions: {
