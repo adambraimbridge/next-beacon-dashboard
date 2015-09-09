@@ -83,7 +83,7 @@ var getCandidates = function(cohort, optinResponse, weekViewResponse){
 		})
 		.compact()
 		.value();
-}
+};
 
 var getDownloadLink = function(surveyCohort){
 	var blob = new Blob([surveyCohort.candidates.join('\r\n')]);
@@ -98,7 +98,7 @@ var getDownloadLink = function(surveyCohort){
 			.attr("download",filename)
 			.text('Download CSV file: ' + filename);
 	}
-}
+};
 
 //===================================================
 Keen.ready(function(){
