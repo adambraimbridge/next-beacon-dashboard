@@ -240,7 +240,7 @@ Keen.ready(function(){
 
 		case '/surveycohorts':
 			require('./pages/surveycohorts');
-			break
+			break;
 
 		default:
 			console.log('unknown graph');
