@@ -127,4 +127,15 @@ app.get('/progress/:post', function (req, res) {
 	});
 });
 
+/* Survey cohorts  */
+
+app.get('/surveycohorts', function (req, res) {
+	res.render('pages/surveycohorts', {
+		layout: 'beacon',
+		keen_project: KEEN_PROJECT_ID,
+		keen_read_key: KEEN_READ_KEY,
+		article_id: 'beacon-dashboard-surveycohorts'
+	});
+});
+
 module.exports.listen = app.listen(process.env.PORT || 5028);

@@ -238,6 +238,10 @@ Keen.ready(function(){
 			render(require('./queries/engagement/referrers'));
 			break;
 
+		case '/surveycohorts':
+			require('./pages/surveycohorts');
+			break;
+
 		default:
 			console.log('unknown graph');
 
