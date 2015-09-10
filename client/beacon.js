@@ -243,7 +243,7 @@ Keen.ready(function(){
 			break;
 
 		case '/graph/front-page/ctr':
-			render(require('./queries/front-page/ctr'));
+			require('./queries/front-page/ctr').render();
 			break;
 
 		default:
