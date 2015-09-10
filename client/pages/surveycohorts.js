@@ -49,9 +49,9 @@ surveyCohorts.forEach(function(n) {
 		target_property: 'user.uuid',
 		group_by: 'user.uuid',
 		filters:[{
-			'property_name':'meta.reason',
-			'operator':'exists',
-			'property_value':false
+			'property_name':'meta.type',
+			'operator':'eq',
+			'property_value':'in'
 		}],
 		timezone: 'UTC',
 		maxAge: 10800
