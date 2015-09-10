@@ -1,3 +1,4 @@
+/* global Keen */
 'use strict';
 
 var client = require('../../../lib/wrapped-keen');
@@ -5,7 +6,7 @@ var client = require('../../../lib/wrapped-keen');
 var render = el => {
     var ctaEl = document.createElement('div');
     ctaEl.dataset.oGridColspan = '12';
-    ctaEl.innerHTML = '<h2>Most clicked elements in the past week</h2>'
+    ctaEl.innerHTML = '<h2>Most clicked elements in the past week</h2>';
 
     el.appendChild(ctaEl);
 
@@ -58,7 +59,7 @@ var render = el => {
             .join('');
         tableEl.appendChild(tableBodyEl);
     });
-}
+};
 
 module.exports = {
     render

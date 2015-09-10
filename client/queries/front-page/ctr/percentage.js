@@ -1,3 +1,4 @@
+/* global Keen */
 'use strict';
 
 var moment = require('moment');
@@ -38,8 +39,7 @@ var render = el => {
         }
     ];
     // go back 7 days
-    var percentageConfigs = Array.from(Array(6).keys())
-        .reverse()
+    var percentageConfigs = [6, 5, 4, 3, 2, 1, 0]
         .map(i => ({
             stepOpts: {
                 timeframe: {
@@ -106,7 +106,7 @@ var render = el => {
             })
             .render();
     });
-}
+};
 
 module.exports = {
     render

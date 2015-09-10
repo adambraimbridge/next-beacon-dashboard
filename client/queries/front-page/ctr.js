@@ -1,4 +1,3 @@
-/* global Keen */
 'use strict';
 
 var cta = require('./ctr/cta');
