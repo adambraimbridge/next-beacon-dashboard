@@ -71,8 +71,21 @@ surveyCohorts.forEach(function(n) {
 	}));
 });
 
-var getCandidates = function(cohort, optinResponse, weekViewResponse){
+/**
+ * Set a list of candidates for a survey cohort
+ * Updates the appropriate cohort in the surveyCohorts array with the candidate list.
+ *
+ * @cohort {number} — Counter; refers to the surveyCohorts array
+ * @optinResponse {object} — Keen query response: A list of uuids of users who opted in
+ * @weekViewResponse {object} — Keen query response: A list of uuids with a week-view-count for each one
+ */
+var setCandidatesForSurveyCohort = function(cohort, optinResponse, weekViewResponse){
 	console.log('optinResponse',optinResponse);
+
+	// Loop through the result of the weekViewResponse Keen query;
+	// If the number of weeks user has visited on >= the survey cohort's required weeksOfActiveUse,
+	// and the user is also in the list of users who opted in weeksOfActiveUse ago,
+	// then they're survey candidates.
 	surveyCohorts[cohort].candidates = _.chain(weekViewResponse.result)
 		.map(function(row){
 			if(row.result >= surveyCohorts[cohort].weeksOfActiveUse
@@ -110,7 +123,7 @@ Keen.ready(function(){
 		else{
 			console.log('Received response!');
 			for(var i=0; i<surveyCohorts.length; i++){
-				getCandidates(i, response[i*2],response[(i*2)+1]);
+				setCandidatesForSurveyCohort(i, response[i*2],response[(i*2)+1]);
 			}
 
 			$('#please-be-patient').hide();
