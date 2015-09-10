@@ -29,7 +29,13 @@ var decodeTable = {
 	"https://next.ft.com/stream/sectionsId/MTAz-U2VjdGlvbnM=": "Currencies",
 	"https://next.ft.com/stream/brandId/ZWI2YTE0YjgtOTIyYy00OTIyLWExOTYtZmRmNzk0YzA4NGFk-QnJhbmRz": "Global Market Overview",
 	"https://next.ft.com/stream/sectionsId/MTA3-U2VjdGlvbnM=": "Global Economy",
-	"https://next.ft.com/stream/sectionsId/NzI=-U2VjdGlvbnM=": "FTfm Fund Management"
+	"https://next.ft.com/stream/sectionsId/NzI=-U2VjdGlvbnM=": "FTfm Fund Management",
+	"https://next.ft.com/stream/sectionsId/MTY=-U2VjdGlvbnM=": "Middle East & North Africa",
+	"https://next.ft.com/stream/authorsId/Q0ItMDAwMDgxOQ==-QXV0aG9ycw==": "Elaine Moore",
+	"https://next.ft.com/stream/authorsId/Q0ItMDAwMDkyNg==-QXV0aG9ycw==": "Lucy Kellaway",
+	"https://next.ft.com/stream/topicsId/MGI1OGNiYWUtMjc4NC00ZGJmLTgzOWYtNzkxZGYzZjcyMTI4-VG9waWNz": "UK immigration",
+	"https://next.ft.com/stream/regionsId/TnN0ZWluX0dMX1NZ-R0w=": "Syria",
+	"https://next.ft.com/stream/topicsId/MjY=-VG9waWNz": "Investment Banking"
 };
 
 var render = function (el, results, opts) {
