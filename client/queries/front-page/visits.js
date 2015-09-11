@@ -1,13 +1,12 @@
 'use strict';
 
-var pageViews = require('./visits/page-views');
-var visitors = require('./visits/visitors');
+var visits = require('./visits/visits');
 
 var render = () => {
 	var el = document.getElementById('charts');
 
-	pageViews.render(el);
-	visitors.render(el);
+	visits.render(el, 'page views', 'count');
+	visits.render(el, 'visitors', 'count_unique', { targetProperty: 'user.uuid' });
 };
 
 module.exports = {
