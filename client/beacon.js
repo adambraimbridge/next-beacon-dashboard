@@ -246,6 +246,10 @@ Keen.ready(function(){
 			require('./queries/front-page/ctr').render();
 			break;
 
+		case '/graph/front-page/visits':
+			require('./queries/front-page/visits').render();
+			break;
+
 		default:
 			console.log('unknown graph');
 

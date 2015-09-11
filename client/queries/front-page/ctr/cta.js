@@ -5,12 +5,13 @@ var client = require('../../../lib/wrapped-keen');
 
 var render = el => {
     var ctaEl = document.createElement('div');
-    ctaEl.dataset.oGridColspan = '12';
-    ctaEl.innerHTML = '<h2>Most clicked elements in the past week</h2>';
+    ctaEl.classList.add('o-grid-row');
+    ctaEl.innerHTML = '<h2 data-o-grid-colspan="12">Most clicked elements in the past week</h2>';
 
     el.appendChild(ctaEl);
 
     var tableEl = document.createElement('table');
+    tableEl.dataset.oGridColspan = '12';
     tableEl.innerHTML = `
         <thead>
             <tr>
@@ -26,7 +27,7 @@ var render = el => {
         filters: [
             {
                 operator: 'eq',
-                property_name: 'url.type',
+                property_name: 'page.location.type',
                 property_value: 'frontpage'
             },
             {

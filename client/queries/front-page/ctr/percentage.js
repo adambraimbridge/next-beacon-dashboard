@@ -6,7 +6,8 @@ var client = require('../../../lib/wrapped-keen');
 
 var render = el => {
     var percentageEl = document.createElement('div');
-    percentageEl.innerHTML = '<h2>Percentage of unique visitors to the front page who clicked on something</h2>';
+    percentageEl.classList.add('o-grid-row');
+    percentageEl.innerHTML = '<h2 data-o-grid-colspan="12">Percentage of unique visitors to the front page who clicked on something</h2>';
     el.appendChild(percentageEl);
 
     var percentageSteps = [
@@ -16,7 +17,7 @@ var render = el => {
             filters: [
                 {
                     operator: 'eq',
-                    property_name: 'url.type',
+                    property_name: 'page.location.type',
                     property_value: 'frontpage'
                 }
             ]
@@ -27,7 +28,7 @@ var render = el => {
             filters: [
                 {
                     operator: 'eq',
-                    property_name: 'url.type',
+                    property_name: 'page.location.type',
                     property_value: 'frontpage'
                 },
                 {
@@ -55,12 +56,12 @@ var render = el => {
     // two top level numbers for yesterday and day before
     var topLevelCharts = [
         {
-            title: moment().subtract(2, 'days').format('dddd'),
-            colors: ['#91DCD0']
-        },
-        {
             title: 'Yesterday',
             colors: ['#49c5b1']
+        },
+        {
+            title: moment().subtract(2, 'days').format('dddd'),
+            colors: ['#91DCD0']
         }
     ]
         .map(config => {
@@ -88,7 +89,7 @@ var render = el => {
     // run the query
     client.run(percentageQueries, (err, results) => {
         topLevelCharts.forEach((topLevelChart, i) => {
-            var result = results.slice(-(topLevelCharts.length) + i).shift();
+            var result = results.slice(-1 - i).shift();
             topLevelChart.chart
                 .data({
                     result: parseFloat(((100 / result.result[0]) * result.result[1]).toFixed(1))
