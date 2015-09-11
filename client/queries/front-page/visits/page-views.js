@@ -29,17 +29,17 @@ var render = el => {
         })
     ];
 
-    var totalEl = document.createElement('div');
-    totalEl.dataset.oGridColspan = '12 M6';
-    pageViewsEl.appendChild(totalEl);
-    var totalChart = new Keen.Dataviz()
-        .el(totalEl)
-        .prepare();
     var percentageEl = document.createElement('div');
     percentageEl.dataset.oGridColspan = '12 M6';
     pageViewsEl.appendChild(percentageEl);
     var percentageChart = new Keen.Dataviz()
         .el(percentageEl)
+        .prepare();
+    var totalEl = document.createElement('div');
+    totalEl.dataset.oGridColspan = '12 M6';
+    pageViewsEl.appendChild(totalEl);
+    var totalChart = new Keen.Dataviz()
+        .el(totalEl)
         .prepare();
     var trendEl = document.createElement('div');
     trendEl.dataset.oGridColspan = '12';
@@ -57,21 +57,27 @@ var render = el => {
 
     client.run(pageViewsQueries, (err, results) => {
         var totalResult = results[0].result.slice(-1).shift().value;
-        totalChart
-            .data({
-                result: totalResult
-            })
-            .title('Total')
-            .render();
         percentageChart
             .data({
                 result: parseFloat(((100 / results[1].result) * totalResult).toFixed(1))
             })
-            .colors(['#91DCD0'])
             .title('Percentage of site-wide page views')
             .render();
+        totalChart
+            .data({
+                result: totalResult
+            })
+            .colors(['#91DCD0'])
+            .title('Total')
+            .render();
+        var trendData = results[0].result.map(result => {
+            result.value = parseFloat(((100 / results[1].result) * result.value).toFixed(1));
+            return result;
+        });
         trendChart
-            .data(results[0])
+            .data({
+                result: trendData
+            })
             .render();
     });
 
