@@ -1,3 +1,4 @@
+/* global Keen */
 'use strict';
 
 var moment = require('moment');
