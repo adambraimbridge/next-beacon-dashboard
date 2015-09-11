@@ -17,7 +17,7 @@ var render = el => {
             filters: [
                 {
                     operator: 'eq',
-                    property_name: 'url.type',
+                    property_name: 'page.location.type',
                     property_value: 'frontpage'
                 }
             ]
@@ -28,7 +28,7 @@ var render = el => {
             filters: [
                 {
                     operator: 'eq',
-                    property_name: 'url.type',
+                    property_name: 'page.location.type',
                     property_value: 'frontpage'
                 },
                 {

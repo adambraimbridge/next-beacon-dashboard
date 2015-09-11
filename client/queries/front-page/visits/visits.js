@@ -16,7 +16,7 @@ var render = (el, type, queryType, queryOpts = {})  => {
             filters: [
                 {
                     operator: 'eq',
-                    property_name: 'url.type',
+                    property_name: 'page.location.type',
                     property_value: 'frontpage'
                 }
             ],
