@@ -2,12 +2,14 @@
 
 var cta = require('./ctr/cta');
 var percentage = require('./ctr/percentage');
+var cohorts = require('./ctr/cohorts');
 
 var render = () => {
 	var el = document.getElementById('charts');
 
 	percentage.render(el);
 	cta.render(el);
+	cohorts.render(el);
 };
 
 module.exports = {
