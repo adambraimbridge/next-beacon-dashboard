@@ -11,6 +11,7 @@ var render = el => {
 
     var cohortsGraphEl = document.createElement('div');
     cohortsGraphEl.dataset.oGridColspan = '12';
+    cohortsEl.appendChild(cohortsGraphEl);
     var cohortsGraph = new Keen.Dataviz()
         .chartType('areachart')
         .el(cohortsGraphEl)
