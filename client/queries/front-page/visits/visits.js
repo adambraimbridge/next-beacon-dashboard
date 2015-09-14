@@ -1,7 +1,6 @@
 /* global Keen */
 'use strict';
 
-var moment = require('moment');
 var client = require('../../../lib/wrapped-keen');
 const weeks = 4;
 
