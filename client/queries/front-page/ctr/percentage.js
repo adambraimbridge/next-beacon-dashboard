@@ -4,10 +4,15 @@
 var moment = require('moment');
 var client = require('../../../lib/wrapped-keen');
 
+var range = size => (new Array(size))
+    .join()
+    .split(',')
+    .map((item, i) => i);
+
 var render = el => {
     var percentageEl = document.createElement('div');
     percentageEl.classList.add('o-grid-row');
-    percentageEl.innerHTML = '<h2 data-o-grid-colspan="12">Percentage of unique visitors to the front page who clicked on something</h2>';
+    percentageEl.innerHTML = '<h2 data-o-grid-colspan="12">Percentage of visitors to the front page who clicked on something</h2>';
     el.appendChild(percentageEl);
 
     var percentageSteps = [
@@ -39,8 +44,9 @@ var render = el => {
             ]
         }
     ];
-    // go back 7 days
-    var percentageConfigs = [6, 5, 4, 3, 2, 1, 0]
+    // go back x days
+    var percentageConfigs = range(14)
+        .reverse()
         .map(i => ({
             stepOpts: {
                 timeframe: {
@@ -82,7 +88,7 @@ var render = el => {
         .height(450)
         .chartOptions({
             hAxis: {
-                format: 'EEEE'
+                format: 'EEE d'
             }
         })
         .prepare();
