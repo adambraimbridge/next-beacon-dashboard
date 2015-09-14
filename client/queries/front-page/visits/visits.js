@@ -1,7 +1,6 @@
 /* global Keen */
 'use strict';
 
-var moment = require('moment');
 var client = require('../../../lib/wrapped-keen');
 const weeks = 4;
 
@@ -47,12 +46,12 @@ var render = (el, type, queryType, queryOpts = {})  => {
     trendEl.dataset.oGridColspan = '12';
     pageViewsEl.appendChild(trendEl);
     charts.set('trend', new Keen.Dataviz()
-        .el(trendEl)
         .chartType('linechart')
+        .el(trendEl)
         .height(450)
         .chartOptions({
             hAxis: {
-                format: 'EEEE'
+                format: 'EEE d'
             }
         })
         .prepare()
@@ -78,28 +77,12 @@ var render = (el, type, queryType, queryOpts = {})  => {
         // turn values into percentages
         var percentageTrendData = frontPageResults.map((result, i) =>
             Object.assign({}, result, {
-                value:  [{
-                    result: parseFloat(((100 / siteResults[i].value) * result.value).toFixed(1))
-                }]
+                value: parseFloat(((100 / siteResults[i].value) * result.value).toFixed(1))
             })
         );
-        // take this week...
-        var trendData = percentageTrendData.slice(-7).map(result => {
-            var trendResult = Object.assign({}, result);
-            trendResult.value[0].category = 'This week';
-            return trendResult;
-        });
-        // ...and overlay previous weeks
-        percentageTrendData.slice(0, -7)
-            .forEach((data, i, array) => {
-                var weekBeginning = array[parseInt(i/7) * 7].timeframe.start;
-                var value = data.value[0];
-                value.category = `W/b ${moment(weekBeginning).format('Do MMM')}`;
-                trendData[i % 7].value.splice(1, 0, value);
-            });
         charts.get('trend')
             .data({
-                result: trendData
+                result: percentageTrendData
             })
             .render();
     });
