@@ -30,6 +30,27 @@ var render = el => {
         tables[type] = tableEl;
     });
 
+    // add component breakdown table
+    var breakdownContainerEl = document.createElement('div');
+    breakdownContainerEl.classList.add('o-grid-row');
+    breakdownContainerEl.innerHTML = `<h2 data-o-grid-colspan="12">Component breakdown for the past week</h2>`;
+    el.appendChild(breakdownContainerEl);
+
+    var breakdownTableEl = document.createElement('table');
+    breakdownTableEl.className = 'table--front-page table--show-all';
+    breakdownTableEl.dataset.oGridColspan = '12';
+    breakdownTableEl.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Dom path</th>
+                    <th>Clicks</th>
+                    <th>% of total clicks</th>
+                </tr>
+            </thead>
+        `;
+    breakdownContainerEl.appendChild(breakdownTableEl);
+    tables['breakdown'] = breakdownTableEl;
+
     var ctaQuery = new Keen.Query('count', {
         eventCollection: 'cta',
         filters: [
@@ -115,13 +136,7 @@ var render = el => {
             });
         });
 
-        // add component breakdown table
-        var breakdownContainerEl = document.createElement('div');
-        breakdownContainerEl.classList.add('o-grid-row');
-        breakdownContainerEl.innerHTML = `<h2 data-o-grid-colspan="12">Component breakdown for the past week</h2>`;
-        el.appendChild(breakdownContainerEl);
-
-        // add selector
+        // add breakdown selector
         var componentSelectEl = document.createElement('select');
         components.forEach(component => {
             var componentName = component.name;
@@ -130,24 +145,10 @@ var render = el => {
             componentEl.textContent = componentName.replace(/-/g, ' ').replace(/\b[a-z]/g, match => match.toUpperCase());
             componentSelectEl.appendChild(componentEl);
         });
-        breakdownContainerEl.appendChild(componentSelectEl);
-
-        var breakdownTableEl = document.createElement('table');
-        breakdownTableEl.className = 'table--front-page table--show-all';
-        breakdownTableEl.dataset.oGridColspan = '12';
-        breakdownTableEl.innerHTML = `
-            <thead>
-                <tr>
-                    <th>Dom path</th>
-                    <th>Clicks</th>
-                    <th>% of total clicks</th>
-                </tr>
-            </thead>
-        `;
-        breakdownContainerEl.appendChild(breakdownTableEl);
+        tables['breakdown'].parentNode.insertBefore(componentSelectEl, tables['breakdown']);
 
         var breakdownTableBodyEl = document.createElement('tbody');
-        breakdownTableEl.appendChild(breakdownTableBodyEl);
+        tables['breakdown'].appendChild(breakdownTableBodyEl);
 
         // group components
         breakdownTableBodyEl.innerHTML = components

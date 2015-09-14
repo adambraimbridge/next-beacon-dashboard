@@ -6,7 +6,7 @@ var client = require('../../../lib/wrapped-keen');
 var render = el => {
     var cohortsEl = document.createElement('div');
     cohortsEl.classList.add('o-grid-row');
-    cohortsEl.innerHTML = '<h2 data-o-grid-colspan="12">Percentage of visitors who click on something X times</h2>';
+    cohortsEl.innerHTML = '<h2 data-o-grid-colspan="12">Percentage of visitors who clicked on something X times</h2>';
     el.appendChild(cohortsEl);
 
     var cohortsGraphEl = document.createElement('div');

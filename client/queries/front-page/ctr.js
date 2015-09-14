@@ -8,8 +8,8 @@ var render = () => {
 	var el = document.getElementById('charts');
 
 	percentage.render(el);
-	cta.render(el);
 	cohorts.render(el);
+	cta.render(el);
 };
 
 module.exports = {
