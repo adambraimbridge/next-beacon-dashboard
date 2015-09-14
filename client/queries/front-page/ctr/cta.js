@@ -67,6 +67,7 @@ var render = el => {
                 </tr>
             `)
             .join('');
+        tables['elements'].appendChild(elementsTableBodyEl);
 
         var componentsTableBodyEl = document.createElement('tbody');
         // pull out the different 'components';
@@ -100,7 +101,6 @@ var render = el => {
         // add show all buttons
         Object.keys(tables).forEach(tableType => {
             var table = tables[tableType];
-            table.appendChild(elementsTableBodyEl);
             var showAllEl = document.createElement('button');
             showAllEl.classList.add('table__button--show-all');
             showAllEl.textContent = 'Show all';
