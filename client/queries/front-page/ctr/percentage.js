@@ -7,7 +7,7 @@ var client = require('../../../lib/wrapped-keen');
 var render = el => {
     var percentageEl = document.createElement('div');
     percentageEl.classList.add('o-grid-row');
-    percentageEl.innerHTML = '<h2 data-o-grid-colspan="12">Percentage of unique visitors to the front page who clicked on something</h2>';
+    percentageEl.innerHTML = '<h2 data-o-grid-colspan="12">Percentage of visitors to the front page who clicked on something</h2>';
     el.appendChild(percentageEl);
 
     var percentageSteps = [
