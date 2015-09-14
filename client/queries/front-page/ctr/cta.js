@@ -5,6 +5,31 @@ var client = require('../../../lib/wrapped-keen');
 
 var render = el => {
 
+    var tables = {};
+    [['components', 'Component name'], ['elements', 'Dom path']].forEach(config => {
+        var [type, colTitle] = config;
+        var containerEl = document.createElement('div');
+        containerEl.classList.add('o-grid-row');
+        containerEl.innerHTML = `<h2 data-o-grid-colspan="12">Most clicked ${type} in the past week</h2>`;
+        el.appendChild(containerEl);
+
+        var tableEl = document.createElement('table');
+        tableEl.classList.add('table--front-page');
+        tableEl.dataset.oGridColspan = '12';
+        tableEl.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>${colTitle}</th>
+                        <th>Clicks</th>
+                        <th>% of total clicks</th>
+                    </tr>
+                </thead>
+            `;
+        containerEl.appendChild(tableEl);
+
+        tables[type] = tableEl;
+    });
+
     var ctaQuery = new Keen.Query('count', {
         eventCollection: 'cta',
         filters: [
@@ -29,30 +54,6 @@ var render = el => {
         timezone: 'UTC'
     });
     client.run(ctaQuery, (err, results) => {
-        var tables = {};
-        [['components', 'Component name'], ['elements', 'Dom path']].forEach(config => {
-            var [type, colTitle] = config;
-            var containerEl = document.createElement('div');
-            containerEl.classList.add('o-grid-row');
-            containerEl.innerHTML = `<h2 data-o-grid-colspan="12">Most clicked ${type} in the past week</h2>`;
-            el.appendChild(containerEl);
-
-            var tableEl = document.createElement('table');
-            tableEl.classList.add('table--front-page');
-            tableEl.dataset.oGridColspan = '12';
-            tableEl.innerHTML = `
-                <thead>
-                    <tr>
-                        <th>${colTitle}</th>
-                        <th>Clicks</th>
-                        <th>% of total clicks</th>
-                    </tr>
-                </thead>
-            `;
-            containerEl.appendChild(tableEl);
-
-            tables[type] = tableEl;
-        });
 
         var totalClicks = results.result.reduce((total, result) => total + result.result, 0);
 
