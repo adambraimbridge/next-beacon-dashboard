@@ -166,7 +166,7 @@ var render = el => {
                             <td>${((100 / elementTotalClicks) * element.result).toFixed(2)}</td>
                         </tr>
                     `)
-                    .join('')
+                    .join('');
             })
             .join('');
 
