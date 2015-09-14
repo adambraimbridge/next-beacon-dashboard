@@ -4,6 +4,25 @@
 var client = require('../../../lib/wrapped-keen');
 
 var render = el => {
+    var cohortsEl = document.createElement('div');
+    cohortsEl.classList.add('o-grid-row');
+    cohortsEl.innerHTML = '<h2 data-o-grid-colspan="12">Percentage of visitors who click on something X times</h2>';
+    el.appendChild(cohortsEl);
+
+    var cohortsGraphEl = document.createElement('div');
+    cohortsGraphEl.dataset.oGridColspan = '12';
+    var cohortsGraph = new Keen.Dataviz()
+        .chartType('areachart')
+        .el(cohortsGraphEl)
+        .height(450)
+        .chartOptions({
+            isStacked: true,
+            hAxis: {
+                format: 'EEEE'
+            }
+        })
+        .prepare();
+
     var query = new Keen.Query('count', {
         eventCollection: 'cta',
         filters: [
@@ -25,7 +44,7 @@ var render = el => {
     });
 
     client.run(query, (err, results) => {
-        results.result.forEach(result => {
+        var cohortResults = results.result.map(result => {
             var newValue = new Array(0, 0, 0, 0, 0);
             var rest = 0;
             result.value.forEach(value => {
@@ -35,30 +54,22 @@ var render = el => {
                     rest += 1;
                 }
             });
-            result.value = newValue.map((value, i) => ({
+            var newResult = Object.assign({}, result);
+            newResult.value = newValue.map((value, i) => ({
                 clicks: i,
-                result: value
+                result: (100 / result.value.length) * value
             }));
-            result.value.push({
-                clicks: `${newValue.length}+`,
-                result: rest
+            newResult.value.push({
+                clicks: `${newValue.length} or more`,
+                result: (100 / result.value.length) * rest
             });
+            return newResult;
         });
         var cohortsEl = document.createElement('div');
         cohortsEl.dataset.oGridColspan = '12';
         el.appendChild(cohortsEl);
-        new Keen.Dataviz()
-            .chartType('areachart')
-            .el(cohortsEl)
-            .height(450)
-            .chartOptions({
-                isStacked: true,
-                hAxis: {
-                    format: 'EEEE'
-                }
-            })
-            .prepare()
-            .data(results)
+        cohortsGraph
+            .data({ result: cohortResults })
             .render();
     });
 };
