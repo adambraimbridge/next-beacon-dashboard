@@ -4,30 +4,6 @@
 var client = require('../../../lib/wrapped-keen');
 
 var render = el => {
-    var tables = {};
-    [['components', 'Component name'], ['elements', 'Dom path']].forEach(config => {
-        var [type, colTitle] = config;
-        var containerEl = document.createElement('div');
-        containerEl.classList.add('o-grid-row');
-        containerEl.innerHTML = `<h2 data-o-grid-colspan="12">Most clicked ${type} in the past week</h2>`;
-        el.appendChild(containerEl);
-
-        var tableEl = document.createElement('table');
-        tableEl.classList.add('table--front-page');
-        tableEl.dataset.oGridColspan = '12';
-        tableEl.innerHTML = `
-            <thead>
-                <tr>
-                    <th>${colTitle}</th>
-                    <th>Clicks</th>
-                    <th>% of total clicks</th>
-                </tr>
-            </thead>
-        `;
-        containerEl.appendChild(tableEl);
-
-        tables[type] = tableEl;
-    });
 
     var ctaQuery = new Keen.Query('count', {
         eventCollection: 'cta',
@@ -53,6 +29,31 @@ var render = el => {
         timezone: 'UTC'
     });
     client.run(ctaQuery, (err, results) => {
+        var tables = {};
+        [['components', 'Component name'], ['elements', 'Dom path']].forEach(config => {
+            var [type, colTitle] = config;
+            var containerEl = document.createElement('div');
+            containerEl.classList.add('o-grid-row');
+            containerEl.innerHTML = `<h2 data-o-grid-colspan="12">Most clicked ${type} in the past week</h2>`;
+            el.appendChild(containerEl);
+
+            var tableEl = document.createElement('table');
+            tableEl.classList.add('table--front-page');
+            tableEl.dataset.oGridColspan = '12';
+            tableEl.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>${colTitle}</th>
+                        <th>Clicks</th>
+                        <th>% of total clicks</th>
+                    </tr>
+                </thead>
+            `;
+            containerEl.appendChild(tableEl);
+
+            tables[type] = tableEl;
+        });
+
         var totalClicks = results.result.reduce((total, result) => total + result.result, 0);
 
         var elementsTableBodyEl = document.createElement('tbody');
@@ -69,7 +70,7 @@ var render = el => {
 
         var componentsTableBodyEl = document.createElement('tbody');
         // pull out the different 'components';
-        componentsTableBodyEl.innerHTML = results.result
+        var components = results.result
             .map(result => result['meta.domPath'].split(' | ')[0])
             .filter((componentName, i, componentNames) => componentNames.indexOf(componentName) === i)
             .map(componentName => ({
@@ -79,7 +80,9 @@ var render = el => {
                     .filter(result => result['meta.domPath'].split(' | ')[0] === componentName)
                     .reduce((total, result) => total + result.result, 0)
             }))
-            .sort((componentOne, componentTwo) => componentTwo.value - componentOne.value)
+            .sort((componentOne, componentTwo) => componentTwo.value - componentOne.value);
+
+        componentsTableBodyEl.innerHTML = components
             .map(component => {
                 // prettify name
                 var componentName = component.name.replace(/-/g, ' ').replace(/\b[a-z]/g, match => match.toUpperCase());
@@ -110,6 +113,70 @@ var render = el => {
                 }
             });
         });
+
+        // add component breakdown table
+        var breakdownContainerEl = document.createElement('div');
+        breakdownContainerEl.classList.add('o-grid-row');
+        breakdownContainerEl.innerHTML = `<h2 data-o-grid-colspan="12">Component breakdown for the past week</h2>`;
+        el.appendChild(breakdownContainerEl);
+
+        // add selector
+        var componentSelectEl = document.createElement('select');
+        components.forEach(component => {
+            var componentName = component.name;
+            var componentEl = document.createElement('option');
+            componentEl.value = componentName;
+            componentEl.textContent = componentName.replace(/-/g, ' ').replace(/\b[a-z]/g, match => match.toUpperCase());
+            componentSelectEl.appendChild(componentEl);
+        });
+        breakdownContainerEl.appendChild(componentSelectEl);
+
+        var breakdownTableEl = document.createElement('table');
+        breakdownTableEl.className = 'table--front-page table--show-all';
+        breakdownTableEl.dataset.oGridColspan = '12';
+        breakdownTableEl.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Dom path</th>
+                    <th>Clicks</th>
+                    <th>% of total clicks</th>
+                </tr>
+            </thead>
+        `;
+        breakdownContainerEl.appendChild(breakdownTableEl);
+
+        var breakdownTableBodyEl = document.createElement('tbody');
+        breakdownTableEl.appendChild(breakdownTableBodyEl);
+
+        // group components
+        breakdownTableBodyEl.innerHTML = components
+            .map(component => ({
+                name: component.name,
+                elements: results.result
+                    .filter(result => result['meta.domPath'].split(' | ')[0] === component.name)
+            }))
+            .map(component => {
+                var elementTotalClicks = component.elements.reduce((total, element) => total += element.result, 0);
+                return component.elements
+                    .sort((elementOne, elementTwo) => elementTwo.result - elementOne.result)
+                    .map(element => `
+                        <tr class="table__body-row" data-component="${component.name}">
+                            <td><a href="https://next.ft.com/uk#domPath:${element['meta.domPath']}">${element['meta.domPath']}</a></td>
+                            <td>${element.result}</td>
+                            <td>${((100 / elementTotalClicks) * element.result).toFixed(2)}</td>
+                        </tr>
+                    `)
+                    .join('')
+            })
+            .join('');
+
+        // handle for select change
+        var componentHandler = function(ev) {
+            Array.from(breakdownTableEl.querySelectorAll('tbody tr'))
+                .forEach(el => el.style.display = el.dataset.component === ev.target.value ? 'table-row' : 'none');
+        };
+        componentSelectEl.addEventListener('change', componentHandler);
+        componentSelectEl.dispatchEvent(new Event('change'));
     });
 };
 
