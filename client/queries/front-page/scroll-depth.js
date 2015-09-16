@@ -1,3 +1,4 @@
+/* global Keen */
 'use strict';
 
 var OTabs = require('o-tabs');
@@ -67,7 +68,7 @@ var render = () => {
 				var newValue = breakpointValue.map(value => {
 					var newResult = total ? parseFloat(((100 / total) * value.result).toFixed(2)) : 0;
 
-					return Object.assign({}, { result: newResult, category: value['meta.componentPos'] })
+					return Object.assign({}, { result: newResult, category: value['meta.componentPos'] });
 				});
 
 				return Object.assign({}, result, { value: newValue });
