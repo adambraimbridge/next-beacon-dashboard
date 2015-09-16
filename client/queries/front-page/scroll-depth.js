@@ -2,16 +2,38 @@
 'use strict';
 
 var OTabs = require('o-tabs');
+var queryString = require('query-string');
+var queryParameters = queryString.parse(location.search);
 var client = require('../../lib/wrapped-keen');
+
 const breakpoints = ['default', 'XS', 'S', 'M', 'L', 'XL'];
+const userTypes = ['subscriber', 'registered', 'anonymous'];
 
 var render = () => {
+	var currentUserType = queryParameters['user-type'] || userTypes[0];
 	var el = document.getElementById('charts');
 
 	var scrollDepthEl = document.createElement('div');
 	scrollDepthEl.classList.add('o-grid-row');
 	scrollDepthEl.innerHTML = `<h2 data-o-grid-colspan="12">Percentage of visitors that see the 1st component, 2nd component, etc</h2>`;
 	el.appendChild(scrollDepthEl);
+
+	// add user type toggle
+	var userTypeEl = document.createElement('div');
+	userTypeEl.classList.add('nav--horizontal');
+	userTypeEl.dataset.oGridColspan = '12';
+	var userItems = userTypes
+		.map(userType =>
+			userType === currentUserType ? `<li>${userType}</li>` : `<li><a href="?user-type=${userType}">${userType}</a></li>`
+		)
+		.join('');
+	userTypeEl.innerHTML = `
+		<h3>User type: </h3>
+		<ul>
+			${userItems}
+		</ul>
+	`;
+	scrollDepthEl.insertBefore(userTypeEl, scrollDepthEl.firstChild);
 
 	var scrollDepthCharts = {};
 	breakpoints.forEach(breakpoint => {
@@ -51,10 +73,15 @@ var render = () => {
 				operator: 'ne',
 				property_name: 'ingest.user.layout',
 				property_value: ''
+			},
+			{
+				operator: 'eq',
+				property_name: 'cohort.incumbent',
+				property_value: currentUserType
 			}
 		],
 		groupBy: ['meta.componentPos', 'ingest.user.layout'],
-		timeframe: `this_14_days`,
+		timeframe: 'previous_14_days',
 		interval: 'daily',
 		timezone: 'UTC'
 	});
@@ -80,6 +107,7 @@ var render = () => {
 
 		var tabsEl = document.createElement('ul');
 		tabsEl.dataset.oComponent = 'o-tabs';
+		tabsEl.dataset.oGridColspan = '12';
 		tabsEl.className = 'o-tabs o-tabs--buttontabs';
 		tabsEl.setAttribute('role', 'tablist');
 		tabsEl.innerHTML = breakpoints
