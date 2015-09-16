@@ -10,7 +10,7 @@ var render = () => {
 
 	var scrollDepthEl = document.createElement('div');
 	scrollDepthEl.classList.add('o-grid-row');
-	scrollDepthEl.innerHTML = `<h2 data-o-grid-colspan="12">Percentage of visitors that see 1st component, 2nd component, etc</h2>`;
+	scrollDepthEl.innerHTML = `<h2 data-o-grid-colspan="12">Percentage of visitors that see the 1st component, 2nd component, etc</h2>`;
 	el.appendChild(scrollDepthEl);
 
 	var scrollDepthCharts = {};
@@ -73,9 +73,6 @@ var render = () => {
 
 				return Object.assign({}, result, { value: newValue });
 			});
-			if (breakpoint === 'XS') {
-				console.log(result);
-			}
 			scrollDepthCharts[breakpoint]
 				.data({ result })
 				.render();
