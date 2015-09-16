@@ -250,6 +250,10 @@ Keen.ready(function(){
 			require('./queries/front-page/visits').render();
 			break;
 
+		case '/graph/front-page/scroll-depth':
+			require('./queries/front-page/scroll-depth').render();
+			break;
+
 		default:
 			console.log('unknown graph');
 

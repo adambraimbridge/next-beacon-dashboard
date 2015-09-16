@@ -1,6 +1,8 @@
 @import 'o-techdocs/main';
 @import 'o-hierarchical-nav/main';
 @import 'o-table/main';
+$o-tabs-is-silent: false;
+@import 'o-tabs/main';
 
 /* Hide any enhanced experience content when in core mode, and vice versa. */
 .core .o--if-js,
@@ -189,6 +191,32 @@ table {
 		.table--show-all & {
 			display: table-row;
 		}
+	}
+}
+.nav--horizontal {
+	h3,
+	ul,
+	li {
+		display: inline-block;
+	}
+	ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	li {
+		font-size: 1.3em;
+
+		&:after {
+			content: '|';
+			margin: 0 5px;
+		}
+		&:last-child:after {
+			display: none;
+		}
+	}
+	a:hover {
+		text-decoration: none;
 	}
 }
 
