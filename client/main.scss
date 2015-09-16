@@ -1,6 +1,8 @@
 @import 'o-techdocs/main';
 @import 'o-hierarchical-nav/main';
 @import 'o-table/main';
+$o-tabs-is-silent: false;
+@import 'o-tabs/main';
 
 /* Hide any enhanced experience content when in core mode, and vice versa. */
 .core .o--if-js,
