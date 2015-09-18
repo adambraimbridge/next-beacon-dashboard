@@ -455,7 +455,7 @@ var render = function (el, results, opts, client) {
 historicChart
 	.parseRawData({ result: historicData })
 	.render();
-	}
+}
 
 };
 

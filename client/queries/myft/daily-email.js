@@ -7,6 +7,9 @@ var util = require('./util');
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
 
+var offset = parseInt(queryParameters.offset) || 0;
+
+
 var daysFromNow = function (offset) {
 	offset = offset || 0;
 	var dateObject = new Date();
@@ -109,9 +112,10 @@ function getFunnelGraph(el) {
 	return new Keen.Dataviz()
 		.el(el)
 		.title(null)
-		.colors([ Keen.Dataviz.defaults.colors[4] ])
+		.chartType('barchart')
+		.colors([ Keen.Dataviz.defaults.colors[4], Keen.Dataviz.defaults.colors[3] ])
 		.chartOptions({
-				chartArea: { left: "30%" },
+				chartArea: { left: "30%", height: '400px'},
 				legend: { position: "none" }
 		})
 		.prepare();
@@ -120,28 +124,77 @@ function getFunnelGraph(el) {
 
 
 function init(client) {
-	var initialiseForTimeframe = function(name, start, end) {
-		var section = document.querySelector(`.section--${name}`);
-		var funnelData = getFunnelDataForTimeframe(start, end);
+	var initialiseForTimeframes = function(current, comparison) {
+		var section = document.querySelector(`.section--${current.name}`);
+		var promises = [];
+		promises.push(client.run(getFunnelDataForTimeframe(current.start, current.end)));
+		promises.push(client.run(getFunnelDataForTimeframe(comparison.start, comparison.end)));
+
+
 		var funnelGraph = getFunnelGraph(section.querySelector('.funnel'));
-		client.run(funnelData).then(function(results) {
+		Promise.all(promises).then(function([currentResults, previousResults]) {
+			var combined = currentResults.result.map(function(val, index) {
+				return [labels[index], val, previousResults.result[index]];
+			});
+
 			funnelGraph
-				.parseRawData(results)
+				.parseRawData({ result: combined })
 				.labels(labels)
 				.render();
 
-			var ctr = results.result[3] / results.result[2];
-			var openRate = results.result[2] / results.result[1];
-			var deliverRate = results.result[1] / results.result[0];
+			var ctr = currentResults.result[3] / currentResults.result[2];
+			var openRate = currentResults.result[2] / currentResults.result[1];
+			var recieveRate = currentResults.result[1] / currentResults.result[0];
 
-			section.querySelector('.numbers--click-rate .numbers__number').textContent = (Math.round(ctr * 10000 ) / 100) + '%';
-			section.querySelector('.numbers--open-rate .numbers__number').textContent = (Math.round(openRate * 10000 ) / 100) + '%';
-			section.querySelector('.numbers--delivery-rate .numbers__number').textContent = (Math.round(deliverRate * 10000 ) / 100) + '%';
+			section.querySelector('.numbers-table--click-rate .numbers-table__current').textContent = (Math.round(ctr * 10000 ) / 100) + '%';
+			section.querySelector('.numbers-table--open-rate .numbers-table__current').textContent = (Math.round(openRate * 10000 ) / 100) + '%';
+			section.querySelector('.numbers-table--recieve-rate .numbers-table__current').textContent = (Math.round(recieveRate * 10000 ) / 100) + '%';
+
+			var prevCtr = previousResults.result[3] / previousResults.result[2];
+			var prevOpenRate = previousResults.result[2] / previousResults.result[1];
+			var prevRecieveRate = previousResults.result[1] / previousResults.result[0];
+
+			section.querySelector('.numbers-table--click-rate .numbers-table__previous').textContent = (Math.round(prevCtr * 10000 ) / 100) + '%';
+			section.querySelector('.numbers-table--open-rate .numbers-table__previous').textContent = (Math.round(prevOpenRate * 10000 ) / 100) + '%';
+			section.querySelector('.numbers-table--recieve-rate .numbers-table__previous').textContent = (Math.round(prevRecieveRate * 10000 ) / 100) + '%';
+
+			var ctrDiff = ((ctr - prevCtr) / prevCtr);
+			var openDiff = ((openRate - prevOpenRate) / prevOpenRate);
+			var recieveDiff = ((recieveRate - prevRecieveRate) / prevRecieveRate);
+
+			section.querySelector('.numbers-table--click-rate .numbers-table__change').textContent = (Math.round(ctrDiff * 10000 ) / 100) + '%';
+			section.querySelector('.numbers-table--open-rate .numbers-table__change').textContent = (Math.round(openDiff * 10000 ) / 100) + '%';
+			section.querySelector('.numbers-table--recieve-rate .numbers-table__change').textContent = (Math.round(recieveDiff * 10000 ) / 100) + '%';
+
 		});
 	};
-	initialiseForTimeframe('today', -1, 0);
-	initialiseForTimeframe('this-week', -7, 0);
-	initialiseForTimeframe('last-week', -14, -7);
+
+
+
+	initialiseForTimeframes(
+	{
+		name: 'today',
+		start: -1 + offset,
+		end: 0  + offset
+	}, {
+		name: 'yesterday',
+		start: -2  + offset,
+		end: -1  + offset
+	});
+
+	initialiseForTimeframes(
+	{
+		name: 'this-week',
+		start: -7  + offset,
+		end: 0  + offset
+	}, {
+		name: 'last-week',
+		start: -14  + offset,
+		end: -7  + offset
+	});
+
+	document.getElementById('offset-date').textContent = daysFromNow(offset);
+
 };
 
 module.exports = {
