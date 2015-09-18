@@ -270,6 +270,10 @@ Keen.ready(function(){
 			require('./queries/front-page/scroll-depth').render();
 			break;
 
+		case '/graph/front-page/performance':
+			require('./queries/front-page/performance').render();
+			break;
+
 		default:
 			console.log('unknown graph');
 
