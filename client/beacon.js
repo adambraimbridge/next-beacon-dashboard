@@ -184,6 +184,10 @@ Keen.ready(function(){
 			require('./queries/myft/weekly-email').init(client);
 			break;
 
+		case '/graph/myft/tray':
+			require('./queries/myft/tray').init(client);
+			break;
+
 		case '/graph/myft':
 			require('./queries/myft').init(client);
 			break;
