@@ -172,6 +172,10 @@ Keen.ready(function(){
 			require('./queries/frequency-recency').init(client);
 			break;
 
+		case '/graph/myft/news-feed':
+			require('./queries/myft/news-feed').init(client);
+			break;
+
 		case '/graph/myft/daily-email':
 			require('./queries/myft/daily-email').init(client);
 			break;

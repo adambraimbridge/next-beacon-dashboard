@@ -1,8 +1,6 @@
-/* global Keen, $ */
+/* global Keen */
 
 'use strict';
-
-var util = require('./util');
 
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
@@ -26,8 +24,6 @@ var labels = [
 
 
 function getDashboard(start, end) {
-	var dashboards = {};
-
 	// This is a base step object, for spawning steps.
 	var step = function(options) {
 		return {
@@ -105,7 +101,7 @@ function getFunnelDataForTimeframe(start, end) {
 		maxAge: 10800
 	});
 	return query;
-};
+}
 
 
 function getFunnelGraph(el) {
@@ -183,7 +179,7 @@ function init(client) {
 
 	document.getElementById('offset-date').textContent = daysFromNow(offset);
 
-};
+}
 
 module.exports = {
 	init: init
