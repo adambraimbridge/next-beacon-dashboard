@@ -1,0 +1,190 @@
+/* global Keen, $ */
+
+'use strict';
+
+var util = require('./util');
+
+var queryString = require('query-string');
+var queryParameters = queryString.parse(location.search);
+
+var offset = parseInt(queryParameters.offset) || 0;
+
+
+var daysFromNow = function (offset) {
+	offset = offset || 0;
+	var dateObject = new Date();
+	dateObject.setDate(dateObject.getDate() + offset);
+	return dateObject.toISOString();
+};
+
+var labels = [
+	'Are following at least one topic',
+	'Have recieved weekly emails',
+	'Have opened a weekly email',
+	'Have clicked on a link in a weekly email'
+];
+
+
+function getDashboard(start, end) {
+	var dashboards = {};
+
+	// This is a base step object, for spawning steps.
+	var step = function(options) {
+		return {
+			eventCollection:options.eventCollection || "dwell",
+			actor_property:"user.uuid",
+			timeframe:  {
+				start: start,
+				end: end
+			},
+			filters:options.filters || [],
+		};
+	};
+
+	return {
+		'title' : 'Engagement with myFT weekly emails',
+		'labels' : labels,
+		'steps':[
+			step({
+				filters: [{
+					property_name: 'userPrefs.following',
+					operator: 'gte',
+					property_value: 1
+				}]
+			}),
+			step({
+				eventCollection: 'email',
+				filters: [
+				{
+					property_name: 'meta.emailType',
+					operator: 'eq',
+					property_value: 'weekly'
+				}, {
+					property_name: 'event',
+					operator: 'eq',
+					property_value: 'delivery'
+				}]
+			}),
+			step({
+				eventCollection: 'email',
+
+				filters: [
+				{
+					property_name: 'meta.emailType',
+					operator: 'eq',
+					property_value: 'weekly'
+				}, {
+					property_name: 'event',
+					operator: 'eq',
+					property_value: 'open'
+				}]
+			}),
+			step({
+				eventCollection: 'email',
+				filters: [{
+					property_name: 'meta.emailType',
+					operator: 'eq',
+					property_value: 'weekly'
+				},{
+					property_name: 'event',
+					operator: 'eq',
+					property_value: 'click'
+				}]
+			})
+		]
+	};
+
+}
+
+function getFunnelDataForTimeframe(start, end) {
+	start = daysFromNow(start);
+	end = daysFromNow(end);
+	var dashboard = getDashboard(start, end);
+	var query = new Keen.Query("funnel", {
+		steps: dashboard.steps,
+		maxAge: 10800
+	});
+	return query;
+};
+
+
+function getFunnelGraph(el) {
+	return new Keen.Dataviz()
+		.el(el)
+		.title(null)
+		.chartType('barchart')
+		.colors([ Keen.Dataviz.defaults.colors[4], Keen.Dataviz.defaults.colors[3] ])
+		.chartOptions({
+				chartArea: { left: "30%", height: '400px'},
+				legend: { position: "none" }
+		})
+		.prepare();
+}
+
+
+
+function init(client) {
+	var initialiseForTimeframes = function(current, comparison) {
+		var section = document.querySelector(`.section--${current.name}`);
+		var promises = [];
+		promises.push(client.run(getFunnelDataForTimeframe(current.start, current.end)));
+		promises.push(client.run(getFunnelDataForTimeframe(comparison.start, comparison.end)));
+
+
+		var funnelGraph = getFunnelGraph(section.querySelector('.funnel'));
+		Promise.all(promises).then(function([currentResults, previousResults]) {
+			var combined = currentResults.result.map(function(val, index) {
+				return [labels[index], val, previousResults.result[index]];
+			});
+
+			funnelGraph
+				.parseRawData({ result: combined })
+				.labels(labels)
+				.render();
+
+			var ctr = currentResults.result[3] / currentResults.result[2];
+			var openRate = currentResults.result[2] / currentResults.result[1];
+			var recieveRate = currentResults.result[1] / currentResults.result[0];
+
+			section.querySelector('.numbers-table--click-rate .numbers-table__current').textContent = (Math.round(ctr * 10000 ) / 100) + '%';
+			section.querySelector('.numbers-table--open-rate .numbers-table__current').textContent = (Math.round(openRate * 10000 ) / 100) + '%';
+			section.querySelector('.numbers-table--recieve-rate .numbers-table__current').textContent = (Math.round(recieveRate * 10000 ) / 100) + '%';
+
+			var prevCtr = previousResults.result[3] / previousResults.result[2];
+			var prevOpenRate = previousResults.result[2] / previousResults.result[1];
+			var prevRecieveRate = previousResults.result[1] / previousResults.result[0];
+
+			section.querySelector('.numbers-table--click-rate .numbers-table__previous').textContent = (Math.round(prevCtr * 10000 ) / 100) + '%';
+			section.querySelector('.numbers-table--open-rate .numbers-table__previous').textContent = (Math.round(prevOpenRate * 10000 ) / 100) + '%';
+			section.querySelector('.numbers-table--recieve-rate .numbers-table__previous').textContent = (Math.round(prevRecieveRate * 10000 ) / 100) + '%';
+
+			var ctrDiff = ((ctr - prevCtr) / prevCtr);
+			var openDiff = ((openRate - prevOpenRate) / prevOpenRate);
+			var recieveDiff = ((recieveRate - prevRecieveRate) / prevRecieveRate);
+
+			section.querySelector('.numbers-table--click-rate .numbers-table__change').textContent = (Math.round(ctrDiff * 10000 ) / 100) + '%';
+			section.querySelector('.numbers-table--open-rate .numbers-table__change').textContent = (Math.round(openDiff * 10000 ) / 100) + '%';
+			section.querySelector('.numbers-table--recieve-rate .numbers-table__change').textContent = (Math.round(recieveDiff * 10000 ) / 100) + '%';
+
+		});
+	};
+
+
+	initialiseForTimeframes(
+	{
+		name: 'this-week',
+		start: -7  + offset,
+		end: 0  + offset
+	}, {
+		name: 'last-week',
+		start: -14  + offset,
+		end: -7  + offset
+	});
+
+	document.getElementById('offset-date').textContent = daysFromNow(offset);
+
+};
+
+module.exports = {
+	init: init
+};
