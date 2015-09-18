@@ -20,6 +20,7 @@
     "o-ft-icons": "^2.2.1",
     "next-buttons": "^2.1.0",
     "next-myft-ui": "^3.0.0",
-    "o-buttons": "v3"
+    "o-buttons": "v3",
+    "next-myft-client": "switch"
   }
 }
