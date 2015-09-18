@@ -9,7 +9,6 @@ const chartParams = {
     majorGridLineColor: '777777',
     width: 890,
     height: 300,
-    lineMode: 'connected',
     from: '-7d',
     hideLegend: true
 };
@@ -34,7 +33,10 @@ var render = () => {
     var targetconfigs = [
         {
             title: 'Average page load time',
-            target: `movingAverage(wpt.next_ft_com.europe_dublin_aws.${currentBrowser}.homepage.loadEventEnd, 6)`
+            target: [
+                `movingAverage(keepLastValue(wpt.next_ft_com.europe_dublin_aws.${currentBrowser}.homepage.loadEventEnd), "6hours")`,
+                `movingAverage(wpt.next_ft_com.europe_dublin_aws.${currentBrowser}.homepage.loadEventEnd, "7days")`
+            ]
         }
     ];
     var el = document.getElementById('charts');
