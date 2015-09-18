@@ -77,6 +77,11 @@ function getDashboard(start, end) {
 				property_name: 'page.location.pathname',
 				operator: 'not_contains',
 				property_value: 'myft/preferences'
+			},
+			{
+				property_name: 'page.location.pathname',
+				operator: 'not_contains',
+				property_value: 'myft/saved-articles'
 			}]
 		}),
 		step({

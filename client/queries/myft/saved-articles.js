@@ -16,8 +16,8 @@ var daysFromNow = function (offset) {
 };
 
 var labels = [
-	'Potentially seen the tray',
-	'Opened the tray...',
+	'Visited "myFT" ...',
+	'...then went to the saved-articles page',
 	'... then went straight to an article'
 ];
 
@@ -37,40 +37,33 @@ function getDashboard(start, end) {
 	};
 
 	return {
-		'title' : 'Engagement with myFT Tray',
+		'title' : 'Engagement with myFT saved articles',
 		'labels' : labels,
 		'steps':[
 			step({
+				filters: [{
+				property_name: 'page.location.pathname',
+				operator: 'contains',
+				property_value: 'myft/'
+			}]
+			}),
+			step({
 			filters: [{
-				property_name: 'userPrefs.following',
-				operator: 'gte',
-				property_value: 1
+				property_name: 'page.location.pathname',
+				operator: 'contains',
+				property_value: 'myft/saved-articles'
+			}]
+		}),
+		step({
+			filters: [{
+				property_name: 'page.location.hash',
+				operator: 'contains',
+				property_value: 'myft:saved-articles:page'
 			},
 			{
 				property_name: 'page.location.type',
-				operator: 'in',
-				property_value: ['article', 'stream', 'search']
-			}]
-		}),
-		step({
-			eventCollection: 'cta',
-			filters: [{
-				property_name: 'meta.domPath',
-				operator: 'contains',
-				property_value: 'myft-tray | cta'
-			}]
-		}),
-		step({
-			eventCollection: 'cta',
-			filters: [{
-				property_name: 'meta.domPath',
-				operator: 'contains',
-				property_value: 'myft-tray'
-			},
-			{
-				property_name: 'meta.domPath',
-				operator: 'contains',
-				property_value: 'article-card | headline'
+				operator: 'eq',
+				property_value: 'article'
 			}]
 		})
 		]
