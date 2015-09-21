@@ -117,7 +117,7 @@ function getFunnelGraph(el) {
 
 
 function init(client) {
-	var initialiseForTimeframes = function(current, comparison) {
+	var flowForTimeframes = function(current, comparison) {
 		var section = document.querySelector(`.section--${current.name}`);
 		var promises = [];
 		promises.push(client.run(getFunnelDataForTimeframe(current.start, current.end)));
@@ -157,7 +157,7 @@ function init(client) {
 	};
 
 
-	initialiseForTimeframes(
+	flowForTimeframes(
 	{
 		name: 'this-week',
 		start: -7  + offset,

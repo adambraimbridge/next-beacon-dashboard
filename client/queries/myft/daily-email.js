@@ -118,7 +118,7 @@ function getFunnelGraph(el) {
 
 
 function init(client) {
-	var initialiseForTimeframes = function(current, comparison) {
+	var flowForTimeframes = function(current, comparison) {
 		var section = document.querySelector(`.section--${current.name}`);
 		var promises = [];
 		promises.push(client.run(getFunnelDataForTimeframe(current.start, current.end)));
@@ -157,9 +157,7 @@ function init(client) {
 		});
 	};
 
-
-
-	initialiseForTimeframes(
+	flowForTimeframes(
 	{
 		name: 'today',
 		start: -1 + offset,
@@ -170,7 +168,7 @@ function init(client) {
 		end: -1  + offset
 	});
 
-	initialiseForTimeframes(
+	flowForTimeframes(
 	{
 		name: 'this-week',
 		start: -7  + offset,
@@ -182,6 +180,21 @@ function init(client) {
 	});
 
 	document.getElementById('offset-date').textContent = daysFromNow(offset);
+
+
+	var usersGroupedByDailyEmail = new Keen.Query('count_unique', {
+		timeframe: { start: daysFromNow(-14 + offset), end: daysFromNow( offset) },
+		target_property: 'user.uuid',
+		event_collection: 'dwell',
+		group_by: ['userPrefs.preferences.email-daily-digest'],
+		interval: 'daily',
+		maxAge: 10800
+	});
+
+	client.draw(usersGroupedByDailyEmail, document.getElementById('email-users-over-time'), {
+		isStacked: 'percent',
+		chartType: 'columnchart'
+	});
 
 }
 
