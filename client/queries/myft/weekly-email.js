@@ -16,10 +16,9 @@ var daysFromNow = function (offset) {
 };
 
 var labels = [
-	'Are following at least one topic',
 	'Have recieved weekly emails',
 	'Have opened a weekly email',
-	'Have clicked on a link in a weekly email'
+	'Have clicked on an articlelink in a weekly email'
 ];
 
 
@@ -41,13 +40,6 @@ function getDashboard(start, end) {
 		'title' : 'Engagement with myFT weekly emails',
 		'labels' : labels,
 		'steps':[
-			step({
-				filters: [{
-					property_name: 'userPrefs.following',
-					operator: 'gte',
-					property_value: 1
-				}]
-			}),
 			step({
 				eventCollection: 'email',
 				filters: [
@@ -85,6 +77,11 @@ function getDashboard(start, end) {
 					property_name: 'event',
 					operator: 'eq',
 					property_value: 'click'
+				},
+				{
+					property_name: 'meta.targetLinkUrl',
+					operator: 'contains',
+					property_value: 'notification:weekly-email'
 				}]
 			})
 		]
@@ -138,29 +135,23 @@ function init(client) {
 				.labels(labels)
 				.render();
 
-			var ctr = currentResults.result[3] / currentResults.result[2];
-			var openRate = currentResults.result[2] / currentResults.result[1];
-			var recieveRate = currentResults.result[1] / currentResults.result[0];
+			var ctr = currentResults.result[2] / currentResults.result[1];
+			var openRate = currentResults.result[1] / currentResults.result[0];
 
 			section.querySelector('.numbers-table--click-rate .numbers-table__current').textContent = (Math.round(ctr * 10000 ) / 100) + '%';
 			section.querySelector('.numbers-table--open-rate .numbers-table__current').textContent = (Math.round(openRate * 10000 ) / 100) + '%';
-			section.querySelector('.numbers-table--recieve-rate .numbers-table__current').textContent = (Math.round(recieveRate * 10000 ) / 100) + '%';
 
-			var prevCtr = previousResults.result[3] / previousResults.result[2];
-			var prevOpenRate = previousResults.result[2] / previousResults.result[1];
-			var prevRecieveRate = previousResults.result[1] / previousResults.result[0];
+			var prevCtr = previousResults.result[2] / previousResults.result[1];
+			var prevOpenRate = previousResults.result[1] / previousResults.result[0];
 
 			section.querySelector('.numbers-table--click-rate .numbers-table__previous').textContent = (Math.round(prevCtr * 10000 ) / 100) + '%';
 			section.querySelector('.numbers-table--open-rate .numbers-table__previous').textContent = (Math.round(prevOpenRate * 10000 ) / 100) + '%';
-			section.querySelector('.numbers-table--recieve-rate .numbers-table__previous').textContent = (Math.round(prevRecieveRate * 10000 ) / 100) + '%';
 
 			var ctrDiff = ((ctr - prevCtr) / prevCtr);
 			var openDiff = ((openRate - prevOpenRate) / prevOpenRate);
-			var recieveDiff = ((recieveRate - prevRecieveRate) / prevRecieveRate);
 
 			section.querySelector('.numbers-table--click-rate .numbers-table__change').textContent = (Math.round(ctrDiff * 10000 ) / 100) + '%';
 			section.querySelector('.numbers-table--open-rate .numbers-table__change').textContent = (Math.round(openDiff * 10000 ) / 100) + '%';
-			section.querySelector('.numbers-table--recieve-rate .numbers-table__change').textContent = (Math.round(recieveDiff * 10000 ) / 100) + '%';
 
 		});
 	};
