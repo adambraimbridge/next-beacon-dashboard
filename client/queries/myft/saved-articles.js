@@ -16,7 +16,7 @@ var daysFromNow = function (offset) {
 };
 
 var labels = [
-	'Visited "myFT" ...',
+	'Visited next ...',
 	'...then went to the saved-articles page',
 	'... then went straight to an article'
 ];
@@ -40,13 +40,7 @@ function getDashboard(start, end) {
 		'title' : 'Engagement with myFT saved articles',
 		'labels' : labels,
 		'steps':[
-			step({
-				filters: [{
-				property_name: 'page.location.pathname',
-				operator: 'contains',
-				property_value: 'myft/'
-			}]
-			}),
+			step({}),
 			step({
 			filters: [{
 				property_name: 'page.location.pathname',
