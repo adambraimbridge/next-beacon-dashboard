@@ -83,8 +83,9 @@ function getFunnelGraph(el) {
 		.prepare();
 }
 
-function viewsOverTime(client) {
-	var interval = "weekly";
+
+function usageOverTime(client) {
+	var interval = "daily";
 	var timeframe = "last_30_days";
 
 	var articleViews = new Keen.Query('count', { // first query
@@ -124,48 +125,6 @@ function viewsOverTime(client) {
 			property_value: 'article'
 		}]
 	});
-
-	var chart = new Keen.Dataviz()
-		.el(document.getElementById("myft-views"))
-		.chartType("barchart")
-		.chartOptions({
-			isStacked: 'percent',
-			height: 500
-		})
-		.prepare();
-
-	client.run([articleViews, myftArticleViews], function(err, res) { // run the queries
-
-		var result1 = res[0].result;
-		var result2 = res[1].result;
-		var data = [];
-		var i=0;
-
-		while (i < result1.length) {
-				data[i]={ // format the data so it can be charted
-						timeframe: result1[i]["timeframe"],
-						value: [
-								{ category: "Article Views", result: result1[i]["value"] },
-								{ category: "myFT article views", result: result2[i]["value"] }
-						]
-				};
-
-				if (i === result1.length-1) { // chart the data
-					chart
-						.parseRawData({ result: data })
-						.render();
-					}
-				i++;
-		}
-
-	});
-}
-
-
-function usageOverTime(client) {
-	var interval = "daily";
-	var timeframe = "last_30_days";
-
 	var nextUsers = new Keen.Query('count_unique', {
 		eventCollection: "dwell",
 		interval: interval,
@@ -223,12 +182,44 @@ function usageOverTime(client) {
 		})
 		.prepare();
 
-	client.run([nextUsers, followUsers, myFTUsers], function(err, res) { // run the queries
+	var viewsChart = new Keen.Dataviz()
+		.el(document.getElementById("myft-views"))
+		.chartType("barchart")
+		.chartOptions({
+			isStacked: 'percent',
+			height: 500
+		})
+		.prepare();
+
+	var consumptionChart = new Keen.Dataviz()
+		.el(document.getElementById("myft-consumption"))
+		.chartType("columnchart")
+		.chartOptions({
+			height: 500,
+			trendlines: {
+				0: {
+					color: 'green',
+					type: 'polynomial',
+					degree: 6
+				}
+			}
+		})
+
+		.prepare();
+
+
+	client.run([nextUsers, followUsers, myFTUsers, articleViews, myftArticleViews], function(err, res) { // run the queries
 
 		var next = res[0].result;
 		var follow = res[1].result;
 		var myft = res[2].result;
+		var articles = res[3].result;
+		var myftArticles = res[4].result;
+
 		var myFTUsageData = [];
+		var articleViewData = [];
+		var articleConsumptionData = [];
+
 		var i=0;
 
 		while (i < follow.length) {
@@ -240,11 +231,34 @@ function usageOverTime(client) {
 							{ category: "myFT users", result: myft[i]["value"] }
 					]
 			};
+			articleViewData[i]={ // format the data so it can be charted
+						timeframe: follow[i]["timeframe"],
+						value: [
+								{ category: "Article Views", result: articles[i]["value"] },
+								{ category: "myFT article views", result: myftArticles[i]["value"] }
+						]
+				};
+			articleConsumptionData[i]={ // format the data so it can be charted
+					timeframe: follow[i]["timeframe"],
+					value: [
+							{ category: "myFT Articles consumed per user", result: myftArticles[i]["value"] / myft[i]["value"] }
+					]
+			};
+
 			if (i === follow.length-1) { // chart the data
 				myFTChart
 					.parseRawData({ result: myFTUsageData })
 					.render();
-				}
+
+				viewsChart
+					.parseRawData({ result: articleViewData })
+					.render();
+
+				consumptionChart
+					.parseRawData({ result: articleConsumptionData })
+					.render();
+
+			}
 			i++;
 		}
 
@@ -310,7 +324,6 @@ function init(client) {
 
 	document.getElementById('offset-date').textContent = daysFromNow(offset);
 
-	viewsOverTime(client);
 	usageOverTime(client);
 
 }
