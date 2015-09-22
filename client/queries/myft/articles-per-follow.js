@@ -8,7 +8,7 @@ module.exports = function (data, client) {
 	}, []))
 		.then(function ([thisFollowUsers, prevFollowUsers, thisArticleViewsByFollowCount, prevArticleViewsByFollowCount]) {
 
-			var extractCount = util.getValueExtractor('user.myft.topicsFollowed');
+			var extractCount = util.getValueExtractor('userPrefs.following');
 
 			function aggregatedAverages (start, finish) {
 				var thisUserCount = 0;

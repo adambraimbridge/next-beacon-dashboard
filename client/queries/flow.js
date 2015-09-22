@@ -123,7 +123,7 @@ function getDashboards(offset) {
 		step({}),
 		step({
 			filters: [{
-				property_name: 'user.myft.topicsFollowed',
+				property_name: 'userPrefs.following',
 				operator: 'gte',
 				property_value: 1
 			}]
@@ -154,7 +154,7 @@ function getDashboards(offset) {
 		'steps':[
 		step({
 			filters: [{
-				property_name: 'user.myft.topicsFollowed',
+				property_name: 'userPrefs.following',
 				operator: 'gte',
 				property_value: 1
 			}]
@@ -191,7 +191,7 @@ function getDashboards(offset) {
 		'steps':[
 		step({
 			filters: [{
-				property_name: 'user.myft.topicsFollowed',
+				property_name: 'userPrefs.following',
 				operator: 'gte',
 				property_value: 1
 			}]
@@ -230,7 +230,7 @@ function getDashboards(offset) {
 		'steps':[
 		step({
 			filters: [{
-				property_name: 'user.myft.topicsFollowed',
+				property_name: 'userPrefs.following',
 				operator: 'gte',
 				property_value: 1
 			}]
@@ -288,7 +288,7 @@ function getDashboards(offset) {
 		'steps':[
 		step({
 			filters: [{
-				property_name: 'user.myft.topicsFollowed',
+				property_name: 'userPrefs.following',
 				operator: 'gte',
 				property_value: 1
 			}]
@@ -347,7 +347,7 @@ function getDashboards(offset) {
 		'steps':[
 		step({
 			filters: [{
-				property_name: 'user.myft.topicsFollowed',
+				property_name: 'userPrefs.following',
 				operator: 'gte',
 				property_value: 1
 			}]
@@ -455,7 +455,7 @@ var render = function (el, results, opts, client) {
 historicChart
 	.parseRawData({ result: historicData })
 	.render();
-	}
+}
 
 };
 

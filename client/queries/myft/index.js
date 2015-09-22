@@ -16,8 +16,8 @@ function init (client) {
 			},
 			followUsers: {
 				eventCollection: "dwell",
-				filters: [{"operator":"exists","property_name":"user.myft.topicsFollowed","property_value":true}],
-				groupBy: "user.myft.topicsFollowed",
+				filters: [{"operator":"exists","property_name":"userPrefs.following","property_value":true}],
+				groupBy: "userPrefs.following",
 				targetProperty: "user.uuid",
 				interval: false
 			},
@@ -44,9 +44,9 @@ function init (client) {
 				eventCollection: "dwell",
 				filters: [
 					{"operator":"eq","property_name":"page.location.type","property_value":"article"},
-					{"operator":"exists","property_name":"user.myft.topicsFollowed","property_value":true}
+					{"operator":"exists","property_name":"userPrefs.following","property_value":true}
 				],
-				groupBy: "user.myft.topicsFollowed",
+				groupBy: "userPrefs.following",
 				interval: false
 			},
 			articleViews: {
@@ -79,6 +79,7 @@ function init (client) {
 			articleViewsFromMyFt: {
 				query: 'count',
 				filters: [
+					{"operator":"contains","property_name":"page.location.hash","property_value":"myft"},
 					{"operator":"eq","property_name":"page.location.type","property_value":"article"}
 				],
 				eventCollection: "dwell",

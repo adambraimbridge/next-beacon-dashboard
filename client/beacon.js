@@ -172,6 +172,30 @@ Keen.ready(function(){
 			require('./queries/frequency-recency').init(client);
 			break;
 
+		case '/graph/myft/usage':
+			require('./queries/myft/usage').init(client);
+			break;
+
+		case '/graph/myft/saved-articles':
+			require('./queries/myft/saved-articles').init(client);
+			break;
+
+		case '/graph/myft/news-feed':
+			require('./queries/myft/news-feed').init(client);
+			break;
+
+		case '/graph/myft/daily-email':
+			require('./queries/myft/daily-email').init(client);
+			break;
+
+		case '/graph/myft/weekly-email':
+			require('./queries/myft/weekly-email').init(client);
+			break;
+
+		case '/graph/myft/tray':
+			require('./queries/myft/tray').init(client);
+			break;
+
 		case '/graph/myft':
 			require('./queries/myft').init(client);
 			break;
