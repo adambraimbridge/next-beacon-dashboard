@@ -22,7 +22,10 @@ var keenQuery =	function(options) {
 			// "property_value":false},
 			// {"operator":"eq",
 			// "property_name":"page.location.type",
-			// "property_value":"article"}
+			// "property_value":"article"},
+			{"operator":"exists",
+			"property_name":"user.uuid",
+			"property_value":true}
 		].concat(
 				options.filters
 			),
@@ -53,6 +56,12 @@ var charts = [
 		options: {
 			filters: filters.relatedStoriesActionFilters
 	}},
+	{queryName: "readNextQuery",
+		elId: "read-next-trend-areachart",
+		options: {
+			filters: filters.readNextActionFilters
+		}
+	},
 	{queryName: "promoboxQuery",
 		elId: "promo-box-trend-areachart",
 		options: {

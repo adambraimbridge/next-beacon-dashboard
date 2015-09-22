@@ -26,6 +26,20 @@ module.exports = {
 			]
 		}
 	],
+	readNextActionFilters: [
+		{"operator":"in",
+		"property_name":"meta.domPath",
+		"property_value":[
+			"article | header | next-up-header | headline-link--package",
+			"article | header | next-up-header | headline-link--topic",
+			"article | header | next-up-header | headline-link--topic--moreRecent",
+			"next-up-bottom | headline-link--package",
+			"next-up-bottom | headline-link--topic",
+			"next-up-bottom | headline-link--topic--moreRecent",
+			"article | suggested-topic",
+			"article | related"
+		]}
+	],
 	relatedStoriesActionFilters: [
 		{"operator":"in",
 		"property_name":"meta.domPath",
