@@ -21,6 +21,113 @@ var labels = [
 	'... then went straight to an article'
 ];
 
+var filterMyNewsPage = [{
+		property_name: 'page.location.pathname',
+		operator: 'contains',
+		property_value: 'myft/'
+	},
+	{
+		property_name: 'page.location.pathname',
+		operator: 'not_contains',
+		property_value: 'myft/portfolio'
+	},
+	{
+		property_name: 'page.location.pathname',
+		operator: 'not_contains',
+		property_value: 'myft/my-topics'
+	},
+	{
+		property_name: 'page.location.pathname',
+		operator: 'not_contains',
+		property_value: 'myft/product-tour'
+	},
+	{
+		property_name: 'page.location.pathname',
+		operator: 'not_contains',
+		property_value: 'myft/api'
+	},
+	{
+		property_name: 'page.location.pathname',
+		operator: 'not_contains',
+		property_value: 'myft/preferences'
+	},
+	{
+		property_name: 'page.location.pathname',
+		operator: 'not_contains',
+		property_value: 'myft/saved-articles'
+	}
+];
+
+
+function headlineClicksPerUser(client) {
+	var interval = "daily";
+	var timeframe = "last_30_days";
+
+	var myNewsUsers = new Keen.Query('count_unique', { // first query
+		eventCollection: "dwell",
+		targetProperty: 'user.uuid',
+		interval: interval,
+		timeframe: timeframe,
+		filters: filterMyNewsPage
+	});
+
+	var headlineClicks = new Keen.Query('count', { // second query
+		eventCollection: "cta",
+		interval: interval,
+		timeframe: timeframe,
+		filters: [
+		{
+			property_name: 'meta.domPath',
+			operator: 'contains',
+			property_value: 'mypage'
+		},
+		{
+			property_name: 'meta.domPath',
+			operator: 'contains',
+			property_value: 'headline'
+		}]
+	});
+
+	var chart = new Keen.Dataviz()
+		.el(document.getElementById("headline-clicks-per-user"))
+		.chartType("columnchart")
+		.chartOptions({
+			height: 500,
+			trendlines: {
+				0: {
+					color: 'green',
+					type: 'polynomial',
+					degree: 6
+				}
+			}
+		})
+		.prepare();
+
+	client.run([myNewsUsers, headlineClicks], function(err, res) { // run the queries
+		var result1 = res[0].result;
+		var result2 = res[1].result;
+		var data = [];
+		var i=0;
+
+		while (i < result1.length) {
+				data[i]={ // format the data so it can be charted
+						timeframe: result1[i]["timeframe"],
+						value: [
+								{ category: "Headline Clicks per User", result: result2[i]["value"] / result1[i]["value"] },
+						]
+				};
+
+				if (i === result1.length-1) { // chart the data
+					chart
+						.parseRawData({ result: data })
+						.render();
+					}
+				i++;
+		}
+
+	});
+
+}
 
 function getDashboard(start, end) {
 	// This is a base step object, for spawning steps.
@@ -48,41 +155,7 @@ function getDashboard(start, end) {
 				}]
 			}),
 			step({
-			filters: [{
-				property_name: 'page.location.pathname',
-				operator: 'contains',
-				property_value: 'myft/'
-			},
-			{
-				property_name: 'page.location.pathname',
-				operator: 'not_contains',
-				property_value: 'myft/portfolio'
-			},
-			{
-				property_name: 'page.location.pathname',
-				operator: 'not_contains',
-				property_value: 'myft/my-topics'
-			},
-			{
-				property_name: 'page.location.pathname',
-				operator: 'not_contains',
-				property_value: 'myft/product-tour'
-			},
-			{
-				property_name: 'page.location.pathname',
-				operator: 'not_contains',
-				property_value: 'myft/api'
-			},
-			{
-				property_name: 'page.location.pathname',
-				operator: 'not_contains',
-				property_value: 'myft/preferences'
-			},
-			{
-				property_name: 'page.location.pathname',
-				operator: 'not_contains',
-				property_value: 'myft/saved-articles'
-			}]
+			filters: filterMyNewsPage
 		}),
 		step({
 			filters: [{
@@ -193,6 +266,8 @@ function init(client) {
 	});
 
 	document.getElementById('offset-date').textContent = daysFromNow(offset);
+
+	headlineClicksPerUser(client);
 
 }
 
