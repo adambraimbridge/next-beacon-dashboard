@@ -5,6 +5,11 @@
 var filters = require('./engagement-filters');
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
+var searchReferrer = [{
+	"operator":"eq",
+	"property_name":"referringSource.websiteType",
+	"property_value":"search"
+}];
 
 var client = new Keen({
 	projectId: keen_project,
@@ -12,10 +17,16 @@ var client = new Keen({
 });
 
 var actionsQuery =	function(options) {
+	var optionFilters;
+	if (queryParameters.referrerType === 'search') {
+		optionFilters = searchReferrer.concat(options.filters);
+	} else {
+		optionFilters = options.filters;
+	}
 	var parameters = {
 		eventCollection: "cta",
 		filters: [
-			// filters removed for staff and also page type as deprecated in CTA
+			// filters removed for staff as deprecated in CTA
 			// {"operator":"eq",
 			// "property_name":"user.isStaff",
 			// "property_value":false},
@@ -26,7 +37,7 @@ var actionsQuery =	function(options) {
 			"property_name":"user.uuid",
 			"property_value":true}
 			].concat(
-				options.filters
+				optionFilters
 			),
 		interval: "daily",
 		timeframe: queryParameters.timeframe || 'previous_14_days',
@@ -38,6 +49,10 @@ var actionsQuery =	function(options) {
 };
 
 var baseQuery =	function() {
+	var optionFilters = [];
+	if (queryParameters.referrerType === 'search') {
+		optionFilters = searchReferrer;
+	}
 	var parameters = {
 		eventCollection: "dwell",
 		filters: [
@@ -47,7 +62,7 @@ var baseQuery =	function() {
 			{"operator":"exists",
 			"property_name":"user.uuid",
 			"property_value":true}
-			],
+		].concat(optionFilters),
 		interval: "daily",
 		timeframe: queryParameters.timeframe || 'previous_14_days',
 		timezone: "UTC",
@@ -106,6 +121,8 @@ var runQuery = function(options) {
 			// divide actions by articles to get click rate
 			var queryActions = res[0].result;
 			var queryBase = res[1].result;
+			console.log('queryActions ', queryActions);
+			console.log('queryBase ', queryBase);
 
 			queryActions.map(function(queryAction) {
 				var queryBaseDate = queryBase.filter(function(el) {
