@@ -20,9 +20,9 @@ var keenQuery =	function(options) {
 			// {"operator":"eq",
 			// "property_name":"user.isStaff",
 			// "property_value":false},
-			// {"operator":"eq",
-			// "property_name":"page.location.type",
-			// "property_value":"article"},
+			{"operator":"eq",
+			"property_name":"page.location.type",
+			"property_value":"article"},
 			{"operator":"exists",
 			"property_name":"user.uuid",
 			"property_value":true}

@@ -19,9 +19,12 @@ var actionsQuery =	function(options) {
 			// {"operator":"eq",
 			// "property_name":"user.isStaff",
 			// "property_value":false},
-			// {"operator":"eq",
-			// "property_name":"page.location.type",
-			// "property_value":"article"}
+			{"operator":"eq",
+			"property_name":"page.location.type",
+			"property_value":"article"},
+			{"operator":"exists",
+			"property_name":"user.uuid",
+			"property_value":true}
 			].concat(
 				options.filters
 			),
@@ -40,7 +43,10 @@ var baseQuery =	function() {
 		filters: [
 			{"operator":"eq",
 			"property_name":"page.location.type",
-			"property_value":"article"}
+			"property_value":"article"},
+			{"operator":"exists",
+			"property_name":"user.uuid",
+			"property_value":true}
 			],
 		interval: "daily",
 		timeframe: queryParameters.timeframe || 'previous_14_days',
