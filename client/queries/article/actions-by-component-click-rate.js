@@ -5,6 +5,11 @@
 var filters = require('./engagement-filters');
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
+var searchReferrer = [{
+	"operator":"eq",
+	"property_name":"referringSource.websiteType",
+	"property_value":"search"
+}];
 
 var client = new Keen({
 	projectId: keen_project,
@@ -12,11 +17,17 @@ var client = new Keen({
 });
 
 var actionsQuery = function(options) {
+	var optionFilters;
+	if (queryParameters.referrerType === 'search') {
+		optionFilters = searchReferrer.concat(options.filters);
+	} else {
+		optionFilters = options.filters;
+	}
 	var parameters = {
 		eventCollection: "cta",
 		filters: [
 		].concat(
-				options.filters
+				optionFilters
 			),
 		groupBy: "meta.domPath",
 		interval: "daily",
@@ -30,6 +41,10 @@ var actionsQuery = function(options) {
 };
 
 var baseQuery = function(options) {
+	var optionFilters = [];
+	if (queryParameters.referrerType === 'search') {
+		optionFilters = searchReferrer;
+	}
 	var parameters = {
 		eventCollection: "dwell",
 		filters: [
@@ -37,7 +52,7 @@ var baseQuery = function(options) {
 			"property_name":"page.location.type",
 			"property_value":"article"}
 		].concat(
-			options.filters
+			optionFilters
 		),
 		interval: "daily",
 		timeframe: queryParameters.timeframe || 'previous_14_days',
