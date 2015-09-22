@@ -5,6 +5,16 @@
 var filters = require('./engagement-filters');
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
+var searchReferrer = [{
+	"operator":"eq",
+	"property_name":"referringSource.websiteType",
+	"property_value":"search"
+}];
+var socialReferrer = [{
+	"operator":"eq",
+	"property_name":"referringSource.websiteType",
+	"property_value":"social-network"
+}];
 
 var client = new Keen({
 	projectId: keen_project,
@@ -12,7 +22,14 @@ var client = new Keen({
 });
 
 var keenQuery =	function(options) {
-
+	var optionFilters;
+	if (queryParameters.referrerType === 'search') {
+		optionFilters = searchReferrer.concat(options.filters);
+	} else if (queryParameters.referrerType === 'social') {
+		optionFilters = socialReferrer.concat(options.filters);
+	} else {
+		optionFilters = options.filters;
+	}
 	var parameters = {
 		eventCollection: "cta",
 		filters: [
@@ -20,11 +37,14 @@ var keenQuery =	function(options) {
 			// {"operator":"eq",
 			// "property_name":"user.isStaff",
 			// "property_value":false},
-			// {"operator":"eq",
-			// "property_name":"page.location.type",
-			// "property_value":"article"}
+			{"operator":"eq",
+			"property_name":"page.location.type",
+			"property_value":"article"},
+			{"operator":"exists",
+			"property_name":"user.uuid",
+			"property_value":true}
 		].concat(
-				options.filters
+				optionFilters
 			),
 		groupBy: "meta.domPath",
 		interval: "daily",
@@ -53,6 +73,12 @@ var charts = [
 		options: {
 			filters: filters.relatedStoriesActionFilters
 	}},
+	{queryName: "readNextQuery",
+		elId: "read-next-trend-areachart",
+		options: {
+			filters: filters.readNextActionFilters
+		}
+	},
 	{queryName: "promoboxQuery",
 		elId: "promo-box-trend-areachart",
 		options: {

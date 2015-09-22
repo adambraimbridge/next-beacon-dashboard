@@ -111,12 +111,14 @@ module.exports = {
 			// {"operator":"eq",
 			// "property_name":"user.isStaff",
 			// "property_value":false},
+			{"operator":"exists",
+			"property_name":"user.uuid",
+			"property_value":true},
 			{"operator":"eq",
 			"property_name":"page.location.type",
 			"property_value":"article"}
 		],
-		groupBy: ["user.uuid", "time.day", "time.week"],
-		targetProperty: "time.day",
+		groupBy: ["ingest.device.spoor_session", "time.week"],
 		timeframe: queryParameters.timeframe || 'previous_2_weeks',
 		timezone: "UTC"
 	}),

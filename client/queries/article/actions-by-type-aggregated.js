@@ -5,6 +5,16 @@
 var filters = require('./engagement-filters');
 var queryString = require('query-string');
 var queryParameters = queryString.parse(location.search);
+var searchReferrer = [{
+	"operator":"eq",
+	"property_name":"referringSource.websiteType",
+	"property_value":"search"
+}];
+var socialReferrer = [{
+	"operator":"eq",
+	"property_name":"referringSource.websiteType",
+	"property_value":"social-network"
+}];
 
 var client = new Keen({
 	projectId: keen_project,
@@ -12,18 +22,29 @@ var client = new Keen({
 });
 
 var actionsQuery =	function(options) {
+	var optionFilters;
+	if (queryParameters.referrerType === 'search') {
+		optionFilters = searchReferrer.concat(options.filters);
+	} else if (queryParameters.referrerType === 'social') {
+		optionFilters = socialReferrer.concat(options.filters);
+	} else {
+		optionFilters = options.filters;
+	}
 	var parameters = {
 		eventCollection: "cta",
 		filters: [
-			// filters removed for staff and also page type as deprecated in CTA
+			// filters removed for staff as deprecated in CTA
 			// {"operator":"eq",
 			// "property_name":"user.isStaff",
 			// "property_value":false},
-			// {"operator":"eq",
-			// "property_name":"page.location.type",
-			// "property_value":"article"}
+			{"operator":"eq",
+			"property_name":"page.location.type",
+			"property_value":"article"},
+			{"operator":"exists",
+			"property_name":"user.uuid",
+			"property_value":true}
 			].concat(
-				options.filters
+				optionFilters
 			),
 		interval: "daily",
 		timeframe: queryParameters.timeframe || 'previous_14_days',
@@ -35,13 +56,23 @@ var actionsQuery =	function(options) {
 };
 
 var baseQuery =	function() {
+	var optionFilters = [];
+	if (queryParameters.referrerType === 'search') {
+		optionFilters = searchReferrer;
+	}
+	if (queryParameters.referrerType === 'social') {
+		optionFilters = socialReferrer;
+	}
 	var parameters = {
 		eventCollection: "dwell",
 		filters: [
 			{"operator":"eq",
 			"property_name":"page.location.type",
-			"property_value":"article"}
-			],
+			"property_value":"article"},
+			{"operator":"exists",
+			"property_name":"user.uuid",
+			"property_value":true}
+		].concat(optionFilters),
 		interval: "daily",
 		timeframe: queryParameters.timeframe || 'previous_14_days',
 		timezone: "UTC",
@@ -100,6 +131,8 @@ var runQuery = function(options) {
 			// divide actions by articles to get click rate
 			var queryActions = res[0].result;
 			var queryBase = res[1].result;
+			console.log('queryActions ', queryActions);
+			console.log('queryBase ', queryBase);
 
 			queryActions.map(function(queryAction) {
 				var queryBaseDate = queryBase.filter(function(el) {

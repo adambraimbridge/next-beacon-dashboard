@@ -214,8 +214,8 @@ Keen.ready(function(){
 			require('./queries/article/views-trend');
 			break;
 
-		case '/graph/article/by-subscriber-per-day':
-			render(require('./queries/article/by_subscriber_per_day'));
+		case '/graph/article/views-per-session':
+			render(require('./queries/article/views-per-session'));
 			break;
 
 		case '/graph/article/actions-by-component':

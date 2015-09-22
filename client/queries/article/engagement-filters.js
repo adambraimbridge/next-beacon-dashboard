@@ -26,6 +26,20 @@ module.exports = {
 			]
 		}
 	],
+	readNextActionFilters: [
+		{"operator":"in",
+		"property_name":"meta.domPath",
+		"property_value":[
+			"article | header | next-up-header | headline-link--package",
+			"article | header | next-up-header | headline-link--topic",
+			"article | header | next-up-header | headline-link--topic--moreRecent",
+			"next-up-bottom | headline-link--package",
+			"next-up-bottom | headline-link--topic",
+			"next-up-bottom | headline-link--topic--moreRecent",
+			"article | suggested-topic",
+			"article | related"
+		]}
+	],
 	relatedStoriesActionFilters: [
 		{"operator":"in",
 		"property_name":"meta.domPath",
@@ -99,7 +113,14 @@ module.exports = {
 			"article | more-on-inline | headline",
 			"article | more-on-inline | image",
 			"story-package | headline",
-			"story-package | image"
+			"story-package | image",
+			"article | header | next-up-header | headline-link--package",
+			"article | header | next-up-header | headline-link--topic",
+			"article | header | next-up-header | headline-link--topic--moreRecent",
+			"next-up-bottom | headline-link--package",
+			"next-up-bottom | headline-link--topic",
+			"next-up-bottom | headline-link--topic--moreRecent",
+			"article | related"
 		]}
 	],
 	topicLinksFilters: [
@@ -114,7 +135,8 @@ module.exports = {
 			"more-on | tag",
 			"mentions | tag",
 			"article | more-on-inline | tag",
-			"story-package | tag"
+			"story-package | tag",
+			"article | suggested-topic"
 		]}
 	],
 	shareLinksFilters: [
