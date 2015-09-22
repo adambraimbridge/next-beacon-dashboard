@@ -10,6 +10,11 @@ var searchReferrer = [{
 	"property_name":"referringSource.websiteType",
 	"property_value":"search"
 }];
+var socialReferrer = [{
+	"operator":"eq",
+	"property_name":"referringSource.websiteType",
+	"property_value":"social-network"
+}];
 
 var client = new Keen({
 	projectId: keen_project,
@@ -20,6 +25,8 @@ var actionsQuery =	function(options) {
 	var optionFilters;
 	if (queryParameters.referrerType === 'search') {
 		optionFilters = searchReferrer.concat(options.filters);
+	} else if (queryParameters.referrerType === 'social') {
+		optionFilters = socialReferrer.concat(options.filters);
 	} else {
 		optionFilters = options.filters;
 	}
@@ -52,6 +59,9 @@ var baseQuery =	function() {
 	var optionFilters = [];
 	if (queryParameters.referrerType === 'search') {
 		optionFilters = searchReferrer;
+	}
+	if (queryParameters.referrerType === 'social') {
+		optionFilters = socialReferrer;
 	}
 	var parameters = {
 		eventCollection: "dwell",
