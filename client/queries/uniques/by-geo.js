@@ -25,12 +25,26 @@ var keenQuery = function(options) {
 };
 
 var continentQuery = keenQuery({
-	groupBy:'user.geo.continent'
+	groupBy:'geo.continent',
+	filters:[{
+		"property_name":"geo.continent",
+		"operator":"ne",
+		"property_value":null
+	},{
+		"property_name":"geo.continent",
+		"operator":"ne",
+		"property_value":"--"
+	}]
 });
 
 var countryQuery = keenQuery({
-	groupBy:'user.geo.country_name',
-	interval: false
+	groupBy:'geo.countryName',
+	interval: false,
+	filters:[{
+		"property_name":"geo.countryName",
+		"operator":"ne",
+		"property_value":"null"
+	}]
 });
 
 var render = function (el, results, opts, client) {
