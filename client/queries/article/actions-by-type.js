@@ -3,7 +3,7 @@
 'use strict';
 
 var filters = require('./engagement-filters');
-var queryString = require('query-string');
+var queryString = require('querystring');
 var queryParameters = queryString.parse(location.search);
 
 var client = new Keen({

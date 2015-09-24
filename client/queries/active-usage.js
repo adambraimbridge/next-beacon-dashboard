@@ -6,7 +6,7 @@ var client = require('../lib/wrapped-keen');
 
 var humanize = require('humanize');
 
-var queryString = require('query-string');
+var queryString = require('querystring');
 var queryParameters = queryString.parse(location.search);
 
 // Degrade gracefully if parameter is missing. Not ideal, but at least it loads something.

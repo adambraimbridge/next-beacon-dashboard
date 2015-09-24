@@ -4,7 +4,7 @@
 
 var client = require('../lib/wrapped-keen');
 
-var queryString = require('query-string');
+var queryString = require('querystring');
 var queryParameters = queryString.parse(location.search);
 
 // This is a base query object, for spawning queries.

@@ -2,7 +2,7 @@
 
 'use strict';
 
-var queryString = require('query-string');
+var queryString = require('querystring');
 var queryParameters = queryString.parse(location.search);
 
 var offset = parseInt(queryParameters.offset) || 0;
