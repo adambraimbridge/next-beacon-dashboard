@@ -28,8 +28,8 @@ var continentQuery = keenQuery({
 	groupBy:'geo.continent',
 	filters:[{
 		"property_name":"geo.continent",
-		"operator":"ne",
-		"property_value":null
+		"operator":"exists",
+		"property_value":true
 	},{
 		"property_name":"geo.continent",
 		"operator":"ne",
@@ -41,6 +41,10 @@ var countryQuery = keenQuery({
 	groupBy:'geo.countryName',
 	interval: false,
 	filters:[{
+		"property_name":"geo.countryName",
+		"operator":"exists",
+		"property_value":true
+	},{
 		"property_name":"geo.countryName",
 		"operator":"ne",
 		"property_value":"null"
