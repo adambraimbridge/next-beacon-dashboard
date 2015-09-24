@@ -2,7 +2,7 @@
 
 'use strict';
 
-var queryString = require('query-string');
+var queryString = require('querystring');
 var queryParameters = queryString.parse(location.search);
 
 // Return the ISO string for relative dates

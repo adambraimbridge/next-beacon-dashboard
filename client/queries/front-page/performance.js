@@ -1,6 +1,6 @@
 'use strict';
 
-import queryString from 'query-string';
+import queryString from 'querystring';
 
 const graphiteBaseUrl = 'https://www.hostedgraphite.com/bbaf3ccf/569381f9-6a60-4c33-a0be-b2272aa7a4a5/graphite/render';
 const chartParams = {

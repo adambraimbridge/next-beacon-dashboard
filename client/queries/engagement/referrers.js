@@ -1,7 +1,7 @@
 /* global Keen */
 'use strict';
 
-var queryString = require('query-string');
+var queryString = require('querystring');
 var queryParameters = queryString.parse(location.search);
 var engagementCohorts = require('../../lib/engagement-cohorts');
 var timeframe = queryParameters.timeframe || 'previous_84_days';
