@@ -22,6 +22,7 @@
     "next-myft-ui": "^3.0.0",
     "o-buttons": "v3",
     "next-myft-client": "switch",
-    "lodash": "3.10.1-npm"
+    "lodash": "3.10.1-npm",
+    "n-third-party-code": "^1.0.0"
   }
 }
