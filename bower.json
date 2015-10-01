@@ -6,7 +6,6 @@
     "next-js-setup": "^4.0.0",
     "keen-js": "^3.2.4",
     "ab-test-confidence": "^1.2.0",
-    "array-find": "^1.0.1",
     "moment": "^2.10.6"
   }
 }
