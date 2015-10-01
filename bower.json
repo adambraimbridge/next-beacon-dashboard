@@ -7,5 +7,10 @@
     "keen-js": "^3.2.4",
     "ab-test-confidence": "^1.2.0",
     "moment": "^2.10.6"
+  },
+  "resolutions": {
+    "o-errors": "^3.1.0",
+    "n-third-party-code": "^1.0.0",
+    "lodash": "3.10.1-npm"
   }
 }
