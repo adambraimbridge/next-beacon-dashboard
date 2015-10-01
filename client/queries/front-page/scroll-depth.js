@@ -1,7 +1,6 @@
 /* global Keen */
 'use strict';
 
-var OTabs = require('o-tabs');
 var queryString = require('querystring');
 var queryParameters = queryString.parse(location.search.substr(1));
 
@@ -115,7 +114,7 @@ var render = () => {
 			.map(breakpoint => `<li role="tab"><a href="#${breakpoint}">${breakpoint}</a></li>`)
 			.join('');
 		scrollDepthEl.insertBefore(tabsEl, scrollDepthEl.querySelector('.o-tabs__tabpanel'));
-		new OTabs(tabsEl);
+		window.Origami['o-tabs'].init();
 	});
 };
 

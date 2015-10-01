@@ -2,7 +2,6 @@
 
 "use strict";
 
-require('o-hierarchical-nav');
 document.dispatchEvent(new CustomEvent('o.DOMContentLoaded'));
 
 // Update the navigation element for the current page as appropriate
