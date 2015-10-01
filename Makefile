@@ -3,7 +3,6 @@ TEST_HOST := "ft-beacon-branch-${CIRCLE_BUILD_NUM}"
 .PHONY: test
 
 install:
-	npm install origami-build-tools
 	origami-build-tools install --verbose
 
 build:
