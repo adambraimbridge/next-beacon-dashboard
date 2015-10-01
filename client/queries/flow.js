@@ -3,7 +3,7 @@
 'use strict';
 
 var queryString = require('querystring');
-var queryParameters = queryString.parse(location.search);
+var queryParameters = queryString.parse(location.search.substr(1));
 
 // Return the ISO string for relative dates
 var daysFromNow = function (offset) {

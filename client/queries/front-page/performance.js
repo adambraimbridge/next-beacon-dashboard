@@ -1,6 +1,7 @@
 'use strict';
 
-import queryString from 'querystring';
+var queryString = require('querystring');
+var queryParameters = queryString.parse(location.search.substr(1));
 
 const graphiteBaseUrl = 'https://www.hostedgraphite.com/bbaf3ccf/569381f9-6a60-4c33-a0be-b2272aa7a4a5/graphite/render';
 const chartParams = {
@@ -28,7 +29,6 @@ const browsers = [
 ];
 
 var render = () => {
-	var queryParameters = queryString.parse(location.search);
 	var currentBrowser = queryParameters.browser || browsers[0].key;
 	var targetconfigs = [
 		{

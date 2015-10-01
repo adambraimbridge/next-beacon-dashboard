@@ -3,7 +3,8 @@
 
 var OTabs = require('o-tabs');
 var queryString = require('querystring');
-var queryParameters = queryString.parse(location.search);
+var queryParameters = queryString.parse(location.search.substr(1));
+
 var client = require('../../lib/wrapped-keen');
 
 const breakpoints = ['default', 'XS', 'S', 'M', 'L', 'XL'];
