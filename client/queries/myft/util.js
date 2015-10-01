@@ -2,7 +2,7 @@
 'use strict';
 
 var queryString = require('querystring');
-var queryParameters = queryString.parse(location.search);
+var queryParameters = queryString.parse(location.search.substr(1));
 var queryTimeframe = queryParameters.timeframe || "this_14_days";
 var previousTimeframe  = queryTimeframe.replace('this', 'previous');
 

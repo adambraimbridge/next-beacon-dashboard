@@ -7,7 +7,7 @@ var client = require('../lib/wrapped-keen');
 var humanize = require('humanize');
 
 var queryString = require('querystring');
-var queryParameters = queryString.parse(location.search);
+var queryParameters = queryString.parse(location.search.substr(1));
 
 // Degrade gracefully if parameter is missing. Not ideal, but at least it loads something.
 // See server/middleware/active-usage.js for details
@@ -115,9 +115,17 @@ var queryLargeDevices = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
 		cta: feature.cta,
 		filters: [{
-			property_name:"user.layout",
-			operator:"in",
-			property_value:["XL","L"]
+			"property_name":"ingest.user.layout",
+			"operator":"exists",
+			"property_value":true
+		},{
+			"property_name":"ingest.user.layout",
+			"operator":"ne",
+			"property_value":"none"
+		},{
+			"property_name":"ingest.user.layout",
+			"operator":"in",
+			"property_value":["XL","L"]
 		}]
 	}),
 	maxAge: 10800
@@ -127,9 +135,17 @@ var queryMediumDevices = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
 		cta: feature.cta,
 		filters: [{
-			property_name:"user.layout",
-			operator:"in",
-			property_value:["M"]
+			"property_name":"ingest.user.layout",
+			"operator":"exists",
+			"property_value":true
+		},{
+			"property_name":"ingest.user.layout",
+			"operator":"ne",
+			"property_value":"none"
+		},{
+			"property_name":"ingest.user.layout",
+			"operator":"in",
+			"property_value":["M"]
 		}]
 	}),
 	maxAge: 10800
@@ -138,10 +154,18 @@ var queryMediumDevices = new Keen.Query("funnel", {
 var querySmallDevices = new Keen.Query("funnel", {
 	steps:activeUserStepsForFeature({
 		cta: feature.cta,
-		filters: [{
-			property_name:"user.layout",
-			operator:"in",
-			property_value:["XS","S","default"]
+				filters: [{
+			"property_name":"ingest.user.layout",
+			"operator":"exists",
+			"property_value":true
+		},{
+			"property_name":"ingest.user.layout",
+			"operator":"ne",
+			"property_value":"none"
+		},{
+			"property_name":"ingest.user.layout",
+			"operator":"in",
+			"property_value":["XS","S","default"]
 		}]
 	}),
 	maxAge: 10800

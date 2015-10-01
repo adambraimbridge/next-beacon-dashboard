@@ -3,6 +3,7 @@ TEST_HOST := "ft-beacon-branch-${CIRCLE_BUILD_NUM}"
 .PHONY: test
 
 install:
+	npm install
 	origami-build-tools install --verbose
 
 build:
@@ -19,7 +20,7 @@ run:
 	export PORT=5028; \
 	nbt run --local
 
-test: build-production
+test:
 	nbt verify --skip-layout-checks
 
 deploy:

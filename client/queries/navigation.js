@@ -3,7 +3,7 @@
 'use strict';
 
 var queryString = require('querystring');
-var queryParameters = queryString.parse(location.search);
+var queryParameters = queryString.parse(location.search.substr(1));
 
 var metric_primary = new Keen.Dataviz()
 	.el(document.getElementById("metric_primary"))

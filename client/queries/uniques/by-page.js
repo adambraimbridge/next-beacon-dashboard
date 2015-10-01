@@ -3,7 +3,7 @@
 'use strict';
 
 var queryString = require('querystring');
-var queryParameters = queryString.parse(location.search);
+var queryParameters = queryString.parse(location.search.substr(1));
 
 // This is a base query object, for spawning queries.
 var keenQuery = function(options) {

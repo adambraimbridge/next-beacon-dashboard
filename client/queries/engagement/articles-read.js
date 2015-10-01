@@ -2,7 +2,7 @@
 'use strict';
 
 var queryString = require('querystring');
-var queryParameters = queryString.parse(location.search);
+var queryParameters = queryString.parse(location.search.substr(1));
 var engagementCohorts = require('../../lib/engagement-cohorts');
 
 var render = (el, results) => {
