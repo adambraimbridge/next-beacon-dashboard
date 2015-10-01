@@ -11,7 +11,7 @@
     "es6-promise": "^2.0.0",
     "flat": "^1.6.0",
     "forever": "^0.11.1",
-    "ft-next-express": "^13.0.0",
+    "ft-next-express": "^15.0.0",
     "ft-next-logger": "^1.1.0",
     "humanize": "0.0.9",
     "keen.io": "^0.1.3",
