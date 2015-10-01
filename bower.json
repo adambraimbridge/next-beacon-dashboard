@@ -8,13 +8,5 @@
     "ab-test-confidence": "^1.2.0",
     "array-find": "^1.0.1",
     "moment": "^2.10.6"
-  },
-  "resolutions": {
-    "next-sass-setup": "^6.0.0",
-    "next-buttons": "^2.1.0",
-    "next-myft-ui": "^3.0.0",
-    "next-myft-client": "switch",
-    "lodash": "3.10.1-npm",
-    "n-third-party-code": "^1.0.0"
   }
 }
