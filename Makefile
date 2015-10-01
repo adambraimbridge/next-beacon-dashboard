@@ -20,7 +20,7 @@ run:
 	export PORT=5028; \
 	nbt run --local
 
-test: build-production
+test:
 	nbt verify --skip-layout-checks
 
 deploy:
