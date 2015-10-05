@@ -110,22 +110,12 @@ client.draw(counts, document.getElementById("dailyTotals"), {
 	}
 });
 
-
+// TODO: De-dupe "www" (e.g. www.drudgereport.com vs drudgereport.com)
 client.draw(referrers, document.getElementById("referrers"), {
 	chartType: "piechart",
 	title: 'Anons by referrer',
 	chartOptions : {
-		height: 450,
-		colors : [
-			'#c00d00',
-			'#002758',
-			'#410057,',
-			'#27757b',
-			'#333333',
-			'#f99d9d',
-			'#2bbbbf',
-			'#f3dee3'
-		]
+		height: 450
 	}
 });
 
