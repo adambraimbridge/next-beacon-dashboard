@@ -14,7 +14,8 @@ build-production:
 	nbt about
 
 clean:
-	git clean -fxd
+	rm -rf bower_components
+	rm -rf node_modules
 
 run:
 	export PORT=5028; \
