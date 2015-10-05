@@ -76,9 +76,7 @@ client.draw(counts, document.getElementById("trend"), {
 		height: 450,
 		trendlines: {
 			0: {
-				color: 'green',
-				type: 'polynomial',
-				degree: 6
+				color: 'green'
 			}
 		},
 		curveType:'function',
