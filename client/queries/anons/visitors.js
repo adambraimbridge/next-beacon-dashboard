@@ -43,7 +43,9 @@ var referrers = new Keen.Query("count_unique", {
 	timezone: "UTC"
 });
 
-
+// TODO: `meta.anon` still exists in keen, but `user.device_id` does not.
+// Suggest we delete spoorID and deviceID (same thing?) and
+// add user.allocationID to optin events in spoor consumer; ask @MattC.
 var anonOptOuts = new Keen.Query("funnel", {
 	steps : [
 		{
