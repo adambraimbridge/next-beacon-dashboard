@@ -199,7 +199,7 @@ function getDashboards(offset) {
 		step({
 			filters: [{
 				eventCollection: 'dwell',
-				property_name: 'user.myft.preferences.publish-rss-feeds',
+				property_name: 'userPrefs.preferences.publish-rss-feeds',
 				operator: 'eq',
 				property_value: true
 			}]
