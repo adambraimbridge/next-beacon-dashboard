@@ -340,7 +340,7 @@ function getDashboards(offset) {
 		'title' : 'Engagement with myFT Tray',
 		'labels' : [
 		'Are following at least one topic',
-		'Seen the tray',
+		'Seen the button for the myFT tray',
 		'Clicked on the tray',
 		'Clicked on an article from the tray'
 		],
@@ -354,11 +354,6 @@ function getDashboards(offset) {
 		}),
 		step({
 			filters: [{
-				property_name: 'user.myft.topicsFollowed',
-				operator: 'gte',
-				property_value: 1
-			},
-			{
 				property_name: 'page.location.type',
 				operator: 'in',
 				property_value: ['article', 'stream', 'search']
