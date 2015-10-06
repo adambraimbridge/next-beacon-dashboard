@@ -23,6 +23,8 @@
     "o-buttons": "v3",
     "next-myft-client": "switch",
     "lodash": "3.10.1-npm",
-    "n-third-party-code": "^1.0.0"
+    "n-third-party-code": "^1.0.0",
+    "o-grid": "^3.2.5",
+    "o-errors": "^3.1.0"
   }
 }
