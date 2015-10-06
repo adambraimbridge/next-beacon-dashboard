@@ -125,12 +125,11 @@ Keen.ready(function(){
 
 		case '/graph/uniques':
 			render(require('./queries/uniques/today'), {
-				title: 'Unique users so far today'}
-			);
+				title: 'Unique users so far today'
+			});
 
 			render(require('./queries/uniques/yesterday'), {
-				title: 'Unique users yesterday',
-				colors: ['#77C9BC']
+				title: 'Unique users yesterday'
 			});
 
 			render(require('./queries/uniques/two_week_average'));

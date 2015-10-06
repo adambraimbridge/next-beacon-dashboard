@@ -3,7 +3,7 @@
 'use strict';
 
 var queryString = require('querystring');
-var queryParameters = queryString.parse(location.search);
+var queryParameters = queryString.parse(location.search.substr(1));
 
 var metric_large = new Keen.Dataviz()
 	.chartOptions({
@@ -91,9 +91,17 @@ var keenQuery = function(options) {
 		eventCollection: "dwell",
 		timeframe: queryParameters.timeframe || "this_14_days",
 		targetProperty: "user.uuid",
-		groupBy: "user.layout",
+		groupBy: "ingest.user.layout",
 		timezone: "UTC",
-		filters:options.filters || [],
+		filters:[{
+			"property_name":"ingest.user.layout",
+			"operator":"exists",
+			"property_value":true
+		},{
+			"property_name":"ingest.user.layout",
+			"operator":"ne",
+			"property_value":"none"
+		}],
 		maxAge: 10800
 	};
 
@@ -117,13 +125,13 @@ var render = function (el, results, opts, client) {
 
 	var total = _.sum(resultMetric.result, 'result');
 	var totalLarge = _.sum(resultMetric.result, function(object) {
-		if (_.includes(["XL","L"], object['user.layout'])) return object.result;
+		if (_.includes(["XL","L"], object['ingest.user.layout'])) return object.result;
 	});
 	var totalMedium = _.sum(resultMetric.result, function(object) {
-		if (_.includes(["M"], object['user.layout'])) return object.result;
+		if (_.includes(["M"], object['ingest.user.layout'])) return object.result;
 	});
 	var totalSmall = _.sum(resultMetric.result, function(object) {
-		if (_.includes(["XS","S","default"], object['user.layout'])) return object.result;
+		if (_.includes(["XS","S","default"], object['ingest.user.layout'])) return object.result;
 	});
 	var totalRemainder = total - _.sum([totalLarge,totalMedium,totalSmall]);
 
@@ -144,7 +152,7 @@ var render = function (el, results, opts, client) {
 		.parseRawData({ result:percentageSmall })
 		.render();
 
-	$('#percentage_remainder').html('With a ' + percentageRemainder + '% remainder ("none" and "null" values)');
+	$('#percentage_remainder').html('With a ~ ' + percentageRemainder + '% remainder ("none" and "null" values)');
 
 	linechart
 		.parseRawData(resultInterval)

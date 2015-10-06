@@ -3,7 +3,7 @@
 "use strict";
 
 var queryString = require('querystring');
-var queryParameters = queryString.parse(location.search);
+var queryParameters = queryString.parse(location.search.substr(1));
 
 var client = new Keen({
 	projectId: keen_project,
@@ -26,9 +26,7 @@ client.draw(query, document.getElementById("linechart"), {
 		height: 450,
 		trendlines: {
 			0: {
-				color: 'green',
-				type: 'polynomial',
-				degree: 6
+				color: 'green'
 			}
 		},
 		curveType:'function',
@@ -49,9 +47,7 @@ client.draw(query, document.getElementById("columnchart"), {
 		height: 450,
 		trendlines: {
 			0: {
-				color: 'green',
-				type: 'polynomial',
-				degree: 6
+				color: 'green'
 			}
 		},
 		hAxis: {
