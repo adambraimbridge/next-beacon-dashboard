@@ -11,6 +11,7 @@
   "resolutions": {
     "o-errors": "^3.1.0",
     "n-third-party-code": "^1.0.0",
-    "lodash": "3.10.1-npm"
+    "lodash": "3.10.1-npm",
+    "o-grid": "^3.1.8"
   }
 }

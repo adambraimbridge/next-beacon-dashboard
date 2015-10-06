@@ -31,6 +31,10 @@ Keen.ready(function(){
 
 	switch (location.pathname) {
 
+		case '/graph/ab/performance':
+			require('./queries/ab/performance').render();
+			break;
+
 		case '/graph/ab/aa':
 
 			render(require('./queries/ab/aa'));
