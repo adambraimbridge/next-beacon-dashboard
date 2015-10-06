@@ -58,7 +58,10 @@ var bounceRateQuery =  new Keen.Query("count", {
 
 var scrollDepthQuery = new Keen.Query("count", {
 	eventCollection: "scrolldepth",
-	filters: [{"operator":"exists","property_name":"user.uuid","property_value":false},{"operator":"exists","property_name":"meta.sessionServiceDown","property_value":false}],
+	filters: [
+		{"operator":"exists","property_name":"user.uuid","property_value":false},
+		{"operator":"exists","property_name":"meta.sessionServiceDown","property_value":false}
+	],
 	groupBy: "meta.percentageViewed",
 	targetProperty: "meta.percentageViewed",
 	timeframe: queryParameters.timeframe || "this_14_days",
