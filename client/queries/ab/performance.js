@@ -2,63 +2,61 @@
 'use strict';
 
 var client = require('../../lib/wrapped-keen');
-const weeks = 4;
 const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search);
 const queryTimeframe = queryParameters.timeframe || "this_7_days";
 
 var generateAverageViews = (el, type, state,  queryOpts = {})  => {
-    var pageViewsEl = document.createElement('div');
-    pageViewsEl.classList.add('o-grid-row');
-    pageViewsEl.innerHTML = `<h2 data-o-grid-colspan="12">Average page views per session for ${state} variant</h2>`;
-    el.appendChild(pageViewsEl);
+	var pageViewsEl = document.createElement('div');
+	pageViewsEl.classList.add('o-grid-row');
+	pageViewsEl.innerHTML = `<h2 data-o-grid-colspan="12">Average page views per session for ${state} variant</h2>`;
+	el.appendChild(pageViewsEl);
 
-    var pageViewsQueries = [
-        new Keen.Query('count', Object.assign({
-            eventCollection: 'dwell',
-            filters: [
-                {
-                    operator: 'eq',
-                    property_name: 'ab.performanceAB',
-                    property_value: state
-                }
-            ],
-            groupBy: 'ingest.device.spoor_session',
-            timeframe: queryTimeframe,
-            timezone: 'UTC'
-        }, queryOpts)),
-    ];
+	var pageViewsQueries = [
+		new Keen.Query('count', Object.assign({
+			eventCollection: 'dwell',
+			filters: [
+			{
+				operator: 'eq',
+				property_name: 'ab.performanceAB',
+				property_value: state
+			}
+			],
+			groupBy: 'ingest.device.spoor_session',
+			timeframe: queryTimeframe,
+			timezone: 'UTC'
+		}, queryOpts)),
+	];
 
-    var charts = new Map([['mean'], ['total']]);
-    charts.forEach((value, key, map) => {
-        var el = document.createElement('div');
-        el.dataset.oGridColspan = '12 M6';
-        pageViewsEl.appendChild(el);
-        map.set(key, new Keen.Dataviz()
-            .el(el)
-            .prepare()
-        );
-    });
+	var charts = new Map([['mean'], ['total']]);
+	charts.forEach((value, key, map) => {
+		var el = document.createElement('div');
+		el.dataset.oGridColspan = '12 M6';
+		pageViewsEl.appendChild(el);
+		map.set(key, new Keen.Dataviz()
+				.el(el)
+				.prepare());
+	});
 
-    client.run(pageViewsQueries, (err, results) => {
-        var data = results.result;
-        var average = data.reduce(function(prev, current) {
-			return prev + current.result
-        }, 0) / data.length;
+	client.run(pageViewsQueries, (err, results) => {
+		var data = results.result;
+		var average = data.reduce(function(prev, current) {
+			return prev + current.result;
+		}, 0) / data.length;
 		charts.get('mean')
 			.data({
 				result: average
 			})
-			.title('Mean page views per session')
+		.title('Mean page views per session')
 			.render();
 		charts.get('total')
 			.data({
 				result: data.length
 			})
-			.colors(['#91DCD0'])
+		.colors(['#91DCD0'])
 			.title('Total')
 			.render();
-    });
+	});
 
 };
 
@@ -112,11 +110,10 @@ var generateFrequency = (timeframe, id, filters=[]) => {
 
 	client.run([queryVisitsPerUser, queryLastVisitPerUser], function(response) {
 		var visitsPerUser = this.data[0].result;
-		var lastVisitPerUser = this.data[1].result;
 		var totalUniqueUsers = visitsPerUser.length;
 
 		//Work out the average days visiting the site in the timeframe
-		var averageVisitsPerUser = _.reduce(visitsPerUser, function(memo, user) {
+		var averageVisitsPerUser = visitsPerUser.reduce(function(memo, user) {
 			return memo + user.result;
 		}, 0) / totalUniqueUsers;
 
@@ -129,7 +126,7 @@ var generateFrequency = (timeframe, id, filters=[]) => {
 };
 
 var generateOptin = function(id, filters) {
-	var keenQuery = function(options) {
+	var KeenQuery = function(options) {
 		var parameters = {
 			eventCollection: 'optin',
 			timeframe: queryTimeframe,
@@ -155,7 +152,7 @@ var generateOptin = function(id, filters) {
 		.height(250)
 		.prepare();
 
-	var piechart24HoursQuery = new keenQuery({
+	var piechart24HoursQuery = new KeenQuery({
 		interval: false,
 		timeframe: 'this_24_hours'
 	});
@@ -175,7 +172,7 @@ var generateOptin = function(id, filters) {
 };
 
 var generateOptoutReason = function(id) {
-	var keenQuery = function(options) {
+	var KeenQuery = function(options) {
 		var parameters = {
 			eventCollection: 'optin',
 			timeframe: queryTimeframe,
@@ -218,7 +215,7 @@ var generateOptoutReason = function(id) {
 		.height(140)
 		.prepare();
 
-	var optOutReasonQuery = new keenQuery({
+	var optOutReasonQuery = new KeenQuery({
 		queryType: 'count',
 		interval: false,
 	});
@@ -227,12 +224,12 @@ var generateOptoutReason = function(id) {
 		optOutReasonQuery
 	], function(error, response){
 		var total = response.result.reduce(function(prev, current) {
-			return prev + current.result
-        }, 0);
-        var slowTotal = response.result.find(function(item) {
-        	return item['meta.reason'] === 'too-slow';
-        }).result;
-        if (error) {
+			return prev + current.result;
+		}, 0);
+		var slowTotal = response.result.find(function(item) {
+			return item['meta.reason'] === 'too-slow';
+		}).result;
+		if (error) {
 			throw new Error('Keen query error: ' + error.message);
 		}
 		else {
@@ -246,7 +243,7 @@ var generateOptoutReason = function(id) {
 };
 
 module.exports = {
-    render : function() {
+	render : function() {
 		var el = document.getElementById('charts');
 
 		generateAverageViews(el, 'page views', 'on');
@@ -274,5 +271,5 @@ module.exports = {
 		}]);
 		generateOptoutReason('on');
 		generateOptoutReason('off');
-    }
+	}
 };
