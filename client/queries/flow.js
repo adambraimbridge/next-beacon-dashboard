@@ -46,7 +46,7 @@ function getDashboards(offset) {
 		step({}),
 		step({
 			filters: [{
-				property_name: 'page.capi.hasGallery',
+				property_name: 'content_v1.flags.hasGallery',
 				operator: 'eq',
 				property_value: true
 			}]
@@ -54,7 +54,7 @@ function getDashboards(offset) {
 		step({
 			eventCollection: 'gallery',
 			filters: [{
-				property_name: 'meta.percentageThrough',
+				property_name: 'meta.meta.percentageThrough',
 				operator: 'gte',
 				property_value: 25
 			}]
@@ -62,7 +62,7 @@ function getDashboards(offset) {
 		step({
 			eventCollection: 'gallery',
 			filters: [{
-				property_name: 'meta.percentageThrough',
+				property_name: 'meta.meta.percentageThrough',
 				operator: 'gte',
 				property_value: 50
 			}]
@@ -70,7 +70,7 @@ function getDashboards(offset) {
 		step({
 			eventCollection: 'gallery',
 			filters: [{
-				property_name: 'meta.percentageThrough',
+				property_name: 'meta.meta.percentageThrough',
 				operator: 'gte',
 				property_value: 75
 			}]
@@ -78,7 +78,7 @@ function getDashboards(offset) {
 		step({
 			eventCollection: 'gallery',
 			filters: [{
-				property_name: 'meta.percentageThrough',
+				property_name: 'meta.meta.percentageThrough',
 				operator: 'gte',
 				property_value: 100
 			}]
