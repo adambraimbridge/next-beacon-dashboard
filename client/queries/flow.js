@@ -95,7 +95,7 @@ function getDashboards(offset) {
 		'steps':[
 		step({
 			filters: [{
-				property_name: 'page.capi.hasTOC',
+				property_name: 'content_v1.flags.hasTableOfContents',
 				operator: 'eq',
 				property_value: true
 			}]
