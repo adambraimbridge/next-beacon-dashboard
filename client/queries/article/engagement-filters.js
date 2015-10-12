@@ -146,7 +146,11 @@ module.exports = {
 			"share | facebook",
 			"share | linkedin",
 			"share | twitter",
-			"share | whatsapp"
+			"share | whatsapp",
+			"article | share | facebook",
+			"article | share | linkedin",
+			"article | share | twitter",
+			"article | share | whatsapp"
 		]}
 	]
 };
