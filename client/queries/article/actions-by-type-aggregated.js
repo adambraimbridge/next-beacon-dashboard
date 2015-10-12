@@ -131,8 +131,6 @@ var runQuery = function(options) {
 			// divide actions by articles to get click rate
 			var queryActions = res[0].result;
 			var queryBase = res[1].result;
-			console.log('queryActions ', queryActions);
-			console.log('queryBase ', queryBase);
 
 			queryActions.map(function(queryAction) {
 				var queryBaseDate = queryBase.filter(function(el) {
