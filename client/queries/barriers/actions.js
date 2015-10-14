@@ -70,7 +70,13 @@ var barrierClicksByElementQuery = new Keen.Query("count", {
 var barrierInteractionsChart = new Keen.Dataviz()
 	.el(document.getElementById('barrierInteractions'))
 	.chartType('areachart')
-	.height(450)
+	.chartOptions({
+		height: 450,
+		chartArea: {
+			left: '5%',
+			width: '65%'
+		}
+	})
 	.prepare();
 
 client.run([
@@ -85,7 +91,6 @@ client.run([
 			return;
 		}
 
-		console.log(response);
 		var data = response[0].result.map((item, index) => {
 			return {
 				timeframe: item.timeframe,
@@ -114,5 +119,9 @@ client.run([
 );
 
 client.draw(barrierClicksByElementQuery, document.getElementById('barrierInteractionsByElement'), {
-	height: 450
+	height: 450,
+	chartArea: {
+		left: '5%',
+		width: '95%'
+	}
 });
