@@ -2,6 +2,10 @@
 
 "use strict";
 
+/*
+TODO — update to the new spoor api
+*/
+
 // Beacon tracking is only desired for the production environment.
 if ($('html').data('next-is-production') !== undefined) {
 	var src = '//next-beacon.ft.com/px.gif/beacon-dashboard';
