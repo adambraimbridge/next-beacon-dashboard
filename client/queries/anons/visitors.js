@@ -43,7 +43,16 @@ var referrers = new Keen.Query("count_unique", {
 	timezone: "UTC"
 });
 
+// NOTE: `meta.anon` still exists in the `optin` event collection in keen,
+// but `user.device_id` does not.
+// Suggest we delete spoorID and deviceID (same thing?) and
+// add user.allocationID to all event collections.
 
+// Note: An `optin` count where `meta.anon` === `true` does not give
+// the same result as a count where `user.uuid` is not set.
+// Suggest we add user.isUnidentified to all event collections
+
+// ask @MattC.
 var anonOptOuts = new Keen.Query("funnel", {
 	steps : [
 		{
@@ -76,9 +85,7 @@ client.draw(counts, document.getElementById("trend"), {
 		height: 450,
 		trendlines: {
 			0: {
-				color: 'green',
-				type: 'polynomial',
-				degree: 6
+				color: 'green'
 			}
 		},
 		curveType:'function',
@@ -99,9 +106,7 @@ client.draw(counts, document.getElementById("dailyTotals"), {
 		height: 450,
 		trendlines: {
 			0: {
-				color: 'green',
-				type: 'polynomial',
-				degree: 6
+				color: 'green'
 			}
 		},
 		hAxis: {
@@ -114,22 +119,12 @@ client.draw(counts, document.getElementById("dailyTotals"), {
 	}
 });
 
-
+// TODO: De-dupe "www" (e.g. www.drudgereport.com vs drudgereport.com)
 client.draw(referrers, document.getElementById("referrers"), {
 	chartType: "piechart",
 	title: 'Anons by referrer',
 	chartOptions : {
-		height: 450,
-		colors : [
-			'#c00d00',
-			'#002758',
-			'#410057,',
-			'#27757b',
-			'#333333',
-			'#f99d9d',
-			'#2bbbbf',
-			'#f3dee3'
-		]
+		height: 450
 	}
 });
 

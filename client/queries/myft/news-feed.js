@@ -95,9 +95,7 @@ function headlineClicksPerUser(client) {
 			height: 500,
 			trendlines: {
 				0: {
-					color: 'green',
-					type: 'polynomial',
-					degree: 6
+					color: 'green'
 				}
 			}
 		})

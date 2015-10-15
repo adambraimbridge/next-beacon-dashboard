@@ -98,7 +98,7 @@ function init(client) {
 	generateFrequencyRecencyStats(queryTimeframe.replace('this', 'previous'), '--previous');
 
 	var isFollowing = {
-		property_name:"user.myft.topicsFollowed",
+		property_name:"userPrefs.following",
 		operator:"gte",
 		property_value:1
 	};

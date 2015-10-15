@@ -46,7 +46,7 @@ function getDashboards(offset) {
 		step({}),
 		step({
 			filters: [{
-				property_name: 'page.capi.hasGallery',
+				property_name: 'content_v1.flags.hasGallery',
 				operator: 'eq',
 				property_value: true
 			}]
@@ -54,7 +54,7 @@ function getDashboards(offset) {
 		step({
 			eventCollection: 'gallery',
 			filters: [{
-				property_name: 'meta.percentageThrough',
+				property_name: 'meta.meta.percentageThrough',
 				operator: 'gte',
 				property_value: 25
 			}]
@@ -62,7 +62,7 @@ function getDashboards(offset) {
 		step({
 			eventCollection: 'gallery',
 			filters: [{
-				property_name: 'meta.percentageThrough',
+				property_name: 'meta.meta.percentageThrough',
 				operator: 'gte',
 				property_value: 50
 			}]
@@ -70,7 +70,7 @@ function getDashboards(offset) {
 		step({
 			eventCollection: 'gallery',
 			filters: [{
-				property_name: 'meta.percentageThrough',
+				property_name: 'meta.meta.percentageThrough',
 				operator: 'gte',
 				property_value: 75
 			}]
@@ -78,7 +78,7 @@ function getDashboards(offset) {
 		step({
 			eventCollection: 'gallery',
 			filters: [{
-				property_name: 'meta.percentageThrough',
+				property_name: 'meta.meta.percentageThrough',
 				operator: 'gte',
 				property_value: 100
 			}]
@@ -95,7 +95,7 @@ function getDashboards(offset) {
 		'steps':[
 		step({
 			filters: [{
-				property_name: 'page.capi.hasTOC',
+				property_name: 'content_v1.flags.hasTableOfContents',
 				operator: 'eq',
 				property_value: true
 			}]
@@ -199,7 +199,7 @@ function getDashboards(offset) {
 		step({
 			filters: [{
 				eventCollection: 'dwell',
-				property_name: 'user.myft.preferences.publish-rss-feeds',
+				property_name: 'userPrefs.preferences.publish-rss-feeds',
 				operator: 'eq',
 				property_value: true
 			}]
@@ -340,7 +340,7 @@ function getDashboards(offset) {
 		'title' : 'Engagement with myFT Tray',
 		'labels' : [
 		'Are following at least one topic',
-		'Seen the tray',
+		'Seen the button for the myFT tray',
 		'Clicked on the tray',
 		'Clicked on an article from the tray'
 		],
@@ -354,11 +354,6 @@ function getDashboards(offset) {
 		}),
 		step({
 			filters: [{
-				property_name: 'user.myft.topicsFollowed',
-				operator: 'gte',
-				property_value: 1
-			},
-			{
 				property_name: 'page.location.type',
 				operator: 'in',
 				property_value: ['article', 'stream', 'search']
