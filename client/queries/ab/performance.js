@@ -45,11 +45,11 @@ var generateAverageViews = (el, type, state,  queryOpts = {})  => {
 
 	client.run(pageViewsQueries, (err, results) => {
 		var data = results.result;
-	
+
 		// remove any session > 20 page views as these are outliers
 		var clean = data.filter(function (a) {
 			return (a.result <= 20);
-		})
+		});
 
 		var average = clean.reduce(function(prev, current) {
 			return prev + current.result;
@@ -256,12 +256,9 @@ var generateOptoutReason = function(id) {
 module.exports = {
 	render : function() {
 		var el = document.getElementById('charts');
-		
-		console.log(123);
-
 		generateAverageViews(el, 'page views', 'on');
 		generateAverageViews(el, 'page views', 'off');
-		
+
 		generateFrequency(queryTimeframe, 'on', [{
 			operator: 'eq',
 			property_name: 'ab.performanceAB',
