@@ -12,6 +12,11 @@
     "o-errors": "^3.1.0",
     "n-third-party-code": "^1.0.0",
     "lodash": "3.10.1-npm",
-    "o-grid": "^3.1.8"
+    "o-grid": "^3.1.8",
+    "next-feature-flags-client": "^v8.0.0",
+    "next-myft-client": "^3.3.0",
+    "next-session-client": "^2.0.0",
+    "next-sass-setup": "^7.0.0",
+    "o-ft-icons": "^2.2.1"
   }
 }
