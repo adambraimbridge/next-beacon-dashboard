@@ -4,7 +4,7 @@
 var client = require('../../lib/wrapped-keen');
 const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search);
-const queryTimeframe = queryParameters.timeframe || "this_7_days";
+const queryTimeframe = queryParameters.timeframe || "this_14_days";
 
 var generateAverageViews = (el, type, state,  queryOpts = {})  => {
 	var pageViewsEl = document.createElement('div');
@@ -16,11 +16,16 @@ var generateAverageViews = (el, type, state,  queryOpts = {})  => {
 		new Keen.Query('count', Object.assign({
 			eventCollection: 'dwell',
 			filters: [
-			{
-				operator: 'eq',
-				property_name: 'ab.performanceAB',
-				property_value: state
-			}
+				{
+					operator: 'eq',
+					property_name: 'ab.performanceAB',
+					property_value: state
+				},
+				{
+					operator: 'exists',
+					property_name: 'user.uuid',
+					property_value: true
+				}
 			],
 			groupBy: 'ingest.device.spoor_session',
 			timeframe: queryTimeframe,
@@ -40,9 +45,15 @@ var generateAverageViews = (el, type, state,  queryOpts = {})  => {
 
 	client.run(pageViewsQueries, (err, results) => {
 		var data = results.result;
-		var average = data.reduce(function(prev, current) {
+
+		// remove any session > 20 page views as these are outliers
+		var clean = data.filter(function (a) {
+			return (a.result <= 20);
+		});
+
+		var average = clean.reduce(function(prev, current) {
 			return prev + current.result;
-		}, 0) / data.length;
+		}, 0) / clean.length;
 		charts.get('mean')
 			.data({
 				result: average
@@ -51,7 +62,7 @@ var generateAverageViews = (el, type, state,  queryOpts = {})  => {
 			.render();
 		charts.get('total')
 			.data({
-				result: data.length
+				result: clean.length
 			})
 		.colors(['#91DCD0'])
 			.title('Total')
@@ -245,29 +256,45 @@ var generateOptoutReason = function(id) {
 module.exports = {
 	render : function() {
 		var el = document.getElementById('charts');
-
 		generateAverageViews(el, 'page views', 'on');
 		generateAverageViews(el, 'page views', 'off');
+
 		generateFrequency(queryTimeframe, 'on', [{
 			operator: 'eq',
 			property_name: 'ab.performanceAB',
 			property_value: 'on'
+		},{
+			operator: 'exists',
+			property_name: 'user.uuid',
+			property_value: true
 		}]);
 		generateFrequency(queryTimeframe, 'off', [{
 			operator: 'eq',
 			property_name: 'ab.performanceAB',
 			property_value: 'off'
+		},{
+			operator: 'exists',
+			property_name: 'user.uuid',
+			property_value: true
 		}]);
 
 		generateOptin('on', [{
 			operator: 'eq',
 			property_name: 'ab.performanceAB',
 			property_value: 'on'
+		},{
+			operator: 'exists',
+			property_name: 'user.uuid',
+			property_value: true
 		}]);
 		generateOptin('off', [{
 			operator: 'eq',
 			property_name: 'ab.performanceAB',
 			property_value: 'off'
+		},{
+			operator: 'exists',
+			property_name: 'user.uuid',
+			property_value: true
 		}]);
 		generateOptoutReason('on');
 		generateOptoutReason('off');
