@@ -1,5 +1,54 @@
 <h1>A/B - Performance</h1>
-<p>For 7 day period unless otherwise stated</p>
+
+<p class="o-techdocs-leadbody">
+	<i>Hypothesis:</i> Users engage more if webpages load faster.
+</p>
+
+<aside>
+	<b>Group A:</b> Webpages are delayed by 5 seconds.<br/>
+	<b>Group B:</b> Webpages are not delayed.
+</aside>
+
+<ul>
+	<li><a target="_blank" href="https://keen.io/project/5486efb559949a0a311510fa/explorer?query%5Bevent_collection%5D=dwell&query%5Banalysis_type%5D=count_unique&query%5Btarget_property%5D=user.uuid&query%5Bgroup_by%5D=ab.performanceAB&query%5Binterval%5D=daily&query%5Btimeframe%5D%5Bstart%5D=2015-09-28T00%3A00%3A00.000%2B00%3A00&query%5Btimeframe%5D%5Bend%5D=2015-10-03T00%3A00%3A00.000%2B00%3A00&project_id=5486efb559949a0a311510fa&visualization%5Bchart_type%5D=columnchart">Since 30th September 2015</a>, all users of next.ft.com have been evenly split into group A and group B.</li>
+	<li>Each time a next.ft.com webpage loads, it checks which group the user is in. </li>
+	<li>If they're in group A, the page is artifically delayed.</li>
+	<li>Group A users don't know they're delayed. Will they notice? Will they opt-out more?</li>
+	<li>Users in group B remain unaffected. Do they have higher RFV scores than group A?</li>
+</ul>
+
+<h2>Volume</h2>
+<p>How many webpages per day do users visit?</p>
+<span class="chart__container" id="volume-chart"></span>
+
+<h1>Frequency</h1>
+<p>
+	Is the average frequency score for each group going up or down? To calulate an average user frequency for a given day:
+	<ol>
+		<li>Count how many users visited any webpage (at least once) that day;</li>
+		<li>Calculate each user's <i>frequency</i>; (The number of days on which they visited in the 90 days previous to that day.)</li>
+		<li>Add up all the frequencies and divide by the number of users.</li>
+	</ol>
+</p>
+
+<p>Unfortunately this chart would take a very long time to calculate, so it isn't possible right now to calculate for every day.</p>
+
+<p>But we <i>can</i> calculate the frequency for today. <b>This can take a few minutes.</b></p>
+
+<div class="chart__container__metrics">
+	<span class="chart__container chart__container--half" id="metric_average_frequency__a"></span>
+	<span class="chart__container chart__container--half" id="metric_average_frequency__b"></span>
+</div>
+
+<h1>Recency</h1>
+<p>How many users visited? Coming soon.</p>
+
+<hr/>
+
+<aside>
+	<p>The following charts are for a 7 day period unless otherwise stated.</p>
+</aside>
+
 <div class="chart__container__metrics" id="charts"></div>
 
 <h3>Frequency</h3>
