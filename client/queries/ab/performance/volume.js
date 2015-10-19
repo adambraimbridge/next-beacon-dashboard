@@ -41,23 +41,22 @@ var volumeQuery = new Keen.Query("count", {
 
 module.exports.run = function() {
 	client.run(volumeQuery, function(err, res) {
-		_.each(res, function(days) {
-			_.each(days, function(day) {
-				_.each(day.value, function(group) {
-					if (group['ab.performanceAB'] === 'on') {
-						group['ab.performanceAB'] = 'Group A';
-					}
-					else if(group['ab.performanceAB'] === 'off') {
-						group['ab.performanceAB'] = 'Group B';
-					}
-				});
-			});
-		});
-
 		if (err) {
 			volumeChart.error(err.message);
 		}
 		else {
+			_.each(res, function(days) {
+				_.each(days, function(day) {
+					_.each(day.value, function(group) {
+						if (group['ab.performanceAB'] === 'on') {
+							group['ab.performanceAB'] = 'Group A';
+						}
+						else if(group['ab.performanceAB'] === 'off') {
+							group['ab.performanceAB'] = 'Group B';
+						}
+					});
+				});
+			});
 			volumeChart
 				.parseRequest(this)
 				.render();
