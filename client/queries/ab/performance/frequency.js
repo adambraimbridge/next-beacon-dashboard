@@ -1,4 +1,4 @@
-/* global Keen */
+/* global Keen, _ */
 'use strict';
 var client = require('../../../lib/wrapped-keen');
 

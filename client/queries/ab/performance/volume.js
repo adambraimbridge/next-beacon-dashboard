@@ -1,11 +1,12 @@
-/* global Keen */
+/* global Keen, _ */
 'use strict';
+
 var client = require('../../../lib/wrapped-keen');
 var d = new Date();
 var timeframe = {
 	"start":"2015-09-28T00:00:00.000+00:00",
 	"end":d.toISOString()
-}
+};
 
 var volumeChart = new Keen.Dataviz()
 	.el(document.getElementById("volume-chart"))

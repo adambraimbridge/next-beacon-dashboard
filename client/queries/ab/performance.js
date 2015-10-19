@@ -1,4 +1,3 @@
-/* global Keen */
 'use strict';
 
 var volume = require('./performance/volume');
@@ -9,5 +8,4 @@ module.exports.render = function(){
 	volume.run();
 	frequency.run();
 	other.run();
-}
-
+};

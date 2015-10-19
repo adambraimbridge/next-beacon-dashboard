@@ -73,7 +73,7 @@ var generateFrequency = (timeframe, id, filters=[]) => {
 
 		// Don't pass any interval parameter if it's explicitly set to false
 		if (options.interval !== false) {
-			parameters['interval'] = options.interval || queryParameters.interval || "daily";
+			parameters['interval'] = options.interval || "daily";
 		}
 
 		return new Keen.Query(query, parameters);
@@ -132,7 +132,7 @@ var generateOptin = function(id, filters) {
 
 		// Don't pass any interval parameter if it's explicitly set to false
 		if (options.interval !== false) {
-			parameters['interval'] = options.interval || queryParameters.interval || 'daily';
+			parameters['interval'] = options.interval || 'daily';
 		}
 
 		return new Keen.Query(options.queryType || 'count_unique', parameters);
@@ -196,7 +196,7 @@ var generateOptoutReason = function(id) {
 
 		// Don't pass any interval parameter if it's explicitly set to false
 		if (options.interval !== false) {
-			parameters['interval'] = options.interval || queryParameters.interval || 'daily';
+			parameters['interval'] = options.interval || 'daily';
 		}
 
 		return new Keen.Query(options.queryType || 'count_unique', parameters);
