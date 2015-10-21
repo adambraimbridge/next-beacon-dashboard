@@ -3,28 +3,37 @@ import queryString from 'querystring';
 
 const queryParameters = queryString.parse(location.search.substr(1));
 const timeframe = queryParameters.timeframe || 'this_14_days';
+const device = queryParameters.device || 'all';
 
-const linkEl = document.querySelector(`*[href="?timeframe=${timeframe}"]`);
-linkEl.outerHTML = linkEl.textContent;
+const timeframeLinkEl = document.querySelector(`*[href="?timeframe=${timeframe}"]`);
+timeframeLinkEl.outerHTML = timeframeLinkEl.textContent;
+const deviceLinkEl = document.querySelector(`*[href="?device=${device}"]`);
+deviceLinkEl.outerHTML = deviceLinkEl.textContent;
 
 const render = () => {
-	const browsersQuery = new Keen.Query('count_unique', {
+	const deviceFilter = device === 'all' ?
+		null :
+		{
+			operator: 'eq',
+			property_name: 'deviceAtlas.mobileDevice',
+			property_value: device === 'mobile'
+
+		};
+	const browsersFilters = [
+		{
+			operator: 'exists',
+			property_name: 'ua.browser.name',
+			property_value: true
+		}
+	];
+	if (deviceFilter) {
+		browsersFilters.push(deviceFilter);
+	}
+	const browsersQuery = new Keen.Query('count', {
 		eventCollection: 'dwell',
-		group_by: 'deviceAtlas.browserName',
-		target_property: 'ingest.device.spoor_id',
-		filters: [
-			{
-				operator: 'ne',
-				property_name: 'deviceAtlas.browserName',
-				property_value: false
-			},
-			{
-				operator: 'exists',
-				property_name: 'deviceAtlas.browserName',
-				property_value: true
-			}
-		],
-		timeframe: 'this_1_days',
+		group_by: 'ua.browser.name',
+		filters: browsersFilters,
+		timeframe,
 		timezone: 'UTC'
 	});
 	client.run(browsersQuery, (err, { result }) => {
@@ -37,7 +46,7 @@ const render = () => {
 				const percentage = (100 / totalResult) * browserData.result;
 				return `
 					<tr class="table__body-row">
-						<td class="table__body-row__browser-name">${browserData['deviceAtlas.browserName']}</td>
+						<td class="table__body-row__browser-name">${browserData['ua.browser.name']}</td>
 						<td>${browserData.result}</td>
 						<td>${percentage.toFixed(2)}</td>
 					</tr>`;
@@ -60,18 +69,21 @@ const render = () => {
 				if (srcElement.parentNode.classList.contains('table__body-row')) {
 					const rowEl = srcElement.parentNode;
 					const browserName = rowEl.querySelector('.table__body-row__browser-name').textContent;
-					const browserQuery = new Keen.Query('count_unique', {
+					const browserFilters = [
+						{
+							operator: 'eq',
+							property_name: 'ua.browser.name',
+							property_value: browserName
+						}
+					];
+					if (deviceFilter) {
+						browserFilters.push(deviceFilter);
+					}
+					const browserQuery = new Keen.Query('count', {
 						eventCollection: 'dwell',
-						group_by: 'deviceAtlas.browserVersion',
-						target_property: 'ingest.device.spoor_id',
-						filters: [
-							{
-								operator: 'eq',
-								property_name: 'deviceAtlas.browserName',
-								property_value: browserName
-							}
-						],
-						timeframe: 'this_1_days',
+						group_by: 'ua.browser.version',
+						filters: browserFilters,
+						timeframe,
 						timezone: 'UTC'
 					});
 					client.run(browserQuery, (err, { result }) => {
@@ -85,7 +97,7 @@ const render = () => {
 								const totalPercentage = (100 / totalResult) * browserData.result;
 								return `
 									<tr class="table__body-row">
-										<td class="table__body-row__browser-version">${browserData['deviceAtlas.browserVersion']}</td>
+										<td class="table__body-row__browser-version">${browserData['ua.browser.version']}</td>
 										<td>${browserData.result}</td>
 										<td>${percentage.toFixed(2)}</td>
 										<td>${totalPercentage.toFixed(2)}</td>
