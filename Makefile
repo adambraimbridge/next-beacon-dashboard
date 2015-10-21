@@ -7,7 +7,7 @@ install:
 	origami-build-tools install --verbose
 
 build:
-	nbt build
+	nbt build --dev
 
 build-production:
 	nbt build

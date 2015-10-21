@@ -151,6 +151,7 @@ table {
 	flex: 1 1 0%;
 }
 
+.table,
 .table--front-page {
 	th,
 	td {
@@ -183,6 +184,10 @@ table {
 		.table--show-all & {
 			display: table-row;
 		}
+	}
+	.table--hover &:hover {
+		cursor: pointer;
+		background-color: rgba(#999999, 0.2);
 	}
 }
 .nav--horizontal {
