@@ -185,7 +185,8 @@ table {
 			display: table-row;
 		}
 	}
-	.table--hover &:hover {
+	.table--hover &:hover,
+	&.table__body-row--selected {
 		cursor: pointer;
 		background-color: rgba(#999999, 0.2);
 	}
