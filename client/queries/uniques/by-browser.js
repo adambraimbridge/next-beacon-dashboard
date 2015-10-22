@@ -12,124 +12,139 @@ if (deviceLinkEl) {
 	deviceLinkEl.outerHTML = deviceLinkEl.textContent;
 }
 
-const loadBrowserDataHandler = (deviceFilter, totalResult, ev) => {
-	const srcElement = ev.srcElement;
-	if (document.querySelector('.table__body-row--selected') || !srcElement.parentNode.classList.contains('table__body-row')) {
+const filters = [{
+	operator: 'exists',
+	property_name: 'ua.browser.name',
+	property_value: true
+}];
+if (device !== 'all') {
+	filters.push({
+		operator: 'eq',
+		property_name: 'deviceAtlas.mobileDevice',
+		property_value: device === 'mobile'
+
+	});
+}
+const query =  new Keen.Query('count', {
+	eventCollection: 'dwell',
+	group_by: ['ua.browser.name', 'ua.browser.version'],
+	filters,
+	timeframe,
+	timezone: 'UTC'
+});
+
+const toggleBrowserTable = ev => {
+	const browserEl = ev.srcElement.parentNode;
+	if (!browserEl.classList.contains('table__body-row')) {
 		return true;
 	}
+	const browserName = browserEl.querySelector('.browser-name').textContent;
+	[...document.querySelectorAll('.browser-wrapper .table:not(.table--hide)')]
+		.forEach(table => table.classList.add('table--hide'));
+	document.querySelector(`.browser-wrapper [data-browser-name="${browserName}"]`)
+		.classList.remove('table--hide');
+};
 
-	const rowEl = srcElement.parentNode;
-	rowEl.classList.add('table__body-row--selected');
-	const browserName = rowEl.querySelector('.browser-name').textContent;
-	const browserFilters = [
-		{
-			operator: 'eq',
-			property_name: 'ua.browser.name',
-			property_value: browserName
-		}
-	];
-	if (deviceFilter) {
-		browserFilters.push(deviceFilter);
-	}
-	const browserQuery = new Keen.Query('count', {
-		eventCollection: 'dwell',
-		group_by: 'ua.browser.version',
-		filters: browserFilters,
-		timeframe,
-		timezone: 'UTC'
-	});
-	client.run(browserQuery, (err, { result }) => {
-		const browserTotal = rowEl.querySelector('.browser-count').textContent;
-		const tableContent = result
-			.sort((browserDataOne, browserDataTwo) => browserDataTwo.result - browserDataOne.result)
-			.map(browserData => {
-				const percentage = (100 / browserTotal) * browserData.result;
-				const totalPercentage = (100 / totalResult) * browserData.result;
-				return `
-					<tr class="table__body-row">
-						<td class="table__body-row__browser-version">${browserData['ua.browser.version']}</td>
-						<td>${browserData.result}</td>
-						<td>${percentage.toFixed(2)}</td>
-						<td>${totalPercentage.toFixed(2)}</td>
-					</tr>`;
-			})
-			.join('');
+const buildBrowsersTable = (browsersData, totalCount) => {
+	const tableContent = Object.keys(browsersData)
+		.map(browserName => ({
+			name: browserName,
+			count: browsersData[browserName].count
+		}))
+		.sort((browserOne, browserTwo) => browserTwo.count - browserOne.count)
+		.map(browser => {
+			const percentage = (100 / totalCount) * browser.count;
+			return `
+				<tr class="table__body-row">
+					<td class="browser-name">${browser.name}</td>
+					<td>${browser.count}</td>
+					<td>${percentage.toFixed(2)}</td>
+				</tr>`;
+		})
+		.join('');
 
-		const tableEl = document.createElement('table');
-		tableEl.className = 'table table--show-all table--browser';
-		tableEl.innerHTML = `
+	const tableEl = document.createElement('table');
+	tableEl.className = 'table table--hover table--show-all table--browsers';
+	tableEl.innerHTML = `
+		<thead>
 			<tr>
-				<th>${browserName} Version</th>
+				<th>Browser</th>
+				<th>Count</th>
+				<th>%</th>
+			</tr>
+		</thead>
+		<tbody>
+			${tableContent}
+		</tbody>`;
+	tableEl.addEventListener('click', toggleBrowserTable);
+
+	document.querySelector('.browsers')
+		.appendChild(tableEl);
+};
+
+const buildBrowserTable = (browserName, browserData, totalCount) => {
+	const tableContent = Object.keys(browserData.versions)
+		.map(versionName => ({
+			name: versionName,
+			count: browserData.versions[versionName]
+		}))
+		.sort((versionOne, versionTwo) => versionTwo.count - versionOne.count)
+		.map(version => {
+			const percentage = (100 / browserData.count) * version.count;
+			const totalPercentage = (100 / totalCount) * version.count;
+			return `
+				<tr class="table__body-row">
+					<td>${version.name}</td>
+					<td>${version.count}</td>
+					<td>${percentage.toFixed(2)}</td>
+					<td>${totalPercentage.toFixed(2)}</td>
+				</tr>`;
+		})
+		.join('');
+
+	const tableEl = document.createElement('table');
+	tableEl.className = 'table table--show-all table--browser table--hide';
+	tableEl.dataset.browserName = browserName;
+	tableEl.innerHTML = `
+		<thead>
+			<tr>
+				<th>${browserName} Versions</th>
 				<th>Count</th>
 				<th>%</th>
 				<th>Total %</th>
 			</tr>
-			${tableContent}`;
-		document.querySelector('.browser').innerHTML = tableEl.outerHTML;
-		rowEl.classList.remove('table__body-row--selected');
-	});
+		</thead>
+		<tbody>
+			${tableContent}
+		</tbody>`;
+
+	document.querySelector('.browser-wrapper')
+		.appendChild(tableEl);
 };
 
 const render = () => {
-	const deviceFilter = device === 'all' ?
-		null :
-		{
-			operator: 'eq',
-			property_name: 'deviceAtlas.mobileDevice',
-			property_value: device === 'mobile'
+	client.run(query, (err, { result }) => {
+		// pull out the unique browsers, with their counts
+		const browsersData = {};
+		result.forEach(data => {
+			const browserName = data['ua.browser.name'];
+			const browserVersion = data['ua.browser.version'];
+			const count = data.result;
+			if (!(browserName in browsersData)) {
+				browsersData[browserName] = {
+					count: 0,
+					versions: {}
+				};
+			}
+			browsersData[browserName].count += count;
+			browsersData[browserName].versions[browserVersion] = count;
+		});
+		const totalCount = Object.keys(browsersData).reduce((currentTotal, browserName) => currentTotal + browsersData[browserName].count, 0);
+		buildBrowsersTable(browsersData, totalCount);
+		Object.keys(browsersData).forEach(browserName => buildBrowserTable(browserName, browsersData[browserName], totalCount));
 
-		};
-	const browsersFilters = [
-		{
-			operator: 'exists',
-			property_name: 'ua.browser.name',
-			property_value: true
-		}
-	];
-	if (deviceFilter) {
-		browsersFilters.push(deviceFilter);
-	}
-	const browsersQuery = new Keen.Query('count', {
-		eventCollection: 'dwell',
-		group_by: 'ua.browser.name',
-		filters: browsersFilters,
-		timeframe,
-		timezone: 'UTC'
 	});
-	client.run(browsersQuery, (err, { result }) => {
-		const totalResult = result.reduce((currentTotal, currentBrowserData) => currentTotal + currentBrowserData.result, 0);
-		const tableContent = result
-			.sort((browserDataOne, browserDataTwo) => browserDataTwo.result - browserDataOne.result)
-			.map(browserData => {
-				const percentage = (100 / totalResult) * browserData.result;
-				return `
-					<tr class="table__body-row">
-						<td class="browser-name">${browserData['ua.browser.name']}</td>
-						<td class="browser-count">${browserData.result}</td>
-						<td class="browser-percentage">${percentage.toFixed(2)}</td>
-					</tr>`;
-			})
-			.join('');
-
-		const tableEl = document.createElement('table');
-		tableEl.className = 'table table--hover table--show-all table--browsers';
-		tableEl.innerHTML = `
-			<thead>
-				<tr>
-					<th>Browser</th>
-					<th>Count</th>
-					<th>%</th>
-				</tr>
-			</thead>
-			<tbody>
-				${tableContent}
-			</tbody>`;
-		tableEl.addEventListener('click', loadBrowserDataHandler.bind(this, deviceFilter, totalResult));
-
-		document.querySelector('.browser-names')
-			.appendChild(tableEl);
-	});
-}
+};
 
 export default {
 	render
