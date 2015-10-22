@@ -124,7 +124,7 @@ const buildBrowserTable = (browserName, browserData, totalCount) => {
 
 const render = () => {
 	client.run(query, (err, { result }) => {
-		// pull out the unique browsers, with their counts
+		// group browsers
 		const browsersData = {};
 		result.forEach(data => {
 			const browserName = data['ua.browser.name'];
