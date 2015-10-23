@@ -47,7 +47,7 @@ var actionsQuery = function(options) {
 	return new Keen.Query("count", parameters);
 };
 
-var baseQuery = function(options) {
+var baseQuery = function() {
 	var optionFilters = [];
 	if (queryParameters.referrerType === 'search') {
 		optionFilters = searchReferrer;

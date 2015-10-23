@@ -5,7 +5,7 @@
 var queryString = require('querystring');
 var queryParameters = queryString.parse(location.search.substr(1));
 
-var render = function (el, results, opts) {
+var render = function (el, results) {
 
 	var resultArray = [];
 	results.result.map(function(result) {

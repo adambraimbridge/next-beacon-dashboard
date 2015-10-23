@@ -2,14 +2,14 @@
 
 'use strict';
 
-module.exports = function (data, client) {
+module.exports = function (data) {
 
 	Promise.all(['articleViewsByHash', 'uniqueArticleViewsByHash'].reduce((arr, key) => {
 		return arr.concat([data.this[key], data.prev[key]]);
 	}, []))
 		.then(function ([thisArticleViewsByHash, prevArticleViewsByHash, thisUniqueArticleViewsByHash, prevUniqueArticleViewsByHash]) {
 
-			var rows = thisUniqueArticleViewsByHash.result.map(function (feature, index) {
+			var rows = thisUniqueArticleViewsByHash.result.map(function (feature) {
 
 				var users = feature['result'];
 				var views = thisArticleViewsByHash.result.find(function(item) {

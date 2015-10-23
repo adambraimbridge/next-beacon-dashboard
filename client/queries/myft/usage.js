@@ -302,22 +302,22 @@ function init(client) {
 	{
 		name: 'today',
 		start: -1 + offset,
-		end: 0  + offset
+		end: 0 + offset
 	}, {
 		name: 'yesterday',
-		start: -2  + offset,
-		end: -1  + offset
+		start: -2 + offset,
+		end: -1 + offset
 	});
 
 	flowForTimeframes(
 	{
 		name: 'this-week',
-		start: -7  + offset,
-		end: 0  + offset
+		start: -7 + offset,
+		end: 0 + offset
 	}, {
 		name: 'last-week',
-		start: -14  + offset,
-		end: -7  + offset
+		start: -14 + offset,
+		end: -7 + offset
 	});
 
 	document.getElementById('offset-date').textContent = daysFromNow(offset);

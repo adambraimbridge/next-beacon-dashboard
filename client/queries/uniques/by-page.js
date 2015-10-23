@@ -83,7 +83,7 @@ var render = function (el, results, opts, client) {
 		.height(500)
 		.prepare();
 
-	client.run(query, function(error, response){
+	client.run(query, function(error){
 		if (error) {
 			linechart.error(error.message);
 		}

@@ -106,7 +106,7 @@ var render = function (el, results, opts, client) {
 		.height(500)
 		.prepare();
 
-	client.run(continentQuery, function(error, response){
+	client.run(continentQuery, function(error){
 		if (error) {
 			linechart.error(error.message);
 		}

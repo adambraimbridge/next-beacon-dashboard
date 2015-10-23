@@ -44,7 +44,7 @@ var pagesVisited = new Keen.Query("count_unique", {
 	timezone: "UTC"
 });
 
-var bounceRateQuery =  new Keen.Query("count", {
+var bounceRateQuery = new Keen.Query("count", {
 	eventCollection: "dwell",
 	filters: [
 		{"operator":"exists","property_name":"user.uuid","property_value":false},

@@ -1,3 +1,4 @@
+/* global Keen */
 import client from '../../lib/wrapped-keen';
 import queryString from 'querystring';
 
@@ -25,7 +26,7 @@ if (device !== 'all') {
 
 	});
 }
-const query =  new Keen.Query('count', {
+const query = new Keen.Query('count', {
 	eventCollection: 'dwell',
 	group_by: ['ua.browser.name', 'ua.browser.version'],
 	filters,

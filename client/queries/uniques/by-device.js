@@ -86,7 +86,7 @@ var barchart_stacked = new Keen.Dataviz()
 	.prepare();
 
 // This is a base query object, for spawning queries.
-var keenQuery = function(options) {
+var KeenQuery = function(options) {
 	var parameters = {
 		eventCollection: "dwell",
 		timeframe: queryParameters.timeframe || "this_14_days",
@@ -113,13 +113,13 @@ var keenQuery = function(options) {
 	return new Keen.Query("count_unique", parameters);
 };
 
-var metricQuery = new keenQuery({
+var metricQuery = new KeenQuery({
 	interval: false
 });
 
-var intervalQuery = keenQuery({});
+var intervalQuery = new KeenQuery({});
 
-var render = function (el, results, opts, client) {
+var render = function (el, results) {
 	var resultMetric = results[0];
 	var resultInterval = results[1];
 

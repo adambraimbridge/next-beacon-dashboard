@@ -4,7 +4,7 @@
 var client = require('../../../lib/wrapped-keen');
 const weeks = 4;
 
-var render = (el, type, queryType, queryOpts = {})  => {
+var render = (el, type, queryType, queryOpts = {}) => {
     var pageViewsEl = document.createElement('div');
     pageViewsEl.classList.add('o-grid-row');
     pageViewsEl.innerHTML = `<h2 data-o-grid-colspan="12">Front page ${type} yesterday</h2>`;

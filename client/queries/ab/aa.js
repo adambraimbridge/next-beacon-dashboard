@@ -2,8 +2,8 @@
 
 'use strict';
 
-var visualise   = require('./visualise');
-var confidence	= require('ab-test-confidence');
+var visualise = require('./visualise');
+var confidence = require('ab-test-confidence');
 
 module.exports = {
 
@@ -21,7 +21,7 @@ module.exports = {
 		maxAge: 10800
 	}),
 
-	render: function (el, response, opts, client) {
+	render: function (el, response) {
 
 		var ab = { on: {}, off: {}, confidence: {} };
 
@@ -49,9 +49,9 @@ module.exports = {
 
 		['on', 'off'].forEach(function (variant) {
 			ab[variant].conversionRate = confidence.conversionRate(ab[variant].visitors, ab[variant].conversions);
-			ab[variant].standardError  = confidence.standardError(ab[variant]);
-			ab.confidence.zScore  = confidence.zScore(ab.on, ab.off);
-			ab.confidence.pValue  = confidence.pValue(ab.confidence.zScore);
+			ab[variant].standardError = confidence.standardError(ab[variant]);
+			ab.confidence.zScore = confidence.zScore(ab.on, ab.off);
+			ab.confidence.pValue = confidence.pValue(ab.confidence.zScore);
 			ab.confidence.at90percent = confidence.at90percent(ab.confidence.pValue);
 			ab.confidence.at95percent = confidence.at95percent(ab.confidence.pValue);
 			ab.confidence.at99percent = confidence.at99percent(ab.confidence.pValue);

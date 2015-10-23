@@ -6,22 +6,23 @@ install:
 	npm install
 	origami-build-tools install --verbose
 
+clean:
+	rm -rf bower_components
+	rm -rf node_modules
+
+verify:
+	nbt verify --skip-layout-checks
+
+test: verify
+
 build:
 	nbt build --dev
 
 build-production:
 	nbt build
 
-clean:
-	rm -rf bower_components
-	rm -rf node_modules
-
 run:
-	export PORT=5028; \
-	nbt run --local
-
-test:
-	nbt verify --skip-layout-checks
+	export PORT=5028; nbt run --local
 
 deploy:
 	nbt configure --no-splunk
