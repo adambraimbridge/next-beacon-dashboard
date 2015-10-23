@@ -123,6 +123,10 @@ Keen.ready(function(){
 
 			break;
 
+		case '/graph/uniques/by-browser':
+			require('./queries/uniques/by-browser').render();
+			break;
+
 		case '/graph/uniques':
 			render(require('./queries/uniques/today'), {
 				title: 'Unique users so far today'

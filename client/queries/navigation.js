@@ -47,7 +47,7 @@ var table = new Keen.Dataviz()
 	.prepare();
 
 // This is a base query object, for spawning queries.
-var keenQuery = function(options) {
+var KeenQuery = function(options) {
 	var parameters = {
 		eventCollection: options.eventCollection || "dwell",
 		timeframe: queryParameters.timeframe || "this_14_days",
@@ -70,12 +70,12 @@ var keenQuery = function(options) {
 };
 
 // Total count of unique visitors by dwell
-var metricTotalQuery = new keenQuery({
+var metricTotalQuery = new KeenQuery({
 	interval: false
 });
 
 // Total count of unique visitors by CTA: "primary-nav" (excluding "secondary-navigation")
-var metricPrimaryQuery = new keenQuery({
+var metricPrimaryQuery = new KeenQuery({
 	eventCollection: "cta",
 	interval: false,
 	filters: [{
@@ -91,7 +91,7 @@ var metricPrimaryQuery = new keenQuery({
 });
 
 // Total count of unique visitors by CTA: "secondary-navigation"
-var metricSecondaryHoverQuery = new keenQuery({
+var metricSecondaryHoverQuery = new KeenQuery({
 	eventCollection: "cta",
 	interval: false,
 	filters: [{
@@ -102,7 +102,7 @@ var metricSecondaryHoverQuery = new keenQuery({
 });
 
 // Total count of unique visitors by CTA: "curated-taxonomy"
-var metricSecondaryHeaderQuery = new keenQuery({
+var metricSecondaryHeaderQuery = new KeenQuery({
 	eventCollection: "cta",
 	interval: false,
 	filters: [{
@@ -113,7 +113,7 @@ var metricSecondaryHeaderQuery = new keenQuery({
 });
 
 // Total count of unique visitors by CTA: "dynamic-tags"
-var metricTertiaryStreamQuery = new keenQuery({
+var metricTertiaryStreamQuery = new KeenQuery({
 	eventCollection: "cta",
 	interval: false,
 	filters: [{
@@ -124,7 +124,7 @@ var metricTertiaryStreamQuery = new keenQuery({
 });
 
 // Total count of unique visitors by CTA: "article | header | tags"
-var metricTertiaryArticleQuery = new keenQuery({
+var metricTertiaryArticleQuery = new KeenQuery({
 	eventCollection: "cta",
 	interval: false,
 	filters: [{
@@ -134,7 +134,7 @@ var metricTertiaryArticleQuery = new keenQuery({
 	}]
 });
 
-var tableQuery = new keenQuery({
+var tableQuery = new KeenQuery({
 	eventCollection: "cta",
 	interval: false,
 	filters: [{
@@ -145,7 +145,7 @@ var tableQuery = new keenQuery({
 	groupBy: "meta.domPath"
 });
 
-var render = function (el, results, opts, client) {
+var render = function (el, results) {
 	var resultTotal = results[0].result;
 	var resultPrimary = results[1].result;
 	var resultSecondaryHover = results[2].result;

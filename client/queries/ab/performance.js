@@ -6,7 +6,7 @@ const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search);
 const queryTimeframe = queryParameters.timeframe || "this_14_days";
 
-var generateAverageViews = (el, type, state,  queryOpts = {})  => {
+var generateAverageViews = (el, type, state, queryOpts = {}) => {
 	var pageViewsEl = document.createElement('div');
 	pageViewsEl.classList.add('o-grid-row');
 	pageViewsEl.innerHTML = `<h2 data-o-grid-colspan="12">Average page views per session for ${state} variant</h2>`;
@@ -119,7 +119,7 @@ var generateFrequency = (timeframe, id, filters=[]) => {
 	});
 
 
-	client.run([queryVisitsPerUser, queryLastVisitPerUser], function(response) {
+	client.run([queryVisitsPerUser, queryLastVisitPerUser], function() {
 		var visitsPerUser = this.data[0].result;
 		var totalUniqueUsers = visitsPerUser.length;
 

@@ -38,7 +38,7 @@ var decodeTable = {
 	"https://next.ft.com/stream/topicsId/MjY=-VG9waWNz": "Investment Banking"
 };
 
-var render = function (el, results, opts) {
+var render = function (el, results) {
 
 	var resultArray = results.result;
 

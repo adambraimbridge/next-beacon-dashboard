@@ -28,8 +28,9 @@ var query = new Keen.Query("count_unique", {
 // each one representing a week. The first object is the
 // first week of the previous month, and the last object is the
 // last week of the current month — even if you're in week 1.
-var render = function (el, results, opts) {
-	var thisWeek, lastWeek;
+var render = function (el, results) {
+	var thisWeek;
+	var lastWeek;
 	var today = daysFromNow();
 	var oneWeekAgo = daysFromNow(-7);
 

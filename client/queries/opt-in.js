@@ -8,7 +8,7 @@ var queryString = require('querystring');
 var queryParameters = queryString.parse(location.search.substr(1));
 
 // This is a base query object, for spawning queries.
-var keenQuery = function(options) {
+var KeenQuery = function(options) {
 	var parameters = {
 		eventCollection: 'optin',
 		timeframe: options.timeframe || queryParameters.timeframe || 'this_14_days',
@@ -45,11 +45,11 @@ var piechart_24_hours = new Keen.Dataviz()
 	.height(250)
 	.prepare();
 
-var piechartQuery = new keenQuery({
+var piechartQuery = new KeenQuery({
 	interval: false
 });
 
-var piechart24HoursQuery = new keenQuery({
+var piechart24HoursQuery = new KeenQuery({
 	interval: false,
 	timeframe: 'this_24_hours'
 });
@@ -156,8 +156,8 @@ var barchart_stacked = new Keen.Dataviz()
 	.height(500)
 	.prepare();
 
-var intervalQuery = keenQuery({});
-client.run(intervalQuery, function(error, response){
+var intervalQuery = new KeenQuery({});
+client.run(intervalQuery, function(error){
 	if (error) {
 		throw new Error('Keen query error: ' + error.message);
 	}
@@ -199,7 +199,7 @@ var table = new Keen.Dataviz()
 	})
 	.prepare();
 
-var optOutReasonQuery = new keenQuery({
+var optOutReasonQuery = new KeenQuery({
 	queryType: 'count',
 	interval: false,
 	groupBy: 'meta.reason',
@@ -258,7 +258,7 @@ var barchart_stacked_difficult_navigation = new Keen.Dataviz()
 	.height(500)
 	.prepare();
 
-var optOutReasonByNavigationQuery = new keenQuery({
+var optOutReasonByNavigationQuery = new KeenQuery({
 	groupBy: 'meta.difficultNavReason',
 	filters: [{
 		property_name:'meta.reason',
@@ -277,7 +277,7 @@ var optOutReasonByNavigationQuery = new keenQuery({
 	}]
 });
 
-client.run(optOutReasonByNavigationQuery, function(error, response){
+client.run(optOutReasonByNavigationQuery, function(error){
 	if (error) {
 		throw new Error('Keen query error: ' + error.message);
 	}

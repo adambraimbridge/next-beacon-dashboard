@@ -2,7 +2,7 @@
 
 var util = require('./util');
 
-module.exports = function (data, client) {
+module.exports = function (data) {
 	Promise.all(['followUsers', 'allUsers'].reduce((arr, key) => {
 		return arr.concat([data.this[key], data.prev[key]]);
 	}, []))

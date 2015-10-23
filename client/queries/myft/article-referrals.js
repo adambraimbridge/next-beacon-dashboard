@@ -2,7 +2,7 @@
 
 var util = require('./util');
 
-module.exports = function (data, client) {
+module.exports = function (data) {
 
 	Promise.all(['articleViewsFromMyFt', 'articleViews'].reduce((arr, key) => {
 		return arr.concat([data.this[key], data.prev[key]]);

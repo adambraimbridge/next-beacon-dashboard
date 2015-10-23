@@ -151,6 +151,7 @@ table {
 	flex: 1 1 0%;
 }
 
+.table,
 .table--front-page {
 	th,
 	td {
@@ -173,6 +174,9 @@ table {
 		font-size: 1.1em;
 	}
 }
+.table--hide {
+	display: none;
+}
 .table__body-row {
 	&:nth-child(2n+1) {
 		background-color: rgba(73, 197, 177, 0.2);
@@ -183,6 +187,11 @@ table {
 		.table--show-all & {
 			display: table-row;
 		}
+	}
+	.table--hover &:hover,
+	&.table__body-row--selected {
+		cursor: pointer;
+		background-color: rgba(#999999, 0.2);
 	}
 }
 .nav--horizontal {

@@ -406,7 +406,7 @@ var queries = [getFunnelForOffset(initialOffset), getFunnelForOffset(initialOffs
 
 	var funnel = new Keen.Dataviz()
 			.el(document.getElementById("funnel"))
-			.title("Count of unique users for 14 days (" + daysFromNow(initialOffset - 14) + " to " +  daysFromNow(initialOffset) + ")" )
+			.title(`Count of unique users for 14 days (${daysFromNow(initialOffset - 14)} to ${daysFromNow(initialOffset)})` )
 			.colors([ Keen.Dataviz.defaults.colors[4] ])
 			.chartOptions({
 					chartArea: { left: "30%" },
@@ -425,7 +425,7 @@ var queries = [getFunnelForOffset(initialOffset), getFunnelForOffset(initialOffs
 		})
 		.prepare();
 
-var render = function (el, results, opts, client) {
+var render = function (el, results) {
 	var historicData = [];
 	if(results) {
 
@@ -436,7 +436,7 @@ var render = function (el, results, opts, client) {
 
 
 
-		results.forEach(function(response, index) {
+		results.forEach(function(response) {
 			var percentage = response.result[response.result.length - 1]/response.result[0];
 			historicData.push({
 				"value" : percentage,

@@ -67,7 +67,7 @@ function init(client) {
 		});
 
 
-		client.run([queryVisitsPerUser, queryLastVisitPerUser], function(response) {
+		client.run([queryVisitsPerUser, queryLastVisitPerUser], function() {
 			var visitsPerUser = this.data[0].result;
 			var lastVisitPerUser = this.data[1].result;
 			var totalUniqueUsers = visitsPerUser.length;

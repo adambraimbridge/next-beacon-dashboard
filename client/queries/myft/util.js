@@ -4,7 +4,7 @@
 var queryString = require('querystring');
 var queryParameters = queryString.parse(location.search.substr(1));
 var queryTimeframe = queryParameters.timeframe || "this_14_days";
-var previousTimeframe  = queryTimeframe.replace('this', 'previous');
+var previousTimeframe = queryTimeframe.replace('this', 'previous');
 
 var queryRealUsers = function(options, timeshift) {
 	var query = options.query || 'count_unique';
