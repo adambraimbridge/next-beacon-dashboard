@@ -11,7 +11,6 @@ build:
 
 build-production:
 	nbt build
-	nbt about
 
 clean:
 	rm -rf bower_components
