@@ -2,17 +2,22 @@
 
 "use strict";
 
-// Beacon tracking is only desired for the production environment.
-if ($('html').data('next-is-production') !== undefined) {
-	var src = '//next-beacon.ft.com/px.gif/beacon-dashboard';
-	var data = {
-		"user":{},
-		"page":{
-			"article_id": article_id,
-			"original_url": original_url
-		}
-	};
+var oTracking = require('o-tracking');
 
-	$('<img>').attr('src', src + '?data=' + encodeURIComponent(JSON.stringify(data)))
-		.appendTo($('body'));
+// O-tracking is only desired for the production environment.
+if (cutsTheMustard && $('html').data('next-is-production') !== undefined) {
+
+	oTracking.init({
+		server: 'https://spoor-api.ft.com/ingest',
+		context: {
+			product: 'beacon-dashboard'
+		},
+		user: {}
+	});
+
+	oTracking.page({
+		content: {
+			asset_type: 'page'
+		}
+	});
 }
