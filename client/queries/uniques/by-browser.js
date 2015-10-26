@@ -28,38 +28,51 @@ if (device !== 'all') {
 }
 const query = new Keen.Query('count', {
 	eventCollection: 'dwell',
-	group_by: ['ua.browser.name', 'ua.browser.version'],
+	group_by: ['ua.browser.name', 'ua.browser.major'],
 	filters,
 	timeframe,
 	timezone: 'UTC'
 });
 
-const toggleBrowserTable = ev => {
-	const browserEl = ev.srcElement.parentNode;
-	if (!browserEl.classList.contains('table__body-row')) {
-		return true;
-	}
-	const browserName = browserEl.querySelector('.browser-name').textContent;
-	[...document.querySelectorAll('.browser-wrapper .table:not(.table--hide)')]
-		.forEach(table => table.classList.add('table--hide'));
-	document.querySelector(`.browser-wrapper [data-browser-name="${browserName}"]`)
-		.classList.remove('table--hide');
+const render = () => {
+	client.run(query, (err, { result }) => {
+		// group browsers
+		const browsersData = {};
+		result.forEach(data => {
+			const browserName = data['ua.browser.name'];
+			const browserVersion = data['ua.browser.major'];
+			const count = data.result;
+			if (!(browserName in browsersData)) {
+				browsersData[browserName] = {
+					count: 0,
+					versions: {}
+				};
+			}
+			browsersData[browserName].count += count;
+			browsersData[browserName].versions[browserVersion] = count;
+		});
+		buildBrowsersTable(browsersData);
+
+	});
 };
 
-const buildBrowsersTable = (browsersData, totalCount) => {
+const buildBrowsersTable = browsersData => {
+	const totalCount = Object.keys(browsersData).reduce((currentTotal, browserName) => currentTotal + browsersData[browserName].count, 0);
 	const tableContent = Object.keys(browsersData)
 		.map(browserName => ({
 			name: browserName,
-			count: browsersData[browserName].count
+			count: browsersData[browserName].count,
+			versions: browsersData[browserName].versions
 		}))
 		.sort((browserOne, browserTwo) => browserTwo.count - browserOne.count)
 		.map(browser => {
 			const percentage = (100 / totalCount) * browser.count;
+			const versions = buildBrowserTable(browser, totalCount);
 			return `
-				<tr class="table__body-row">
-					<td class="browser-name">${browser.name}</td>
-					<td>${browser.count}</td>
-					<td>${percentage.toFixed(2)}</td>
+				<tr class="browser table__body-row">
+					<td class="browser__name">${browser.name}</td>
+					<td class="browser__percentage" title="${browser.count}">${percentage.toFixed(2)}</td>
+					<td class="browser__versions">${versions}</td>
 				</tr>`;
 		})
 		.join('');
@@ -70,8 +83,8 @@ const buildBrowsersTable = (browsersData, totalCount) => {
 		<thead>
 			<tr>
 				<th>Browser</th>
-				<th>Count</th>
 				<th>%</th>
+				<th>Versions</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -83,7 +96,7 @@ const buildBrowsersTable = (browsersData, totalCount) => {
 		.appendChild(tableEl);
 };
 
-const buildBrowserTable = (browserName, browserData, totalCount) => {
+const buildBrowserTable = (browserData, totalCount) => {
 	const tableContent = Object.keys(browserData.versions)
 		.map(versionName => ({
 			name: versionName,
@@ -94,23 +107,21 @@ const buildBrowserTable = (browserName, browserData, totalCount) => {
 			const percentage = (100 / browserData.count) * version.count;
 			const totalPercentage = (100 / totalCount) * version.count;
 			return `
-				<tr class="table__body-row">
-					<td>${version.name}</td>
-					<td>${version.count}</td>
-					<td>${percentage.toFixed(2)}</td>
-					<td>${totalPercentage.toFixed(2)}</td>
+				<tr class="version table__body-row">
+					<td class="version__name">${version.name}</td>
+					<td class="version__percentage" title="${version.count}">${percentage.toFixed(2)}</td>
+					<td class="version__total-percentage">${totalPercentage.toFixed(2)}</td>
 				</tr>`;
 		})
 		.join('');
 
 	const tableEl = document.createElement('table');
-	tableEl.className = 'table table--show-all table--browser table--hide';
-	tableEl.dataset.browserName = browserName;
+	tableEl.className = 'table table--show-all table--versions';
+	tableEl.dataset.browserName = browserData.name;
 	tableEl.innerHTML = `
 		<thead>
 			<tr>
-				<th>${browserName} Versions</th>
-				<th>Count</th>
+				<th></th>
 				<th>%</th>
 				<th>Total %</th>
 			</tr>
@@ -119,32 +130,21 @@ const buildBrowserTable = (browserName, browserData, totalCount) => {
 			${tableContent}
 		</tbody>`;
 
-	document.querySelector('.browser-wrapper')
-		.appendChild(tableEl);
+	return tableEl.outerHTML;
 };
 
-const render = () => {
-	client.run(query, (err, { result }) => {
-		// group browsers
-		const browsersData = {};
-		result.forEach(data => {
-			const browserName = data['ua.browser.name'];
-			const browserVersion = data['ua.browser.version'];
-			const count = data.result;
-			if (!(browserName in browsersData)) {
-				browsersData[browserName] = {
-					count: 0,
-					versions: {}
-				};
-			}
-			browsersData[browserName].count += count;
-			browsersData[browserName].versions[browserVersion] = count;
-		});
-		const totalCount = Object.keys(browsersData).reduce((currentTotal, browserName) => currentTotal + browsersData[browserName].count, 0);
-		buildBrowsersTable(browsersData, totalCount);
-		Object.keys(browsersData).forEach(browserName => buildBrowserTable(browserName, browsersData[browserName], totalCount));
-
-	});
+const toggleBrowserTable = ev => {
+	const browserEl = ev.srcElement.parentNode;
+	if (!browserEl.classList.contains('browser')) {
+		return true;
+	}
+	if (browserEl.classList.contains('browser--selected')) {
+		browserEl.classList.remove('browser--selected');
+	} else {
+		[...document.querySelectorAll('.browser--selected')]
+			.forEach(table => table.classList.remove('browser--selected'));
+		browserEl.classList.add('browser--selected');
+	}
 };
 
 export default {

@@ -14,7 +14,7 @@ var render = el => {
         el.appendChild(containerEl);
 
         var tableEl = document.createElement('table');
-        tableEl.classList.add('table--front-page');
+        tableEl.className = 'table table--front-page';
         tableEl.dataset.oGridColspan = '12';
         tableEl.innerHTML = `
                 <thead>
@@ -37,7 +37,7 @@ var render = el => {
     el.appendChild(breakdownContainerEl);
 
     var breakdownTableEl = document.createElement('table');
-    breakdownTableEl.className = 'table--front-page table--show-all';
+    breakdownTableEl.className = 'table table--front-page table--show-all';
     breakdownTableEl.dataset.oGridColspan = '12';
     breakdownTableEl.innerHTML = `
             <thead>
