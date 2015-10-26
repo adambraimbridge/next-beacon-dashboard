@@ -1,4 +1,4 @@
-/* global $, article_id, original_url */
+/* global $, cutsTheMustard */
 
 "use strict";
 
