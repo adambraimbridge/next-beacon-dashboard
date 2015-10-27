@@ -10,14 +10,15 @@ if (cutsTheMustard && $('html').data('next-is-production') !== undefined) {
 	oTracking.init({
 		server: 'https://spoor-api.ft.com/ingest',
 		context: {
-			product: 'beacon-dashboard'
+			product: 'next'
 		},
 		user: {}
 	});
 
-	oTracking.page({
-		content: {
-			asset_type: 'page'
+	oTracking.event({
+		detail: {
+			category: 'beacon-dashboard',
+			action: 'beacon-dashboard'
 		}
 	});
 }
