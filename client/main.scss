@@ -151,11 +151,22 @@ table {
 	flex: 1 1 0%;
 }
 
-.table,
-.table--front-page {
+.table {
 	th,
 	td {
 		padding: 5px;
+	}
+	th {
+		font-size: 1.3em;
+		text-align: left;
+	}
+	td {
+		font-size: 1.1em;
+	}
+}
+.table--front-page {
+	th,
+	td {
 		&:first-child {
 			width: 60%;
 		}
@@ -166,12 +177,23 @@ table {
 			width: 20%;
 		}
 	}
-	th {
-		font-size: 1.3em;
-		text-align: left;
+}
+.table--browsers {
+	.browser__name,
+	.browser__percentage {
+		width: 20%;
+		vertical-align: top;
 	}
-	td {
-		font-size: 1.1em;
+	.version__name,
+	.version__percentage,
+	.version__total-percentage {
+		width: 33%;
+	}
+	.table--versions {
+		display: none;
+	}
+	.browser--selected .table--versions {
+		display: table;
 	}
 }
 .table--hide {
@@ -191,7 +213,7 @@ table {
 	.table--hover &:hover,
 	&.table__body-row--selected {
 		cursor: pointer;
-		background-color: rgba(#999999, 0.2);
+		background-color: rgba(#999999, 0.1);
 	}
 }
 .nav--horizontal {
