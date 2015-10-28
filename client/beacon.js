@@ -239,6 +239,18 @@ Keen.ready(function(){
 			render(require('./queries/article/scroll-depth-by-screen-size'));
 			break;
 
+		case '/graph/article/session-referred':
+			render(require('./queries/article/sessions-referred'));
+			break;
+
+		case '/graph/article/per-session':
+			render(require('./queries/article/per-session'));
+			break;
+
+		case '/graph/article/ctr':
+			require('./queries/article/ctr');
+			break;
+
 		case '/graph/stream/views':
 			require('./queries/stream/views');
 			render(require('./queries/stream/last-week-average'));
