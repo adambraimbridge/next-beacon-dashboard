@@ -1,4 +1,7 @@
 /* global Keen */
+
+"use strict";
+
 import client from '../../lib/wrapped-keen';
 import queryString from 'querystring';
 
@@ -149,4 +152,4 @@ const toggleBrowserTable = ev => {
 
 export default {
 	render
-}
+};
