@@ -1,11 +1,11 @@
 /* global Keen */
 'use strict';
 
-var client = require('../../../lib/wrapped-keen');
 
-var render = el => {
 
-    var tables = {};
+const render = (el, promiseOfData)  => {
+
+    const tables = {};
     [['components', 'Component name'], ['elements', 'Dom path']].forEach(config => {
         var [type, colTitle] = config;
         var containerEl = document.createElement('div');
@@ -17,14 +17,14 @@ var render = el => {
         tableEl.className = 'table table--front-page';
         tableEl.dataset.oGridColspan = '12';
         tableEl.innerHTML = `
-                <thead>
-                    <tr>
-                        <th>${colTitle}</th>
-                        <th>Clicks</th>
-                        <th>% of total clicks</th>
-                    </tr>
-                </thead>
-            `;
+            <thead>
+                <tr>
+                    <th>${colTitle}</th>
+                    <th>Clicks</th>
+                    <th>% of users clicking on this</th>
+                </tr>
+            </thead>
+        `;
         containerEl.appendChild(tableEl);
 
         tables[type] = tableEl;
@@ -37,149 +37,155 @@ var render = el => {
     el.appendChild(breakdownContainerEl);
 
     var breakdownTableEl = document.createElement('table');
-    breakdownTableEl.className = 'table table--front-page table--show-all';
+    breakdownTableEl.className = 'table table--front-page';
     breakdownTableEl.dataset.oGridColspan = '12';
     breakdownTableEl.innerHTML = `
-            <thead>
-                <tr>
-                    <th>Dom path</th>
-                    <th>Clicks</th>
-                    <th>% of total clicks</th>
-                </tr>
-            </thead>
-        `;
+        <thead>
+            <tr>
+                <th>Dom path</th>
+                <th>Clicks</th>
+                <th>% of users clicking this</th>
+            </tr>
+        </thead>
+    `;
     breakdownContainerEl.appendChild(breakdownTableEl);
     tables['breakdown'] = breakdownTableEl;
 
-    var ctaQuery = new Keen.Query('count', {
-        eventCollection: 'cta',
-        filters: [
-            {
-                operator: 'eq',
-                property_name: 'page.location.type',
-                property_value: 'frontpage'
-            },
-            {
-                operator: 'exists',
-                property_name: 'meta.domPath',
-                property_value: true
-            },
-            {
-                operator: 'in',
-                property_name: 'meta.nodeName',
-                property_value: ['a', 'button']
+
+    promiseOfData
+    .then(([users, usersByDay, uniqueClicks, clicks, clicksByUserAndDay]) => {
+
+
+    var elementsTableBodyEl = document.createElement('tbody');
+    elementsTableBodyEl.innerHTML = clicks
+        .map(element => ({
+            name: element['meta.domPath'],
+            clicks: element.result,
+            uniqueClicks: uniqueClicks.find((el) => {
+                return el['meta.domPath'] === element['meta.domPath'];
+            }).result
+        }))
+        .sort((resultOne, resultTwo) => resultTwo.uniqueClicks - resultOne.uniqueClicks)
+        .map(result => `
+            <tr class="table__body-row">
+                <td><a href="https://next.ft.com/uk#domPath:${result['meta.domPath']}">${result.name}</a></td>
+                <td>${result.clicks}</td>
+                <td>${((100 / users) * result.uniqueClicks).toFixed(2)}</td>
+            </tr>
+        `)
+        .join('');
+    tables['elements'].appendChild(elementsTableBodyEl);
+
+    var componentsTableBodyEl = document.createElement('tbody');
+    // pull out the different 'components';
+    var uniqueComponentClicks = uniqueClicks
+    .map(result => result['meta.domPath'].split(' | ')[0])
+    .filter((componentName, i, componentNames) => componentNames.indexOf(componentName) === i)
+    .map(componentName => ({
+        name: componentName,
+            // sum the clicks for this component
+            value: uniqueClicks
+                .filter(result => result['meta.domPath'].split(' | ')[0] === componentName)
+                .reduce((total, result) => total + result.result, 0)
+        }))
+
+    var components = clicks
+    .map(result => result['meta.domPath'].split(' | ')[0])
+    .filter((componentName, i, componentNames) => componentNames.indexOf(componentName) === i)
+    .map(componentName => ({
+        name: componentName,
+            // sum the clicks for this component
+            clicks: clicks
+                .filter(result => result['meta.domPath'].split(' | ')[0] === componentName)
+                .reduce((total, result) => total + result.result, 0),
+            uniqueClicks: uniqueComponentClicks.find((comp) => {
+                return comp.name === componentName;
+            }).value,
+            elements: clicks
+                .filter(result => result['meta.domPath'].split(' | ')[0] === componentName)
+                .map(element => ({
+                    name: element['meta.domPath'],
+                    clicks: element.result,
+                    uniqueClicks: uniqueClicks.find((el) => {
+                        return el['meta.domPath'] === element['meta.domPath'];
+                    }).result
+                }))
+        }))
+    .sort((componentOne, componentTwo) => componentTwo.uniqueClicks - componentOne.uniqueClicks);
+
+    componentsTableBodyEl.innerHTML = components
+    .map(component => {
+            // prettify name
+            var componentName = component.name.replace(/-/g, ' ').replace(/\b[a-z]/g, match => match.toUpperCase());
+            return `
+            <tr class="table__body-row">
+                <td><a href="https://next.ft.com/uk#domPath:${component.name}">${componentName}</a></td>
+                <td>${component.clicks}</td>
+                <td>${((100 / users) * component.uniqueClicks).toFixed(2)}</td>
+            </tr>
+            `;
+        })
+    .join('');
+    tables['components'].appendChild(componentsTableBodyEl);
+
+    // add show all buttons
+    Object.keys(tables).forEach(tableType => {
+        var table = tables[tableType];
+        var showAllEl = document.createElement('button');
+        showAllEl.classList.add('table__button--show-all');
+        showAllEl.textContent = 'Show all';
+        table.appendChild(showAllEl);
+        table.addEventListener('click', function (ev) {
+            var target = ev.target;
+            if (target.classList.contains('table__button--show-all')) {
+                this.classList.add('table--show-all');
+                target.parentNode.removeChild(target);
             }
-        ],
-        groupBy: 'meta.domPath',
-        timeframe: 'previous_7_days',
-        timezone: 'UTC'
+        });
     });
-    client.run(ctaQuery, (err, results) => {
 
-        var totalClicks = results.result.reduce((total, result) => total + result.result, 0);
+    // add breakdown selector
+    var componentSelectEl = document.createElement('select');
+    components.forEach(component => {
+        var componentName = component.name;
+        var componentEl = document.createElement('option');
+        componentEl.value = componentName;
+        componentEl.textContent = componentName.replace(/-/g, ' ').replace(/\b[a-z]/g, match => match.toUpperCase());
+        componentSelectEl.appendChild(componentEl);
+    });
+    tables['breakdown'].parentNode.insertBefore(componentSelectEl, tables['breakdown']);
 
-        var elementsTableBodyEl = document.createElement('tbody');
-        elementsTableBodyEl.innerHTML = results.result
-            .sort((resultOne, resultTwo) => resultTwo.result - resultOne.result)
-            .map(result => `
-                <tr class="table__body-row">
-                    <td><a href="https://next.ft.com/uk#domPath:${result['meta.domPath']}">${result['meta.domPath']}</a></td>
-                    <td>${result.result}</td>
-                    <td>${((100 / totalClicks) * result.result).toFixed(2)}</td>
-                </tr>
+    var breakdownTableBodyEl = document.createElement('tbody');
+    tables['breakdown'].appendChild(breakdownTableBodyEl);
+
+    // group components
+    breakdownTableBodyEl.innerHTML = components
+    .map(component => {
+        return component.elements
+        .sort((elementOne, elementTwo) => elementTwo.uniqueClicks - elementOne.uniqueClicks)
+        .map(element => `
+            <tr class="table__body-row" data-component="${component.name}">
+                <td><a href="https://next.ft.com/uk#domPath:${element['meta.domPath']}">${element.name}</a></td>
+                <td>${element.clicks}</td>
+                <td>${((100 / users) * element.uniqueClicks).toFixed(2)}</td>
+            </tr>
             `)
-            .join('');
-        tables['elements'].appendChild(elementsTableBodyEl);
+        .join('');
+    })
+    .join('');
 
-        var componentsTableBodyEl = document.createElement('tbody');
-        // pull out the different 'components';
-        var components = results.result
-            .map(result => result['meta.domPath'].split(' | ')[0])
-            .filter((componentName, i, componentNames) => componentNames.indexOf(componentName) === i)
-            .map(componentName => ({
-                name: componentName,
-                // sum the clicks for this component
-                value: results.result
-                    .filter(result => result['meta.domPath'].split(' | ')[0] === componentName)
-                    .reduce((total, result) => total + result.result, 0)
-            }))
-            .sort((componentOne, componentTwo) => componentTwo.value - componentOne.value);
+    // handle for select change
+    var componentHandler = function(ev) {
+        Array.from(breakdownTableEl.querySelectorAll('tbody tr'))
+        .forEach(el => el.style.display = el.dataset.component === ev.target.value ? 'table-row' : 'none');
+    };
+    componentSelectEl.addEventListener('change', componentHandler);
+    componentSelectEl.dispatchEvent(new Event('change'));
 
-        componentsTableBodyEl.innerHTML = components
-            .map(component => {
-                // prettify name
-                var componentName = component.name.replace(/-/g, ' ').replace(/\b[a-z]/g, match => match.toUpperCase());
-                return `
-                    <tr class="table__body-row">
-                        <td><a href="https://next.ft.com/uk#domPath:${component.name}">${componentName}</a></td>
-                        <td>${component.value}</td>
-                        <td>${((100 / totalClicks) * component.value).toFixed(2)}</td>
-                    </tr>
-                `;
-            })
-            .join('');
-        tables['components'].appendChild(componentsTableBodyEl);
+});
 
-        // add show all buttons
-        Object.keys(tables).forEach(tableType => {
-            var table = tables[tableType];
-            var showAllEl = document.createElement('button');
-            showAllEl.classList.add('table__button--show-all');
-            showAllEl.textContent = 'Show all';
-            table.appendChild(showAllEl);
-            table.addEventListener('click', function (ev) {
-                var target = ev.target;
-                if (target.classList.contains('table__button--show-all')) {
-                    this.classList.add('table--show-all');
-                    target.parentNode.removeChild(target);
-                }
-            });
-        });
 
-        // add breakdown selector
-        var componentSelectEl = document.createElement('select');
-        components.forEach(component => {
-            var componentName = component.name;
-            var componentEl = document.createElement('option');
-            componentEl.value = componentName;
-            componentEl.textContent = componentName.replace(/-/g, ' ').replace(/\b[a-z]/g, match => match.toUpperCase());
-            componentSelectEl.appendChild(componentEl);
-        });
-        tables['breakdown'].parentNode.insertBefore(componentSelectEl, tables['breakdown']);
 
-        var breakdownTableBodyEl = document.createElement('tbody');
-        tables['breakdown'].appendChild(breakdownTableBodyEl);
-
-        // group components
-        breakdownTableBodyEl.innerHTML = components
-            .map(component => ({
-                name: component.name,
-                elements: results.result
-                    .filter(result => result['meta.domPath'].split(' | ')[0] === component.name)
-            }))
-            .map(component => {
-                var elementTotalClicks = component.elements.reduce((total, element) => total += element.result, 0);
-                return component.elements
-                    .sort((elementOne, elementTwo) => elementTwo.result - elementOne.result)
-                    .map(element => `
-                        <tr class="table__body-row" data-component="${component.name}">
-                            <td><a href="https://next.ft.com/uk#domPath:${element['meta.domPath']}">${element['meta.domPath']}</a></td>
-                            <td>${element.result}</td>
-                            <td>${((100 / elementTotalClicks) * element.result).toFixed(2)}</td>
-                        </tr>
-                    `)
-                    .join('');
-            })
-            .join('');
-
-        // handle for select change
-        var componentHandler = function(ev) {
-            Array.from(breakdownTableEl.querySelectorAll('tbody tr'))
-                .forEach(el => el.style.display = el.dataset.component === ev.target.value ? 'table-row' : 'none');
-        };
-        componentSelectEl.addEventListener('change', componentHandler);
-        componentSelectEl.dispatchEvent(new Event('change'));
-    });
 };
 
 module.exports = {

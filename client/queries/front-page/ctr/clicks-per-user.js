@@ -12,7 +12,7 @@ var range = size => (new Array(size))
 var render = (el, promiseOfData) => {
     var percentageEl = document.createElement('div');
     percentageEl.classList.add('o-grid-row');
-    percentageEl.innerHTML = '<h2 data-o-grid-colspan="12">Percentage of visitors who clicked on something</h2>';
+    percentageEl.innerHTML = '<h2 data-o-grid-colspan="12">Clicks per user</h2>';
     el.appendChild(percentageEl);
 
     var topLevelCharts = [
@@ -52,28 +52,34 @@ var render = (el, promiseOfData) => {
     promiseOfData
     .then(([users, usersByDay, uniqueClicks, clicks, clicksByUserAndDay]) => {
 
+        const clicksPerDay = clicksByUserAndDay.map((result, index) => (
+            {
+                clicks: result.value.reduce((prevVal, currentUser) => {
+                    return prevVal + currentUser.result;
+                }, 0)
+            }
+        ));
+
         topLevelCharts.forEach((topLevelChart, i) => {
-            var clicksByUserOnDay = clicksByUserAndDay.slice(-1 - i).shift();
-            var uniqueClicksOnDay = clicksByUserOnDay.value.filter((user) => {
-                return user.result > 0;
-            }).length;
+
+            var clicksOnDay = clicksPerDay.slice(-1 -i).shift().clicks;
+
             var usersOnDay = usersByDay.slice(-1 - i).shift().value;
 
             topLevelChart.chart
                 .data({
-                    result: parseFloat(((100 / usersOnDay) * uniqueClicksOnDay).toFixed(1))
+                    result: parseFloat((clicksOnDay / usersOnDay).toFixed(1))
                 })
                 .title(topLevelChart.title)
                 .colors(topLevelChart.colors)
                 .render();
         });
+
         trendChart
             .data({
-                result: clicksByUserAndDay.map((result, index) => ({
-                    value: parseFloat(((100 / usersByDay[index].value) * result.value.filter((user) => {
-                        return user.result > 0;
-                    }).length).toFixed(1)),
-                    timeframe: result.timeframe
+                result: clicksPerDay.map((day, index) => ({
+                    value: parseFloat((clicksPerDay[index].clicks / usersByDay[index].value).toFixed(1)),
+                    timeframe: usersByDay[index].timeframe
                 }))
             })
             .render();
