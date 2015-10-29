@@ -2,12 +2,6 @@
 'use strict';
 
 var moment = require('moment');
-var client = require('../../../lib/wrapped-keen');
-
-var range = size => (new Array(size))
-    .join()
-    .split(',')
-    .map((item, i) => i);
 
 var render = (el, promiseOfData) => {
     var percentageEl = document.createElement('div');
@@ -50,9 +44,9 @@ var render = (el, promiseOfData) => {
 
 
     promiseOfData
-    .then(([users, usersByDay, uniqueClicks, clicks, clicksByUserAndDay]) => {
+    .then(([, usersByDay, , , clicksByUserAndDay]) => {
 
-        const clicksPerDay = clicksByUserAndDay.map((result, index) => (
+        const clicksPerDay = clicksByUserAndDay.map((result) => (
             {
                 clicks: result.value.reduce((prevVal, currentUser) => {
                     return prevVal + currentUser.result;

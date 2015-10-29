@@ -1,9 +1,8 @@
-/* global Keen */
 'use strict';
 
 
 
-const render = (el, promiseOfData)  => {
+const render = (el, promiseOfData) => {
 
     const tables = {};
     [['components', 'Component name'], ['elements', 'Dom path']].forEach(config => {
@@ -53,7 +52,7 @@ const render = (el, promiseOfData)  => {
 
 
     promiseOfData
-    .then(([users, usersByDay, uniqueClicks, clicks, clicksByUserAndDay]) => {
+    .then(([users, , uniqueClicks, clicks, ]) => {
 
 
     var elementsTableBodyEl = document.createElement('tbody');

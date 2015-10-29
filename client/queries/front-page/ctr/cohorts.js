@@ -1,8 +1,6 @@
 /* global Keen */
 'use strict';
 
-var client = require('../../../lib/wrapped-keen');
-
 var render = (el, promiseOfData) => {
     var cohortsEl = document.createElement('div');
     cohortsEl.classList.add('o-grid-row');
@@ -25,7 +23,7 @@ var render = (el, promiseOfData) => {
         .prepare();
 
     promiseOfData
-    .then(([users, usersByDay, uniqueClicks, clicks, clicksByUserAndDay]) => {
+    .then(([, usersByDay, , , clicksByUserAndDay]) => {
 
         var cohortResults = clicksByUserAndDay.map((result, day) => {
             const newValue = new Array(0, 0, 0, 0, 0);
