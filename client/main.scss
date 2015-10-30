@@ -271,3 +271,20 @@ body {
 .o-techdocs .o-header {
 	margin-bottom: 0px;
 }
+
+
+/*Front Page styles */
+
+.front-page__metric--small .keen-metric-value,
+.front-page__metric--small .keen-metric-title {
+	color: #000;
+	font-size: 24px;
+}
+
+.front-page__metric {
+	text-decoration: none;
+}
+
+.front-page__metric:hover .keen-metric {
+	opacity: 0.7;
+}

@@ -23,7 +23,7 @@ const render = (el, promiseOfData) => {
         .prepare();
 
     promiseOfData
-    .then(([, usersByDay, , , clicksByUserAndDay]) => {
+    .then(([, usersByDay, , , clicksByUserAndDay, ]) => {
 
         const cohortResults = clicksByUserAndDay.map((result, day) => {
             const newValue = new Array(0, 0, 0, 0, 0);

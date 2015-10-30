@@ -1,51 +1,43 @@
 /* global Keen */
 'use strict';
 
-const moment = require('moment');
-
 
 const render = (el, promiseOfData) => {
-    const percentageEl = document.createElement('div');
-    percentageEl.classList.add('o-grid-row');
-    percentageEl.innerHTML = '<h2 data-o-grid-colspan="12">Clicks per user</h2>';
-    el.appendChild(percentageEl);
 
-    const topLevelCharts = [
-        {
-            title: 'Today',
-            colors: ['#49c5b1']
-        },
-        {
-            title: 'Yesterday',
-            colors: ['#91DCD0']
-        }
-    ].map(config => {
-        const el = document.createElement('div');
-        el.dataset.oGridColspan = '12 M6';
-        percentageEl.appendChild(el);
-        config.chart = new Keen.Dataviz()
-            .el(el)
-            .prepare();
-        return config;
-    });
+    const clicksPerUserEl = document.querySelector('.js-front-page-clicks-per-user');
 
-    const trendEl = document.createElement('div');
-    trendEl.dataset.oGridColspan = '12';
-    percentageEl.appendChild(trendEl);
+    const clicksPerUserMetric = new Keen.Dataviz()
+        .title('Average clicks per user today')
+        .chartOptions({
+            width: '100%'
+        })
+        .colors(['#49c5b1'])
+        .el(clicksPerUserEl)
+        .prepare();
+
+    const trendEl = document.querySelector('.js-front-page-clicks-per-user-chart');
+
+
     const trendChart = new Keen.Dataviz()
         .el(trendEl)
-        .chartType('linechart')
+        .chartType('columnchart')
         .height(450)
+        .title('Average clicks per user on the Homepage')
         .chartOptions({
             hAxis: {
                 format: 'EEE d'
+            },
+            trendlines: {
+                0: {
+                    color: 'green'
+                }
             }
         })
         .prepare();
 
 
     promiseOfData
-    .then(([, usersByDay, , , clicksByUserAndDay]) => {
+    .then(([, usersByDay, , , clicksByUserAndDay, ]) => {
 
         const clicksPerDay = clicksByUserAndDay.map((result) => (
             {
@@ -55,18 +47,14 @@ const render = (el, promiseOfData) => {
             }
         ));
 
-        topLevelCharts.forEach((topLevelChart, i) => {
-            const clicksOnDay = clicksPerDay[clicksPerDay.length - i - 1].clicks;
+        const clicksOnDay = clicksPerDay[clicksPerDay.length - 1].clicks;
 
-            const usersOnDay = usersByDay[usersByDay.length - i - 1].value;
-            topLevelChart.chart
-                .data({
-                    result: parseFloat((clicksOnDay / usersOnDay).toFixed(1))
-                })
-                .title(topLevelChart.title)
-                .colors(topLevelChart.colors)
-                .render();
-        });
+        const usersOnDay = usersByDay[usersByDay.length - 1].value;
+        clicksPerUserMetric
+            .data({
+                result: parseFloat((clicksOnDay / usersOnDay).toFixed(1))
+            })
+            .render();
 
         trendChart
             .data({

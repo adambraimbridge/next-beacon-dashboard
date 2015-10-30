@@ -88,7 +88,7 @@ app.get('/graph/:name/:sub?', function (req, res) {
 	article_id = article_id.toLowerCase();
 
 	res.render(tmpl, {
-		layout: 'beacon',
+		layout: req.query.vanilla ? 'vanilla' : 'beacon',
 		keen_project: KEEN_PROJECT_ID,
 		keen_read_key: KEEN_READ_KEY,
 		page_name:req.params.name,

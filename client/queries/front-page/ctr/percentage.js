@@ -2,64 +2,55 @@
 'use strict';
 
 const render = (el, promiseOfData) => {
-    const percentageEl = document.createElement('div');
-    percentageEl.classList.add('o-grid-row');
-    percentageEl.innerHTML = '<h2 data-o-grid-colspan="12">Percentage of visitors who clicked on something</h2>';
-    el.appendChild(percentageEl);
 
-    const topLevelCharts = [
-        {
-            title: 'Today',
-            colors: ['#49c5b1']
-        },
-        {
-            title: 'Yesterday',
-            colors: ['#91DCD0']
-        }
-    ].map(config => {
-        const el = document.createElement('div');
-        el.dataset.oGridColspan = '12 M6';
-        percentageEl.appendChild(el);
-        config.chart = new Keen.Dataviz()
-            .el(el)
-            .prepare();
-        return config;
-    });
 
-    const trendEl = document.createElement('div');
-    trendEl.dataset.oGridColspan = '12';
-    percentageEl.appendChild(trendEl);
+    const ctrMetricEl = document.querySelector('.js-front-page-ctr');
+    const ctrMetric = new Keen.Dataviz()
+        .title('CTR Today')
+        .chartOptions({
+            suffix: '%',
+            width: '100%'
+        })
+        .title('Homepage CTR')
+        .colors(['#49c5b1'])
+        .el(ctrMetricEl)
+        .prepare();
+
+    const trendEl = document.querySelector('.js-front-page-ctr-chart');
+
     const trendChart = new Keen.Dataviz()
         .el(trendEl)
-        .chartType('linechart')
+        .chartType('columnchart')
+        .title('Homepage CTR')
         .height(450)
         .chartOptions({
             hAxis: {
                 format: 'EEE d'
+            },
+            trendlines: {
+                0: {
+                    color: 'green'
+                }
             }
         })
         .prepare();
 
 
     promiseOfData
-    .then(([, usersByDay, , , clicksByUserAndDay]) => {
+    .then(([, usersByDay, , , clicksByUserAndDay, ]) => {
 
-        topLevelCharts.forEach((topLevelChart, i) => {
 
-            const clicksByUserOnDay = clicksByUserAndDay[clicksByUserAndDay.length - i - 1];
-            const uniqueClicksOnDay = clicksByUserOnDay.value.filter((user) => {
-                return user.result > 0;
-            }).length;
-            const usersOnDay = usersByDay[usersByDay.length - i - 1].value;
+        const clicksByUserOnDay = clicksByUserAndDay[clicksByUserAndDay.length - 1];
+        const uniqueClicksOnDay = clicksByUserOnDay.value.filter((user) => {
+            return user.result > 0;
+        }).length;
+        const usersOnDay = usersByDay[usersByDay.length - 1].value;
 
-            topLevelChart.chart
-                .data({
-                    result: parseFloat(((100 / usersOnDay) * uniqueClicksOnDay).toFixed(1))
-                })
-                .title(topLevelChart.title)
-                .colors(topLevelChart.colors)
-                .render();
-        });
+        ctrMetric
+            .data({
+                result: parseFloat(((100 / usersOnDay) * uniqueClicksOnDay).toFixed(1))
+            })
+            .render();
 
         const trend = clicksByUserAndDay.map((result, index) => ({
             value: parseFloat(((100 / usersByDay[index].value) * result.value.filter((user) => {
@@ -68,6 +59,7 @@ const render = (el, promiseOfData) => {
             timeframe: result.timeframe
         }));
 
+        console.log(trend);
         trendChart
             .data({
                 result: trend

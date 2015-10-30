@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html class="no-js o-hoverable-on" data-next-app="{{__name}}"{{#if __isProduction}} data-next-is-production{{/if}}>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<title>Beacon - next.ft.com performance dashboard</title>
+		<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
+		<link rel="stylesheet" href="//build.origami.ft.com/v2/bundles/css?modules=o-typography@^2.0.3,o-techdocs@^4.2.1,o-tabs@^2.0.1,o-hierarchical-nav@^2.0.0,o-ft-icons@^2.3.10,o-table@^3.0.0,o-grid@^3.0.0" />
+		<link rel="stylesheet" href="//build.origami.ft.com/v2/bundles/css?modules=o-aside-panel@^1.3.2" />
+		<link rel="stylesheet" href="{{#hashedAsset}}main.css{{/hashedAsset}}"/>
+		{{>next-js-setup/templates/ctm}}
+	</head>
+	<body class="dashboard">
+
+		{{{body}}}
+
+		<script>
+			window.cutsTheMustard = true;
+			window.keen_project = '{{keen_project}}';
+			window.keen_read_key = '{{keen_read_key}}';
+			window.page_name = '{{page_name}}';
+			window.article_id = '{{article_id}}';
+			window.original_url = '{{original_url}}';
+			window.activeUsageFeatures = {{{json @root.activeUsageFeatures}}};
+		</script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.9.3/lodash.min.js"></script>
+		<script src="//code.jquery.com/jquery-2.1.4.min.js" type="text/javascript"></script>
+		<script src="//cdn.jsdelivr.net/keen.js/3.2.4/keen.min.js" type="text/javascript"></script>
+		<script src="//build.origami.ft.com/v2/bundles/js?modules=o-typography@^2.0.3,o-techdocs@^4.2.1,o-tabs@^2.0.1,o-hierarchical-nav@^2.0.0,o-ft-icons@^2.3.10,o-table@^3.0.0,o-grid@^3.0.0"></script>
+		{{>next-js-setup/templates/script-loader}}
+	</body>
+</html>
