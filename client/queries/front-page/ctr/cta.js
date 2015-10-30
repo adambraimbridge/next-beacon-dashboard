@@ -6,13 +6,13 @@ const render = (el, promiseOfData) => {
 
     const tables = {};
     [['components', 'Component name'], ['elements', 'Dom path']].forEach(config => {
-        var [type, colTitle] = config;
-        var containerEl = document.createElement('div');
+        const [type, colTitle] = config;
+        const containerEl = document.createElement('div');
         containerEl.classList.add('o-grid-row');
         containerEl.innerHTML = `<h2 data-o-grid-colspan="12">Most clicked ${type} in the past week</h2>`;
         el.appendChild(containerEl);
 
-        var tableEl = document.createElement('table');
+        const tableEl = document.createElement('table');
         tableEl.className = 'table table--front-page';
         tableEl.dataset.oGridColspan = '12';
         tableEl.innerHTML = `
@@ -30,12 +30,12 @@ const render = (el, promiseOfData) => {
     });
 
     // add component breakdown table
-    var breakdownContainerEl = document.createElement('div');
+    const breakdownContainerEl = document.createElement('div');
     breakdownContainerEl.classList.add('o-grid-row');
     breakdownContainerEl.innerHTML = `<h2 data-o-grid-colspan="12">Component breakdown for the past week</h2>`;
     el.appendChild(breakdownContainerEl);
 
-    var breakdownTableEl = document.createElement('table');
+    const breakdownTableEl = document.createElement('table');
     breakdownTableEl.className = 'table table--front-page';
     breakdownTableEl.dataset.oGridColspan = '12';
     breakdownTableEl.innerHTML = `
@@ -55,7 +55,7 @@ const render = (el, promiseOfData) => {
     .then(([users, , uniqueClicks, clicks, ]) => {
 
 
-    var elementsTableBodyEl = document.createElement('tbody');
+    const elementsTableBodyEl = document.createElement('tbody');
     elementsTableBodyEl.innerHTML = clicks
         .map(element => ({
             name: element['meta.domPath'],
@@ -75,9 +75,9 @@ const render = (el, promiseOfData) => {
         .join('');
     tables['elements'].appendChild(elementsTableBodyEl);
 
-    var componentsTableBodyEl = document.createElement('tbody');
+    const componentsTableBodyEl = document.createElement('tbody');
     // pull out the different 'components';
-    var uniqueComponentClicks = uniqueClicks
+    const uniqueComponentClicks = uniqueClicks
     .map(result => result['meta.domPath'].split(' | ')[0])
     .filter((componentName, i, componentNames) => componentNames.indexOf(componentName) === i)
     .map(componentName => ({
@@ -88,7 +88,7 @@ const render = (el, promiseOfData) => {
                 .reduce((total, result) => total + result.result, 0)
         }))
 
-    var components = clicks
+    const components = clicks
     .map(result => result['meta.domPath'].split(' | ')[0])
     .filter((componentName, i, componentNames) => componentNames.indexOf(componentName) === i)
     .map(componentName => ({
@@ -115,7 +115,7 @@ const render = (el, promiseOfData) => {
     componentsTableBodyEl.innerHTML = components
     .map(component => {
             // prettify name
-            var componentName = component.name.replace(/-/g, ' ').replace(/\b[a-z]/g, match => match.toUpperCase());
+            const componentName = component.name.replace(/-/g, ' ').replace(/\b[a-z]/g, match => match.toUpperCase());
             return `
             <tr class="table__body-row">
                 <td><a href="https://next.ft.com/uk#domPath:${component.name}">${componentName}</a></td>
@@ -129,13 +129,13 @@ const render = (el, promiseOfData) => {
 
     // add show all buttons
     Object.keys(tables).forEach(tableType => {
-        var table = tables[tableType];
-        var showAllEl = document.createElement('button');
+        const table = tables[tableType];
+        const showAllEl = document.createElement('button');
         showAllEl.classList.add('table__button--show-all');
         showAllEl.textContent = 'Show all';
         table.appendChild(showAllEl);
         table.addEventListener('click', function (ev) {
-            var target = ev.target;
+            const target = ev.target;
             if (target.classList.contains('table__button--show-all')) {
                 this.classList.add('table--show-all');
                 target.parentNode.removeChild(target);
@@ -144,17 +144,17 @@ const render = (el, promiseOfData) => {
     });
 
     // add breakdown selector
-    var componentSelectEl = document.createElement('select');
+    const componentSelectEl = document.createElement('select');
     components.forEach(component => {
-        var componentName = component.name;
-        var componentEl = document.createElement('option');
+        const componentName = component.name;
+        const componentEl = document.createElement('option');
         componentEl.value = componentName;
         componentEl.textContent = componentName.replace(/-/g, ' ').replace(/\b[a-z]/g, match => match.toUpperCase());
         componentSelectEl.appendChild(componentEl);
     });
     tables['breakdown'].parentNode.insertBefore(componentSelectEl, tables['breakdown']);
 
-    var breakdownTableBodyEl = document.createElement('tbody');
+    const breakdownTableBodyEl = document.createElement('tbody');
     tables['breakdown'].appendChild(breakdownTableBodyEl);
 
     // group components
@@ -174,7 +174,7 @@ const render = (el, promiseOfData) => {
     .join('');
 
     // handle for select change
-    var componentHandler = function(ev) {
+    const componentHandler = function(ev) {
         Array.from(breakdownTableEl.querySelectorAll('tbody tr'))
         .forEach(el => el.style.display = el.dataset.component === ev.target.value ? 'table-row' : 'none');
     };

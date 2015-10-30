@@ -2,10 +2,10 @@
 
 'use strict';
 
-var cta = require('./ctr/cta');
-var percentage = require('./ctr/percentage');
-var cohorts = require('./ctr/cohorts');
-var clicksPerUser = require('./ctr/clicks-per-user');
+const cta = require('./ctr/cta');
+const percentage = require('./ctr/percentage');
+const cohorts = require('./ctr/cohorts');
+const clicksPerUser = require('./ctr/clicks-per-user');
 const client = require('../../lib/wrapped-keen');
 
 const filter = {
@@ -86,9 +86,10 @@ const getDataForTimeframe = (timeframe) => {
 }
 
 
-var render = () => {
-	var el = document.getElementById('charts');
+const render = () => {
+	const el = document.getElementById('charts');
 	const promiseOfData = getDataForTimeframe('this_7_days');
+
 	percentage.render(el, promiseOfData);
 	clicksPerUser.render(el, promiseOfData);
 	cohorts.render(el, promiseOfData);

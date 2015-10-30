@@ -1,25 +1,26 @@
 /* global Keen */
 'use strict';
 
-var moment = require('moment');
+const moment = require('moment');
 
-var render = (el, promiseOfData) => {
-    var percentageEl = document.createElement('div');
+
+const render = (el, promiseOfData) => {
+    const percentageEl = document.createElement('div');
     percentageEl.classList.add('o-grid-row');
     percentageEl.innerHTML = '<h2 data-o-grid-colspan="12">Clicks per user</h2>';
     el.appendChild(percentageEl);
 
-    var topLevelCharts = [
+    const topLevelCharts = [
         {
-            title: 'Yesterday',
+            title: 'Today',
             colors: ['#49c5b1']
         },
         {
-            title: moment().subtract(2, 'days').format('dddd'),
+            title: 'Yesterday',
             colors: ['#91DCD0']
         }
     ].map(config => {
-        var el = document.createElement('div');
+        const el = document.createElement('div');
         el.dataset.oGridColspan = '12 M6';
         percentageEl.appendChild(el);
         config.chart = new Keen.Dataviz()
@@ -28,10 +29,10 @@ var render = (el, promiseOfData) => {
         return config;
     });
 
-    var trendEl = document.createElement('div');
+    const trendEl = document.createElement('div');
     trendEl.dataset.oGridColspan = '12';
     percentageEl.appendChild(trendEl);
-    var trendChart = new Keen.Dataviz()
+    const trendChart = new Keen.Dataviz()
         .el(trendEl)
         .chartType('linechart')
         .height(450)
@@ -55,11 +56,9 @@ var render = (el, promiseOfData) => {
         ));
 
         topLevelCharts.forEach((topLevelChart, i) => {
+            const clicksOnDay = clicksPerDay[clicksPerDay.length - i - 1].clicks;
 
-            var clicksOnDay = clicksPerDay.slice(-1 -i).shift().clicks;
-
-            var usersOnDay = usersByDay.slice(-1 - i).shift().value;
-
+            const usersOnDay = usersByDay[usersByDay.length - i - 1].value;
             topLevelChart.chart
                 .data({
                     result: parseFloat((clicksOnDay / usersOnDay).toFixed(1))

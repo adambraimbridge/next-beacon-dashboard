@@ -1,16 +1,16 @@
 /* global Keen */
 'use strict';
 
-var render = (el, promiseOfData) => {
-    var cohortsEl = document.createElement('div');
+const render = (el, promiseOfData) => {
+    const cohortsEl = document.createElement('div');
     cohortsEl.classList.add('o-grid-row');
     cohortsEl.innerHTML = '<h2 data-o-grid-colspan="12">Percentage of visitors who clicked on something X times</h2>';
     el.appendChild(cohortsEl);
 
-    var cohortsGraphEl = document.createElement('div');
+    const cohortsGraphEl = document.createElement('div');
     cohortsGraphEl.dataset.oGridColspan = '12';
     cohortsEl.appendChild(cohortsGraphEl);
-    var cohortsGraph = new Keen.Dataviz()
+    const cohortsGraph = new Keen.Dataviz()
         .chartType('columnchart')
         .el(cohortsGraphEl)
         .height(450)
@@ -25,7 +25,7 @@ var render = (el, promiseOfData) => {
     promiseOfData
     .then(([, usersByDay, , , clicksByUserAndDay]) => {
 
-        var cohortResults = clicksByUserAndDay.map((result, day) => {
+        const cohortResults = clicksByUserAndDay.map((result, day) => {
             const newValue = new Array(0, 0, 0, 0, 0);
             let totalUsersClicking = 0;
             let rest = 0;
@@ -39,7 +39,7 @@ var render = (el, promiseOfData) => {
                     rest += 1;
                 }
             });
-            var newResult = Object.assign({}, result);
+            const newResult = Object.assign({}, result);
 
             //clicksByUserAndDay includes users who didn't visit the site at all that day
             // so recalculate those who didn't click anything
@@ -58,7 +58,7 @@ var render = (el, promiseOfData) => {
             return newResult;
         });
 
-        var cohortsEl = document.createElement('div');
+        const cohortsEl = document.createElement('div');
         cohortsEl.dataset.oGridColspan = '12';
         el.appendChild(cohortsEl);
         cohortsGraph
