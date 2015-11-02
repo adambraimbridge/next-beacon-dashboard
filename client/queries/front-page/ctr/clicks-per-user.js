@@ -37,7 +37,12 @@ const render = (el, promiseOfData) => {
 
 
     promiseOfData
-    .then(([, usersByDay, , , clicksByUserAndDay, ]) => {
+    .then((
+        [ , //users
+        usersByDay,
+        clicksByUserAndDay,
+         , //viewsByDay
+        ]) => {
 
         const clicksPerDay = clicksByUserAndDay.map((result) => (
             {

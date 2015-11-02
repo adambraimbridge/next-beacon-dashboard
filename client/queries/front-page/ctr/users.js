@@ -36,8 +36,13 @@ const render = (el, promiseOfData) => {
         .prepare();
 
 
-    promiseOfData
-    .then(([, usersByDay, , , , ]) => {
+       promiseOfData
+    .then((
+        [, //users
+        usersByDay,
+         , // clicksByUserAndDay
+         , //viewsByDay
+        ]) => {
 
 
         const usersToday = usersByDay[usersByDay.length - 1].value;

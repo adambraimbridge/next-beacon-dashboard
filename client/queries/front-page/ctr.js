@@ -1,10 +1,8 @@
-/* global Keen */
+/* global Keen, $ */
 
 'use strict';
 
-const cta = require('./ctr/cta');
 const percentage = require('./ctr/percentage');
-const cohorts = require('./ctr/cohorts');
 const clicksPerUser = require('./ctr/clicks-per-user');
 const users = require('./ctr/users');
 const views = require('./ctr/views');
@@ -49,25 +47,6 @@ const getDataForTimeframe = (timeframe) => {
         maxAge: 600
     });
 
-    const uniqueClicksByDomPath = new Keen.Query('count_unique', {
-        targetProperty: 'user.uuid',
-        eventCollection: 'cta',
-        filters: filter.isOnHomepage.concat(filter.isAClick),
-        groupBy: 'meta.domPath',
-        timeframe: timeframe,
-        timezone: 'UTC',
-        maxAge: 600
-    });
-
-    const clicksByDomPath = new Keen.Query('count', {
-        eventCollection: 'cta',
-        filters: filter.isOnHomepage.concat(filter.isAClick),
-        groupBy: 'meta.domPath',
-        timeframe: timeframe,
-        timezone: 'UTC',
-        maxAge: 600
-    });
-
     const clicksByUserAndDay = new Keen.Query('count', {
         eventCollection: 'cta',
         filters: filter.isOnHomepage.concat(filter.isAClick),
@@ -89,8 +68,6 @@ const getDataForTimeframe = (timeframe) => {
     return Promise.all([
         client.run(usersOnHomepage).then(res => res.result),
         client.run(usersOnHomepageByDay).then(res => res.result),
-        client.run(uniqueClicksByDomPath).then(res => res.result),
-        client.run(clicksByDomPath).then(res => res.result),
         client.run(clicksByUserAndDay).then(res => res.result),
         client.run(viewsByDay).then(res => res.result)
     ]);;
@@ -101,12 +78,10 @@ const render = () => {
 	const el = document.getElementById('charts');
 	const promiseOfData = getDataForTimeframe('this_30_days');
 
-	// cta.render(el, promiseOfData);
 	percentage.render(el, promiseOfData);
 	clicksPerUser.render(el, promiseOfData);
 	users.render(el, promiseOfData);
 	views.render(el, promiseOfData);
-	// cohorts.render(el, promiseOfData);
 
 
 	if(document.location.hash) {

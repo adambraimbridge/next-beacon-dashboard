@@ -298,7 +298,7 @@ body {
 }
 .front-page__metric--small .keen-metric-value,
 .front-page__metric--small .keen-metric-title {
-	color: #000;
+	color: #000000;
 	font-size: 24px;
 }
 
@@ -316,7 +316,7 @@ body {
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 30px 30px 0 30px;
-  border-color: #49c5b1 transparent transparent transparent;
+  border-width: 30px 30px 0;
+  border-color: #49c5b1 transparent transparent;
   margin: 0 auto;
 }

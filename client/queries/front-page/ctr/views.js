@@ -37,7 +37,7 @@ const render = (el, promiseOfData) => {
 
 
     promiseOfData
-    .then(([, , , , , viewsByDay]) => {
+    .then(([, , , viewsByDay]) => {
 
 
         const viewsToday = viewsByDay[viewsByDay.length - 1].value;
