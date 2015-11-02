@@ -1,3 +1,5 @@
+/* global Keen */
+
 'use strict';
 
 const homepageComponents = {
@@ -56,7 +58,7 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
         var components = sortedClicks.map((day) => {
             return day.map(result => result.name.split(' | ')[0])
-            .filter((componentName, i, componentNames) =>  !!homepageComponents[componentName] && componentNames.indexOf(componentName) === i)
+            .filter((componentName, i, componentNames) => !!homepageComponents[componentName] && componentNames.indexOf(componentName) === i)
             .map(componentName => {
                 const elements = day
                 .filter(result => result.name.split(' | ')[0] === componentName);
@@ -103,8 +105,7 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
                     value: ((100 / users[index].value) * thisComp.uniqueClicks) / 100
                 };
             });
-            console.log('data', data);
-            const trendChart = new Keen.Dataviz()
+            new Keen.Dataviz()
                 .el(trendEl)
                 .chartType('linechart')
                 .parseRawData({
