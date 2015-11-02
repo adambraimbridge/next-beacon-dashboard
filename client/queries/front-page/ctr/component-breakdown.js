@@ -28,8 +28,8 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
     <thead>
     <tr>
     <th>Component</th>
-    <th>Clicks</th>
-    <th>% of users clicking on this</th>
+    <th>Clicks ${friendlyChosenPeriod}</th>
+    <th>% of users clicking on this ${friendlyChosenPeriod}</th>
     </tr>
     </thead>
     `;
