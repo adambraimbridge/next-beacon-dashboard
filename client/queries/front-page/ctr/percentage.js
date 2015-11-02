@@ -1,12 +1,12 @@
 /* global Keen */
 'use strict';
 
-const render = (el, promiseOfData) => {
+const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
 
     const ctrMetricEl = document.querySelector('.js-front-page-ctr');
     const ctrMetric = new Keen.Dataviz()
-        .title('CTR Today')
+        .title(`CTR ${friendlyChosenPeriod}`)
         .chartOptions({
             suffix: '%',
             width: '100%'
@@ -27,6 +27,7 @@ const render = (el, promiseOfData) => {
             hAxis: {
                 format: 'EEE d'
             },
+            curveType:'function',
             trendlines: {
                 0: {
                     color: 'green'
@@ -38,8 +39,7 @@ const render = (el, promiseOfData) => {
 
     promiseOfData
     .then((
-        [ , //users
-        usersByDay,
+        [ usersByDay,
         clicksByUserAndDay,
          , //viewsByDay
         ]) => {

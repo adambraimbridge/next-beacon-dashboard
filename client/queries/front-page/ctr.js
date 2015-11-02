@@ -7,6 +7,8 @@ const clicksPerUser = require('./ctr/clicks-per-user');
 const users = require('./ctr/users');
 const views = require('./ctr/views');
 const client = require('../../lib/wrapped-keen');
+const queryString = require('querystring');
+const queryParameters = queryString.parse(location.search.substr(1));
 
 const filter = {
     isOnHomepage: [{
@@ -26,62 +28,59 @@ const filter = {
     }]
 }
 
-const getDataForTimeframe = (timeframe) => {
+const getDataForTimeframe = (timeframe, interval) => {
 
-    const usersOnHomepage = new Keen.Query('count_unique', {
-        targetProperty: 'user.uuid',
-        eventCollection: 'dwell',
-        filters: filter.isOnHomepage,
-        timeframe: timeframe,
-        timezone: 'UTC',
-        maxAge: 600
-    });
 
-    const usersOnHomepageByDay = new Keen.Query('count_unique', {
-        targetProperty: 'user.uuid',
-        eventCollection: 'dwell',
-        filters: filter.isOnHomepage,
-        timeframe: timeframe,
-        interval: 'daily',
-        timezone: 'UTC',
-        maxAge: 600
-    });
+  const usersOnHomepageByDay = new Keen.Query('count_unique', {
+      targetProperty: 'user.uuid',
+      eventCollection: 'dwell',
+      filters: filter.isOnHomepage,
+      timeframe: timeframe,
+      interval: interval,
+      timezone: 'UTC',
+      maxAge: 600
+  });
 
-    const clicksByUserAndDay = new Keen.Query('count', {
-        eventCollection: 'cta',
-        filters: filter.isOnHomepage.concat(filter.isAClick),
-        groupBy: 'user.uuid',
-        timeframe: timeframe,
-        timezone: 'UTC',
-        interval: 'daily',
-        maxAge: 600
-    });
+  const clicksByUserAndDay = new Keen.Query('count', {
+      eventCollection: 'cta',
+      filters: filter.isOnHomepage.concat(filter.isAClick),
+      groupBy: 'user.uuid',
+      timeframe: timeframe,
+      timezone: 'UTC',
+      interval: interval,
+      maxAge: 600
+  });
 
-    const viewsByDay = new Keen.Query('count', {
-        eventCollection: 'dwell',
-        filters: filter.isOnHomepage,
-        timeframe: timeframe,
-        timezone: 'UTC',
-        interval: 'daily',
-        maxAge: 600
-    });
-    return Promise.all([
-        client.run(usersOnHomepage).then(res => res.result),
-        client.run(usersOnHomepageByDay).then(res => res.result),
-        client.run(clicksByUserAndDay).then(res => res.result),
-        client.run(viewsByDay).then(res => res.result)
-    ]);;
+  const viewsByDay = new Keen.Query('count', {
+      eventCollection: 'dwell',
+      filters: filter.isOnHomepage,
+      timeframe: timeframe,
+      timezone: 'UTC',
+      interval: interval,
+      maxAge: 600
+  });
+  return Promise.all([
+      client.run(usersOnHomepageByDay).then(res => res.result),
+      client.run(clicksByUserAndDay).then(res => res.result),
+      client.run(viewsByDay).then(res => res.result)
+  ]);;
 }
 
 
 const render = () => {
 	const el = document.getElementById('charts');
-	const promiseOfData = getDataForTimeframe('this_30_days');
+	const timeframe = queryParameters['timeframe'] || 'this_30_days';
+	const interval = timeframe.indexOf('week') > 0 ? 'weekly' : 'daily';
+	const friendlyChosenPeriod = timeframe.indexOf('this_') >= 0 ?
+		(interval === 'daily' ? 'today' : 'this week') :
+		(interval === 'daily' ? 'yesterday' : 'last week');
 
-	percentage.render(el, promiseOfData);
-	clicksPerUser.render(el, promiseOfData);
-	users.render(el, promiseOfData);
-	views.render(el, promiseOfData);
+	const promiseOfData = getDataForTimeframe(timeframe, interval);
+
+	percentage.render(el, promiseOfData, friendlyChosenPeriod);
+	clicksPerUser.render(el, promiseOfData, friendlyChosenPeriod);
+	users.render(el, promiseOfData, friendlyChosenPeriod);
+	views.render(el, promiseOfData, friendlyChosenPeriod);
 
 
  	if(!document.location.hash) {

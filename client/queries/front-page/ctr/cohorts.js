@@ -24,8 +24,7 @@ const render = (el, promiseOfData) => {
 
     promiseOfData
     .then((
-        [ , //users
-        usersByDay,
+        [ usersByDay,
         clicksByUserAndDay,
          , //viewsByDay
         ]) => {

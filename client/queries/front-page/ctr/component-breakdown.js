@@ -2,14 +2,14 @@
 
 
 
-const render = (el, promiseOfData) => {
+const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
     const tables = {};
     [['components', 'Component name'], ['elements', 'Dom path']].forEach(config => {
         var [type, colTitle] = config;
         var containerEl = document.createElement('div');
         containerEl.classList.add('o-grid-row');
-        containerEl.innerHTML = `<h2 data-o-grid-colspan="12">Most clicked ${type} today</h2>`;
+        containerEl.innerHTML = `<h2 data-o-grid-colspan="12">Most clicked ${type} ${friendlyChosenPeriod}</h2>`;
         el.appendChild(containerEl);
 
         var tableEl = document.createElement('table');
@@ -32,7 +32,7 @@ const render = (el, promiseOfData) => {
     // add component breakdown table
     var breakdownContainerEl = document.createElement('div');
     breakdownContainerEl.classList.add('o-grid-row');
-    breakdownContainerEl.innerHTML = `<h2 data-o-grid-colspan="12">Component breakdown for today</h2>`;
+    breakdownContainerEl.innerHTML = `<h2 data-o-grid-colspan="12">Component breakdown for ${friendlyChosenPeriod}</h2>`;
     el.appendChild(breakdownContainerEl);
 
     var breakdownTableEl = document.createElement('table');

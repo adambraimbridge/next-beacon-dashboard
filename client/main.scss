@@ -286,15 +286,11 @@ body {
 }
 
 .front-page__chart-anchor:not(:target) + .front-page__chart {
-    opacity: 0;
+    height: 0;
+    overflow: hidden;
 }
 .front-page__chart {
-	position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  opacity: 1;
+	height: auto;
 }
 .front-page__metric--small .keen-metric-value,
 .front-page__metric--small .keen-metric-title {

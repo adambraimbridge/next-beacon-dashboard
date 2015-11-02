@@ -2,12 +2,12 @@
 'use strict';
 
 
-const render = (el, promiseOfData) => {
+const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
     const clicksPerUserEl = document.querySelector('.js-front-page-clicks-per-user');
 
     const clicksPerUserMetric = new Keen.Dataviz()
-        .title('Average clicks per user today')
+        .title(`Average clicks per user ${friendlyChosenPeriod}`)
         .chartOptions({
             width: '100%'
         })
@@ -27,6 +27,7 @@ const render = (el, promiseOfData) => {
             hAxis: {
                 format: 'EEE d'
             },
+            curveType:'function',
             trendlines: {
                 0: {
                     color: 'green'
@@ -38,8 +39,7 @@ const render = (el, promiseOfData) => {
 
     promiseOfData
     .then((
-        [ , //users
-        usersByDay,
+        [ usersByDay,
         clicksByUserAndDay,
          , //viewsByDay
         ]) => {
