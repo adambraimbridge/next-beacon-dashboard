@@ -9,7 +9,10 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
     const usersMetric = new Keen.Dataviz()
         .title(`Users ${friendlyChosenPeriod}`)
         .chartOptions({
-            width: '100%'
+            width: '100%',
+            animation: {
+                startup: true
+            }
         })
         .colors(['#eeeeee'])
         .el(usersEl)
@@ -25,9 +28,12 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
         .height(450)
         .chartOptions({
             hAxis: {
-                format: 'EEE d'
+                format: 'EEE d',
+                title: 'Date'
             },
-            curveType:'function',
+            vAxis: {
+                title: 'Number of users that visited Front Page'
+            },
             trendlines: {
                 0: {
                     color: 'green'

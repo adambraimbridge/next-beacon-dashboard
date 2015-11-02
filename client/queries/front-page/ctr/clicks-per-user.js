@@ -9,7 +9,10 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
     const clicksPerUserMetric = new Keen.Dataviz()
         .title(`Average clicks per user ${friendlyChosenPeriod}`)
         .chartOptions({
-            width: '100%'
+            width: '100%',
+            animation: {
+                startup: true
+            }
         })
         .colors(['#49c5b1'])
         .el(clicksPerUserEl)
@@ -25,9 +28,12 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
         .title('Average clicks per user on the Homepage')
         .chartOptions({
             hAxis: {
-                format: 'EEE d'
+                format: 'EEE d',
+                title: 'Date'
             },
-            curveType:'function',
+            vAxis: {
+                title: 'Average clicks per front-page user'
+            },
             trendlines: {
                 0: {
                     color: 'green'
