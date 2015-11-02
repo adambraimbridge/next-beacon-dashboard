@@ -9,6 +9,7 @@ const clicksPerUser = require('./ctr/clicks-per-user');
 const users = require('./ctr/users');
 const views = require('./ctr/views');
 const client = require('../../lib/wrapped-keen');
+const tabs = require('o-tabs');
 
 const filter = {
     isOnHomepage: [{
@@ -107,6 +108,8 @@ const render = () => {
 	users.render(el, promiseOfData);
 	views.render(el, promiseOfData);
 	// cohorts.render(el, promiseOfData);
+
+	tabs.init();
 
 };
 
