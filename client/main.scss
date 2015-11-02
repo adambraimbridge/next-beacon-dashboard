@@ -275,6 +275,27 @@ body {
 
 /*Front Page styles */
 
+.front-page__charts {
+	height: 400px;
+	position: relative;
+}
+
+.front-page__chart-anchor {
+  position: fixed;
+  display: none;
+}
+
+.front-page__chart-anchor:not(:target) + .front-page__chart {
+    opacity: 0;
+}
+.front-page__chart {
+	position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 1;
+}
 .front-page__metric--small .keen-metric-value,
 .front-page__metric--small .keen-metric-title {
 	color: #000;
@@ -289,8 +310,7 @@ body {
 	opacity: 0.7;
 }
 
-
-.front-page__tab[aria-selected="true"] .front-page__metric:after {
+.front-page__metric.is-selected:after {
   content: '';
   display: block;
   width: 0;
@@ -299,11 +319,4 @@ body {
   border-width: 30px 30px 0 30px;
   border-color: #49c5b1 transparent transparent transparent;
   margin: 0 auto;
-}
-
-// Keen doesn't load in display:none containers
-.front-page .o-tabs__tabpanel[role=tabpanel][aria-hidden=true] {
-	display: block;
-	height: 0;
-	overflow: hidden;
 }

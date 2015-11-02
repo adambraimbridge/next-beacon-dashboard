@@ -9,7 +9,6 @@ const clicksPerUser = require('./ctr/clicks-per-user');
 const users = require('./ctr/users');
 const views = require('./ctr/views');
 const client = require('../../lib/wrapped-keen');
-const tabs = require('o-tabs');
 
 const filter = {
     isOnHomepage: [{
@@ -109,7 +108,21 @@ const render = () => {
 	views.render(el, promiseOfData);
 	// cohorts.render(el, promiseOfData);
 
-	tabs.init();
+
+	if(document.location.hash) {
+		const metric = document.querySelector(`.front-page__metric[href="${document.location.hash}"]`);
+		if(metric) {
+			metric.classList.add('is-selected');
+		}
+	}
+
+	$('.front-page__metric').on('click', (e) => {
+		const selected = document.querySelector('.front-page__metric.is-selected');
+		if(selected) {
+			selected.classList.remove('is-selected');
+		}
+		e.currentTarget.classList.add('is-selected');
+	});
 
 };
 
