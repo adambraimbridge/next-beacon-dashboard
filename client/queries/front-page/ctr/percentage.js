@@ -29,8 +29,7 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
                 title: 'Date'
             },
             vAxis: {
-                title: 'CTR',
-                format: 'percent'
+                title: 'CTR (%)'
             },
             trendlines: {
                 0: {

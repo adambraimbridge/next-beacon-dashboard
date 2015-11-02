@@ -1,55 +1,41 @@
 'use strict';
 
-
+const homepageComponents = {
+    'header': 'Header (inc Markets)',
+    'lead-today': 'Top stories',
+    'fastft': 'FastFT',
+    'editors-picks': 'Editors Picks',
+    'opinion': 'Opinion',
+    'popular': 'Most Popular',
+    'topic-life-arts': 'Life & Arts',
+    'topic-markets': 'Markets',
+    'topic-technology': 'Technology',
+    'video-picks': 'Videos'
+}
 
 const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
     const tables = {};
-    [['components', 'Component name'], ['elements', 'Dom path']].forEach(config => {
-        var [type, colTitle] = config;
-        var containerEl = document.createElement('div');
-        containerEl.classList.add('o-grid-row');
-        containerEl.innerHTML = `<h2 data-o-grid-colspan="12">Most clicked ${type} ${friendlyChosenPeriod}</h2>`;
-        el.appendChild(containerEl);
+    const containerEl = document.createElement('div');
+    containerEl.classList.add('o-grid-row');
+    containerEl.innerHTML = `<h2 data-o-grid-colspan="12">Homepage Components</h2>`;
+    el.appendChild(containerEl);
 
-        var tableEl = document.createElement('table');
-        tableEl.className = 'table table--front-page';
-        tableEl.dataset.oGridColspan = '12';
-        tableEl.innerHTML = `
-        <thead>
-        <tr>
-        <th>${colTitle}</th>
-        <th>Clicks</th>
-        <th>% of users clicking on this</th>
-        </tr>
-        </thead>
-        `;
-        containerEl.appendChild(tableEl);
-
-        tables[type] = tableEl;
-    });
-
-    // add component breakdown table
-    var breakdownContainerEl = document.createElement('div');
-    breakdownContainerEl.classList.add('o-grid-row');
-    breakdownContainerEl.innerHTML = `<h2 data-o-grid-colspan="12">Component breakdown for ${friendlyChosenPeriod}</h2>`;
-    el.appendChild(breakdownContainerEl);
-
-    var breakdownTableEl = document.createElement('table');
-    breakdownTableEl.className = 'table table--front-page';
-    breakdownTableEl.dataset.oGridColspan = '12';
-    breakdownTableEl.innerHTML = `
+    const tableEl = document.createElement('table');
+    tableEl.className = 'table table--front-page table--show-all ';
+    tableEl.dataset.oGridColspan = '12';
+    tableEl.innerHTML = `
     <thead>
     <tr>
-    <th>Dom path</th>
+    <th>Component</th>
     <th>Clicks</th>
-    <th>% of users clicking this</th>
+    <th>% of users clicking on this</th>
     </tr>
     </thead>
     `;
-    breakdownContainerEl.appendChild(breakdownTableEl);
-    tables['breakdown'] = breakdownTableEl;
+    containerEl.appendChild(tableEl);
 
+    tables['components'] = tableEl;
 
     promiseOfData
     .then(([users, uniqueClicks, clicks]) => {
@@ -65,34 +51,24 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
             .sort((resultOne, resultTwo) => resultTwo.uniqueClicks - resultOne.uniqueClicks);
         }));
 
-        var elementsTableBodyEl = document.createElement('tbody');
-        elementsTableBodyEl.innerHTML = sortedClicks[sortedClicks.length - 1].map(result => `
-            <tr class="table__body-row">
-            <td><a href="https://next.ft.com/uk#domPath:${result['meta.domPath']}">${result.name}</a></td>
-            <td>${result.clicks}</td>
-            <td>${((100 / users[users.length - 1].value) * result.uniqueClicks).toFixed(2)}</td>
-            </tr>
-            `)
-        .join('');
-        tables['elements'].appendChild(elementsTableBodyEl);
-
         var componentsTableBodyEl = document.createElement('tbody');
         // pull out the different 'components';
 
         var components = sortedClicks.map((day) => {
             return day.map(result => result.name.split(' | ')[0])
-            .filter((componentName, i, componentNames) => componentNames.indexOf(componentName) === i)
+            .filter((componentName, i, componentNames) =>  !!homepageComponents[componentName] && componentNames.indexOf(componentName) === i)
             .map(componentName => {
                 const elements = day
                 .filter(result => result.name.split(' | ')[0] === componentName);
                 return {
-                    name: componentName,
+                    id: componentName,
+                    name: homepageComponents[componentName],
                         // sum the clicks for this component
-                        clicks: elements.reduce((total, result) => total + result.clicks, 0),
-                        uniqueClicks: elements.reduce((total, result) => total + result.uniqueClicks, 0),
-                        elements: elements
-                    };
-                })
+                    clicks: elements.reduce((total, result) => total + result.clicks, 0),
+                    uniqueClicks: elements.reduce((total, result) => total + result.uniqueClicks, 0),
+                    elements: elements
+                };
+            })
             .sort((componentOne, componentTwo) => componentTwo.uniqueClicks - componentOne.uniqueClicks);
 
         });
@@ -107,6 +83,9 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
                 <td>${component.clicks}</td>
                 <td>${((100 / users[users.length - 1].value) * component.uniqueClicks).toFixed(2)}</td>
                 </tr>
+                <tr class="table__body-row">
+                    <td colspan="3"><div class="js-component-chart-${component.id}"></div></td>
+                </tr>
                 `;
             })
         .join('');
@@ -114,63 +93,42 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
 
         tables['components'].appendChild(componentsTableBodyEl);
-        // add show all buttons
-        Object.keys(tables).forEach(tableType => {
-            var table = tables[tableType];
-            var showAllEl = document.createElement('button');
-            showAllEl.classList.add('table__button--show-all');
-            showAllEl.textContent = 'Show all';
-            table.appendChild(showAllEl);
-            table.addEventListener('click', function (ev) {
-                var target = ev.target;
-                if (target.classList.contains('table__button--show-all')) {
-                    this.classList.add('table--show-all');
-                    target.parentNode.removeChild(target);
-                }
+
+        Object.keys(homepageComponents).forEach((key) => {
+            const trendEl = document.querySelector(`.js-component-chart-${key}`);
+            const data = components.map((day, index) => {
+                const thisComp = day.find((comp)=> comp.id === key);
+                return {
+                    timeframe: users[index].timeframe,
+                    value: ((100 / users[index].value) * thisComp.uniqueClicks) / 100
+                };
             });
-        });
+            console.log('data', data);
+            const trendChart = new Keen.Dataviz()
+                .el(trendEl)
+                .chartType('linechart')
+                .parseRawData({
+                    result: data
+                })
+                .title(homepageComponents[key] + ' CTR')
+                .height(300)
+                .chartOptions({
+                    hAxis: {
+                        format: 'EEE d',
+                        title: 'Date'
+                    },
+                    vAxis: {
+                        title: 'CTR (%)'
+                    },
+                    trendlines: {
+                        0: {
+                            color: 'green'
+                        }
+                    }
+                })
+                .render();
 
-
-        // add breakdown selector
-        var componentSelectEl = document.createElement('select');
-        components[components.length - 1].forEach(component => {
-            if(!component) {
-                return;
-            }
-            var componentName = component.name;
-            var componentEl = document.createElement('option');
-            componentEl.value = componentName;
-            componentEl.textContent = componentName.replace(/-/g, ' ').replace(/\b[a-z]/g, match => match.toUpperCase());
-            componentSelectEl.appendChild(componentEl);
-        });
-        tables['breakdown'].parentNode.insertBefore(componentSelectEl, tables['breakdown']);
-
-        var breakdownTableBodyEl = document.createElement('tbody');
-        tables['breakdown'].appendChild(breakdownTableBodyEl);
-
-        // group components
-        breakdownTableBodyEl.innerHTML = components[components.length - 1]
-        .map(component => {
-            return component.elements
-            .sort((elementOne, elementTwo) => elementTwo.uniqueClicks - elementOne.uniqueClicks)
-            .map(element => `
-                <tr class="table__body-row" data-component="${component.name}">
-                <td><a href="https://next.ft.com/uk#domPath:${element['meta.domPath']}">${element.name}</a></td>
-                <td>${element.clicks}</td>
-                <td>${((100 / users[users.length - 1].value) * element.uniqueClicks).toFixed(2)}</td>
-                </tr>
-                `)
-            .join('');
         })
-        .join('');
-
-        // handle for select change
-        var componentHandler = function(ev) {
-            Array.from(breakdownTableEl.querySelectorAll('tbody tr'))
-            .forEach(el => el.style.display = el.dataset.component === ev.target.value ? 'table-row' : 'none');
-        };
-        componentSelectEl.addEventListener('change', componentHandler);
-        componentSelectEl.dispatchEvent(new Event('change'));
 
     });
 
