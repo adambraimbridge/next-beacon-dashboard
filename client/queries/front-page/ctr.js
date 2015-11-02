@@ -84,11 +84,13 @@ const render = () => {
 	views.render(el, promiseOfData);
 
 
-	if(document.location.hash) {
-		const metric = document.querySelector(`.front-page__metric[href="${document.location.hash}"]`);
-		if(metric) {
-			metric.classList.add('is-selected');
-		}
+ 	if(!document.location.hash) {
+		document.location.hash = '#front-page-ctr-chart'
+	}
+
+	const metric = document.querySelector(`.front-page__metric[href="${document.location.hash}"]`);
+	if(metric) {
+		metric.classList.add('is-selected');
 	}
 
 	$('.front-page__metric').on('click', (e) => {

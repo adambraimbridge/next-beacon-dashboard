@@ -64,7 +64,6 @@ const render = (el, promiseOfData) => {
             timeframe: result.timeframe
         }));
 
-        console.log(trend);
         trendChart
             .data({
                 result: trend

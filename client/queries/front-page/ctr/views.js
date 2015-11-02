@@ -41,7 +41,6 @@ const render = (el, promiseOfData) => {
 
 
         const viewsToday = viewsByDay[viewsByDay.length - 1].value;
-                console.log('usersToday', viewsToday)
 
         viewsMetric
             .data({
