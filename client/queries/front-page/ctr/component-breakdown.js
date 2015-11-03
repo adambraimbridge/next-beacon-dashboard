@@ -81,7 +81,7 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
                 var componentName = component.name.replace(/-/g, ' ').replace(/\b[a-z]/g, match => match.toUpperCase());
                 return `
                 <tr class="table__body-row">
-                <td><a href="https://next.ft.com/uk#domPath:${component.name}">${componentName}</a></td>
+                <td><a href="https://next.ft.com/uk#domPath:${component.id}">${componentName}</a></td>
                 <td>${component.clicks}</td>
                 <td>${((100 / users[users.length - 1].value) * component.uniqueClicks).toFixed(2)}</td>
                 </tr>
