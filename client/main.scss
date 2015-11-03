@@ -317,3 +317,7 @@ body {
   border-color: #49c5b1 transparent transparent;
   margin: 0 auto;
 }
+
+.front-page__metric--small.is-selected:after {
+	border-color: #eeeeee transparent transparent;
+}

@@ -102,7 +102,7 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
                 const thisComp = day.find((comp)=> comp.id === key);
                 return {
                     timeframe: users[index].timeframe,
-                    value: ((100 / users[index].value) * thisComp.uniqueClicks) / 100
+                    value: parseFloat(((100 / users[index].value) * thisComp.uniqueClicks).toFixed(2))
                 };
             });
             new Keen.Dataviz()
