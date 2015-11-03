@@ -7,7 +7,7 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
     const viewsEl = document.querySelector('.js-front-page-views');
 
     const viewsMetric = new Keen.Dataviz()
-        .title(`Visits ${friendlyChosenPeriod}`)
+        .title(`HP visits ${friendlyChosenPeriod}`)
         .chartOptions({
             width: '100%',
             animation: {
@@ -24,7 +24,7 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
     const trendChart = new Keen.Dataviz()
         .el(trendEl)
         .chartType('columnchart')
-        .title('Visits')
+        .title('Homepage Visits')
         .height(450)
         .chartOptions({
             hAxis: {
