@@ -271,3 +271,53 @@ body {
 .o-techdocs .o-header {
 	margin-bottom: 0px;
 }
+
+
+/*Front Page styles */
+
+.front-page__charts {
+	height: 460px;
+	position: relative;
+}
+
+.front-page__chart-anchor {
+  position: fixed;
+  display: none;
+}
+
+.front-page__chart-anchor:not(:target) + .front-page__chart {
+    height: 0;
+    overflow: hidden;
+}
+.front-page__chart {
+	height: auto;
+}
+.front-page__metric--small .keen-metric-value,
+.front-page__metric--small .keen-metric-title {
+	color: #000000;
+	font-size: 24px;
+}
+
+.front-page__metric {
+	text-decoration: none;
+	margin: 5px 0;
+}
+
+.front-page__metric:hover .keen-metric {
+	opacity: 0.7;
+}
+
+.front-page__metric.is-selected:after {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 30px 30px 0;
+  border-color: #49c5b1 transparent transparent;
+  margin: 0 auto;
+}
+
+.front-page__metric--small.is-selected:after {
+	border-color: #eeeeee transparent transparent;
+}
