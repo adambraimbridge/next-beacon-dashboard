@@ -25,16 +25,25 @@ const filter = {
         operator: 'exists',
         property_name: 'meta.domPath',
         property_value: true
+    }],
+    layout: [{
+      operator: 'eq',
+      property_name: 'ingest.user.layout',
+      property_value: queryParameters['layout']
     }]
 }
 
 const getDataForTimeframe = (timeframe, interval) => {
 
+  let defaultFilters = filter.isOnHomepage;
+  if(queryParameters['layout']) {
+    defaultFilters = defaultFilters.concat(filter.layout);
+  }
 
   const usersOnHomepageByDay = new Keen.Query('count_unique', {
       targetProperty: 'user.uuid',
       eventCollection: 'dwell',
-      filters: filter.isOnHomepage,
+      filters: defaultFilters,
       timeframe: timeframe,
       interval: interval,
       timezone: 'UTC',
@@ -43,7 +52,7 @@ const getDataForTimeframe = (timeframe, interval) => {
 
   const clicksByUserAndDay = new Keen.Query('count', {
       eventCollection: 'cta',
-      filters: filter.isOnHomepage.concat(filter.isAClick),
+      filters: defaultFilters.concat(filter.isAClick),
       groupBy: 'user.uuid',
       timeframe: timeframe,
       timezone: 'UTC',
@@ -53,7 +62,7 @@ const getDataForTimeframe = (timeframe, interval) => {
 
   const viewsByDay = new Keen.Query('count', {
       eventCollection: 'dwell',
-      filters: filter.isOnHomepage,
+      filters: defaultFilters,
       timeframe: timeframe,
       timezone: 'UTC',
       interval: interval,
@@ -68,40 +77,40 @@ const getDataForTimeframe = (timeframe, interval) => {
 
 
 const render = () => {
-	const el = document.getElementById('charts');
-	const timeframe = queryParameters['timeframe'] || 'this_30_days';
-	const interval = timeframe.indexOf('week') > 0 ? 'weekly' : 'daily';
-	const friendlyChosenPeriod = timeframe.indexOf('this_') >= 0 ?
-		(interval === 'daily' ? 'today' : 'this week') :
-		(interval === 'daily' ? 'yesterday' : 'last week');
+  const el = document.getElementById('charts');
+  const timeframe = queryParameters['timeframe'] || 'this_30_days';
+  const interval = timeframe.indexOf('week') > 0 ? 'weekly' : 'daily';
+  const friendlyChosenPeriod = timeframe.indexOf('this_') >= 0 ?
+    (interval === 'daily' ? 'today' : 'this week') :
+    (interval === 'daily' ? 'yesterday' : 'last week');
 
-	const promiseOfData = getDataForTimeframe(timeframe, interval);
+  const promiseOfData = getDataForTimeframe(timeframe, interval);
 
-	percentage.render(el, promiseOfData, friendlyChosenPeriod);
-	clicksPerUser.render(el, promiseOfData, friendlyChosenPeriod);
-	users.render(el, promiseOfData, friendlyChosenPeriod);
-	views.render(el, promiseOfData, friendlyChosenPeriod);
+  percentage.render(el, promiseOfData, friendlyChosenPeriod);
+  clicksPerUser.render(el, promiseOfData, friendlyChosenPeriod);
+  users.render(el, promiseOfData, friendlyChosenPeriod);
+  views.render(el, promiseOfData, friendlyChosenPeriod);
 
 
- 	if(!document.location.hash) {
-		document.location.hash = '#front-page-ctr-chart'
-	}
+  if(!document.location.hash) {
+    document.location.hash = '#front-page-ctr-chart'
+  }
 
-	const metric = document.querySelector(`.front-page__metric[href="${document.location.hash}"]`);
-	if(metric) {
-		metric.classList.add('is-selected');
-	}
+  const metric = document.querySelector(`.front-page__metric[href="${document.location.hash}"]`);
+  if(metric) {
+    metric.classList.add('is-selected');
+  }
 
-	$('.front-page__metric').on('click', (e) => {
-		const selected = document.querySelector('.front-page__metric.is-selected');
-		if(selected) {
-			selected.classList.remove('is-selected');
-		}
-		e.currentTarget.classList.add('is-selected');
-	});
+  $('.front-page__metric').on('click', (e) => {
+    const selected = document.querySelector('.front-page__metric.is-selected');
+    if(selected) {
+      selected.classList.remove('is-selected');
+    }
+    e.currentTarget.classList.add('is-selected');
+  });
 
 };
 
 module.exports = {
-	render
+  render
 };
