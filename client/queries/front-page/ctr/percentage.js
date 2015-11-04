@@ -1,4 +1,4 @@
-/* global Keen */
+/* global Keen, _ */
 'use strict';
 
 const render = (el, promiseOfData, friendlyChosenPeriod) => {
@@ -40,29 +40,20 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
 
     promiseOfData
-    .then((
-        [ usersByDay,
-        clicksByUserAndDay,
-         , //viewsByDay
-        ]) => {
+    .then((data) => {
 
-
-        const clicksByUserOnDay = clicksByUserAndDay[clicksByUserAndDay.length - 1];
-        const uniqueClicksOnDay = clicksByUserOnDay.value.filter((user) => {
-            return user.result > 0;
-        }).length;
-        const usersOnDay = usersByDay[usersByDay.length - 1].value;
 
         ctrMetric
             .data({
-                result: parseFloat(((100 / usersOnDay) * uniqueClicksOnDay).toFixed(1))
+                result: data[data.length-1].byLayout.total.ctr
             })
             .render();
 
-        const trend = clicksByUserAndDay.map((result, index) => ({
-            value: parseFloat(((100 / usersByDay[index].value) * result.value.filter((user) => {
-                return user.result > 0;
-            }).length).toFixed(1)),
+        const trend = data.map((result, index) => ({
+            value: Object.values(_.mapValues(result.byLayout, (dataForLayout, layout) => ({
+                category: layout,
+                result: dataForLayout.ctr
+            }))),
             timeframe: result.timeframe
         }));
 

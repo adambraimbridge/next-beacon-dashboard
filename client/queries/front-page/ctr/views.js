@@ -43,25 +43,34 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
         .prepare();
 
 
-    promiseOfData
-    .then(([, , viewsByDay]) => {
+
+       promiseOfData
+       .then((data) => {
 
 
-        const viewsToday = viewsByDay[viewsByDay.length - 1].value;
 
         viewsMetric
             .data({
-                result: viewsToday
+                result: data[data.length-1].byLayout.total.views
             })
             .render();
 
+        const trend = data.map((result, index) => ({
+            value: Object.values(_.mapValues(result.byLayout, (dataForLayout, layout) => ({
+                category: layout,
+                result: dataForLayout.views
+            }))),
+            timeframe: result.timeframe
+        }));
+
         trendChart
             .data({
-                result: viewsByDay
+                result: trend
             })
             .render();
 
     });
+
 
 };
 

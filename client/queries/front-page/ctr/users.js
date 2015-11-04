@@ -44,23 +44,27 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
 
        promiseOfData
-    .then((
-        [usersByDay,
-         , // clicksByUserAndDay
-         , //viewsByDay
-        ]) => {
+       .then((data) => {
 
 
-        const usersToday = usersByDay[usersByDay.length - 1].value;
+
         usersMetric
             .data({
-                result: usersToday
+                result: data[data.length-1].byLayout.total.users
             })
             .render();
 
+        const trend = data.map((result, index) => ({
+            value: Object.values(_.mapValues(result.byLayout, (dataForLayout, layout) => ({
+                category: layout,
+                result: dataForLayout.users
+            }))),
+            timeframe: result.timeframe
+        }));
+
         trendChart
             .data({
-                result: usersByDay
+                result: trend
             })
             .render();
 

@@ -44,35 +44,27 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
 
     promiseOfData
-    .then((
-        [ usersByDay,
-        clicksByUserAndDay,
-         , //viewsByDay
-        ]) => {
+       .then((data) => {
 
-        const clicksPerDay = clicksByUserAndDay.map((result) => (
-            {
-                clicks: result.value.reduce((prevVal, currentUser) => {
-                    return prevVal + currentUser.result;
-                }, 0)
-            }
-        ));
-
-        const clicksOnDay = clicksPerDay[clicksPerDay.length - 1].clicks;
-
-        const usersOnDay = usersByDay[usersByDay.length - 1].value;
         clicksPerUserMetric
             .data({
-                result: parseFloat((clicksOnDay / usersOnDay).toFixed(1))
+                result: data[data.length-1].byLayout.total.clicksPerUser
             })
             .render();
 
+        const trend = data.map((result, index) => ({
+            value: Object.values(_.mapValues(result.byLayout, (dataForLayout, layout) => ({
+                category: layout,
+                result: dataForLayout.clicksPerUser
+            }))),
+            timeframe: result.timeframe
+        }));
+
+        console.log('cpu', trend);
+
         trendChart
             .data({
-                result: clicksPerDay.map((day, index) => ({
-                    value: parseFloat((clicksPerDay[index].clicks / usersByDay[index].value).toFixed(1)),
-                    timeframe: usersByDay[index].timeframe
-                }))
+                result: trend
             })
             .render();
 
