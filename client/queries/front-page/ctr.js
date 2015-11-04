@@ -47,7 +47,7 @@ const getDataForTimeframe = (timeframe, interval) => {
       timeframe: timeframe,
       interval: interval,
       timezone: 'UTC',
-      maxAge: 600
+      maxAge: 3600
   });
 
   const clicksByUserAndDay = new Keen.Query('count', {
@@ -57,7 +57,7 @@ const getDataForTimeframe = (timeframe, interval) => {
       timeframe: timeframe,
       timezone: 'UTC',
       interval: interval,
-      maxAge: 600
+      maxAge: 3600
   });
 
   const viewsByDay = new Keen.Query('count', {
@@ -66,7 +66,7 @@ const getDataForTimeframe = (timeframe, interval) => {
       timeframe: timeframe,
       timezone: 'UTC',
       interval: interval,
-      maxAge: 600
+      maxAge: 3600
   });
   return Promise.all([
       client.run(usersOnHomepageByDay).then(res => res.result),
