@@ -1,4 +1,4 @@
-<h1>Front Page: CTR</h1>
+<h1>Front Page: CTR {{#if query.layout}}(Layout: {{query.layout}}){{/if}}</h1>
 
 <div id="charts" class="o-grid-container front-page">
 	<div class="front-page__metrics o-grid-row">
@@ -23,15 +23,26 @@
 	</div>
 
 </div>
-<a href="/graph/front-page/components">View Component breakdown</a>
+<a href="/graph/front-page/components?timeframe={{query.timeframe}}&layout={{query.layout}}">View Component breakdown</a>
 
 <p>
 	Timeframe:
+	<a href="?timeframe=this_14_days&layout={{query.layout}}">14 days</a> |
+	<a href="?timeframe=previous_14_days&layout={{query.layout}}">14 days (excluding today)</a> |
+	<a href="?timeframe=this_30_days&layout={{query.layout}}">30 days</a> |
+	<a href="?timeframe=previous_30_days&layout={{query.layout}}">30 days (excluding today)</a> |
+	<a href="?timeframe=this_12_weeks&layout={{query.layout}}">12 weeks</a> |
+	<a href="?timeframe=previous_12_weeks&layout={{query.layout}}">12 weeks (excluding this week)</a>
+</p>
 
-	<a href="?timeframe=this_14_days">14 days</a> |
-	<a href="?timeframe=previous_14_days">14 days (excluding today)</a> |
-	<a href="?timeframe=this_30_days">30 days</a> |
-	<a href="?timeframe=previous_30_days">30 days (excluding today)</a> |
-	<a href="?timeframe=this_12_weeks">12 weeks</a> |
-	<a href="?timeframe=previous_12_weeks">12 weeks (excluding this week)</a>
+<p>
+	Screen Size:
+	<a href="?timeframe={{query.timeframe}}&layout=default">default</a> |
+	<a href="?timeframe={{query.timeframe}}&layout=XS">XS</a> |
+	<a href="?timeframe={{query.timeframe}}&layout=S">S</a> |
+	<a href="?timeframe={{query.timeframe}}&layout=M">M</a> |
+	<a href="?timeframe={{query.timeframe}}&layout=L">L</a> |
+	<a href="?timeframe={{query.timeframe}}&layout=XL">XL</a> |
+	<a href="?timeframe={{query.timeframe}}&layout=XXL">XXL</a> |
+	<a href="?timeframe={{query.timeframe}}">all</a>
 </p>

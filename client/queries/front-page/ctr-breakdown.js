@@ -22,16 +22,25 @@ const filter = {
         operator: 'exists',
         property_name: 'meta.domPath',
         property_value: true
+    }],
+    layout: [{
+      operator: 'eq',
+      property_name: 'ingest.user.layout',
+      property_value: queryParameters['layout']
     }]
 }
 
 const getDataForTimeframe = (timeframe, interval) => {
 
+    let defaultFilters = filter.isOnHomepage;
+    if(queryParameters['layout']) {
+        defaultFilters = defaultFilters.concat(filter.layout);
+    }
 
     const usersOnHomepageByDay = new Keen.Query('count_unique', {
         targetProperty: 'user.uuid',
         eventCollection: 'dwell',
-        filters: filter.isOnHomepage,
+        filters: defaultFilters,
         timeframe: timeframe,
         interval: interval,
         timezone: 'UTC',
@@ -41,7 +50,7 @@ const getDataForTimeframe = (timeframe, interval) => {
     const uniqueClicksByDomPath = new Keen.Query('count_unique', {
         targetProperty: 'user.uuid',
         eventCollection: 'cta',
-        filters: filter.isOnHomepage.concat(filter.isAClick),
+        filters: defaultFilters.concat(filter.isAClick),
         groupBy: 'meta.domPath',
         timeframe: timeframe,
         interval: interval,
@@ -51,7 +60,7 @@ const getDataForTimeframe = (timeframe, interval) => {
 
     const clicksByDomPath = new Keen.Query('count', {
         eventCollection: 'cta',
-        filters: filter.isOnHomepage.concat(filter.isAClick),
+        filters: defaultFilters.concat(filter.isAClick),
         groupBy: 'meta.domPath',
         timeframe: timeframe,
         interval: interval,

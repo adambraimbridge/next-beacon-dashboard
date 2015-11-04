@@ -7,7 +7,7 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
     const viewsEl = document.querySelector('.js-front-page-views');
 
     const viewsMetric = new Keen.Dataviz()
-        .title(`HP visits ${friendlyChosenPeriod}`)
+        .title(`HP page views ${friendlyChosenPeriod}`)
         .chartOptions({
             width: '100%',
             animation: {

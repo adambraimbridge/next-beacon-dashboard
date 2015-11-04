@@ -11,7 +11,6 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
             suffix: '%',
             width: '100%'
         })
-        .title('Homepage CTR')
         .colors(['#49c5b1'])
         .el(ctrMetricEl)
         .prepare();
