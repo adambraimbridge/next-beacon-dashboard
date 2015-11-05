@@ -1,4 +1,4 @@
-/* global Keen, $ */
+/* global Keen, $, _ */
 
 'use strict';
 
@@ -83,36 +83,39 @@ const getDataForTimeframe = (timeframe, interval) => {
 
     return clicksByUserAndDay.map((day, index) => {
 
-          const byLayout = _.chain(day.value).groupBy('ingest.user.layout').mapValues((users, layout) => {
-              const usersByLayout = _.chain(usersByDay[index].value).groupBy('ingest.user.layout').mapValues((users) => users[0].result).value();
-              const viewsByLayout = _.chain(viewsByDay[index].value).groupBy('ingest.user.layout').mapValues((users) => users[0].result).value();
-              const onlyClickers = users.filter((user) => user.result > 0);
-              const clicks = onlyClickers.reduce((prev, curr) => prev + curr.result, 0);
-              return {
-                  clicks: clicks,
-                  uniqueClicks: onlyClickers.length,
-                  users: usersByLayout[layout] || 0,
-                  views: viewsByLayout[layout] || 0,
-                  ctr: parseFloat(((100 / usersByLayout[layout]) * onlyClickers.length).toFixed(1)),
-                  clicksPerUser: parseFloat((clicks /  (usersByLayout[layout] || 0)).toFixed(1))
-              }
-          }).omit('null','').value();
+      //Group results by layout, and calculate CTR for each layout
+      const byLayout = _.chain(day.value).groupBy('ingest.user.layout').mapValues((users, layout) => {
+        const usersByLayout = _.chain(usersByDay[index].value).groupBy('ingest.user.layout').mapValues((users) => users[0].result).value();
+        const viewsByLayout = _.chain(viewsByDay[index].value).groupBy('ingest.user.layout').mapValues((users) => users[0].result).value();
+        const onlyClickers = users.filter((user) => user.result > 0);
+        const clicks = onlyClickers.reduce((prev, curr) => prev + curr.result, 0);
+        return {
+            layout: layout,
+            clicks: clicks,
+            uniqueClicks: onlyClickers.length,
+            users: usersByLayout[layout] || 0,
+            views: viewsByLayout[layout] || 0,
+            ctr: parseFloat(((100 / usersByLayout[layout]) * onlyClickers.length).toFixed(1)),
+            clicksPerUser: parseFloat((clicks / (usersByLayout[layout] || 0)).toFixed(1))
+        }
+      }).omit('null','') //skip duff values, and sort the results in
+      .value();
 
-          byLayout.total = _.chain(byLayout).values().value().reduce((prev, curr) => ({
-              clicks: prev.clicks + curr.clicks,
-              uniqueClicks: prev.uniqueClicks + curr.uniqueClicks,
-              users: prev.users + curr.users,
-              views: prev.views + curr.views
-          }), { clicks: 0, uniqueClicks: 0, users: 0, views: 0});
+      byLayout.all = _.chain(byLayout).values().value().reduce((prev, curr) => ({
+          clicks: prev.clicks + curr.clicks,
+          uniqueClicks: prev.uniqueClicks + curr.uniqueClicks,
+          users: prev.users + curr.users,
+          views: prev.views + curr.views
+      }), { clicks: 0, uniqueClicks: 0, users: 0, views: 0});
 
-          byLayout.total.ctr = parseFloat(((100 / byLayout.total.users) * byLayout.total.uniqueClicks).toFixed(1));
-          byLayout.total.clicksPerUser = parseFloat((byLayout.total.clicks /  byLayout.total.users).toFixed(1));
+      byLayout.all.ctr = parseFloat(((100 / byLayout.all.users) * byLayout.all.uniqueClicks).toFixed(1));
+      byLayout.all.clicksPerUser = parseFloat((byLayout.all.clicks / byLayout.all.users).toFixed(1));
 
-          return {
-              timeframe: day.timeframe,
-              byLayout: byLayout
-          };
-        });
+      return {
+          timeframe: day.timeframe,
+          byLayout: byLayout
+      };
+    });
 
   });
 }
@@ -122,16 +125,13 @@ const render = () => {
   const el = document.getElementById('charts');
   const timeframe = queryParameters['timeframe'] || 'this_30_days';
   const interval = timeframe.indexOf('week') > 0 ? 'weekly' : 'daily';
-  const friendlyChosenPeriod = timeframe.indexOf('this_') >= 0 ?
-    (interval === 'daily' ? 'today' : 'this week') :
-    (interval === 'daily' ? 'yesterday' : 'last week');
 
   const promiseOfData = getDataForTimeframe(timeframe, interval);
 
-  percentage.render(el, promiseOfData, friendlyChosenPeriod);
-  clicksPerUser.render(el, promiseOfData, friendlyChosenPeriod);
-  users.render(el, promiseOfData, friendlyChosenPeriod);
-  views.render(el, promiseOfData, friendlyChosenPeriod);
+  percentage.render(el, promiseOfData);
+  clicksPerUser.render(el, promiseOfData);
+  users.render(el, promiseOfData);
+  views.render(el, promiseOfData);
 
 
   if(!document.location.hash) {

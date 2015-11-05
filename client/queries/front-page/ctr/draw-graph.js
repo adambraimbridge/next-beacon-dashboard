@@ -1,15 +1,25 @@
+/* global google, $ */
+
 'use strict';
 
 
 module.exports = function drawGraph(data, el, keyToDraw, opts) {
+  const expectedLayoutOrder = ['all', 'default', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
-	const keys = Object.keys(data[0].byLayout);
+	const keys = Object.keys(data[0].byLayout).sort((a, b) => expectedLayoutOrder.indexOf(a)-expectedLayoutOrder.indexOf(b));
+
+
 	const trend = [['timeframe', ...keys]];
 
 	data.forEach((result) => {
-		const values = Object.values(_.mapValues(result.byLayout, (dataForLayout, layout) => dataForLayout[keyToDraw]));
+		const layouts = Object.values(result.byLayout)
+			.sort((a, b) => expectedLayoutOrder.indexOf(a.layout)-expectedLayoutOrder.indexOf(b.layout));
+
+		const values = layouts.map((dataForLayout) => dataForLayout[keyToDraw]);
+
 		trend.push([new Date(result.timeframe.end), ...values]);
 	});
+
 
 	const chart = new google.visualization.LineChart(el);
 
@@ -25,12 +35,12 @@ module.exports = function drawGraph(data, el, keyToDraw, opts) {
 			title: 'Date',
 			showTextEvery: 1
 		},
-		crosshair: { focused: { color: '#3bc', opacity: 0.8 } }
-	}, opts)
+		crosshair: { trigger: 'both' }
+	}, opts);
 
 	const toggleColumn = function(col) {
 
-		if (columns[col] == col) {
+		if (columns[col] === col) {
 		// hide the data series
 			columns[col] = {
 				label: graphData.getColumnLabel(col),
@@ -60,8 +70,8 @@ module.exports = function drawGraph(data, el, keyToDraw, opts) {
 		columns.push(i);
 		if (i > 0) {
 			series[i - 1] = {};
-			if(i !== numberOfColumns-1) {
-				toggleColumn(i);
+			if(i !== 1) {
+				toggleColumn(i); //Turn off all but the first (total)
 			}
 		}
 	}
@@ -70,21 +80,12 @@ module.exports = function drawGraph(data, el, keyToDraw, opts) {
 
 	draw();
 
+	//enable the toggles
+	$('.js-front-page-layout-toggles').removeClass('is-hidden');
 
-
-
-	google.visualization.events.addListener(chart, 'select', function () {
-
-		const sel = chart.getSelection();
-		console.log('sel', sel);
-			// if selection length is 0, we deselected an element
-			if (sel.length > 0) {
-			// if row is undefined, we clicked on the legend
-			if (sel[0].row === null) {
-				const col = sel[0].column;
-				toggleColumn(col);
-				draw()
-			}
-		}
+	$('.js-front-page-layout-toggles .toggle-line').change((e) => {
+		toggleColumn(parseInt(e.currentTarget.getAttribute('data-column')));
+		draw();
 	});
+
 };

@@ -1,14 +1,15 @@
-/* global Keen, _ */
+/* global Keen */
 'use strict';
 
 const drawGraph = require('./draw-graph');
+const drawMetric = require('./draw-metric');
 
-const render = (el, promiseOfData, friendlyChosenPeriod) => {
+const render = (el, promiseOfData) => {
 
 
     const ctrMetricEl = document.querySelector('.js-front-page-ctr');
-    const ctrMetric = new Keen.Dataviz()
-        .title(`CTR ${friendlyChosenPeriod}`)
+    const keenContainer = new Keen.Dataviz()
+        .title('CTR')
         .chartOptions({
             suffix: '%',
             width: '100%'
@@ -23,11 +24,8 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
     .then((data) => {
 
 
-        ctrMetric
-            .data({
-                result: data[data.length-1].byLayout.total.ctr
-            })
-            .render();
+    drawMetric(data, keenContainer, 'ctr');
+
 
        drawGraph(data, trendEl, 'ctr', {
             title: 'Homepage CTR',

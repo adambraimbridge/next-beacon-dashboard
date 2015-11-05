@@ -277,6 +277,7 @@ body {
 
 .front-page__charts {
 	height: 460px;
+	margin-top: 20px;
 	position: relative;
 }
 
@@ -320,4 +321,11 @@ body {
 
 .front-page__metric--small.is-selected:after {
 	border-color: #eeeeee transparent transparent;
+}
+
+
+/* Utils */
+
+.is-hidden {
+	display: none;
 }

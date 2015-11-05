@@ -2,13 +2,14 @@
 'use strict';
 
 const drawGraph = require('./draw-graph');
+const drawMetric = require('./draw-metric');
 
-const render = (el, promiseOfData, friendlyChosenPeriod) => {
+const render = (el, promiseOfData) => {
 
     const viewsEl = document.querySelector('.js-front-page-views');
 
-    const viewsMetric = new Keen.Dataviz()
-        .title(`HP page views ${friendlyChosenPeriod}`)
+    const keenContainer = new Keen.Dataviz()
+        .title('Page Views')
         .chartOptions({
             width: '100%',
             animation: {
@@ -26,11 +27,8 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
 
 
-        viewsMetric
-            .data({
-                result: data[data.length-1].byLayout.total.views
-            })
-            .render();
+        drawMetric(data, keenContainer, 'views');
+
 
         drawGraph(data, trendEl, 'views', {
             vAxis: {

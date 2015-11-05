@@ -1,14 +1,15 @@
 /* global Keen */
 'use strict';
 const drawGraph = require('./draw-graph');
+const drawMetric = require('./draw-metric');
 
 
-const render = (el, promiseOfData, friendlyChosenPeriod) => {
+const render = (el, promiseOfData) => {
 
     const usersEl = document.querySelector('.js-front-page-users');
 
-    const usersMetric = new Keen.Dataviz()
-        .title(`HP users ${friendlyChosenPeriod}`)
+    const keenContainer = new Keen.Dataviz()
+        .title('Users')
         .chartOptions({
             width: '100%',
             animation: {
@@ -26,11 +27,8 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
 
 
-        usersMetric
-            .data({
-                result: data[data.length-1].byLayout.total.users
-            })
-            .render();
+        drawMetric(data, keenContainer, 'users');
+
 
         drawGraph(data, trendEl, 'users', {
             vAxis: {

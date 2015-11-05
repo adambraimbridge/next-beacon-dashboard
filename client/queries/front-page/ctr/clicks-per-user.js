@@ -1,16 +1,17 @@
-/* global Keen, google, _ */
+/* global Keen */
 'use strict';
 
 const drawGraph = require('./draw-graph');
+const drawMetric = require('./draw-metric');
 
 
 
-const render = (el, promiseOfData, friendlyChosenPeriod) => {
+const render = (el, promiseOfData) => {
 
     const clicksPerUserEl = document.querySelector('.js-front-page-clicks-per-user');
 
-    const clicksPerUserMetric = new Keen.Dataviz()
-        .title(`Average clicks per user ${friendlyChosenPeriod}`)
+    const keenContainer = new Keen.Dataviz()
+        .title('Clicks per user')
         .chartOptions({
             width: '100%',
             animation: {
@@ -26,11 +27,7 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
     promiseOfData
        .then((data) => {
 
-        clicksPerUserMetric
-            .data({
-                result: data[data.length-1].byLayout.total.clicksPerUser
-            })
-            .render();
+        drawMetric(data, keenContainer, 'clicksPerUser');
 
         drawGraph(data, trendEl, 'clicksPerUser', {
             title: 'Average clicks per user on the Homepage',
