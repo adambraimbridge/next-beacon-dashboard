@@ -24,7 +24,14 @@ module.exports = function drawGraph(data, el, keyToDraw, opts) {
 	const chart = new google.visualization.LineChart(el);
 
 	const columns = [];
-	const series = {};
+	const seriesDefaults = {
+		0: {
+			lineWidth: 4,
+			color: '#000000'
+		}
+	};
+
+	const series = Object.assign({}, seriesDefaults);
 
 	const graphData = google.visualization.arrayToDataTable(trend);
 
@@ -35,7 +42,9 @@ module.exports = function drawGraph(data, el, keyToDraw, opts) {
 			title: 'Date',
 			showTextEvery: 1
 		},
-		crosshair: { trigger: 'both' }
+		trendlines: { 0: { opacity: 0.6, color: '#49c5b1' } },
+		crosshair: { trigger: 'both' },
+		series: seriesDefaults
 	}, opts);
 
 	const toggleColumn = function(col) {
@@ -43,6 +52,7 @@ module.exports = function drawGraph(data, el, keyToDraw, opts) {
 		if (columns[col] === col) {
 		// hide the data series
 			columns[col] = {
+				isHidden: true,
 				label: graphData.getColumnLabel(col),
 				type: graphData.getColumnType(col),
 				calc: function () {
@@ -55,21 +65,28 @@ module.exports = function drawGraph(data, el, keyToDraw, opts) {
 		} else {
 			// show the data series
 			columns[col] = col;
-			series[col - 1].color = null;
+			series[col - 1].color = seriesDefaults[col - 1] ? seriesDefaults[col-1].color : null;
 		}
 	}
 
 	const draw = function() {
 		const view = new google.visualization.DataView(graphData);
 		view.setColumns(columns);
-		chart.draw(view, Object.assign(options, { series: series}));
+
+		const overrides = { series: series };
+		if(columns[1].isHidden) {
+			overrides.trendlines = null;
+		} else {
+			overrides.trendlines = { 0: { opacity: 0.6, color: '#49c5b1' } };
+		}
+		chart.draw(view, Object.assign(options, overrides));
 	}
 
 	const numberOfColumns = graphData.getNumberOfColumns()
 	for (let i = 0; i < numberOfColumns; i++) {
 		columns.push(i);
 		if (i > 0) {
-			series[i - 1] = {};
+			series[i - 1] = series[i-1] ? Object.assign({}, series[i-1]) : {};
 			if(i !== 1) {
 				toggleColumn(i); //Turn off all but the first (total)
 			}
