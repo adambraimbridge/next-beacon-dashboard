@@ -1,6 +1,7 @@
 /* global Keen */
 'use strict';
 
+const drawGraph = require('./draw-graph');
 
 const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
@@ -20,30 +21,6 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
     const trendEl = document.querySelector('.js-front-page-views-chart');
 
-
-    const trendChart = new Keen.Dataviz()
-        .el(trendEl)
-        .chartType('columnchart')
-        .title('Homepage Visits')
-        .height(450)
-        .chartOptions({
-            hAxis: {
-                format: 'EEE d',
-                title: 'Date'
-            },
-            vAxis: {
-                title: 'Number of Front Page views'
-            },
-            trendlines: {
-                0: {
-                    color: 'green'
-                }
-            }
-        })
-        .prepare();
-
-
-
        promiseOfData
        .then((data) => {
 
@@ -55,19 +32,13 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
             })
             .render();
 
-        const trend = data.map((result, index) => ({
-            value: Object.values(_.mapValues(result.byLayout, (dataForLayout, layout) => ({
-                category: layout,
-                result: dataForLayout.views
-            }))),
-            timeframe: result.timeframe
-        }));
+        drawGraph(data, trendEl, 'views', {
+            vAxis: {
+                title: 'Number of Front Page views'
+            },
+            title: 'Homepage Visits'
+        });
 
-        trendChart
-            .data({
-                result: trend
-            })
-            .render();
 
     });
 

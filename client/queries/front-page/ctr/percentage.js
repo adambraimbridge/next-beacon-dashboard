@@ -1,6 +1,8 @@
 /* global Keen, _ */
 'use strict';
 
+const drawGraph = require('./draw-graph');
+
 const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
 
@@ -17,28 +19,6 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
     const trendEl = document.querySelector('.js-front-page-ctr-chart');
 
-    const trendChart = new Keen.Dataviz()
-        .el(trendEl)
-        .chartType('columnchart')
-        .title('Homepage CTR')
-        .height(450)
-        .chartOptions({
-            hAxis: {
-                format: 'EEE d',
-                title: 'Date'
-            },
-            vAxis: {
-                title: 'CTR (%)'
-            },
-            trendlines: {
-                0: {
-                    color: 'green'
-                }
-            }
-        })
-        .prepare();
-
-
     promiseOfData
     .then((data) => {
 
@@ -49,19 +29,12 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
             })
             .render();
 
-        const trend = data.map((result, index) => ({
-            value: Object.values(_.mapValues(result.byLayout, (dataForLayout, layout) => ({
-                category: layout,
-                result: dataForLayout.ctr
-            }))),
-            timeframe: result.timeframe
-        }));
-
-        trendChart
-            .data({
-                result: trend
-
-            }).render();
+       drawGraph(data, trendEl, 'ctr', {
+            title: 'Homepage CTR',
+            vAxis: {
+                title: 'CTR (%)'
+            }
+       });
 
     });
 }
