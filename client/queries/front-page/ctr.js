@@ -2,13 +2,15 @@
 
 'use strict';
 
-const percentage = require('./ctr/percentage');
-const clicksPerUser = require('./ctr/clicks-per-user');
-const users = require('./ctr/users');
-const views = require('./ctr/views');
+// const percentage = require('./ctr/percentage');
+// const clicksPerUser = require('./ctr/clicks-per-user');
+// const users = require('./ctr/users');
+// const views = require('./ctr/views');
 const client = require('../../lib/wrapped-keen');
 const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search.substr(1));
+const drawGraph = require('./ctr/draw-graph');
+const drawMetric = require('./ctr/draw-metric');
 
 const filter = {
     isOnHomepage: [{
@@ -45,20 +47,9 @@ const getDataForTimeframe = (timeframe, interval) => {
     defaultFilters = defaultFilters.concat(filter.layout);
   }
 
-  const usersOnHomepageByDay = new Keen.Query('count_unique', {
-      targetProperty: 'user.uuid',
+  const views = new Keen.Query('count', {
       eventCollection: 'dwell',
-      groupBy: ['ingest.user.layout'],
       filters: defaultFilters,
-      timeframe: timeframe,
-      interval: interval,
-      timezone: 'UTC',
-      maxAge: 3600
-  });
-
-  const clicksByUserAndDay = new Keen.Query('count', {
-      eventCollection: 'cta',
-      filters: defaultFilters.concat(filter.isAClick),
       groupBy: ['ingest.user.layout', 'user.uuid'],
       timeframe: timeframe,
       timezone: 'UTC',
@@ -66,57 +57,88 @@ const getDataForTimeframe = (timeframe, interval) => {
       maxAge: 3600
   });
 
-  const viewsByDay = new Keen.Query('count', {
-      eventCollection: 'dwell',
-      filters: defaultFilters,
-      groupBy: ['ingest.user.layout'],
+  const clicks = new Keen.Query('count', {
+      eventCollection: 'cta',
+      filters: defaultFilters.concat(filter.isAClick),
+      groupBy: ['ingest.user.layout', 'user.uuid', 'meta.domPath'],
       timeframe: timeframe,
       timezone: 'UTC',
       interval: interval,
       maxAge: 3600
   });
+
   return Promise.all([
-      client.run(usersOnHomepageByDay).then(res => res.result),
-      client.run(clicksByUserAndDay).then(res => res.result),
-      client.run(viewsByDay).then(res => res.result)
-  ]).then(([ usersByDay, clicksByUserAndDay, viewsByDay ]) => {
+    client.run(views).then(res => res.result),
+    client.run(clicks).then(res => res.result)
+  ]).then(([ views, clicks ]) => {
 
-    return clicksByUserAndDay.map((day, index) => {
+    //components = [] or []
+    return function(components, layouts) {
+      //for each day
+      return clicks.map((day, index) => {
 
-      //Group results by layout, and calculate CTR for each layout
-      const byLayout = _.chain(day.value).groupBy('ingest.user.layout').mapValues((users, layout) => {
-        const usersByLayout = _.chain(usersByDay[index].value).groupBy('ingest.user.layout').mapValues((users) => users[0].result).value();
-        const viewsByLayout = _.chain(viewsByDay[index].value).groupBy('ingest.user.layout').mapValues((users) => users[0].result).value();
-        const onlyClickers = users.filter((user) => user.result > 0);
-        const clicks = onlyClickers.reduce((prev, curr) => prev + curr.result, 0);
-        return {
-            layout: layout,
-            clicks: clicks,
-            uniqueClicks: onlyClickers.length,
-            users: usersByLayout[layout] || 0,
-            views: viewsByLayout[layout] || 0,
-            ctr: parseFloat(((100 / usersByLayout[layout]) * onlyClickers.length).toFixed(1)),
-            clicksPerUser: parseFloat((clicks / (usersByLayout[layout] || 0)).toFixed(1))
+        let linesToShow = [];
+        if(!components.length) {
+          components = ['all'];
         }
-      }).omit('null','') //skip duff values, and sort the results in
-      .value();
+        if(!layouts.length) {
+          layouts = ['all'];
+        }
 
-      byLayout.all = _.chain(byLayout).values().value().reduce((prev, curr) => ({
-          clicks: prev.clicks + curr.clicks,
-          uniqueClicks: prev.uniqueClicks + curr.uniqueClicks,
-          users: prev.users + curr.users,
-          views: prev.views + curr.views
-      }), { clicks: 0, uniqueClicks: 0, users: 0, views: 0});
+        if(components.length > 1) {
+          components.forEach(component => {
+            linesToShow.push({
+              component: component,
+              layout: layouts && layouts[0] ? layouts[0] : 'all'
+            });
+          });
+        } else {
+          components.forEach(component => {
+            layouts.forEach(layout => {
+              linesToShow.push({
+                component: component,
+                layout: layout
+              });
+            });
+          });
+        }
 
-      byLayout.all.ctr = parseFloat(((100 / byLayout.all.users) * byLayout.all.uniqueClicks).toFixed(1));
-      byLayout.all.clicksPerUser = parseFloat((byLayout.all.clicks / byLayout.all.users).toFixed(1));
+        return linesToShow.map(line => {
+            const filterMatches = (data) => {
+              let isMatch = data.result > 0;
+              if(data['meta.domPath'] && line.component && line.component !== 'all') {
+                  isMatch = isMatch && (data['meta.domPath'].indexOf(line.component) === 0);
+              }
+              if(data['ingest.user.layout'] && line.layout && line.layout !== 'all') {
+                isMatch = isMatch && (data['ingest.user.layout'] === line.layout);
+              }
 
-      return {
-          timeframe: day.timeframe,
-          byLayout: byLayout
-      };
-    });
+              return isMatch
+            }
 
+            const matchingClicks = day.value.filter(filterMatches);
+            const matchingViews = views[index].value.filter(filterMatches);
+            const totalViews = matchingViews.reduce((prev, curr) => (prev + curr.result), 0);
+
+            const clicks = matchingClicks.reduce((prev, curr) => (prev + curr.result), 0);
+            const uniqueClickers = Object.keys(_.chain(matchingClicks).groupBy('user.uuid').value());
+            const uniqueUsers = Object.keys(_.chain(matchingViews).groupBy('user.uuid').value());
+
+            return {
+              component: line.component,
+              layout: line.layout,
+              timeframe: day.timeframe,
+              clicks: clicks,
+              uniqueClicks: uniqueClickers.length,
+              users: uniqueUsers.length,
+              views: totalViews,
+              ctr: parseFloat(((100 / uniqueUsers.length) * uniqueClickers.length).toFixed(1)),
+              clicksPerUser: parseFloat((clicks / (uniqueUsers.length || 0)).toFixed(1))
+            };
+
+        });
+      });
+    };
   });
 }
 
@@ -127,11 +149,94 @@ const render = () => {
   const interval = timeframe.indexOf('week') > 0 ? 'weekly' : 'daily';
 
   const promiseOfData = getDataForTimeframe(timeframe, interval);
+  const metrics = [{
+      id: 'ctr',
+      title: 'CTR',
+      metricConfig: {
+        suffix: '%'
+      },
+      chartConfig: {}
+    }, {
+      id: 'clicksPerUser',
+      title: 'Clicks per user',
+      metricConfig: {},
+      chartConfig: {}
+    },
+    {
+      id: 'users',
+      title: 'Homepage Users',
+      metricConfig: {},
+      chartConfig: {}
+    },
+    {
+      id: 'views',
+      title: 'Homepage Page Views',
+      metricConfig: {},
+      chartConfig: {}
+    },
+  ];
 
-  percentage.render(el, promiseOfData);
-  clicksPerUser.render(el, promiseOfData);
-  users.render(el, promiseOfData);
-  views.render(el, promiseOfData);
+  metrics.forEach(metric => {
+
+    metric.keenMetricContainer = new Keen.Dataviz()
+      .title(metric.title)
+      .chartOptions(Object.assign({
+          width: '100%'
+      }, metric.metricConfig))
+      .colors(['#49c5b1'])
+      .el(document.querySelector(`.js-front-page-metric[data-metric="${metric.id}"]`))
+      .prepare();
+
+    metric.chartEl = new Keen.Dataviz()
+        .el(document.querySelector(`.js-front-page-chart[data-metric="${metric.id}"]`))
+        .chartType('linechart')
+        .title(metric.title)
+        .height(450)
+        .chartOptions({
+            hAxis: {
+                format: 'EEE d',
+                title: 'Date'
+            },
+            vAxis: {
+                title: metric.title
+            },
+            trendlines: {
+                0: {
+                    color: 'green'
+                }
+            }
+        })
+        .prepare();
+  });
+  // percentage.render(el, promiseOfData);
+
+
+  promiseOfData.then(query => {
+
+
+    const draw = () => {
+      const components = Array.from(document.querySelectorAll('.js-toggle-components:checked') || []).map((el) => el.getAttribute('data-component')).filter(comp => !!comp);
+      const layouts = Array.from(document.querySelectorAll('.js-toggle-layout:checked') || []).map((el) => el.getAttribute('data-layout')).filter(layout => !!layout);
+
+      const data = query(components, layouts);
+      console.log(components, layouts, 'data', data);
+      metrics.forEach((metricConfig) => {
+        drawMetric(data, metricConfig);
+        drawGraph(data, metricConfig);
+      });
+
+    }
+
+    draw();
+
+
+
+
+    $('.js-front-page-toggles').removeClass('is-hidden');
+
+    $('.js-front-page-toggles .toggle-line').change(draw);
+
+  });
 
 
   if(!document.location.hash) {

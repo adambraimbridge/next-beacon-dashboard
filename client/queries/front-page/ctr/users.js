@@ -27,7 +27,7 @@ const render = (el, promiseOfData) => {
 
 
 
-        drawMetric(data, keenContainer, 'users');
+        drawMetric(data, metric);
 
 
         drawGraph(data, trendEl, 'users', {
