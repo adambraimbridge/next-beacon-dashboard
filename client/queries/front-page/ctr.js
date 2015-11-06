@@ -42,7 +42,7 @@ const filter = {
 
 const getDataForTimeframe = (timeframe, interval) => {
 
-  let defaultFilters = filter.isOnHomepage;
+  let defaultFilters = filter.isOnHomepage.concat(filter.hasUUID);
   if(queryParameters['layout']) {
     defaultFilters = defaultFilters.concat(filter.layout);
   }

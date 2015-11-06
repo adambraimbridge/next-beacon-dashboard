@@ -13,14 +13,18 @@ module.exports = function drawGraph(data, metricConfig) {
 		}))
 	})));
 
+	const series = {};
+
+	if(data[0][0].component === 'all' & data[0][0].layout === 'all') {
+		series[0] =  {
+			lineWidth: 4,
+			color: '#000000'
+		}
+	}
+
 	metricConfig.chartEl
 		.chartOptions({
-			series: {
-				0: {
-					lineWidth: 4,
-					color: '#000000'
-				}
-			}
+			series: series
 		})
 		.parseRawData( { result: graphData})
 		.render();

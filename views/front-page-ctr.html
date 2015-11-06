@@ -1,5 +1,20 @@
 {{#defineBlock 'vertical-nav'}}
 	<h3>Homepage</h3>
+	<div class="front-page__controls js-front-page-toggles">
+	<ul>
+		<li><input type="checkbox" class="toggle-line js-toggle-components" data-component="all" checked>All</li>
+		<li><input type="checkbox" class="toggle-line js-toggle-components" data-component="header">Header</li>
+		<li><input type="checkbox" class="toggle-line js-toggle-components" data-component="lead-today">Top Stories</li>
+		<li><input type="checkbox" class="toggle-line js-toggle-components" data-component="fastft">FastFT</li>
+		<li><input type="checkbox" class="toggle-line js-toggle-components" data-component="editors-picks">Editors Picks</li>
+		<li><input type="checkbox" class="toggle-line js-toggle-components" data-component="opinion">Opinion</li>
+		<li><input type="checkbox" class="toggle-line js-toggle-components" data-component="popular">Most Popular</li>
+		<li><input type="checkbox" class="toggle-line js-toggle-components" data-component="topic-life-arts">Life & Arts</li>
+		<li><input type="checkbox" class="toggle-line js-toggle-components" data-component="topic-markets">Markets</li>
+		<li><input type="checkbox" class="toggle-line js-toggle-components" data-component="topic-technology">Technology</li>
+		<li><input type="checkbox" class="toggle-line js-toggle-components" data-component="video-picks">Videos</li>
+	</ul>
+</div>
 {{/defineBlock}}
 
 <h1>Front Page: CTR {{#if query.layout}}(Layout: {{query.layout}}){{/if}}</h1>
@@ -28,12 +43,7 @@
 		</div>
 
 
-		<div class="front-page__controls js-front-page-toggles is-hidden">
-			<strong>Breakpoint:</strong>
-			<input type="checkbox" class="toggle-line js-toggle-components" data-component="all" checked>All
-			<input type="checkbox" class="toggle-line js-toggle-components" data-component="header" data-column="2">Header
-			<input type="checkbox" class="toggle-line js-toggle-components" data-component="lead-today" data-column="3">Top Stories
-		</div>
+
 
 		<span id="front-page-ctr-chart" class="front-page__chart-anchor"></span>
 		<div  class="front-page__chart js-front-page-chart" data-metric="ctr" data-o-grid-colspan="12"></div>
