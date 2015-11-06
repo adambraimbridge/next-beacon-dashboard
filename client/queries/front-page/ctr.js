@@ -1,4 +1,4 @@
-/* global Keen, $ */
+/* global Keen, $, _ */
 
 'use strict';
 
@@ -15,6 +15,11 @@ const filter = {
         operator: 'eq',
         property_name: 'page.location.type',
         property_value: 'frontpage'
+    }],
+    hasUUID: [{
+      "operator":"exists",
+      "property_name":"user.uuid",
+      "property_value":true
     }],
     isAClick: [{
         operator: 'in',
@@ -43,6 +48,7 @@ const getDataForTimeframe = (timeframe, interval) => {
   const usersOnHomepageByDay = new Keen.Query('count_unique', {
       targetProperty: 'user.uuid',
       eventCollection: 'dwell',
+      groupBy: ['ingest.user.layout'],
       filters: defaultFilters,
       timeframe: timeframe,
       interval: interval,
@@ -53,7 +59,7 @@ const getDataForTimeframe = (timeframe, interval) => {
   const clicksByUserAndDay = new Keen.Query('count', {
       eventCollection: 'cta',
       filters: defaultFilters.concat(filter.isAClick),
-      groupBy: 'user.uuid',
+      groupBy: ['ingest.user.layout', 'user.uuid'],
       timeframe: timeframe,
       timezone: 'UTC',
       interval: interval,
@@ -63,6 +69,7 @@ const getDataForTimeframe = (timeframe, interval) => {
   const viewsByDay = new Keen.Query('count', {
       eventCollection: 'dwell',
       filters: defaultFilters,
+      groupBy: ['ingest.user.layout'],
       timeframe: timeframe,
       timezone: 'UTC',
       interval: interval,
@@ -72,7 +79,45 @@ const getDataForTimeframe = (timeframe, interval) => {
       client.run(usersOnHomepageByDay).then(res => res.result),
       client.run(clicksByUserAndDay).then(res => res.result),
       client.run(viewsByDay).then(res => res.result)
-  ]);;
+  ]).then(([ usersByDay, clicksByUserAndDay, viewsByDay ]) => {
+
+    return clicksByUserAndDay.map((day, index) => {
+
+      //Group results by layout, and calculate CTR for each layout
+      const byLayout = _.chain(day.value).groupBy('ingest.user.layout').mapValues((users, layout) => {
+        const usersByLayout = _.chain(usersByDay[index].value).groupBy('ingest.user.layout').mapValues((users) => users[0].result).value();
+        const viewsByLayout = _.chain(viewsByDay[index].value).groupBy('ingest.user.layout').mapValues((users) => users[0].result).value();
+        const onlyClickers = users.filter((user) => user.result > 0);
+        const clicks = onlyClickers.reduce((prev, curr) => prev + curr.result, 0);
+        return {
+            layout: layout,
+            clicks: clicks,
+            uniqueClicks: onlyClickers.length,
+            users: usersByLayout[layout] || 0,
+            views: viewsByLayout[layout] || 0,
+            ctr: parseFloat(((100 / usersByLayout[layout]) * onlyClickers.length).toFixed(1)),
+            clicksPerUser: parseFloat((clicks / (usersByLayout[layout] || 0)).toFixed(1))
+        }
+      }).omit('null','') //skip duff values, and sort the results in
+      .value();
+
+      byLayout.all = _.chain(byLayout).values().value().reduce((prev, curr) => ({
+          clicks: prev.clicks + curr.clicks,
+          uniqueClicks: prev.uniqueClicks + curr.uniqueClicks,
+          users: prev.users + curr.users,
+          views: prev.views + curr.views
+      }), { clicks: 0, uniqueClicks: 0, users: 0, views: 0});
+
+      byLayout.all.ctr = parseFloat(((100 / byLayout.all.users) * byLayout.all.uniqueClicks).toFixed(1));
+      byLayout.all.clicksPerUser = parseFloat((byLayout.all.clicks / byLayout.all.users).toFixed(1));
+
+      return {
+          timeframe: day.timeframe,
+          byLayout: byLayout
+      };
+    });
+
+  });
 }
 
 
@@ -80,16 +125,13 @@ const render = () => {
   const el = document.getElementById('charts');
   const timeframe = queryParameters['timeframe'] || 'this_30_days';
   const interval = timeframe.indexOf('week') > 0 ? 'weekly' : 'daily';
-  const friendlyChosenPeriod = timeframe.indexOf('this_') >= 0 ?
-    (interval === 'daily' ? 'today' : 'this week') :
-    (interval === 'daily' ? 'yesterday' : 'last week');
 
   const promiseOfData = getDataForTimeframe(timeframe, interval);
 
-  percentage.render(el, promiseOfData, friendlyChosenPeriod);
-  clicksPerUser.render(el, promiseOfData, friendlyChosenPeriod);
-  users.render(el, promiseOfData, friendlyChosenPeriod);
-  views.render(el, promiseOfData, friendlyChosenPeriod);
+  percentage.render(el, promiseOfData);
+  clicksPerUser.render(el, promiseOfData);
+  users.render(el, promiseOfData);
+  views.render(el, promiseOfData);
 
 
   if(!document.location.hash) {

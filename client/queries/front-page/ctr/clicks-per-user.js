@@ -1,13 +1,17 @@
 /* global Keen */
 'use strict';
 
+const drawGraph = require('./draw-graph');
+const drawMetric = require('./draw-metric');
 
-const render = (el, promiseOfData, friendlyChosenPeriod) => {
+
+
+const render = (el, promiseOfData) => {
 
     const clicksPerUserEl = document.querySelector('.js-front-page-clicks-per-user');
 
-    const clicksPerUserMetric = new Keen.Dataviz()
-        .title(`Average clicks per user ${friendlyChosenPeriod}`)
+    const keenContainer = new Keen.Dataviz()
+        .title('Clicks per user')
         .chartOptions({
             width: '100%',
             animation: {
@@ -20,61 +24,17 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
     const trendEl = document.querySelector('.js-front-page-clicks-per-user-chart');
 
+    promiseOfData
+       .then((data) => {
 
-    const trendChart = new Keen.Dataviz()
-        .el(trendEl)
-        .chartType('columnchart')
-        .height(450)
-        .title('Average clicks per user on the Homepage')
-        .chartOptions({
-            hAxis: {
-                format: 'EEE d',
-                title: 'Date'
-            },
+        drawMetric(data, keenContainer, 'clicksPerUser');
+
+        drawGraph(data, trendEl, 'clicksPerUser', {
+            title: 'Average clicks per user on the Homepage',
             vAxis: {
                 title: 'Average clicks per front-page user'
-            },
-            trendlines: {
-                0: {
-                    color: 'green'
-                }
             }
-        })
-        .prepare();
-
-
-    promiseOfData
-    .then((
-        [ usersByDay,
-        clicksByUserAndDay,
-         , //viewsByDay
-        ]) => {
-
-        const clicksPerDay = clicksByUserAndDay.map((result) => (
-            {
-                clicks: result.value.reduce((prevVal, currentUser) => {
-                    return prevVal + currentUser.result;
-                }, 0)
-            }
-        ));
-
-        const clicksOnDay = clicksPerDay[clicksPerDay.length - 1].clicks;
-
-        const usersOnDay = usersByDay[usersByDay.length - 1].value;
-        clicksPerUserMetric
-            .data({
-                result: parseFloat((clicksOnDay / usersOnDay).toFixed(1))
-            })
-            .render();
-
-        trendChart
-            .data({
-                result: clicksPerDay.map((day, index) => ({
-                    value: parseFloat((clicksPerDay[index].clicks / usersByDay[index].value).toFixed(1)),
-                    timeframe: usersByDay[index].timeframe
-                }))
-            })
-            .render();
+        });
 
     });
 
@@ -83,3 +43,4 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
 module.exports = {
     render
 };
+

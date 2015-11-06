@@ -1,13 +1,15 @@
 /* global Keen */
 'use strict';
+const drawGraph = require('./draw-graph');
+const drawMetric = require('./draw-metric');
 
 
-const render = (el, promiseOfData, friendlyChosenPeriod) => {
+const render = (el, promiseOfData) => {
 
     const usersEl = document.querySelector('.js-front-page-users');
 
-    const usersMetric = new Keen.Dataviz()
-        .title(`HP users ${friendlyChosenPeriod}`)
+    const keenContainer = new Keen.Dataviz()
+        .title('Users')
         .chartOptions({
             width: '100%',
             animation: {
@@ -20,49 +22,20 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
     const trendEl = document.querySelector('.js-front-page-users-chart');
 
+    promiseOfData
+    .then((data) => {
 
-    const trendChart = new Keen.Dataviz()
-        .el(trendEl)
-        .chartType('columnchart')
-        .title('Users')
-        .height(450)
-        .chartOptions({
-            hAxis: {
-                format: 'EEE d',
-                title: 'Date'
-            },
+
+
+        drawMetric(data, keenContainer, 'users');
+
+
+        drawGraph(data, trendEl, 'users', {
             vAxis: {
                 title: 'Number of users that visited Front Page'
             },
-            trendlines: {
-                0: {
-                    color: 'green'
-                }
-            }
-        })
-        .prepare();
-
-
-       promiseOfData
-    .then((
-        [usersByDay,
-         , // clicksByUserAndDay
-         , //viewsByDay
-        ]) => {
-
-
-        const usersToday = usersByDay[usersByDay.length - 1].value;
-        usersMetric
-            .data({
-                result: usersToday
-            })
-            .render();
-
-        trendChart
-            .data({
-                result: usersByDay
-            })
-            .render();
+            title: 'Users'
+        });
 
     });
 

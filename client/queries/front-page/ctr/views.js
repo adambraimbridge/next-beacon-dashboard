@@ -1,13 +1,15 @@
 /* global Keen */
 'use strict';
 
+const drawGraph = require('./draw-graph');
+const drawMetric = require('./draw-metric');
 
-const render = (el, promiseOfData, friendlyChosenPeriod) => {
+const render = (el, promiseOfData) => {
 
     const viewsEl = document.querySelector('.js-front-page-views');
 
-    const viewsMetric = new Keen.Dataviz()
-        .title(`HP page views ${friendlyChosenPeriod}`)
+    const keenContainer = new Keen.Dataviz()
+        .title('Page Views')
         .chartOptions({
             width: '100%',
             animation: {
@@ -20,48 +22,24 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
     const trendEl = document.querySelector('.js-front-page-views-chart');
 
+       promiseOfData
+       .then((data) => {
 
-    const trendChart = new Keen.Dataviz()
-        .el(trendEl)
-        .chartType('columnchart')
-        .title('Homepage Visits')
-        .height(450)
-        .chartOptions({
-            hAxis: {
-                format: 'EEE d',
-                title: 'Date'
-            },
+
+
+        drawMetric(data, keenContainer, 'views');
+
+
+        drawGraph(data, trendEl, 'views', {
             vAxis: {
                 title: 'Number of Front Page views'
             },
-            trendlines: {
-                0: {
-                    color: 'green'
-                }
-            }
-        })
-        .prepare();
+            title: 'Homepage Visits'
+        });
 
-
-    promiseOfData
-    .then(([, , viewsByDay]) => {
-
-
-        const viewsToday = viewsByDay[viewsByDay.length - 1].value;
-
-        viewsMetric
-            .data({
-                result: viewsToday
-            })
-            .render();
-
-        trendChart
-            .data({
-                result: viewsByDay
-            })
-            .render();
 
     });
+
 
 };
 
