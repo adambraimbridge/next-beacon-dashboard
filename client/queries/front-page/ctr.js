@@ -238,18 +238,24 @@ const render = () => {
         })
         .prepare();
   });
-  // percentage.render(el, promiseOfData);
 
 
   promiseOfData.then(query => {
 
-
-    const draw = () => {
-      const components = Array.from(document.querySelectorAll('.js-toggle-components:checked') || []).map((el) => el.getAttribute('data-component')).filter(comp => !!comp);
+  	const getCurrentState = () => {
+  		const components = Array.from(document.querySelectorAll('.js-toggle-components:checked') || []).map((el) => el.getAttribute('data-component')).filter(comp => !!comp);
       const layouts = Array.from(document.querySelectorAll('.js-toggle-layout:checked') || []).map((el) => el.getAttribute('data-layout')).filter(layout => !!layout);
 
+      return {
+      	components,
+      	layouts
+      }
+  	}
+
+    const draw = ({components, layouts}) => {
+      
+
       const data = query(components, layouts);
-      console.log(components, layouts, 'data', data);
       metrics.forEach((metricConfig) => {
         drawMetric(data, metricConfig);
         drawGraph(data, metricConfig);
@@ -257,14 +263,36 @@ const render = () => {
 
     }
 
-    draw();
+
+    draw(getCurrentState());
 
 
 
 
     $('.js-front-page-toggles').removeClass('is-hidden');
 
-    $('.js-front-page-toggles .toggle-line').change(draw);
+    $('.js-front-page-toggles .toggle-line').change(() => {
+
+    	const state = getCurrentState();
+
+    	if(state.components.length > 1) {
+    		$('.js-toggle-layout').attr('type', 'radio');
+    		if(state.layouts.length > 1) {
+    			state.layouts = state.layouts.slice(0, 1);
+    			$('.js-toggle-layout').prop('checked', false);
+    			$(`.js-toggle-layout[data-layout="${state.layouts[0]}"]`).prop("checked", true);
+
+    		}
+    		
+    	} else {
+    		$('.js-toggle-layout').attr('type', 'checkbox');
+    	}
+    	if('requestAnimationFrame' in window) {
+    		window.requestAnimationFrame(draw.bind(this, state));
+    	} else {
+    		setTimeout(draw.bind(this, state), 0);
+    	}
+    });
 
   });
 
