@@ -18,6 +18,16 @@ const filter = {
         property_name: 'page.location.type',
         property_value: 'frontpage'
     }],
+    hasLayout: [{
+    	"operator":"exists",
+      "property_name":"ingest.user.layout",
+      "property_value":true
+    },
+    {
+    	"operator":"ne",
+      "property_name":"ingest.user.layout",
+      "property_value": ""
+    }],
     hasUUID: [{
       "operator":"exists",
       "property_name":"user.uuid",
@@ -42,15 +52,12 @@ const filter = {
 
 const getDataForTimeframe = (timeframe, interval) => {
 
-  let defaultFilters = filter.isOnHomepage.concat(filter.hasUUID);
-  if(queryParameters['layout']) {
-    defaultFilters = defaultFilters.concat(filter.layout);
-  }
+  let defaultFilters = filter.isOnHomepage;
 
   const users = new Keen.Query('count_unique', {
       eventCollection: 'dwell',
       target_property: 'user.uuid',
-      filters: defaultFilters,
+      filters: defaultFilters.concat(filter.hasLayout),
       groupBy: ['ingest.user.layout'],
       timeframe: {
       	start: daysAgo(28),
@@ -63,8 +70,33 @@ const getDataForTimeframe = (timeframe, interval) => {
 
   const views = new Keen.Query('count', {
       eventCollection: 'dwell',
-      filters: defaultFilters,
+      filters: defaultFilters.concat(filter.hasLayout),
       groupBy: ['ingest.user.layout'],
+      timeframe: {
+      	start: daysAgo(28),
+      	end: daysAgo(0)
+      },
+      timezone: 'UTC',
+      interval: interval,
+      maxAge: 3600
+  });
+
+  const totalUsers = new Keen.Query('count_unique', {
+      eventCollection: 'dwell',
+      target_property: 'user.uuid',
+      filters: defaultFilters,
+      timeframe: {
+      	start: daysAgo(28),
+      	end: daysAgo(0)
+      },
+      timezone: 'UTC',
+      interval: interval,
+      maxAge: 3600
+  });
+
+  const totalViews = new Keen.Query('count', {
+      eventCollection: 'dwell',
+      filters: defaultFilters,
       timeframe: {
       	start: daysAgo(28),
       	end: daysAgo(0)
@@ -92,11 +124,13 @@ const getDataForTimeframe = (timeframe, interval) => {
   return Promise.all([
     client.run(users).then(res => res.result),
     client.run(views).then(res => res.result),
+    client.run(totalUsers).then(res => res.result),
+    client.run(totalViews).then(res => res.result),
     client.run(clicks(21,28)).then(res => res.result),
     client.run(clicks(14,21)).then(res => res.result),
     client.run(clicks(7,14)).then(res => res.result),
     client.run(clicks(0,7)).then(res => res.result)
-  ]).then(([ users, views, ...clicks ]) => {
+  ]).then(([ users, views, totalUsers, totalViews, ...clicks ]) => {
 
   	clicks = _.flatten(clicks);
     //components = [] or []
@@ -147,8 +181,8 @@ const getDataForTimeframe = (timeframe, interval) => {
             const matchingViews = views[index].value.filter(filterMatches);
        			const matchingUsers = users[index].value.filter(filterMatches);
 
-            const totalViews = matchingViews.reduce((prev, curr) => (prev + curr.result), 0);
-            const totalUsers = matchingUsers.reduce((prev, curr) => (prev + curr.result), 0);
+            const totalViewsCount = line.layout === 'all' ? totalViews[index].value : matchingViews.reduce((prev, curr) => (prev + curr.result), 0);
+            const totalUsersCount = line.layout === 'all' ? totalUsers[index].value :  matchingUsers.reduce((prev, curr) => (prev + curr.result), 0);
 
             const clicks = matchingClicks.reduce((prev, curr) => (prev + curr.result), 0);
             const uniqueClickers = Object.keys(_.chain(matchingClicks).groupBy('user.uuid').value());
@@ -160,10 +194,10 @@ const getDataForTimeframe = (timeframe, interval) => {
               timeframe: day.timeframe,
               clicks: clicks,
               uniqueClicks: uniqueClickers.length,
-              users: totalUsers,
-              views: totalViews,
-              ctr: parseFloat(((100 / totalUsers) * uniqueClickers.length).toFixed(1)),
-              clicksPerUser: parseFloat((clicks / totalUsers).toFixed(1))
+              users: totalUsersCount,
+              views: totalViewsCount,
+              ctr: parseFloat(((100 / totalUsersCount) * uniqueClickers.length).toFixed(1)),
+              clicksPerUser: parseFloat((clicks / totalUsersCount).toFixed(1))
             };
 
         });
