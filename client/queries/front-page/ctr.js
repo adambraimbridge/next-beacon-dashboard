@@ -2,16 +2,16 @@
 
 'use strict';
 
-// const percentage = require('./ctr/percentage');
-// const clicksPerUser = require('./ctr/clicks-per-user');
-// const users = require('./ctr/users');
-// const views = require('./ctr/views');
 const client = require('../../lib/wrapped-keen');
 const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search.substr(1));
 const drawGraph = require('./ctr/draw-graph');
 const drawMetric = require('./ctr/draw-metric');
+const moment = require('moment');
 
+function daysAgo(n) {
+	return moment.unix(moment().startOf('day').unix()-(n * 86400)).toDate();
+}
 const filter = {
     isOnHomepage: [{
         operator: 'eq',
@@ -52,7 +52,10 @@ const getDataForTimeframe = (timeframe, interval) => {
       target_property: 'user.uuid',
       filters: defaultFilters,
       groupBy: ['ingest.user.layout'],
-      timeframe: timeframe,
+      timeframe: {
+      	start: daysAgo(28),
+      	end: daysAgo(0)
+      },
       timezone: 'UTC',
       interval: interval,
       maxAge: 3600
@@ -62,28 +65,40 @@ const getDataForTimeframe = (timeframe, interval) => {
       eventCollection: 'dwell',
       filters: defaultFilters,
       groupBy: ['ingest.user.layout'],
-      timeframe: timeframe,
+      timeframe: {
+      	start: daysAgo(28),
+      	end: daysAgo(0)
+      },
       timezone: 'UTC',
       interval: interval,
       maxAge: 3600
   });
 
-  const clicks = new Keen.Query('count', {
+  const clicks = function(to, from) {
+  	return new Keen.Query('count', {
       eventCollection: 'cta',
       filters: defaultFilters.concat(filter.isAClick),
       groupBy: ['ingest.user.layout', 'user.uuid', 'meta.domPath'],
-      timeframe: timeframe,
+      timeframe: {
+      	start: daysAgo(from),
+      	end: daysAgo(to)
+      },
       timezone: 'UTC',
       interval: interval,
       maxAge: 3600
-  });
+  	});
+  }
 
   return Promise.all([
     client.run(users).then(res => res.result),
     client.run(views).then(res => res.result),
-    client.run(clicks).then(res => res.result)
-  ]).then(([ users, views, clicks ]) => {
+    client.run(clicks(21,28)).then(res => res.result),
+    client.run(clicks(14,21)).then(res => res.result),
+    client.run(clicks(7,14)).then(res => res.result),
+    client.run(clicks(0,7)).then(res => res.result)
+  ]).then(([ users, views, ...clicks ]) => {
 
+  	clicks = _.flatten(clicks);
     //components = [] or []
     return function(components, layouts) {
       //for each day
