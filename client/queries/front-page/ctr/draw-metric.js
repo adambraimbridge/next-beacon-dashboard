@@ -1,9 +1,9 @@
 'use strict';
 
-module.exports = function(data, keenContainer, key) {
-
-	const total = data.reduce((prev, curr) => prev + curr.byLayout.all[key], 0);
-	keenContainer.data({
+module.exports = function(data, metric) {
+	//curr[0] represents the "everything" graph
+	const total = data.reduce((prev, curr) => prev + curr[0][metric.id], 0);
+	metric.keenMetricContainer.data({
       result: total / data.length
   })
   .render();
