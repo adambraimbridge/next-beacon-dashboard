@@ -1,3 +1,5 @@
+/* global Keen, _ */
+
 'use strict';
 
 const moment = require('moment');

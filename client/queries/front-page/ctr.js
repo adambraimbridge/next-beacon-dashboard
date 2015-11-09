@@ -1,4 +1,4 @@
-/* global Keen, $, _ */
+/* global Keen, $ */
 
 'use strict';
 
