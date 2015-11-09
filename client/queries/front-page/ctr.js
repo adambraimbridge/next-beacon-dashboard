@@ -182,11 +182,11 @@ const getDataForTimeframe = (timeframe, interval) => {
        			const matchingUsers = users[index].value.filter(filterMatches);
 
             const totalViewsCount = line.layout === 'all' ? totalViews[index].value : matchingViews.reduce((prev, curr) => (prev + curr.result), 0);
-            const totalUsersCount = line.layout === 'all' ? totalUsers[index].value :  matchingUsers.reduce((prev, curr) => (prev + curr.result), 0);
+            const totalUsersCount = line.layout === 'all' ? totalUsers[index].value : matchingUsers.reduce((prev, curr) => (prev + curr.result), 0);
 
             const clicks = matchingClicks.reduce((prev, curr) => (prev + curr.result), 0);
             const uniqueClickers = Object.keys(_.chain(matchingClicks).groupBy('user.uuid').value());
-     
+
 
             return {
               component: line.component,
@@ -208,7 +208,6 @@ const getDataForTimeframe = (timeframe, interval) => {
 
 
 const render = () => {
-  const el = document.getElementById('charts');
   const timeframe = queryParameters['timeframe'] || 'this_30_days';
   const interval = timeframe.indexOf('week') > 0 ? 'weekly' : 'daily';
 
@@ -287,7 +286,7 @@ const render = () => {
   	}
 
     const draw = ({components, layouts}) => {
-      
+
 
       const data = query(components, layouts);
       metrics.forEach((metricConfig) => {
@@ -317,7 +316,7 @@ const render = () => {
     			$(`.js-toggle-layout[data-layout="${state.layouts[0]}"]`).prop("checked", true);
 
     		}
-    		
+
     	} else {
     		$('.js-toggle-layout').attr('type', 'checkbox');
     	}

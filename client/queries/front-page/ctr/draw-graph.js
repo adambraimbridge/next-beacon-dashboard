@@ -1,5 +1,3 @@
-/* global google, $ */
-
 'use strict';
 
 
@@ -16,7 +14,7 @@ module.exports = function drawGraph(data, metricConfig) {
 	const series = {};
 
 	if(data[0][0].component === 'all' & data[0][0].layout === 'all') {
-		series[0] =  {
+		series[0] = {
 			lineWidth: 4,
 			color: '#000000'
 		}
@@ -26,6 +24,6 @@ module.exports = function drawGraph(data, metricConfig) {
 		.chartOptions({
 			series: series
 		})
-		.parseRawData( { result: graphData})
+		.parseRawData({ result: graphData})
 		.render();
 };
