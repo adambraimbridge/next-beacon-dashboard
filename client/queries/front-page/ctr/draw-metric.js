@@ -7,4 +7,4 @@ module.exports = function(data, metric) {
       result: total / data.length
   })
   .render();
-}
+};

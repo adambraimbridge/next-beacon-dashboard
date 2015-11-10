@@ -37,68 +37,6 @@ const query = new Keen.Query('count', {
 	timezone: 'UTC'
 });
 
-const render = () => {
-	client.run(query, (err, { result }) => {
-		// group browsers
-		const browsersData = {};
-		result.forEach(data => {
-			const browserName = data['ua.browser.name'];
-			const browserVersion = data['ua.browser.major'];
-			const count = data.result;
-			if (!(browserName in browsersData)) {
-				browsersData[browserName] = {
-					count: 0,
-					versions: {}
-				};
-			}
-			browsersData[browserName].count += count;
-			browsersData[browserName].versions[browserVersion] = count;
-		});
-		buildBrowsersTable(browsersData);
-
-	});
-};
-
-const buildBrowsersTable = browsersData => {
-	const totalCount = Object.keys(browsersData).reduce((currentTotal, browserName) => currentTotal + browsersData[browserName].count, 0);
-	const tableContent = Object.keys(browsersData)
-		.map(browserName => ({
-			name: browserName,
-			count: browsersData[browserName].count,
-			versions: browsersData[browserName].versions
-		}))
-		.sort((browserOne, browserTwo) => browserTwo.count - browserOne.count)
-		.map(browser => {
-			const percentage = (100 / totalCount) * browser.count;
-			const versions = buildBrowserTable(browser, totalCount);
-			return `
-				<tr class="browser table__body-row">
-					<td class="browser__name">${browser.name}</td>
-					<td class="browser__percentage" title="${browser.count}">${percentage.toFixed(2)}</td>
-					<td class="browser__versions">${versions}</td>
-				</tr>`;
-		})
-		.join('');
-
-	const tableEl = document.createElement('table');
-	tableEl.className = 'table table--hover table--show-all table--browsers';
-	tableEl.innerHTML = `
-		<thead>
-			<tr>
-				<th>Browser</th>
-				<th>%</th>
-				<th>Versions</th>
-			</tr>
-		</thead>
-		<tbody>
-			${tableContent}
-		</tbody>`;
-	tableEl.addEventListener('click', toggleBrowserTable);
-
-	document.querySelector('.browsers')
-		.appendChild(tableEl);
-};
-
 const buildBrowserTable = (browserData, totalCount) => {
 	const tableContent = Object.keys(browserData.versions)
 		.map(versionName => ({
@@ -148,6 +86,68 @@ const toggleBrowserTable = ev => {
 			.forEach(table => table.classList.remove('browser--selected'));
 		browserEl.classList.add('browser--selected');
 	}
+};
+
+const buildBrowsersTable = browsersData => {
+	const totalCount = Object.keys(browsersData).reduce((currentTotal, browserName) => currentTotal + browsersData[browserName].count, 0);
+	const tableContent = Object.keys(browsersData)
+		.map(browserName => ({
+			name: browserName,
+			count: browsersData[browserName].count,
+			versions: browsersData[browserName].versions
+		}))
+		.sort((browserOne, browserTwo) => browserTwo.count - browserOne.count)
+		.map(browser => {
+			const percentage = (100 / totalCount) * browser.count;
+			const versions = buildBrowserTable(browser, totalCount);
+			return `
+				<tr class="browser table__body-row">
+					<td class="browser__name">${browser.name}</td>
+					<td class="browser__percentage" title="${browser.count}">${percentage.toFixed(2)}</td>
+					<td class="browser__versions">${versions}</td>
+				</tr>`;
+		})
+		.join('');
+
+	const tableEl = document.createElement('table');
+	tableEl.className = 'table table--hover table--show-all table--browsers';
+	tableEl.innerHTML = `
+		<thead>
+			<tr>
+				<th>Browser</th>
+				<th>%</th>
+				<th>Versions</th>
+			</tr>
+		</thead>
+		<tbody>
+			${tableContent}
+		</tbody>`;
+	tableEl.addEventListener('click', toggleBrowserTable);
+
+	document.querySelector('.browsers')
+		.appendChild(tableEl);
+};
+
+const render = () => {
+	client.run(query, (err, { result }) => {
+		// group browsers
+		const browsersData = {};
+		result.forEach(data => {
+			const browserName = data['ua.browser.name'];
+			const browserVersion = data['ua.browser.major'];
+			const count = data.result;
+			if (!(browserName in browsersData)) {
+				browsersData[browserName] = {
+					count: 0,
+					versions: {}
+				};
+			}
+			browsersData[browserName].count += count;
+			browsersData[browserName].versions[browserVersion] = count;
+		});
+		buildBrowsersTable(browsersData);
+
+	});
 };
 
 export default {
