@@ -17,7 +17,7 @@ module.exports = function drawGraph(data, metricConfig) {
 		series[0] = {
 			lineWidth: 4,
 			color: '#000000'
-		}
+		};
 	}
 
 	metricConfig.chartEl

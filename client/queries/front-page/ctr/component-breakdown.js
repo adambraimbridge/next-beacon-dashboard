@@ -13,7 +13,7 @@ const homepageComponents = {
     'topic-markets': 'Markets',
     'topic-technology': 'Technology',
     'video-picks': 'Videos'
-}
+};
 
 const render = (el, promiseOfData, friendlyChosenPeriod) => {
 
@@ -129,7 +129,7 @@ const render = (el, promiseOfData, friendlyChosenPeriod) => {
                 })
                 .render();
 
-        })
+        });
 
     });
 

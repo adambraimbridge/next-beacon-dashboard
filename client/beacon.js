@@ -78,6 +78,11 @@ Keen.ready(function(){
 
 			break;
 
+		case '/graph/ab/suggested-read':
+			require('./queries/ab/suggested-read');
+			require('./queries/ab/suggested-read-ctr');
+			break;
+
 		case '/graph/opt-in':
 			require('./queries/opt-in');
 			break;

@@ -282,13 +282,13 @@ body {
 }
 
 .front-page__chart-anchor {
-  position: fixed;
-  display: none;
+	position: fixed;
+	display: none;
 }
 
 .front-page__chart-anchor:not(:target) + .front-page__chart {
-    height: 0;
-    overflow: hidden;
+		height: 0;
+		overflow: hidden;
 }
 .front-page__chart {
 	height: auto;
@@ -309,14 +309,14 @@ body {
 }
 
 .front-page__metric.is-selected:after {
-  content: '';
-  display: block;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 30px 30px 0;
-  border-color: #49c5b1 transparent transparent;
-  margin: 0 auto;
+	content: '';
+	display: block;
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 30px 30px 0;
+	border-color: #49c5b1 transparent transparent;
+	margin: 0 auto;
 }
 
 
