@@ -18,7 +18,7 @@ require('es6-promise').polyfill();
 
 var KEEN_PROJECT_ID = process.env.KEEN_PROJECT_ID;
 var KEEN_READ_KEY = process.env.KEEN_READ_KEY;
-var KEEN_MASTER_KEY = process.env.KEEN_MASTER_KEY;
+var KEEN_MASTER_KEY = process.env.KEEN_MASTER;
 
 // Indicates the app is behind a front-facing proxy, and to use the X-Forwarded-* headers to determine the connection and the IP address of the client. NOTE: X-Forwarded-* headers are easily spoofed and the detected IP addresses are unreliable.
 // See: http://expressjs.com/api.html
