@@ -48,10 +48,7 @@ app.use(auth);
 // pipe through to an AWS bucket containing Redshift exports
 app.get('/reports/*', function(req, res) {
 	var path = process.env.S3_HOST + '/' + req.params[0];
-	https.get({
-		url: path,
-		referer: 'https://beacon.ft.com'
-	}, function(proxyRes) {
+	https.get(path, function(proxyRes) {
 		proxyRes.pipe(res);
 	});
 });
