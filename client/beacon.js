@@ -31,6 +31,10 @@ Keen.ready(function(){
 
 	switch (location.pathname) {
 
+		case '/graph/ab/anonymous-propensity-message':
+			require('./queries/ab/anonymous-propensity-message').render();
+			break;
+
 		case '/graph/ab/performance':
 			require('./queries/ab/performance').render();
 			break;

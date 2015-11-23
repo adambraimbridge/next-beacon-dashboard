@@ -18,6 +18,9 @@ test: verify
 build:
 	nbt build --dev
 
+build-watch:
+	nbt build --dev --watch
+
 build-production:
 	nbt build
 
