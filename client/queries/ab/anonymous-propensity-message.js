@@ -7,51 +7,50 @@ import queryString from 'querystring';
 const queryParameters = queryString.parse(location.search);
 const queryTimeframe  = queryParameters.timeframe || "this_14_days"; // TODO: Set the proper value for this
 
-//=============================================================================================//
-// MAIN
-//=============================================================================================//
-
 export function render() {
-	visualize(AveragePageViewsPerSession);
-	visualize(ClicksPerVisit);
-	visualize(TotalSubscriptions);
+
+	Dashboard.visualizePageViewsPerSession();
+	//Dashboard.visualizeClicksPerVisit();
+	//Dashboard.visualizeTotalSubscriptions();
+}
+
+class Dashboard {
+
+	static visualizePageViewsPerSession() {
+		visualize( AveragePageViewsPerSession.on('variant'), /* into -> */ Slot.at('#apv-variant-slot') );
+		visualize( AveragePageViewsPerSession.on('control'), /* into -> */ Slot.at('#apv-control-slot') );
+	}
+
+	static visualizeClicksPerVisit() {
+		visualize( ClicksPerVisit.on('variant'), /* into -> */ Slot.at('#apv-variant') );
+		visualize( ClicksPerVisit.on('control'), /* into -> */ Slot.at('#apv-control') );
+	}
+
+	static visualizeTotalSubscriptions() {
+		visualize( TotalSubscriptions.on('variant'), /* into -> */ Slot.at('#ts-variant-slot') );
+		visualize( TotalSubscriptions.on('control'), /* into -> */ Slot.at('#ts-control-slot') );
+	}
 }
 
 //=============================================================================================//
 // UTILITIES
 //=============================================================================================//
 
-function visualize(Metric) {
-	const slots = [];
+function visualize(metric, slot) {
 
-	prepViewSlotsFor(Metric)
-			.then(Metric.fetchData)
-			.then(Metric.prepDataForVisualisation)
-			.then(loadDataIntoViewSlots);
+	slot.prepare();
 
-	function prepViewSlotsFor(Metric) {
-		return Promise.resolve()
-			.then(getSlotElements)
-			.then(prepSlotForEachElement);
+	metric.fetchData()
+		.then(metric.prepDataForVisualisation)
+		.then(renderDataIntoSlot);
 
-		function getSlotElements() {
-			return document.querySelectorAll(`[data-metric=${Metric.id}] [data-viz]`);
-		}
-
-		function prepSlotForEachElement(elements) {
-			for(const element of elements) {
-				const slot = new Slot(element);
-				slot.prepare();
-				slots.push(slot);
-			}
-		}
+	function renderDataIntoSlot(data) {
+		slot.render(data)
 	}
+}
 
-	function loadDataIntoViewSlots( data:MetricData ) {
-		for(const slot of slots) {
-			slot.render(data.for(slot))
-		}
-	}
+function promise() {
+	return Promise.resolve();
 }
 
 //=============================================================================================//
@@ -60,63 +59,52 @@ function visualize(Metric) {
 
 class AveragePageViewsPerSession {
 
-	static id = 'average-page-views-per-session';
+	static on(group) {
+	    return new AveragePageViewsPerSession(group);
+	}
 
-	static fetchData() {
-		return Promise.all([
-			fetchPageViewsPerSessionFor('variant'),
-			fetchPageViewsPerSessionFor('control')
-		])
-		.then(results => {
-			return {
-				variant: results[0],
-				control: results[1]
-			}
-		});
+	constructor(group) {
+	    this.group = group;
+	}
 
-		function fetchPageViewsPerSessionFor(group) {
-			return Promise.resolve()
-				.then(prepQuery)
-				.then(submitQueryToKeen);
+	fetchData() {
+		const self = this;
 
-			function prepQuery() {
-				return new Keen.Query('count', Object.assign({
-					eventCollection: 'dwell',
-					filters: [
-						{
-							operator: 'eq',
-							property_name: 'ab.propensityMessaging',
-							property_value: group
-						}
-					],
-					groupBy: 'ingest.device.spoor_session',
-					timeframe: queryTimeframe,
-					timezone: 'UTC'
-				}))
-			}
+		return promise()
+			.then(prepQuery)
+			.then(submitQueryToKeen);
 
-			function submitQueryToKeen(query) {
-				return new Promise(resolve => {
-					client.run([query], (err, results) => {
-						resolve(results.result);
-					});
-				})
-			}
+		function prepQuery() {
+			return new Keen.Query('count', Object.assign({
+				eventCollection: 'dwell',
+				filters: [
+					{
+						operator: 'eq',
+						property_name: 'ab.propensityMessaging',
+						property_value: self.group
+					}
+				],
+				groupBy: 'ingest.device.spoor_session',
+				timeframe: queryTimeframe,
+				timezone: 'UTC'
+			}));
+		}
+
+		function submitQueryToKeen(query) {
+			return new Promise(resolve => {
+				client.run([query], (err, results) => {
+					resolve(results.result);
+				});
+			})
 		}
 	}
 
-	static prepDataForVisualisation(data) {
-		return Promise.all([
-			calculateAverageOf(data['variant']),
-			calculateAverageOf(data['control'])
-		])
-		.then(returnDataAsMetricData);
+	prepDataForVisualisation(items) {
+		return averageOf(items);
 
-		function calculateAverageOf(items) {
+		function averageOf(items) {
 			return new Promise(resolve => {
-
 				resolve(totalViews() / items.length);
-
 				function totalViews() {
 					let total = 0;
 					for(const item of items) {
@@ -124,13 +112,6 @@ class AveragePageViewsPerSession {
 					}
 					return total;
 				}
-			});
-		}
-
-		function returnDataAsMetricData(averages) {
-			return new MetricData({
-				variant:averages[0],
-				control:averages[1]
 			});
 		}
 	}
@@ -166,6 +147,10 @@ class TotalSubscriptions {
 }
 
 class Slot {
+	static at(selector) {
+	    return new Slot(document.querySelector(selector));
+	}
+
 	constructor(element) {
 		this.id = element.dataset.viz;
 	    this.instance = new Keen.Dataviz().el(element).title(element.dataset.vizTitle);
@@ -179,15 +164,5 @@ class Slot {
 	}
 	render(data) {
 		this.instance.data({ result: data }).render();
-	}
-}
-
-class MetricData {
-	constructor(data) {
-		this.data = data || {};
-	}
-
-	for(slot) {
-		return this.data[slot.id];
 	}
 }
