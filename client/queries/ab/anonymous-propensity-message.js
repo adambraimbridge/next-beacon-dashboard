@@ -97,13 +97,17 @@ class Slot {
    Metrics
 \* ---------------------------------------------------------------------------------------------- */
 
-class PageViewsPerSession {
+class Metric {
 
 	static for({group, timeframe}) {
-	    return new PageViewsPerSession({group, timeframe});
+		return new this({group, timeframe});
 	}
+}
+
+class PageViewsPerSession extends Metric {
 
 	constructor({group, timeframe}) {
+		super();
 	    this.group = group;
 		this.timeframe = timeframe;
 	}
@@ -140,13 +144,10 @@ class PageViewsPerSession {
 	}
 }
 
-class ClicksPerVisit {
-
-	static for({group, timeframe}) {
-		return new ClicksPerVisit({group, timeframe});
-	}
+class ClicksPerVisit extends Metric {
 
 	constructor({group, timeframe}) {
+		super();
 		this.group = group;
 		this.timeframe = timeframe;
 	}
@@ -166,6 +167,11 @@ class ClicksPerVisit {
 					operator: 'eq',
 					property_name: 'ab.propensityMessaging',
 					property_value: self.group
+				},
+				{
+					operator: 'contains',
+					property_name: 'page.location.href',
+					property_value: 'next.ft.com/content/'
 				}
 			],
 			groupBy: 'ingest.device.spoor_session',
@@ -183,9 +189,10 @@ class ClicksPerVisit {
 	}
 }
 
-class TotalSubscriptions {
+class TotalSubscriptions extends Metric {
 
 	constructor(group) {
+		super();
 		this.group = group;
 	}
 
