@@ -112,9 +112,9 @@ class PageViewsPerSession extends Metric {
 		this.timeframe = timeframe;
 	}
 
-	fetch(timeframe) {
+	fetch() {
 		return promise()
-			.then(this.prepQuery.bind(this, timeframe))
+			.then(this.prepQuery.bind(this))
 			.then(this.submitQueryToKeen.bind(this));
 	}
 
@@ -152,9 +152,9 @@ class ClicksPerVisit extends Metric {
 		this.timeframe = timeframe;
 	}
 
-	fetch(timeframe) {
+	fetch() {
 		return promise()
-			.then(this.prepQuery.bind(this, timeframe))
+			.then(this.prepQuery.bind(this))
 			.then(this.submitQueryToKeen.bind(this));
 	}
 
