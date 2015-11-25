@@ -1,159 +1,85 @@
 /* global Keen */
 'use strict';
 
-import client from '../../lib/wrapped-keen';
+import keen from '../../lib/wrapped-keen';
 import queryString from 'querystring';
 
+const defaultTimeframe = { start: '2015-11-14T00:00:00.000+00:00', end: '2015-11-19T00:00:00.000+00:00'};
 const queryParameters = queryString.parse(location.search);
-const queryTimeframe  = queryParameters.timeframe || "this_14_days"; // TODO: Set the proper value for this
+const queryTimeframe  = queryParameters.timeframe || defaultTimeframe;
 
 export function render() {
 
-	Dashboard.visualizePageViewsPerSession();
-	//Dashboard.visualizeClicksPerVisit();
-	//Dashboard.visualizeTotalSubscriptions();
+	Dashboard.visualize({
+		 count : average,
+		metric : PageViewsPerSession.on('variant'),
+		  slot : Slot.at('#apv-variant-slot')
+	});
+
+	Dashboard.visualize({
+		 count : average,
+		metric : PageViewsPerSession.on('control'),
+		  slot : Slot.at('#apv-control-slot')
+	});
+
+	Dashboard.visualize({
+		 count : average,
+		metric : ClicksPerVisit.on('variant'),
+		  slot : Slot.at('#cpv-variant-slot')
+	});
+
+
+	Dashboard.visualize({
+		 count : average,
+		metric : ClicksPerVisit.on('control'),
+		  slot : Slot.at('#cpv-control-slot')
+	});
+
+	/*
+	Dashboard.visualize({
+		metric : TotalSubscriptions.on('variant'),
+		  slot : Slot.at('#ts-variant-slot')
+	});
+
+	Dashboard.visualize({
+		metric : TotalSubscriptions.on('control'),
+		  slot : Slot.at('#ts-variant-slot')
+	});
+	*/
 }
+
+/*------------------------------------------------------------------------*\
+ DASHBOARD
+\*------------------------------------------------------------------------*/
 
 class Dashboard {
 
-	static visualizePageViewsPerSession() {
-		visualize( AveragePageViewsPerSession.on('variant'), /* into -> */ Slot.at('#apv-variant-slot') );
-		visualize( AveragePageViewsPerSession.on('control'), /* into -> */ Slot.at('#apv-control-slot') );
-	}
+	static visualize({ count=na, metric, slot}) {
+	    slot.prepare();
 
-	static visualizeClicksPerVisit() {
-		visualize( ClicksPerVisit.on('variant'), /* into -> */ Slot.at('#apv-variant') );
-		visualize( ClicksPerVisit.on('control'), /* into -> */ Slot.at('#apv-control') );
-	}
+		metric.fetch()
+			.then(count)
+			.then(renderResultIntoSlot);
 
-	static visualizeTotalSubscriptions() {
-		visualize( TotalSubscriptions.on('variant'), /* into -> */ Slot.at('#ts-variant-slot') );
-		visualize( TotalSubscriptions.on('control'), /* into -> */ Slot.at('#ts-control-slot') );
-	}
-}
-
-//=============================================================================================//
-// UTILITIES
-//=============================================================================================//
-
-function visualize(metric, slot) {
-
-	slot.prepare();
-
-	metric.fetchData()
-		.then(metric.prepDataForVisualisation)
-		.then(renderDataIntoSlot);
-
-	function renderDataIntoSlot(data) {
-		slot.render(data)
-	}
-}
-
-function promise() {
-	return Promise.resolve();
-}
-
-//=============================================================================================//
-// OBJECTS
-//=============================================================================================//
-
-class AveragePageViewsPerSession {
-
-	static on(group) {
-	    return new AveragePageViewsPerSession(group);
-	}
-
-	constructor(group) {
-	    this.group = group;
-	}
-
-	fetchData() {
-		const self = this;
-
-		return promise()
-			.then(prepQuery)
-			.then(submitQueryToKeen);
-
-		function prepQuery() {
-			return new Keen.Query('count', Object.assign({
-				eventCollection: 'dwell',
-				filters: [
-					{
-						operator: 'eq',
-						property_name: 'ab.propensityMessaging',
-						property_value: self.group
-					}
-				],
-				groupBy: 'ingest.device.spoor_session',
-				timeframe: queryTimeframe,
-				timezone: 'UTC'
-			}));
+		function renderResultIntoSlot(result) {
+			slot.render(result)
 		}
 
-		function submitQueryToKeen(query) {
-			return new Promise(resolve => {
-				client.run([query], (err, results) => {
-					resolve(results.result);
-				});
-			})
+		// use when not applicable
+		function na(data) {
+			return data;
 		}
-	}
-
-	prepDataForVisualisation(items) {
-		return averageOf(items);
-
-		function averageOf(items) {
-			return new Promise(resolve => {
-				resolve(totalViews() / items.length);
-				function totalViews() {
-					let total = 0;
-					for(const item of items) {
-						total = total + item.result;
-					}
-					return total;
-				}
-			});
-		}
-	}
-}
-
-
-class ClicksPerVisit {
-
-	static id = 'clicks-per-visit';
-
-	static fetchData() {
-		// TODO: Implement
-	}
-
-	static prepDataForVisualisation(data) {
-		// TODO: Implement
-		return new MetricData({variant:20, control:40})
-	}
-}
-
-class TotalSubscriptions {
-
-	static id = 'total-subscriptions';
-
-	static fetchData() {
-		// TODO: Implement
-	}
-
-	static prepDataForVisualisation(data) {
-		// TODO: Implement
-		return new MetricData({variant:0, control:250})
 	}
 }
 
 class Slot {
 	static at(selector) {
-	    return new Slot(document.querySelector(selector));
+		return new Slot(document.querySelector(selector));
 	}
 
 	constructor(element) {
 		this.id = element.dataset.viz;
-	    this.instance = new Keen.Dataviz().el(element).title(element.dataset.vizTitle);
+		this.instance = new Keen.Dataviz().el(element).title(element.dataset.vizTitle);
 		if(element.dataset.vizColors) {
 			this.instance.colors(element.dataset.vizColors.split(','))
 		}
@@ -165,4 +91,125 @@ class Slot {
 	render(data) {
 		this.instance.data({ result: data }).render();
 	}
+}
+
+/*------------------------------------------------------------------------*\
+  METRICS
+\*------------------------------------------------------------------------*/
+
+class PageViewsPerSession {
+
+	static on(group) {
+	    return new PageViewsPerSession(group);
+	}
+
+	constructor(group) {
+	    this.group = group;
+	}
+
+	fetch() {
+		return promise()
+			.then(this.prepQuery.bind(this))
+			.then(this.submitQueryToKeen.bind(this));
+	}
+
+	prepQuery() {
+		const self = this;
+		return new Keen.Query('count', Object.assign({
+			eventCollection: 'dwell',
+			filters: [
+				{
+					operator: 'eq',
+					property_name: 'ab.propensityMessaging',
+					property_value: self.group
+				}
+			],
+			groupBy: 'ingest.device.spoor_session',
+			timeframe: queryTimeframe,
+			timezone: 'UTC'
+		}));
+	}
+
+	submitQueryToKeen(query) {
+		return new Promise(resolve => {
+			keen.run([query], (err, results) => {
+				resolve(results.result);
+			});
+		})
+	}
+}
+
+class ClicksPerVisit {
+
+	static on(group) {
+		return new ClicksPerVisit(group);
+	}
+
+	constructor(group) {
+		this.group = group;
+	}
+
+	fetch() {
+		return promise()
+			.then(this.prepQuery.bind(this))
+			.then(this.submitQueryToKeen.bind(this));
+	}
+
+	prepQuery() {
+		const self = this;
+		return new Keen.Query('count', Object.assign({
+			eventCollection: 'cta',
+			filters: [
+				{
+					operator: 'eq',
+					property_name: 'ab.propensityMessaging',
+					property_value: self.group
+				}
+			],
+			groupBy: 'ingest.device.spoor_session',
+			timeframe: queryTimeframe,
+			timezone: 'UTC'
+		}));
+	}
+
+	submitQueryToKeen(query) {
+		return new Promise(resolve => {
+			keen.run([query], (err, results) => {
+				resolve(results.result);
+			});
+		})
+	}
+}
+
+class TotalSubscriptions {
+
+	constructor(group) {
+		this.group = group;
+	}
+
+	fetch() {
+		// TODO: Implement
+	}
+}
+
+/*------------------------------------------------------------------------*\
+  METRICS
+\*------------------------------------------------------------------------*/
+
+function average(items) {
+	return sum(items) / items.length;
+}
+
+function sum(items) {
+	let total = 0;
+
+	for(const item of items) {
+		total = total + item.result;
+	}
+
+	return total;
+}
+
+function promise() {
+	return Promise.resolve();
 }
