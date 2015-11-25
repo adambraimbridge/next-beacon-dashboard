@@ -6,51 +6,52 @@ import queryString from 'querystring';
 
 const defaultTimeframe = { start: '2015-11-14T00:00:00.000+00:00', end: '2015-11-19T00:00:00.000+00:00'};
 const queryParameters = queryString.parse(location.search);
-const queryTimeframe  = queryParameters.timeframe || defaultTimeframe;
+const timeframe  = queryParameters.timeframe || defaultTimeframe;
 
 export function render() {
 
 	Dashboard.visualize({
 		 count : average,
-		metric : PageViewsPerSession.on('variant'),
+		metric : PageViewsPerSession.for({group:'variant', timeframe}),
 		  slot : Slot.at('#apv-variant-slot')
 	});
 
 	Dashboard.visualize({
 		 count : average,
-		metric : PageViewsPerSession.on('control'),
+		metric : PageViewsPerSession.for({group:'control', timeframe}),
 		  slot : Slot.at('#apv-control-slot')
 	});
 
 	Dashboard.visualize({
 		 count : average,
-		metric : ClicksPerVisit.on('variant'),
+		metric : ClicksPerVisit.for({group:'variant', timeframe}),
 		  slot : Slot.at('#cpv-variant-slot')
 	});
 
-
 	Dashboard.visualize({
 		 count : average,
-		metric : ClicksPerVisit.on('control'),
+		metric : ClicksPerVisit.for({group:'control', timeframe}),
 		  slot : Slot.at('#cpv-control-slot')
 	});
 
 	/*
 	Dashboard.visualize({
-		metric : TotalSubscriptions.on('variant'),
-		  slot : Slot.at('#ts-variant-slot')
+		   metric : TotalSubscriptions.on('variant'),
+		     slot : Slot.at('#ts-variant-slot'),
+		timeframe
 	});
 
 	Dashboard.visualize({
-		metric : TotalSubscriptions.on('control'),
-		  slot : Slot.at('#ts-variant-slot')
+		   metric : TotalSubscriptions.on('control'),
+		     slot : Slot.at('#ts-variant-slot'),
+		timeframe
 	});
 	*/
 }
 
-/*------------------------------------------------------------------------*\
- DASHBOARD
-\*------------------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------- *\
+   Dashboard
+\* ---------------------------------------------------------------------------------------------- */
 
 class Dashboard {
 
@@ -65,8 +66,7 @@ class Dashboard {
 			slot.render(result)
 		}
 
-		// use when not applicable
-		function na(data) {
+		function na /* not applicable */ (data) {
 			return data;
 		}
 	}
@@ -93,23 +93,24 @@ class Slot {
 	}
 }
 
-/*------------------------------------------------------------------------*\
-  METRICS
-\*------------------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------- *\
+   Metrics
+\* ---------------------------------------------------------------------------------------------- */
 
 class PageViewsPerSession {
 
-	static on(group) {
-	    return new PageViewsPerSession(group);
+	static for({group, timeframe}) {
+	    return new PageViewsPerSession({group, timeframe});
 	}
 
-	constructor(group) {
+	constructor({group, timeframe}) {
 	    this.group = group;
+		this.timeframe = timeframe;
 	}
 
-	fetch() {
+	fetch(timeframe) {
 		return promise()
-			.then(this.prepQuery.bind(this))
+			.then(this.prepQuery.bind(this, timeframe))
 			.then(this.submitQueryToKeen.bind(this));
 	}
 
@@ -125,7 +126,7 @@ class PageViewsPerSession {
 				}
 			],
 			groupBy: 'ingest.device.spoor_session',
-			timeframe: queryTimeframe,
+			timeframe: self.timeframe,
 			timezone: 'UTC'
 		}));
 	}
@@ -141,17 +142,18 @@ class PageViewsPerSession {
 
 class ClicksPerVisit {
 
-	static on(group) {
-		return new ClicksPerVisit(group);
+	static for({group, timeframe}) {
+		return new ClicksPerVisit({group, timeframe});
 	}
 
-	constructor(group) {
+	constructor({group, timeframe}) {
 		this.group = group;
+		this.timeframe = timeframe;
 	}
 
-	fetch() {
+	fetch(timeframe) {
 		return promise()
-			.then(this.prepQuery.bind(this))
+			.then(this.prepQuery.bind(this, timeframe))
 			.then(this.submitQueryToKeen.bind(this));
 	}
 
@@ -167,7 +169,7 @@ class ClicksPerVisit {
 				}
 			],
 			groupBy: 'ingest.device.spoor_session',
-			timeframe: queryTimeframe,
+			timeframe: self.timeframe,
 			timezone: 'UTC'
 		}));
 	}
@@ -187,14 +189,14 @@ class TotalSubscriptions {
 		this.group = group;
 	}
 
-	fetch() {
+	fetch(timeframe) {
 		// TODO: Implement
 	}
 }
 
-/*------------------------------------------------------------------------*\
-  METRICS
-\*------------------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------- *\
+   Utilities
+\* ---------------------------------------------------------------------------------------------- */
 
 function average(items) {
 	return sum(items) / items.length;
