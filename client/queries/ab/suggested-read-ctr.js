@@ -83,7 +83,7 @@ function ctaQuery() {
 			.concat(referrerFilters)
 			.concat(standardQueryFilters),
 		groupBy: ["meta.domPath","ab.articleSuggestedRead"],
-		timeframe: 'this_28_days',
+		timeframe: {"end":"2015-12-02T00:00:00.000+00:00","start":"2015-10-29T00:00:00.000+00:00"},
 		timezone: "UTC",
 		maxAge:10800
 	};
@@ -97,7 +97,7 @@ function baseQuery() {
 			.concat(referrerFilters)
 			.concat(standardQueryFilters),
 		groupBy: "ab.articleSuggestedRead",
-		timeframe: 'this_28_days',
+		timeframe: {"end":"2015-12-02T00:00:00.000+00:00","start":"2015-10-29T00:00:00.000+00:00"},
 		timezone: "UTC",
 		maxAge:10800
 	};
