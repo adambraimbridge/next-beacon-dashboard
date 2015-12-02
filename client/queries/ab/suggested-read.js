@@ -60,7 +60,7 @@ function uniqueSessionsQuery() {
 			.concat(standardQueryFilters)
 			.concat(referrerFilters),
 		targetProperty: "ingest.device.spoor_session",
-		timeframe: 'this_28_days',
+		timeframe: {"end":"2015-12-02T00:00:00.000+00:00","start":"2015-10-29T00:00:00.000+00:00"},
 		timezone: "UTC",
 		maxAge:10800
 	};
@@ -83,7 +83,7 @@ function articleDepthQuery(referredSessionsArray) {
 			.concat(referredSessionsFilter)
 			.concat(standardQueryFilters),
 		groupBy: ["ingest.device.spoor_session", "ab.articleSuggestedRead"],
-		timeframe: 'this_28_days',
+		timeframe: {"end":"2015-12-02T00:00:00.000+00:00","start":"2015-10-29T00:00:00.000+00:00"},
 		timezone: "UTC",
 		maxAge:10800
 	};
