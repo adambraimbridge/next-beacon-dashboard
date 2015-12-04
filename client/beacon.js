@@ -35,6 +35,10 @@ Keen.ready(function(){
 			require('./queries/ab/performance').render();
 			break;
 
+		case '/graph/ab/front-page-prototype':
+			require('./queries/ab/front-page-prototype').render();
+			break;
+
 		case '/graph/ab/aa':
 
 			render(require('./queries/ab/aa'));
