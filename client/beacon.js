@@ -6,6 +6,28 @@ var client = require('./lib/wrapped-keen');
 
 var container = document.getElementById("graph__container");
 
+// Generate a url to keen explorer for this query
+var getExplorerURL = function(query){
+	var explorerURL;
+	if (query && query.params) {
+		var params = "?";
+		params += (query.params.event_collection) ? `&query[event_collection]=${query.params.event_collection}` : "";
+		params += (query.analysis) ? `&query[analysis_type]=${query.analysis}` : "";
+		params += (query.params.target_property) ? `&query[target_property]=${query.params.target_property}` : "";
+		params += (query.params.timezone) ? `&query[timezone]=${query.params.timezone}` : "";
+		params += (query.params.timeframe) ? `&query[timeframe]=${query.params.timeframe}` : "";
+		params += (query.params.group_by) ? `&query[group_by]=${query.params.group_by}` : "";
+		params += (query.params.interval) ? `&query[interval]=${query.params.interval}` : "";
+		if (query.params.filters) query.params.filters.forEach((filter,key) => {
+			params += `&query[filters][${key}][property_name]=${filter.property_name}`
+			params += `&query[filters][${key}][operator]=${filter.operator}`
+			params += `&query[filters][${key}][property_value]=${filter.property_value}`
+		});
+		explorerURL = `/explorer${params}`;
+	}
+	return explorerURL;
+}
+
 // Given a query object { query: new Keen.Query(...), render: fn }
 var render = function (keen, opts) {
 	var el = document.createElement('div');
@@ -21,6 +43,15 @@ var render = function (keen, opts) {
 
 	} else {
 		client.draw(keen.query, el, opts);
+	}
+
+	var explorerURL = getExplorerURL(keen.query);
+	if (explorerURL) {
+		var explorerLink = document.createElement("a");
+		explorerLink.setAttribute("href", explorerURL);
+		explorerLink.setAttribute("target", "_blank");
+		explorerLink.innerHTML = "(Explore)";
+		container.appendChild(explorerLink);
 	}
 };
 
