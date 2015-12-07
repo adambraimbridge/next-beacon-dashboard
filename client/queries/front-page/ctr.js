@@ -12,6 +12,9 @@ const moment = require('moment');
 function daysAgo(n) {
 	return moment.unix(moment().startOf('day').unix()-(n * 86400)).toDate();
 }
+
+const capitalise = string => string.slice(0, 1).toUpperCase() + string.slice(1);
+
 const filter = {
 		isOnHomepage: [{
 				operator: 'eq',
@@ -47,12 +50,36 @@ const filter = {
 			operator: 'eq',
 			property_name: 'ingest.user.layout',
 			property_value: queryParameters['layout']
-		}]
+		}],
+		abControl: [
+			{
+				operator: 'exists',
+				property_name: 'ab.frontPageLayoutPrototype',
+				property_value: true
+			},
+			{
+				operator: 'eq',
+				property_name: 'ab.frontPageLayoutPrototype',
+				property_value: 'control'
+			}
+		],
+		abVariant: [
+			{
+				operator: 'exists',
+				property_name: 'ab.frontPageLayoutPrototype',
+				property_value: true
+			},
+			{
+				operator: 'eq',
+				property_name: 'ab.frontPageLayoutPrototype',
+				property_value: 'variant'
+			}
+		]
 };
 
-const getDataForTimeframe = (timeframe, interval) => {
+const getDataForTimeframe = (timeframe, interval, abCohort) => {
 
-	let defaultFilters = filter.isOnHomepage;
+	let defaultFilters = filter.isOnHomepage.concat(filter[`ab${capitalise(abCohort)}`] || []);
 
 	const users = new Keen.Query('count_unique', {
 			eventCollection: 'dwell',
@@ -196,8 +223,8 @@ const getDataForTimeframe = (timeframe, interval) => {
 							uniqueClicks: uniqueClickers.length,
 							users: totalUsersCount,
 							views: totalViewsCount,
-							ctr: parseFloat(((100 / totalUsersCount) * uniqueClickers.length).toFixed(1)),
-							clicksPerUser: parseFloat((clicks / totalUsersCount).toFixed(1))
+							ctr: parseFloat(((totalUsersCount > 0 ? 100 / totalUsersCount : 100) * uniqueClickers.length).toFixed(1)),
+							clicksPerUser: parseFloat((totalUsersCount > 0 ? clicks / totalUsersCount : clicks).toFixed(1))
 						};
 
 				});
@@ -210,16 +237,22 @@ const getDataForTimeframe = (timeframe, interval) => {
 const render = () => {
 	const timeframe = queryParameters['timeframe'] || 'this_30_days';
 	const interval = timeframe.indexOf('week') > 0 ? 'weekly' : 'daily';
+	const abCohort = queryParameters['ab-cohort'] || 'everyone';
 
-	const promiseOfData = getDataForTimeframe(timeframe, interval);
-	const metrics = [{
+	// un-link the selected cohort
+	document.querySelector(`.ab-cohort[href="?ab-cohort=${abCohort}"]`).outerHTML = capitalise(abCohort);
+
+	const promiseOfData = getDataForTimeframe(timeframe, interval, abCohort);
+	const metrics = [
+		{
 			id: 'ctr',
 			title: 'CTR',
 			metricConfig: {
 				suffix: '%'
 			},
 			chartConfig: {}
-		}, {
+		},
+		{
 			id: 'clicksPerUser',
 			title: 'Clicks per user',
 			metricConfig: {},
@@ -236,7 +269,7 @@ const render = () => {
 			title: 'Homepage Page Views',
 			metricConfig: {},
 			chartConfig: {}
-		},
+		}
 	];
 
 	metrics.forEach(metric => {
