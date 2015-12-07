@@ -19,6 +19,14 @@
 
 <h1>Front Page: CTR {{#if query.layout}}(Layout: {{query.layout}}){{/if}}</h1>
 
+<div class="nav--horizontal">
+	<h3>A/B Test:</h3>
+	<ul>
+		<li><a class="ab-cohort" href="?ab-cohort=everyone">Everyone</a></li>
+		<li><a class="ab-cohort" href="?ab-cohort=control">Control</a></li>
+		<li><a class="ab-cohort" href="?ab-cohort=variant">Variant</a></li>
+	</ul>
+</div>
 
 <div id="charts" class="o-grid-container front-page">
 	<div class="front-page__metrics o-grid-row">
