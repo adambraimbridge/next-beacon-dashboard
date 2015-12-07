@@ -3,6 +3,7 @@
 
 var http			= require('http');
 var https			= require('https');
+var aws4			= require('aws4');
 var auth			= require('./middleware/auth');
 var activeUsage			= require('./middleware/active-usage');
 var cookieParser	= require('cookie-parser');
@@ -47,8 +48,18 @@ app.use(auth);
 
 // pipe through to an AWS bucket containing Redshift exports
 app.get('/reports/*', function(req, res) {
-	var path = process.env.S3_HOST + '/' + req.params[0];
-	https.get(path, function(proxyRes) {
+	// url: `https://${process.env.S3_HOST}/{req.params[0]}`
+	var signed = aws4.sign({
+		service: 's3',
+		hostname: process.env.S3_HOST,
+		path: '/' + req.params[0],
+		signQuery: true,
+		region: 'eu-west-1',
+	}, {
+		accessKeyId: process.env.S3_AWS_ACCESS,
+		secretAccessKey: process.env.S3_AWS_SECRET
+	});
+	https.get(signed, function(proxyRes) {
 		proxyRes.pipe(res);
 	});
 });
