@@ -6,11 +6,7 @@ const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search);
 const queryTimeframe = queryParameters.timeframe || "this_7_days";
 
-var generateAverageViews = (el, type, state, queryOpts = {}) => {
-	var pageViewsEl = document.createElement('div');
-	pageViewsEl.classList.add('o-grid-row');
-	pageViewsEl.innerHTML = `<h2 data-o-grid-colspan="12">Average page views per session for ${state} variant</h2>`;
-	el.appendChild(pageViewsEl);
+var generateAverageViews = (type, state, queryOpts = {}) => {
 
 	var pageViewsQueries = [
 		new Keen.Query('count', Object.assign({
@@ -18,7 +14,7 @@ var generateAverageViews = (el, type, state, queryOpts = {}) => {
 			filters: [
 				{
 					operator: 'eq',
-					property_name: 'ab.frontPageLayoutPrototype',
+					property_name: 'user.ab.frontPageLayoutPrototype',
 					property_value: state
 				},
 				{
@@ -40,11 +36,8 @@ var generateAverageViews = (el, type, state, queryOpts = {}) => {
 
 	var charts = new Map([['mean'], ['total']]);
 	charts.forEach((value, key, map) => {
-		var el = document.createElement('div');
-		el.dataset.oGridColspan = '12 M6';
-		pageViewsEl.appendChild(el);
 		map.set(key, new Keen.Dataviz()
-				.el(el)
+				.el(document.getElementById("metric_" + key + "_volume__" + state))
 				.prepare());
 	});
 
@@ -63,20 +56,20 @@ var generateAverageViews = (el, type, state, queryOpts = {}) => {
 			.data({
 				result: average
 			})
-		.title('Mean page views per session')
+		.title('Mean articles read per session for ' + state)
 			.render();
 		charts.get('total')
 			.data({
 				result: clean.length
 			})
 		.colors(['#91DCD0'])
-			.title('Total')
+			.title('Total articles read for ' + state)
 			.render();
 	});
 
 };
 
-var generateFrequency = (timeframe, id, filters=[]) => {
+var generateFrequency = (timeframe, state, filters=[]) => {
 	var keenQuery = function(options) {
 		var query = options.query || 'count_unique';
 		var parameters = {
@@ -84,7 +77,23 @@ var generateFrequency = (timeframe, id, filters=[]) => {
 			timeframe: queryTimeframe,
 			targetProperty: options.targetProperty,
 			timezone: "UTC",
-			filters:options.filters || [],
+			filters: [
+				{
+					operator: 'eq',
+					property_name: 'user.ab.frontPageLayoutPrototype',
+					property_value: state
+				},
+				{
+					operator: 'exists',
+					property_name: 'user.uuid',
+					property_value: true
+				},
+				{
+					operator: 'eq',
+					property_name: 'page.location.type',
+					property_value: 'article'
+				}
+			],
 			maxAge: 10800
 		};
 
@@ -100,9 +109,9 @@ var generateFrequency = (timeframe, id, filters=[]) => {
 		return new Keen.Query(query, parameters);
 	};
 	var metricAverageFrequency = new Keen.Dataviz()
-		.el(document.getElementById("metric_average_frequency__" + id))
+		.el(document.getElementById("metric_average_frequency__" + state))
 		.chartType("metric")
-		.title(timeframe.replace(/_/g, ' ') + ' for variant ' + id)
+		.title(timeframe.replace(/_/g, ' ') + ' for ' + state)
 		.height(140)
 		.prepare();
 
@@ -143,28 +152,11 @@ var generateFrequency = (timeframe, id, filters=[]) => {
 
 module.exports = {
 	render : function() {
-		var el = document.getElementById('charts');
-		generateAverageViews(el, 'page views', 'on');
-		generateAverageViews(el, 'page views', 'off');
+		generateAverageViews('page views', 'control');
+		generateAverageViews('page views', 'variant');
 
-		generateFrequency(queryTimeframe, 'on', [{
-			operator: 'eq',
-			property_name: 'ab.frontPageLayoutPrototype',
-			property_value: 'on'
-		},{
-			operator: 'exists',
-			property_name: 'user.uuid',
-			property_value: true
-		}]);
-		generateFrequency(queryTimeframe, 'off', [{
-			operator: 'eq',
-			property_name: 'ab.frontPageLayoutPrototype',
-			property_value: 'off'
-		},{
-			operator: 'exists',
-			property_name: 'user.uuid',
-			property_value: true
-		}]);
+		generateFrequency(queryTimeframe, 'control');
+		generateFrequency(queryTimeframe, 'variant');
 
 	}
 };
