@@ -6,6 +6,8 @@ const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search);
 const queryTimeframe = queryParameters.timeframe || "this_7_days";
 
+const startDate = "2015-12-01";
+const currDate = new Date().toISOString();
 var generateAverageViews = (type, state, queryOpts = {}) => {
 
 	var pageViewsQueries = [
@@ -28,43 +30,112 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 					property_value: 'article'
 				}
 			],
-			groupBy: 'ingest.device.spoor_session',
-			timeframe: queryTimeframe,
+			groupBy: ['time.week','user.uuid'],
+			timeframe: {
+				start: startDate,
+				end: currDate
+			},
+			timezone: 'UTC'
+		}, queryOpts)),
+		new Keen.Query('count_unique', Object.assign({
+			targetProperty: 'user.uuid',
+			eventCollection: 'dwell',
+			filters: [
+				{
+					operator: 'eq',
+					property_name: 'user.ab.frontPageLayoutPrototype',
+					property_value: state
+				},
+				{
+					operator: 'exists',
+					property_name: 'user.uuid',
+					property_value: true
+				}
+			],
+			groupBy: ['time.week'],
+			timeframe: {
+				start: startDate,
+				end: currDate
+			},
 			timezone: 'UTC'
 		}, queryOpts)),
 	];
 
-	var charts = new Map([['mean'], ['total']]);
+	var charts = new Map([['mean'], ['atLeast1'], ['atLeast3'], ['atLeast5']]);
 	charts.forEach((value, key, map) => {
 		map.set(key, new Keen.Dataviz()
 				.el(document.getElementById("metric_" + key + "_volume__" + state))
 				.prepare());
 	});
 
-	client.run(pageViewsQueries, (err, results) => {
-		var data = results.result;
 
-		// remove any session > 20 page views as these are outliers
-		var clean = data.filter(function (a) {
-			return (a.result <= 20);
+
+	client.run(pageViewsQueries, (err, [articlesRead, users]) => {
+		const byWeek = _.groupBy(articlesRead.result, 'time.week');
+		const data = Object.keys(byWeek).map((week, index) => {
+			const visitsForWeek = byWeek[week];
+
+			const atLeastNUsers = (n) => {
+				const filteredVisits = visitsForWeek.filter(visit => visit.result >= n);
+				return (filteredVisits.length / users.result[index].result) * 100
+			}
+
+			const mean = visitsForWeek.reduce(function(prev, current) {
+				return prev + current.result;
+			}, 0) / users.result[index].result;
+			return {
+				'time.week': week,
+				'atLeast1': atLeastNUsers(1),
+				'atLeast3': atLeastNUsers(3),
+				'atLeast5': atLeastNUsers(5),
+				'mean': mean
+			}
 		});
 
-		var average = clean.reduce(function(prev, current) {
-			return prev + current.result;
-		}, 0) / clean.length;
+
+		var totals = data.reduce(function(prev, current) {
+			return {
+				'time.week': current['time.week'],
+				'atLeast1': prev['atLeast1'] + current['atLeast1'],
+				'atLeast3':  prev['atLeast3'] + current['atLeast3'],
+				'atLeast5':  prev['atLeast5'] + current['atLeast5'],
+				'mean':  prev['mean'] + current['mean']
+			};
+		}, {
+			'time.week': null,
+			'atLeast1': 0,
+			'atLeast3': 0,
+			'atLeast5': 0,
+			'mean': 0
+		});
+
+		var average = {
+			'time.week': totals['time.week'],
+			'atLeast1': totals['atLeast1'] / data.length,
+			'atLeast3': totals['atLeast3'] / data.length,
+			'atLeast5': totals['atLeast5'] / data.length,
+			'mean': totals['mean'] / data.length
+		};
+
 		charts.get('mean')
 			.data({
-				result: average
+				result: average['mean']
 			})
 		.title('Mean articles read per session for ' + state)
 			.render();
-		charts.get('total')
-			.data({
-				result: clean.length
-			})
-		.colors(['#91DCD0'])
-			.title('Total articles read for ' + state)
-			.render();
+
+		[1, 3, 5].map((n) => {
+			charts.get('atLeast' + n)
+				.data({
+					result: average['atLeast' + n]
+				})
+			.colors(['#91DCD0'])
+				.title('% reading at least ' + n + ' article for ' + state)
+				.render();
+
+		})
+
+
 	});
 
 };
@@ -74,7 +145,10 @@ var generateFrequency = (timeframe, state, filters=[]) => {
 		var query = options.query || 'count_unique';
 		var parameters = {
 			eventCollection: options.eventCollection || "dwell",
-			timeframe: queryTimeframe,
+			timeframe: {
+			start: startDate,
+			end: currDate
+		},
 			targetProperty: options.targetProperty,
 			timezone: "UTC",
 			filters: [
@@ -116,7 +190,7 @@ var generateFrequency = (timeframe, state, filters=[]) => {
 		.prepare();
 
 	var queryLastVisitPerUser = keenQuery({
-		timeframe: timeframe,
+		timeframe: 'this_7_days',
 		query: 'maximum',
 		targetProperty: 'time.day',
 		groupBy: 'user.uuid',
@@ -125,7 +199,10 @@ var generateFrequency = (timeframe, state, filters=[]) => {
 	});
 
 	var queryVisitsPerUser = keenQuery({
-		timeframe: timeframe,
+		timeframe: {
+			start: startDate,
+			end: currDate
+		},
 		targetProperty: 'time.day',
 		groupBy: 'user.uuid',
 		interval: false,

@@ -1,31 +1,37 @@
 <h1>A/B - Front Page Layout Prototype</h1>
-<p>For 7 day period unless otherwise stated</p>
-
-<p>
-	Timeframe:
-	<a href="?timeframe=this_7_days">7 days</a> |
-	<a href="?timeframe=this_14_days">14 days</a> |
-	<a href="?timeframe=this_30_days">30 days</a> |
-	<a href="?timeframe=this_60_days">60 days</a> |
-	<a href="?timeframe=this_90_days">90 days</a>
-</p>
+<p>Since 2015-12-07</p>
 
 <h3>Volume - average</h3>
-<p>In the specified time frame, how many articles do users read per session.</p>
+<p>How many articles do users read per week? (Averaged across the weeks since the AB test began)</p>
 <div class="chart__container__metrics">
 	<span class="chart__container chart__container--half" id="metric_mean_volume__control"></span>
 	<span class="chart__container chart__container--half" id="metric_mean_volume__variant"></span>
 </div>
 
-<h3>Volume - total</h3>
-<p>In the specified time frame, how many articles were read.</p>
+
+<h3>Volume - atLeast1</h3>
+<p>What % of users read at least 1 article per week? (Averaged across the weeks since the AB test began)</p>
 <div class="chart__container__metrics">
-	<span class="chart__container chart__container--half" id="metric_total_volume__control"></span>
-	<span class="chart__container chart__container--half" id="metric_total_volume__variant"></span>
+	<span class="chart__container chart__container--half" id="metric_atLeast1_volume__control"></span>
+	<span class="chart__container chart__container--half" id="metric_atLeast1_volume__variant"></span>
+</div>
+
+<h3>Volume - atLeast3</h3>
+<p>What % of users read at least 3 article per week? (Averaged across the weeks since the AB test began)</p>
+<div class="chart__container__metrics">
+	<span class="chart__container chart__container--half" id="metric_atLeast3_volume__control"></span>
+	<span class="chart__container chart__container--half" id="metric_atLeast3_volume__variant"></span>
+</div>
+
+<h3>Volume - atLeast5</h3>
+<p>What % of users read at least 5 article per week? (Averaged across the weeks since the AB test began)</p>
+<div class="chart__container__metrics">
+	<span class="chart__container chart__container--half" id="metric_atLeast5_volume__control"></span>
+	<span class="chart__container chart__container--half" id="metric_atLeast5_volume__variant"></span>
 </div>
 
 <h3>Frequency</h3>
-<p>In the specified time frame, how many days on average do users visit next.ft.com.</p>
+<p>In the last 7 days, how many days on average do users visit next.ft.com.</p>
 <div class="chart__container__metrics">
 	<span class="chart__container chart__container--half" id="metric_average_frequency__control"></span>
 	<span class="chart__container chart__container--half" id="metric_average_frequency__variant"></span>
