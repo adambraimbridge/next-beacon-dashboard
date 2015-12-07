@@ -8,6 +8,12 @@ const queryTimeframe = queryParameters.timeframe || "this_7_days";
 
 const startDate = "2015-12-01";
 const currDate = new Date().toISOString();
+
+const colors = {
+	control: '#91DCD0',
+	variant: '#49c5b1'
+};
+
 var generateAverageViews = (type, state, queryOpts = {}) => {
 
 	var pageViewsQueries = [
@@ -122,15 +128,16 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 				result: average['mean']
 			})
 		.title('Mean articles read per session for ' + state)
-			.render();
+		.colors([colors[state]])
+		.render();
 
 		[1, 3, 5].map((n) => {
 			charts.get('atLeast' + n)
 				.data({
 					result: average['atLeast' + n]
 				})
-			.colors(['#91DCD0'])
-				.title('% reading at least ' + n + ' article for ' + state)
+				.colors([colors[state]])
+				.title('% reading at least ' + n + ' article(s) for ' + state)
 				.render();
 
 		})
@@ -221,6 +228,7 @@ var generateFrequency = (timeframe, state, filters=[]) => {
 
 		metricAverageFrequency
 			.parseRawData({ result:parseFloat(averageVisitsPerUser) })
+			.colors([colors[state]])
 			.render();
 	});
 
