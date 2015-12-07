@@ -214,8 +214,6 @@ const getDataForTimeframe = (timeframe, interval, abCohort) => {
 						const clicks = matchingClicks.reduce((prev, curr) => (prev + curr.result), 0);
 						const uniqueClickers = Object.keys(_.chain(matchingClicks).groupBy('user.uuid').value());
 
-						console.log(`Total Users Count: ${totalUsersCount}`);
-						console.log(`Unique Clickers Length: ${uniqueClickers.length}`);
 
 						return {
 							component: line.component,
