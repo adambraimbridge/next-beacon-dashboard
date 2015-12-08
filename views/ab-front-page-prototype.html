@@ -1,5 +1,15 @@
-<h1>A/B - Front Page Layout Prototype</h1>
+<h1>A/B - Front Page Layout Prototype {{#if query.layout}}(Layout: {{query.layout}}){{/if}}</h1>
 <p>Since 2015-12-07</p>
+
+<div>
+	<a href="?" >all</a>
+	<a href="?layout=default" >default</a>
+	<a href="?layout=XS">XS</a>
+	<a href="?layout=S">S</a>
+	<a href="?layout=M">M</a>
+	<a href="?layout=L">L</a>
+	<a href="?layout=XL">XL</a>
+</div>
 
 <h2>Volume</h2>
 <p>How many articles do users read per week? (Averaged across the weeks since the AB test began)</p>

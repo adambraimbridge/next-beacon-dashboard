@@ -3,7 +3,7 @@
 
 var client = require('../../lib/wrapped-keen');
 const queryString = require('querystring');
-const queryParameters = queryString.parse(location.search);
+const queryParameters = queryString.parse(location.search.substr(1));
 const queryTimeframe = queryParameters.timeframe || "this_7_days";
 
 const startDate = "2015-12-07";
@@ -14,28 +14,42 @@ const colors = {
 	variant: '#49c5b1'
 };
 
+const getFilters = (state, pageType) => {
+	let filters = [{
+		operator: 'eq',
+		property_name: 'user.ab.frontPageLayoutPrototype',
+		property_value: state
+	},
+	{
+		operator: 'exists',
+		property_name: 'user.uuid',
+		property_value: true
+	}];
+
+	if(queryParameters['layout']) {
+		filters.push({
+      operator: 'eq',
+      property_name: 'ingest.user.layout',
+      property_value: queryParameters['layout']
+    })
+	}
+
+	if(pageType) {
+		filters.push({
+			operator: 'eq',
+			property_name: 'page.location.type',
+			property_value: pageType
+		});
+	}
+	return filters;
+};
+
 var generateAverageViews = (type, state, queryOpts = {}) => {
 
 	var pageViewsQueries = [
 		new Keen.Query('count', Object.assign({
 			eventCollection: 'dwell',
-			filters: [
-				{
-					operator: 'eq',
-					property_name: 'user.ab.frontPageLayoutPrototype',
-					property_value: state
-				},
-				{
-					operator: 'exists',
-					property_name: 'user.uuid',
-					property_value: true
-				},
-				{
-					operator: 'eq',
-					property_name: 'page.location.type',
-					property_value: 'article'
-				}
-			],
+			filters: getFilters(state, 'article'),
 			groupBy: ['time.week','user.uuid'],
 			timeframe: {
 				start: startDate,
@@ -46,18 +60,7 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 		new Keen.Query('count_unique', Object.assign({
 			targetProperty: 'user.uuid',
 			eventCollection: 'dwell',
-			filters: [
-				{
-					operator: 'eq',
-					property_name: 'user.ab.frontPageLayoutPrototype',
-					property_value: state
-				},
-				{
-					operator: 'exists',
-					property_name: 'user.uuid',
-					property_value: true
-				}
-			],
+			filters: getFilters(state),
 			groupBy: ['time.week'],
 			timeframe: {
 				start: startDate,
@@ -163,18 +166,7 @@ var generateFrequency = (timeframe, state) => {
 			timeframe: 'this_7_days',
 			targetProperty: options.targetProperty,
 			timezone: "UTC",
-			filters: [
-				{
-					operator: 'eq',
-					property_name: 'user.ab.frontPageLayoutPrototype',
-					property_value: state
-				},
-				{
-					operator: 'exists',
-					property_name: 'user.uuid',
-					property_value: true
-				}
-			],
+			filters: getFilters(state),
 			maxAge: 10800
 		};
 
