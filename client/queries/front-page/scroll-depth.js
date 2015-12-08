@@ -1,60 +1,17 @@
 /* global Keen */
 'use strict';
 
-var queryString = require('querystring');
-var queryParameters = queryString.parse(location.search.substr(1));
-
 var client = require('../../lib/wrapped-keen');
 
-const breakpoints = ['default', 'XS', 'S', 'M', 'L', 'XL'];
-const userTypes = ['subscriber', 'registered', 'anonymous'];
-
 var render = () => {
-	var currentUserType = queryParameters['user-type'] || userTypes[0];
-	var el = document.getElementById('charts');
-
-	var scrollDepthEl = document.createElement('div');
-	scrollDepthEl.classList.add('o-grid-row');
-	scrollDepthEl.innerHTML = `<h2 data-o-grid-colspan="12">Percentage of visitors that see the 1st component, 2nd component, etc</h2>`;
-	el.appendChild(scrollDepthEl);
-
-	// add user type toggle
-	var userTypeEl = document.createElement('div');
-	userTypeEl.classList.add('nav--horizontal');
-	userTypeEl.dataset.oGridColspan = '12';
-	var userItems = userTypes
-		.map(userType =>
-			userType === currentUserType ? `<li>${userType}</li>` : `<li><a href="?user-type=${userType}">${userType}</a></li>`
-		)
-		.join('');
-	userTypeEl.innerHTML = `
-		<h3>User type: </h3>
-		<ul>
-			${userItems}
-		</ul>
-	`;
-	scrollDepthEl.insertBefore(userTypeEl, scrollDepthEl.firstChild);
-
-	var scrollDepthCharts = {};
-	breakpoints.forEach(breakpoint => {
-		var graphEl = document.createElement('div');
-		graphEl.dataset.oGridColspan = '12';
-		graphEl.classList.add('o-tabs__tabpanel');
-		graphEl.id = breakpoint;
-		scrollDepthEl.appendChild(graphEl);
-
-		scrollDepthCharts[breakpoint] = new Keen.Dataviz()
-			.chartType('areachart')
-			.el(graphEl)
-			.height(450)
-			.chartOptions({
-				isStacked: true,
-				hAxis: {
-					format: 'EEE d'
-				}
-			})
-			.prepare();
-	});
+	const scrollDepthChart = new Keen.Dataviz()
+		.chartType('columnchart')
+		.el(document.getElementById('charts'))
+		.height(450)
+		.chartOptions({
+			isStacked: true
+		})
+		.prepare();
 
 	var scrollDepthQuery = new Keen.Query('count', {
 		eventCollection: 'scrolldepth',
@@ -65,56 +22,41 @@ var render = () => {
 				property_value: 'frontpage'
 			},
 			{
-				operator: 'exists',
-				property_name: 'meta.componentPos',
-				property_value: true
-			},
-			{
-				operator: 'ne',
-				property_name: 'ingest.user.layout',
-				property_value: ''
-			},
-			{
 				operator: 'eq',
-				property_name: 'cohort.incumbent',
-				property_value: currentUserType
+				property_name: 'ab.frontPageLayoutPrototype',
+				property_value: 'control'
+			},
+			{
+				operator: 'exists',
+				property_name: 'meta.domPath',
+				property_value: true
 			}
 		],
-		groupBy: ['meta.componentPos', 'ingest.user.layout'],
+		groupBy: ['meta.componentPos', 'meta.domPath'],
 		timeframe: 'previous_14_days',
-		interval: 'daily',
 		timezone: 'UTC'
 	});
 
+	function controlFilter (resultObject) {
+		return	(resultObject['meta.componentPos'] === 1 && resultObject['meta.domPath'] === 'lead-today') ||
+				(resultObject['meta.componentPos'] === 2 && resultObject['meta.domPath'] === 'editors-picks') ||
+				(resultObject['meta.componentPos'] === 3 && resultObject['meta.domPath'] === 'opinion') ||
+				(resultObject['meta.componentPos'] === 4 && resultObject['meta.domPath'] === 'topic-life-arts') ||
+				(resultObject['meta.componentPos'] === 5 && resultObject['meta.domPath'] === 'topic-markets') ||
+				(resultObject['meta.componentPos'] === 6 && resultObject['meta.domPath'] === 'topic-technology') ||
+				(resultObject['meta.componentPos'] === 7 && resultObject['meta.domPath'] === 'video-picks')
+	}
+
 	client.run(scrollDepthQuery, (err, results) => {
-		Object.keys(scrollDepthCharts).forEach(breakpoint => {
-			// change results to percentage
-			var result = results.result.map(result => {
-				var breakpointValue = result.value.filter(value => value['ingest.user.layout'] === breakpoint);
-				var total = breakpointValue.reduce((currentTotal, value) => currentTotal += value.result, 0);
-				var newValue = breakpointValue.map(value => {
-					var newResult = total ? parseFloat(((100 / total) * value.result).toFixed(2)) : 0;
+		const result = results.result.map(result => {
+			result['meta.domPath'] = result['meta.domPath'][0]
+			return result;
+		}).filter(controlFilter);
 
-					return Object.assign({}, { result: newResult, category: value['meta.componentPos'] });
-				});
-
-				return Object.assign({}, result, { value: newValue });
-			});
-			scrollDepthCharts[breakpoint]
-				.data({ result })
-				.render();
-		});
-
-		var tabsEl = document.createElement('ul');
-		tabsEl.dataset.oComponent = 'o-tabs';
-		tabsEl.dataset.oGridColspan = '12';
-		tabsEl.className = 'o-tabs o-tabs--buttontabs';
-		tabsEl.setAttribute('role', 'tablist');
-		tabsEl.innerHTML = breakpoints
-			.map(breakpoint => `<li role="tab"><a href="#${breakpoint}">${breakpoint}</a></li>`)
-			.join('');
-		scrollDepthEl.insertBefore(tabsEl, scrollDepthEl.querySelector('.o-tabs__tabpanel'));
-		window.Origami['o-tabs'].init();
+		scrollDepthChart
+			.data({ result })
+			.labels(['Lead today [1]', 'Editor\'s pick [2]', 'Opinion [3]', 'Life & Arts [4]', 'Markets [5]', 'Technology [6]', 'Video [7]'])
+			.render();
 	});
 };
 
