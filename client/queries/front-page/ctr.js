@@ -77,7 +77,8 @@ const filter = {
 		]
 };
 
-const getDataForTimeframe = (timeframe, interval, abCohort) => {
+const getDataForTimeframe = (timeframeDays, interval, abCohort) => {
+	const timeframe = `previous_${timeframeDays}_days`;
 
 	let defaultFilters = filter.isOnHomepage.concat(filter[`ab${capitalise(abCohort)}`] || []);
 
@@ -86,10 +87,7 @@ const getDataForTimeframe = (timeframe, interval, abCohort) => {
 			target_property: 'user.uuid',
 			filters: defaultFilters.concat(filter.hasLayout),
 			groupBy: ['ingest.user.layout'],
-			timeframe: {
-				start: daysAgo(28),
-				end: daysAgo(0)
-			},
+			timeframe,
 			timezone: 'UTC',
 			interval: interval,
 			maxAge: 3600
@@ -99,10 +97,7 @@ const getDataForTimeframe = (timeframe, interval, abCohort) => {
 			eventCollection: 'dwell',
 			filters: defaultFilters.concat(filter.hasLayout),
 			groupBy: ['ingest.user.layout'],
-			timeframe: {
-				start: daysAgo(28),
-				end: daysAgo(0)
-			},
+			timeframe,
 			timezone: 'UTC',
 			interval: interval,
 			maxAge: 3600
@@ -112,10 +107,7 @@ const getDataForTimeframe = (timeframe, interval, abCohort) => {
 			eventCollection: 'dwell',
 			target_property: 'user.uuid',
 			filters: defaultFilters,
-			timeframe: {
-				start: daysAgo(28),
-				end: daysAgo(0)
-			},
+			timeframe,
 			timezone: 'UTC',
 			interval: interval,
 			maxAge: 3600
@@ -124,10 +116,7 @@ const getDataForTimeframe = (timeframe, interval, abCohort) => {
 	const totalViews = new Keen.Query('count', {
 			eventCollection: 'dwell',
 			filters: defaultFilters,
-			timeframe: {
-				start: daysAgo(28),
-				end: daysAgo(0)
-			},
+			timeframe,
 			timezone: 'UTC',
 			interval: interval,
 			maxAge: 3600
@@ -148,16 +137,22 @@ const getDataForTimeframe = (timeframe, interval, abCohort) => {
 		});
 	};
 
-	return Promise.all([
+	const queryPromises = [
 		client.run(users).then(res => res.result),
 		client.run(views).then(res => res.result),
 		client.run(totalUsers).then(res => res.result),
-		client.run(totalViews).then(res => res.result),
-		client.run(clicks(21,28)).then(res => res.result),
-		client.run(clicks(14,21)).then(res => res.result),
-		client.run(clicks(7,14)).then(res => res.result),
-		client.run(clicks(0,7)).then(res => res.result)
-	]).then(([ users, views, totalUsers, totalViews, ...clicks ]) => {
+		client.run(totalViews).then(res => res.result)
+	];
+
+	let i = timeframeDays;
+	// group the clicks by week
+	while (i > 0) {
+		queryPromises.push(client.run(clicks(i - 7, i)).then(res => res.result));
+		i -= 7;
+	}
+
+	return Promise.all(queryPromises)
+		.then(([ users, views, totalUsers, totalViews, ...clicks ]) => {
 
 		clicks = _.flatten(clicks);
 		//components = [] or []
@@ -203,7 +198,6 @@ const getDataForTimeframe = (timeframe, interval, abCohort) => {
 
 							return isMatch;
 						};
-
 						const matchingClicks = day.value.filter(filterMatches);
 						const matchingViews = views[index].value.filter(filterMatches);
 						const matchingUsers = users[index].value.filter(filterMatches);
@@ -212,8 +206,8 @@ const getDataForTimeframe = (timeframe, interval, abCohort) => {
 						const totalUsersCount = line.layout === 'all' ? totalUsers[index].value : matchingUsers.reduce((prev, curr) => (prev + curr.result), 0);
 
 						const clicks = matchingClicks.reduce((prev, curr) => (prev + curr.result), 0);
-						const uniqueClickers = Object.keys(_.chain(matchingClicks).groupBy('user.uuid').value());
 
+						const uniqueClickers = Object.keys(_.chain(matchingClicks).groupBy('user.uuid').value());
 
 						return {
 							component: line.component,
@@ -235,14 +229,15 @@ const getDataForTimeframe = (timeframe, interval, abCohort) => {
 
 
 const render = () => {
-	const timeframe = queryParameters['timeframe'] || 'this_30_days';
-	const interval = timeframe.indexOf('week') > 0 ? 'weekly' : 'daily';
-	const abCohort = queryParameters['ab-cohort'] || 'everyone';
+	const timeframeDays = queryParameters['timeframe-days'] || '28';
+	const interval = 'daily';
+	const abCohort = queryParameters['ab-cohort'] || 'control';
 
-	// un-link the selected cohort
-	document.querySelector(`.ab-cohort[href="?ab-cohort=${abCohort}"]`).outerHTML = capitalise(abCohort);
+	// un-link the selected cohort and timeframe
+	document.querySelector(`.ab-cohort[href*="ab-cohort=${abCohort}"]`).outerHTML = capitalise(abCohort);
+	document.querySelector(`.timeframe-days[href*="timeframe-days=${timeframeDays}"]`).outerHTML = timeframeDays;
 
-	const promiseOfData = getDataForTimeframe(timeframe, interval, abCohort);
+	const promiseOfData = getDataForTimeframe(timeframeDays, interval, abCohort);
 	const metrics = [
 		{
 			id: 'ctr',
@@ -309,7 +304,9 @@ const render = () => {
 	promiseOfData.then(query => {
 
 		const getCurrentState = () => {
-			const components = Array.from(document.querySelectorAll('.js-toggle-components:checked') || []).map((el) => el.getAttribute('data-component')).filter(comp => !!comp);
+			const components = Array.from(document.querySelectorAll('.js-toggle-components:checked') || [])
+				.map(el => el.dataset[abCohort])
+				.filter(comp => !!comp);
 			const layouts = Array.from(document.querySelectorAll('.js-toggle-layout:checked') || []).map((el) => el.getAttribute('data-layout')).filter(layout => !!layout);
 
 			return {
