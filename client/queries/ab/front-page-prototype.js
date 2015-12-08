@@ -192,7 +192,7 @@ var generateFrequency = (timeframe, state) => {
 	var metricAverageFrequency = new Keen.Dataviz()
 		.el(document.getElementById("metric_average_frequency__" + state))
 		.chartType("metric")
-		.title('days this week for ' + state)
+		.title('visits this week for ' + state)
 		.height(140)
 		.prepare();
 
@@ -206,7 +206,7 @@ var generateFrequency = (timeframe, state) => {
 
 	var queryVisitsPerUser = keenQuery({
 		timeframe: timeframe,
-		targetProperty: 'time.day',
+		targetProperty: 'ingest.device.spoor_session',
 		groupBy: 'user.uuid',
 		interval: false
 	});
@@ -223,6 +223,7 @@ var generateFrequency = (timeframe, state) => {
 
 		metricAverageFrequency
 		.parseRawData({ result:parseFloat(averageVisitsPerUser) })
+		.colors([colors[state]])
 		.render();
 
 	});
