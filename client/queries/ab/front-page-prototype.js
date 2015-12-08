@@ -6,7 +6,7 @@ const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search);
 const queryTimeframe = queryParameters.timeframe || "this_7_days";
 
-const startDate = "2015-12-01";
+const startDate = "2015-12-07";
 const currDate = new Date().toISOString();
 
 const colors = {
@@ -67,7 +67,7 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 		}, queryOpts)),
 	];
 
-	var charts = new Map([['mean'], ['atLeast1'], ['atLeast3'], ['atLeast5']]);
+	var charts = new Map([['mean'], ['atLeast1'], ['atLeast3'], ['atLeast5'], ['atLeast7'], ['atLeast9']]);
 	charts.forEach((value, key, map) => {
 		map.set(key, new Keen.Dataviz()
 				.el(document.getElementById("metric_" + key + "_volume__" + state))
@@ -94,6 +94,8 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 				'atLeast1': atLeastNUsers(1),
 				'atLeast3': atLeastNUsers(3),
 				'atLeast5': atLeastNUsers(5),
+				'atLeast7': atLeastNUsers(7),
+				'atLeast9': atLeastNUsers(9),
 				'mean': mean
 			}
 		});
@@ -105,6 +107,8 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 				'atLeast1': prev['atLeast1'] + current['atLeast1'],
 				'atLeast3':  prev['atLeast3'] + current['atLeast3'],
 				'atLeast5':  prev['atLeast5'] + current['atLeast5'],
+				'atLeast7':  prev['atLeast7'] + current['atLeast7'],
+				'atLeast9':  prev['atLeast9'] + current['atLeast9'],
 				'mean':  prev['mean'] + current['mean']
 			};
 		}, {
@@ -112,6 +116,8 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 			'atLeast1': 0,
 			'atLeast3': 0,
 			'atLeast5': 0,
+			'atLeast7': 0,
+			'atLeast9': 0,
 			'mean': 0
 		});
 
@@ -120,6 +126,8 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 			'atLeast1': totals['atLeast1'] / data.length,
 			'atLeast3': totals['atLeast3'] / data.length,
 			'atLeast5': totals['atLeast5'] / data.length,
+			'atLeast7': totals['atLeast7'] / data.length,
+			'atLeast9': totals['atLeast9'] / data.length,
 			'mean': totals['mean'] / data.length
 		};
 
@@ -131,7 +139,7 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 		.colors([colors[state]])
 		.render();
 
-		[1, 3, 5].map((n) => {
+		[1, 3, 5, 7, 9].map((n) => {
 			charts.get('atLeast' + n)
 				.data({
 					result: average['atLeast' + n]
@@ -147,15 +155,12 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 
 };
 
-var generateFrequency = (timeframe, state, filters=[]) => {
+var generateFrequency = (timeframe, state) => {
 	var keenQuery = function(options) {
 		var query = options.query || 'count_unique';
 		var parameters = {
 			eventCollection: options.eventCollection || "dwell",
-			timeframe: {
-			start: startDate,
-			end: currDate
-		},
+			timeframe: 'this_7_days',
 			targetProperty: options.targetProperty,
 			timezone: "UTC",
 			filters: [
@@ -168,11 +173,6 @@ var generateFrequency = (timeframe, state, filters=[]) => {
 					operator: 'exists',
 					property_name: 'user.uuid',
 					property_value: true
-				},
-				{
-					operator: 'eq',
-					property_name: 'page.location.type',
-					property_value: 'article'
 				}
 			],
 			maxAge: 10800
@@ -192,44 +192,39 @@ var generateFrequency = (timeframe, state, filters=[]) => {
 	var metricAverageFrequency = new Keen.Dataviz()
 		.el(document.getElementById("metric_average_frequency__" + state))
 		.chartType("metric")
-		.title(timeframe.replace(/_/g, ' ') + ' for ' + state)
+		.title('days this week for ' + state)
 		.height(140)
 		.prepare();
 
-	var queryLastVisitPerUser = keenQuery({
-		timeframe: 'this_7_days',
-		query: 'maximum',
-		targetProperty: 'time.day',
-		groupBy: 'user.uuid',
-		interval: false,
-		filters: filters
+
+	var queryTotalUsers = keenQuery({
+		timeframe: timeframe,
+		query: 'count_unique',
+		targetProperty: 'user.uuid',
+		interval: false
 	});
 
 	var queryVisitsPerUser = keenQuery({
-		timeframe: {
-			start: startDate,
-			end: currDate
-		},
+		timeframe: timeframe,
 		targetProperty: 'time.day',
 		groupBy: 'user.uuid',
-		interval: false,
-		filters: filters
+		interval: false
 	});
 
 
-	client.run([queryVisitsPerUser, queryLastVisitPerUser], function() {
+	client.run([queryVisitsPerUser, queryTotalUsers], function() {
 		var visitsPerUser = this.data[0].result;
-		var totalUniqueUsers = visitsPerUser.length;
+		var totalUniqueUsers = this.data[1].result;
 
 		//Work out the average days visiting the site in the timeframe
-		var averageVisitsPerUser = visitsPerUser.reduce(function(memo, user) {
+		var averageVisitsPerUser = _.reduce(visitsPerUser, function(memo, user) {
 			return memo + user.result;
 		}, 0) / totalUniqueUsers;
 
 		metricAverageFrequency
-			.parseRawData({ result:parseFloat(averageVisitsPerUser) })
-			.colors([colors[state]])
-			.render();
+		.parseRawData({ result:parseFloat(averageVisitsPerUser) })
+		.render();
+
 	});
 
 
