@@ -168,11 +168,6 @@ var generateFrequency = (timeframe, state, filters=[]) => {
 					operator: 'exists',
 					property_name: 'user.uuid',
 					property_value: true
-				},
-				{
-					operator: 'eq',
-					property_name: 'page.location.type',
-					property_value: 'article'
 				}
 			],
 			maxAge: 10800
@@ -192,44 +187,41 @@ var generateFrequency = (timeframe, state, filters=[]) => {
 	var metricAverageFrequency = new Keen.Dataviz()
 		.el(document.getElementById("metric_average_frequency__" + state))
 		.chartType("metric")
-		.title(timeframe.replace(/_/g, ' ') + ' for ' + state)
+		.title('days this week for ' + state)
 		.height(140)
 		.prepare();
 
+
 	var queryLastVisitPerUser = keenQuery({
-		timeframe: 'this_7_days',
+		timeframe: timeframe,
 		query: 'maximum',
 		targetProperty: 'time.day',
 		groupBy: 'user.uuid',
-		interval: false,
-		filters: filters
+		interval: false
 	});
 
 	var queryVisitsPerUser = keenQuery({
-		timeframe: {
-			start: startDate,
-			end: currDate
-		},
+		timeframe: timeframe,
 		targetProperty: 'time.day',
 		groupBy: 'user.uuid',
-		interval: false,
-		filters: filters
+		interval: false
 	});
 
 
 	client.run([queryVisitsPerUser, queryLastVisitPerUser], function() {
 		var visitsPerUser = this.data[0].result;
+		var lastVisitPerUser = this.data[1].result;
 		var totalUniqueUsers = visitsPerUser.length;
 
 		//Work out the average days visiting the site in the timeframe
-		var averageVisitsPerUser = visitsPerUser.reduce(function(memo, user) {
+		var averageVisitsPerUser = _.reduce(visitsPerUser, function(memo, user) {
 			return memo + user.result;
 		}, 0) / totalUniqueUsers;
 
 		metricAverageFrequency
-			.parseRawData({ result:parseFloat(averageVisitsPerUser) })
-			.colors([colors[state]])
-			.render();
+		.parseRawData({ result:parseFloat(averageVisitsPerUser) })
+		.render();
+
 	});
 
 
