@@ -155,7 +155,7 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 
 };
 
-var generateFrequency = (timeframe, state, filters=[]) => {
+var generateFrequency = (timeframe, state) => {
 	var keenQuery = function(options) {
 		var query = options.query || 'count_unique';
 		var parameters = {
@@ -197,11 +197,10 @@ var generateFrequency = (timeframe, state, filters=[]) => {
 		.prepare();
 
 
-	var queryLastVisitPerUser = keenQuery({
+	var queryTotalUsers = keenQuery({
 		timeframe: timeframe,
-		query: 'maximum',
-		targetProperty: 'time.day',
-		groupBy: 'user.uuid',
+		query: 'count_unique',
+		targetProperty: 'user.uuid',
 		interval: false
 	});
 
@@ -213,10 +212,9 @@ var generateFrequency = (timeframe, state, filters=[]) => {
 	});
 
 
-	client.run([queryVisitsPerUser, queryLastVisitPerUser], function() {
+	client.run([queryVisitsPerUser, queryTotalUsers], function() {
 		var visitsPerUser = this.data[0].result;
-		var lastVisitPerUser = this.data[1].result;
-		var totalUniqueUsers = visitsPerUser.length;
+		var totalUniqueUsers = this.data[1].result;
 
 		//Work out the average days visiting the site in the timeframe
 		var averageVisitsPerUser = _.reduce(visitsPerUser, function(memo, user) {
