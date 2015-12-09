@@ -49,22 +49,24 @@ var render = () => {
 	}
 
 	const controlFilter = (resultObject) => {
-		return	(resultObject['meta.componentPos'] === 1 && resultObject['meta.domPath'] === 'lead-today') ||
-				(resultObject['meta.componentPos'] === 2 && resultObject['meta.domPath'] === 'editors-picks') ||
-				(resultObject['meta.componentPos'] === 3 && resultObject['meta.domPath'] === 'opinion') ||
-				(resultObject['meta.componentPos'] === 4 && resultObject['meta.domPath'] === 'topic-life-arts') ||
-				(resultObject['meta.componentPos'] === 5 && resultObject['meta.domPath'] === 'topic-markets') ||
-				(resultObject['meta.componentPos'] === 6 && resultObject['meta.domPath'] === 'topic-technology') ||
-				(resultObject['meta.componentPos'] === 7 && resultObject['meta.domPath'] === 'video-picks')
+		return	(resultObject['meta.componentPos'] === 1 && resultObject['meta.domPath'][0] === 'lead-today') ||
+				(resultObject['meta.componentPos'] === 2 && resultObject['meta.domPath'][0] === 'editors-picks') ||
+				(resultObject['meta.componentPos'] === 3 && resultObject['meta.domPath'][0] === 'opinion') ||
+				(resultObject['meta.componentPos'] === 4 && resultObject['meta.domPath'][0] === 'topic-life-arts') ||
+				(resultObject['meta.componentPos'] === 5 && resultObject['meta.domPath'][0] === 'topic-markets') ||
+				(resultObject['meta.componentPos'] === 6 && resultObject['meta.domPath'][0] === 'topic-technology') ||
+				(resultObject['meta.componentPos'] === 7 && resultObject['meta.domPath'][0] === 'video-picks')
 	}
 
 	client.run(scrollDepthQuery, (err, results) => {
 		const total = acquireTotal(results);
-		const result = results.result.map(result => {
+		const result = results.result.filter(controlFilter).map(result => {
 			result['meta.domPath'] = result['meta.domPath'][0];
 			result['result'] = calculatePercentage(result, total);
 			return result;
-		}).filter(controlFilter);
+		}).sort((a,b) => {
+			return parseFloat(a['meta.componentPos']) - parseFloat(b['meta.componentPos']);
+		});
 
 		scrollDepthChart
 			.data({ result })
