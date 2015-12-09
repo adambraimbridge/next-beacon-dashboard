@@ -6,6 +6,7 @@ var queryParameters = queryString.parse(location.search.substr(1));
 
 var client = require('../../lib/wrapped-keen');
 
+const breakpoints = ['default', 'XS', 'S', 'M', 'L', 'XL'];
 const userTypes = ['subscriber', 'registered', 'anonymous'];
 
 var render = () => {
@@ -33,20 +34,24 @@ var render = () => {
 		</ul>
 	`;
 	scrollDepthEl.insertBefore(userTypeEl, scrollDepthEl.firstChild);
-	
-	var graphEl = document.createElement('div');
-	graphEl.dataset.oGridColspan = '12';
-	graphEl.classList.add('o-tabs__tabpanel');
-	scrollDepthEl.appendChild(graphEl);
 
-	const scrollDepthChart = new Keen.Dataviz()
-		.chartType('columnchart')
-		.el(graphEl)
-		.height(450)
-		.chartOptions({
-			isStacked: true
-		})
-		.prepare();
+	var scrollDepthCharts = {};
+	breakpoints.forEach(breakpoint => {
+		var graphEl = document.createElement('div');
+		graphEl.dataset.oGridColspan = '12';
+		graphEl.classList.add('o-tabs__tabpanel');
+		graphEl.id = breakpoint;
+		scrollDepthEl.appendChild(graphEl);
+
+		scrollDepthCharts[breakpoint] = new Keen.Dataviz()
+			.chartType('columnchart')
+			.el(graphEl)
+			.height(450)
+			.chartOptions({
+				isStacked: true
+			})
+			.prepare();
+	});
 
 	var scrollDepthQuery = new Keen.Query('count', {
 		eventCollection: 'scrolldepth',
@@ -77,20 +82,20 @@ var render = () => {
 				property_value: currentUserType
 			}
 		],
-		groupBy: ['meta.componentPos', 'meta.domPath'],
+		groupBy: ['meta.componentPos', 'meta.domPath', 'ingest.user.layout'],
 		timeframe: 'previous_14_days',
 		timezone: 'UTC'
 	});
 
-	const acquireTotal = (results) => {
-		const leadTodayObject = results.result.filter((resultObject) => {
+	const acquireTotal = (resultObjectArray) => {
+		const leadTodayObject = resultObjectArray.filter((resultObject) => {
 			return (resultObject['meta.componentPos'] === 1 && resultObject['meta.domPath'][0] === 'lead-today')
 		});
 		return leadTodayObject ? leadTodayObject[0]['result'] : null
 	}
 
 	const calculatePercentage = (result, total) => {
-		return (100 / total) * result['result'];
+		return parseFloat(((100 / total) * result['result']).toFixed(2));
 	}
 
 	const controlFilter = (resultObject) => {
@@ -98,25 +103,42 @@ var render = () => {
 		return controlFilterPaths[resultObject['meta.componentPos'] - 1] === resultObject['meta.domPath'][0]
 	}
 
-	client.run(scrollDepthQuery, (err, results) => {
-		const total = acquireTotal(results);
-		const result = results.result.filter(controlFilter).sort((a,b) => {
-			return parseFloat(a['meta.componentPos']) - parseFloat(b['meta.componentPos']);
-		}).map(result => {
-			result['result'] = calculatePercentage(result, total);
-			result['meta.componentPos'] = result['meta.domPath'][0] + ' [' + result['meta.componentPos'] + ']';
-			return result;
-		});
+	const breakpointFilter = (breakpoint, resultObject) => {
+		return resultObject['ingest.user.layout'] === breakpoint;
+	}
 
-		scrollDepthChart
-			.data({ result })
-			.render();
+	client.run(scrollDepthQuery, (err, results) => {
+		Object.keys(scrollDepthCharts).forEach(breakpoint => {
+			const result = results.result.filter(breakpointFilter.bind(this, breakpoint)).filter(controlFilter).map((result) => {
+				return result;
+			}).sort((a,b) => {
+				return parseFloat(a['meta.componentPos']) - parseFloat(b['meta.componentPos']);
+			})
+
+			const total = acquireTotal(result);
+			result.map((result) => {
+				result['result'] = calculatePercentage(result, total);
+				result['label'] = result['meta.domPath'][0] + ' [' + result['meta.componentPos'] + ']';
+				delete result['ingest.user.layout'];
+				delete result['meta.componentPos'];
+				delete result['meta.domPath'];
+				return result;
+			});
+
+			scrollDepthCharts[breakpoint]
+				.data({ result })
+				.render();
+		});
 
 		var tabsEl = document.createElement('ul');
 		tabsEl.dataset.oComponent = 'o-tabs';
 		tabsEl.dataset.oGridColspan = '12';
 		tabsEl.className = 'o-tabs o-tabs--buttontabs';
 		tabsEl.setAttribute('role', 'tablist');
+		tabsEl.innerHTML = breakpoints
+			.map(breakpoint => `<li role="tab"><a href="#${breakpoint}">${breakpoint}</a></li>`)
+			.join('');
+		scrollDepthEl.insertBefore(tabsEl, scrollDepthEl.querySelector('.o-tabs__tabpanel'));
 		window.Origami['o-tabs'].init();
 	});
 };
