@@ -37,7 +37,18 @@ var render = () => {
 		timezone: 'UTC'
 	});
 
-	function controlFilter (resultObject) {
+	const acquireTotal = (results) => {
+		const leadTodayObject = results.result.filter((resultObject) => {
+			return (resultObject['meta.componentPos'] === 1 && resultObject['meta.domPath'][0] === 'lead-today')
+		});
+		return leadTodayObject ? leadTodayObject[0]['result'] : null
+	}
+
+	const calculatePercentage = (result, total) => {
+		return (100 / total) * result['result'];
+	}
+
+	const controlFilter = (resultObject) => {
 		return	(resultObject['meta.componentPos'] === 1 && resultObject['meta.domPath'] === 'lead-today') ||
 				(resultObject['meta.componentPos'] === 2 && resultObject['meta.domPath'] === 'editors-picks') ||
 				(resultObject['meta.componentPos'] === 3 && resultObject['meta.domPath'] === 'opinion') ||
@@ -48,8 +59,10 @@ var render = () => {
 	}
 
 	client.run(scrollDepthQuery, (err, results) => {
+		const total = acquireTotal(results);
 		const result = results.result.map(result => {
-			result['meta.domPath'] = result['meta.domPath'][0]
+			result['meta.domPath'] = result['meta.domPath'][0];
+			result['result'] = calculatePercentage(result, total);
 			return result;
 		}).filter(controlFilter);
 
