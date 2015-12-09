@@ -22,6 +22,11 @@ var render = () => {
 				property_value: 'frontpage'
 			},
 			{
+				operator: 'exists',
+				property_name: 'ab.frontPageLayoutPrototype',
+				property_value: true
+			},
+			{
 				operator: 'eq',
 				property_name: 'ab.frontPageLayoutPrototype',
 				property_value: 'control'
