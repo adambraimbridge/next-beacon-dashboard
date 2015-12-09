@@ -49,13 +49,8 @@ var render = () => {
 	}
 
 	const controlFilter = (resultObject) => {
-		return	(resultObject['meta.componentPos'] === 1 && resultObject['meta.domPath'][0] === 'lead-today') ||
-				(resultObject['meta.componentPos'] === 2 && resultObject['meta.domPath'][0] === 'editors-picks') ||
-				(resultObject['meta.componentPos'] === 3 && resultObject['meta.domPath'][0] === 'opinion') ||
-				(resultObject['meta.componentPos'] === 4 && resultObject['meta.domPath'][0] === 'topic-life-arts') ||
-				(resultObject['meta.componentPos'] === 5 && resultObject['meta.domPath'][0] === 'topic-markets') ||
-				(resultObject['meta.componentPos'] === 6 && resultObject['meta.domPath'][0] === 'topic-technology') ||
-				(resultObject['meta.componentPos'] === 7 && resultObject['meta.domPath'][0] === 'video-picks')
+		const controlFilterPaths = ['lead-today', 'editors-picks', 'opinion', 'topic-life-arts', 'topic-markets', 'topic-technology', 'video-picks']
+		return controlFilterPaths[resultObject['meta.componentPos'] - 1] === resultObject['meta.domPath'][0]
 	}
 
 	client.run(scrollDepthQuery, (err, results) => {
