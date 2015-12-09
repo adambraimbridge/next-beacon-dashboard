@@ -60,17 +60,16 @@ var render = () => {
 
 	client.run(scrollDepthQuery, (err, results) => {
 		const total = acquireTotal(results);
-		const result = results.result.filter(controlFilter).map(result => {
-			result['meta.domPath'] = result['meta.domPath'][0];
-			result['result'] = calculatePercentage(result, total);
-			return result;
-		}).sort((a,b) => {
+		const result = results.result.filter(controlFilter).sort((a,b) => {
 			return parseFloat(a['meta.componentPos']) - parseFloat(b['meta.componentPos']);
+		}).map(result => {
+			result['result'] = calculatePercentage(result, total);
+			result['meta.componentPos'] = result['meta.domPath'][0] + ' [' + result['meta.componentPos'] + ']';
+			return result;
 		});
 
 		scrollDepthChart
 			.data({ result })
-			.labels(['Lead today [1]', 'Editor\'s pick [2]', 'Opinion [3]', 'Life & Arts [4]', 'Markets [5]', 'Technology [6]', 'Video [7]'])
 			.render();
 	});
 };
