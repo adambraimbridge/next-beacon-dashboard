@@ -8,9 +8,11 @@ var client = require('../../lib/wrapped-keen');
 
 const breakpoints = ['default', 'XS', 'S', 'M', 'L', 'XL'];
 const userTypes = ['subscriber', 'registered', 'anonymous'];
+const abCohortTypes = ['variant', 'control'];
 
 var render = () => {
 	var currentUserType = queryParameters['user-type'] || userTypes[0];
+	var abCohort = queryParameters['ab-cohort'] || abCohortTypes[0];
 	var el = document.getElementById('charts');
 
 	var scrollDepthEl = document.createElement('div');
@@ -18,19 +20,28 @@ var render = () => {
 	scrollDepthEl.innerHTML = `<h2 data-o-grid-colspan="12">Percentage of visitors that see the 1st component, 2nd component, etc</h2>`;
 	el.appendChild(scrollDepthEl);
 
-	// add user type toggle
 	var userTypeEl = document.createElement('div');
 	userTypeEl.classList.add('nav--horizontal');
 	userTypeEl.dataset.oGridColspan = '12';
 	var userItems = userTypes
 		.map(userType =>
-			userType === currentUserType ? `<li>${userType}</li>` : `<li><a href="?user-type=${userType}">${userType}</a></li>`
+			userType === currentUserType ? `<li>${userType}</li>` : `<li><a href="?user-type=${userType}&amp;ab-cohort=${abCohort}">${userType}</a></li>`
+		)
+		.join('');
+	var abCohortItems = abCohortTypes
+		.map(abCohortType =>
+			abCohortType === abCohort ? `<li>${abCohortType}</li>` : `<li><a href="?user-type=${currentUserType}&amp;ab-cohort=${abCohortType}">${abCohortType}</a></li>`
 		)
 		.join('');
 	userTypeEl.innerHTML = `
 		<h3>User type: </h3>
 		<ul>
 			${userItems}
+		</ul>
+		<br>
+		<h3>A/B Test:</h3>
+		<ul>
+			${abCohortItems}
 		</ul>
 	`;
 	scrollDepthEl.insertBefore(userTypeEl, scrollDepthEl.firstChild);
@@ -69,7 +80,7 @@ var render = () => {
 			{
 				operator: 'eq',
 				property_name: 'ab.frontPageLayoutPrototype',
-				property_value: 'control'
+				property_value: abCohort
 			},
 			{
 				operator: 'exists',
@@ -88,19 +99,24 @@ var render = () => {
 	});
 
 	const acquireTotal = (resultObjectArray) => {
-		const leadTodayObject = resultObjectArray.filter((resultObject) => {
-			return (resultObject['meta.componentPos'] === 1 && resultObject['meta.domPath'][0] === 'lead-today')
+		const topSectionObject = resultObjectArray.filter((resultObject) => {
+			const topSection = resultObject['meta.domPath'][0];
+			return abCohort === 'variant' ? topSection === 'top-stories' : topSection === 'lead-today';
 		});
-		return leadTodayObject ? leadTodayObject[0]['result'] : null
+		return topSectionObject ? topSectionObject[0].result : null
 	}
 
 	const calculatePercentage = (result, total) => {
-		return parseFloat(((100 / total) * result['result']).toFixed(2));
+		return parseFloat(((100 / total) * result.result).toFixed(2));
 	}
 
-	const controlFilter = (resultObject) => {
-		const controlFilterPaths = ['lead-today', 'editors-picks', 'opinion', 'topic-life-arts', 'topic-markets', 'topic-technology', 'video-picks']
-		return controlFilterPaths[resultObject['meta.componentPos'] - 1] === resultObject['meta.domPath'][0]
+	const components = {
+		variant: ['top-stories', 'opinion', 'editors-picks', 'most-popular', 'technology', 'markets', 'life-and-arts', 'video'],
+		control: ['lead-today', 'editors-picks', 'opinion', 'topic-life-arts', 'topic-markets', 'topic-technology', 'video-picks']
+	}
+
+	const validComponentFilter = (resultObject) => {
+		return components[abCohort][resultObject['meta.componentPos']-1] === resultObject['meta.domPath'][0];
 	}
 
 	const breakpointFilter = (breakpoint, resultObject) => {
@@ -109,16 +125,15 @@ var render = () => {
 
 	client.run(scrollDepthQuery, (err, results) => {
 		Object.keys(scrollDepthCharts).forEach(breakpoint => {
-			const result = results.result.filter(breakpointFilter.bind(this, breakpoint)).filter(controlFilter).map((result) => {
+			const result = results.result.filter(breakpointFilter.bind(this, breakpoint)).filter(validComponentFilter).map((result) => {
 				return result;
 			}).sort((a,b) => {
 				return parseFloat(a['meta.componentPos']) - parseFloat(b['meta.componentPos']);
-			})
-
+			});
 			const total = acquireTotal(result);
 			result.map((result) => {
-				result['result'] = calculatePercentage(result, total);
-				result['label'] = result['meta.domPath'][0] + ' [' + result['meta.componentPos'] + ']';
+				result.result = calculatePercentage(result, total);
+				result.label = result['meta.domPath'][0] + ' [' + result['meta.componentPos'] + ']';
 				delete result['ingest.user.layout'];
 				delete result['meta.componentPos'];
 				delete result['meta.domPath'];
