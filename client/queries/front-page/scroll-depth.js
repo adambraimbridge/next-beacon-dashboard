@@ -9,10 +9,12 @@ var client = require('../../lib/wrapped-keen');
 const breakpoints = ['default', 'XS', 'S', 'M', 'L', 'XL'];
 const userTypes = ['subscriber', 'registered', 'anonymous'];
 const abCohortTypes = ['variant', 'control'];
+const timeframeTypes = ['7', '14', '21', '28'];
 
 var render = () => {
 	var currentUserType = queryParameters['user-type'] || userTypes[0];
-	var abCohort = queryParameters['ab-cohort'] || abCohortTypes[0];
+	var currentabCohort = queryParameters['ab-cohort'] || abCohortTypes[0];
+	var currentTimeframe = queryParameters['timeframe'] || timeframeTypes[0];
 	var el = document.getElementById('charts');
 
 	var scrollDepthEl = document.createElement('div');
@@ -23,16 +25,25 @@ var render = () => {
 	var userTypeEl = document.createElement('div');
 	userTypeEl.classList.add('nav--horizontal');
 	userTypeEl.dataset.oGridColspan = '12';
+
 	var userItems = userTypes
 		.map(userType =>
-			userType === currentUserType ? `<li>${userType}</li>` : `<li><a href="?user-type=${userType}&amp;ab-cohort=${abCohort}">${userType}</a></li>`
+			userType === currentUserType ? `<li>${userType}</li>` : `<li><a href="?user-type=${userType}&amp;ab-cohort=${currentabCohort}&amp;timeframe=${currentTimeframe}">${userType}</a></li>`
 		)
 		.join('');
+
 	var abCohortItems = abCohortTypes
 		.map(abCohortType =>
-			abCohortType === abCohort ? `<li>${abCohortType}</li>` : `<li><a href="?user-type=${currentUserType}&amp;ab-cohort=${abCohortType}">${abCohortType}</a></li>`
+			abCohortType === currentabCohort ? `<li>${abCohortType}</li>` : `<li><a href="?user-type=${currentUserType}&amp;ab-cohort=${abCohortType}&amp;timeframe=${currentTimeframe}">${abCohortType}</a></li>`
 		)
 		.join('');
+
+	var timeframeItems = timeframeTypes
+		.map(timeframeType =>
+			timeframeType === currentTimeframe ?  `<li>${timeframeType}</li>` : `<li><a href="?user-type=${currentUserType}&amp;ab-cohort=${currentabCohort}&amp;timeframe=${timeframeType}">${timeframeType}</a></li>`
+		)
+		.join('');
+
 	userTypeEl.innerHTML = `
 		<h3>User type: </h3>
 		<ul>
@@ -42,6 +53,11 @@ var render = () => {
 		<h3>A/B Test:</h3>
 		<ul>
 			${abCohortItems}
+		</ul>
+		<br>
+		<h3>Timeframe (days):</h3>
+		<ul>
+			${timeframeItems}
 		</ul>
 	`;
 	scrollDepthEl.insertBefore(userTypeEl, scrollDepthEl.firstChild);
@@ -80,7 +96,7 @@ var render = () => {
 			{
 				operator: 'eq',
 				property_name: 'ab.frontPageLayoutPrototype',
-				property_value: abCohort
+				property_value: currentabCohort
 			},
 			{
 				operator: 'exists',
@@ -94,51 +110,42 @@ var render = () => {
 			}
 		],
 		groupBy: ['meta.componentPos', 'meta.domPath', 'ingest.user.layout'],
-		timeframe: 'previous_14_days',
+		timeframe: `previous_${currentTimeframe}_days`,
 		timezone: 'UTC'
 	});
 
-	const acquireTotal = (resultObjectArray) => {
+	const acquireTotal = resultObjectArray => {
 		const topSectionObject = resultObjectArray.filter((resultObject) => {
 			const topSection = resultObject['meta.domPath'][0];
-			return abCohort === 'variant' ? topSection === 'top-stories' : topSection === 'lead-today';
+			return currentabCohort === 'variant' ? topSection === 'top-stories' : topSection === 'lead-today';
 		});
 		return topSectionObject ? topSectionObject[0].result : null
-	}
+	};
 
-	const calculatePercentage = (result, total) => {
-		return parseFloat(((100 / total) * result.result).toFixed(2));
-	}
+	const calculatePercentage = (result, total) => parseFloat(((100 / total) * result.result).toFixed(2));
 
 	const components = {
 		variant: ['top-stories', 'opinion', 'editors-picks', 'most-popular', 'technology', 'markets', 'life-and-arts', 'video'],
 		control: ['lead-today', 'editors-picks', 'opinion', 'topic-life-arts', 'topic-markets', 'topic-technology', 'video-picks']
-	}
+	};
 
-	const validComponentFilter = (resultObject) => {
-		return components[abCohort][resultObject['meta.componentPos']-1] === resultObject['meta.domPath'][0];
-	}
+	const validComponentFilter = resultObject => (
+		components[currentabCohort][resultObject['meta.componentPos']-1] === resultObject['meta.domPath'][0]
+	);
 
-	const breakpointFilter = (breakpoint, resultObject) => {
-		return resultObject['ingest.user.layout'] === breakpoint;
-	}
+	const breakpointFilter = (breakpoint, resultObject) => resultObject['ingest.user.layout'] === breakpoint;
 
 	client.run(scrollDepthQuery, (err, results) => {
 		Object.keys(scrollDepthCharts).forEach(breakpoint => {
-			const result = results.result.filter(breakpointFilter.bind(this, breakpoint)).filter(validComponentFilter).map((result) => {
-				return result;
-			}).sort((a,b) => {
-				return parseFloat(a['meta.componentPos']) - parseFloat(b['meta.componentPos']);
-			});
+			let result = results.result
+				.filter(breakpointFilter.bind(this, breakpoint))
+				.filter(validComponentFilter)
+				.sort((a,b) => parseInt(a['meta.componentPos']) - parseInt(b['meta.componentPos']));
 			const total = acquireTotal(result);
-			result.map((result) => {
-				result.result = calculatePercentage(result, total);
-				result.label = result['meta.domPath'][0] + ' [' + result['meta.componentPos'] + ']';
-				delete result['ingest.user.layout'];
-				delete result['meta.componentPos'];
-				delete result['meta.domPath'];
-				return result;
-			});
+			result = result.map(result => ({
+				result: calculatePercentage(result, total),
+				label: `${result['meta.domPath'][0]} [${result['meta.componentPos']}]`
+			}));
 
 			scrollDepthCharts[breakpoint]
 				.data({ result })
