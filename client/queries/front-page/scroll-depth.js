@@ -1,46 +1,46 @@
 /* global Keen */
 'use strict';
 
-var queryString = require('querystring');
-var queryParameters = queryString.parse(location.search.substr(1));
+const queryString = require('querystring');
+const queryParameters = queryString.parse(location.search.substr(1));
 
-var client = require('../../lib/wrapped-keen');
+const client = require('../../lib/wrapped-keen');
 
 const breakpoints = ['default', 'XS', 'S', 'M', 'L', 'XL'];
 const userTypes = ['subscriber', 'registered', 'anonymous'];
 const abCohortTypes = ['variant', 'control'];
 const timeframeTypes = ['7', '14', '21', '28'];
 
-var render = () => {
-	var currentUserType = queryParameters['user-type'] || userTypes[0];
-	var currentabCohort = queryParameters['ab-cohort'] || abCohortTypes[0];
-	var currentTimeframe = queryParameters['timeframe'] || timeframeTypes[0];
-	var el = document.getElementById('charts');
+const render = () => {
+	const currentUserType = queryParameters['user-type'] || userTypes[0];
+	const currentabCohort = queryParameters['ab-cohort'] || abCohortTypes[0];
+	const currentTimeframe = queryParameters['timeframe'] || timeframeTypes[0];
+	const el = document.getElementById('charts');
 
-	var scrollDepthEl = document.createElement('div');
+	const scrollDepthEl = document.createElement('div');
 	scrollDepthEl.classList.add('o-grid-row');
 	scrollDepthEl.innerHTML = `<h2 data-o-grid-colspan="12">Percentage of visitors that see the 1st component, 2nd component, etc</h2>`;
 	el.appendChild(scrollDepthEl);
 
-	var userTypeEl = document.createElement('div');
+	const userTypeEl = document.createElement('div');
 	userTypeEl.classList.add('nav--horizontal');
 	userTypeEl.dataset.oGridColspan = '12';
 
-	var userItems = userTypes
+	const userItems = userTypes
 		.map(userType =>
 			userType === currentUserType ? `<li>${userType}</li>` : `<li><a href="?user-type=${userType}&amp;ab-cohort=${currentabCohort}&amp;timeframe=${currentTimeframe}">${userType}</a></li>`
 		)
 		.join('');
 
-	var abCohortItems = abCohortTypes
+	const abCohortItems = abCohortTypes
 		.map(abCohortType =>
 			abCohortType === currentabCohort ? `<li>${abCohortType}</li>` : `<li><a href="?user-type=${currentUserType}&amp;ab-cohort=${abCohortType}&amp;timeframe=${currentTimeframe}">${abCohortType}</a></li>`
 		)
 		.join('');
 
-	var timeframeItems = timeframeTypes
+	const timeframeItems = timeframeTypes
 		.map(timeframeType =>
-			timeframeType === currentTimeframe ?  `<li>${timeframeType}</li>` : `<li><a href="?user-type=${currentUserType}&amp;ab-cohort=${currentabCohort}&amp;timeframe=${timeframeType}">${timeframeType}</a></li>`
+			timeframeType === currentTimeframe ? `<li>${timeframeType}</li>` : `<li><a href="?user-type=${currentUserType}&amp;ab-cohort=${currentabCohort}&amp;timeframe=${timeframeType}">${timeframeType}</a></li>`
 		)
 		.join('');
 
@@ -62,9 +62,9 @@ var render = () => {
 	`;
 	scrollDepthEl.insertBefore(userTypeEl, scrollDepthEl.firstChild);
 
-	var scrollDepthCharts = {};
+	const scrollDepthCharts = {};
 	breakpoints.forEach(breakpoint => {
-		var graphEl = document.createElement('div');
+		const graphEl = document.createElement('div');
 		graphEl.dataset.oGridColspan = '12';
 		graphEl.classList.add('o-tabs__tabpanel');
 		graphEl.id = breakpoint;
@@ -80,7 +80,7 @@ var render = () => {
 			.prepare();
 	});
 
-	var scrollDepthQuery = new Keen.Query('count', {
+	const scrollDepthQuery = new Keen.Query('count', {
 		eventCollection: 'scrolldepth',
 		filters: [
 			{
@@ -152,7 +152,7 @@ var render = () => {
 				.render();
 		});
 
-		var tabsEl = document.createElement('ul');
+		const tabsEl = document.createElement('ul');
 		tabsEl.dataset.oComponent = 'o-tabs';
 		tabsEl.dataset.oGridColspan = '12';
 		tabsEl.className = 'o-tabs o-tabs--buttontabs';
