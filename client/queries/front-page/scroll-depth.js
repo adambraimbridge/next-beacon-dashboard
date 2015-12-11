@@ -19,7 +19,11 @@ const render = () => {
 
 	const scrollDepthEl = document.createElement('div');
 	scrollDepthEl.classList.add('o-grid-row');
-	scrollDepthEl.innerHTML = `<h2 data-o-grid-colspan="12">Percentage of visitors that see the 1st component, 2nd component, etc</h2>`;
+	scrollDepthEl.innerHTML = `
+		<h2 data-o-grid-colspan="12">
+			Percentage of visitors that see the 1st component, 2nd component, etc
+		</h2>
+	`;
 	el.appendChild(scrollDepthEl);
 
 	const userTypeEl = document.createElement('div');
@@ -28,19 +32,43 @@ const render = () => {
 
 	const userItems = userTypes
 		.map(userType =>
-			userType === currentUserType ? `<li>${userType}</li>` : `<li><a href="?user-type=${userType}&amp;ab-cohort=${currentabCohort}&amp;timeframe=${currentTimeframe}">${userType}</a></li>`
+			userType === currentUserType
+				? `<li>${userType}</li>`
+				: `
+					<li>
+						<a href="?user-type=${userType}&amp;ab-cohort=${currentabCohort}&amp;timeframe=${currentTimeframe}">
+							${userType}
+						</a>
+					</li>
+				`
 		)
 		.join('');
 
 	const abCohortItems = abCohortTypes
 		.map(abCohortType =>
-			abCohortType === currentabCohort ? `<li>${abCohortType}</li>` : `<li><a href="?user-type=${currentUserType}&amp;ab-cohort=${abCohortType}&amp;timeframe=${currentTimeframe}">${abCohortType}</a></li>`
+			abCohortType === currentabCohort
+				? `<li>${abCohortType}</li>`
+				: `
+					<li>
+						<a href="?user-type=${currentUserType}&amp;ab-cohort=${abCohortType}&amp;timeframe=${currentTimeframe}">
+							${abCohortType}
+						</a>
+					</li>
+				`
 		)
 		.join('');
 
 	const timeframeItems = timeframeTypes
 		.map(timeframeType =>
-			timeframeType === currentTimeframe ? `<li>${timeframeType}</li>` : `<li><a href="?user-type=${currentUserType}&amp;ab-cohort=${currentabCohort}&amp;timeframe=${timeframeType}">${timeframeType}</a></li>`
+			timeframeType === currentTimeframe
+				? `<li>${timeframeType}</li>`
+				: `
+					<li>
+						<a href="?user-type=${currentUserType}&amp;ab-cohort=${currentabCohort}&amp;timeframe=${timeframeType}">
+							${timeframeType}
+						</a>
+					</li>
+				`
 		)
 		.join('');
 
