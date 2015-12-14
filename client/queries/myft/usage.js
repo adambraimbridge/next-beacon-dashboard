@@ -104,7 +104,7 @@ function usageOverTime(client) {
 		}]
 	});
 
-	var myftArticleViews = new Keen.Query('count', { // second query
+	var myFtArticleViews = new Keen.Query('count', { // second query
 		eventCollection: "dwell",
 		interval: interval,
 		timeframe: timeframe,
@@ -155,7 +155,7 @@ function usageOverTime(client) {
 		}]
 	});
 
-	var myFTUsers = new Keen.Query('count_unique', {
+	var myFtUsers = new Keen.Query('count_unique', {
 		eventCollection: "dwell",
 		interval: interval,
 		timeframe: timeframe,
@@ -174,7 +174,7 @@ function usageOverTime(client) {
 	});
 
 
-	var myFTChart = new Keen.Dataviz()
+	var myFtChart = new Keen.Dataviz()
 		.el(document.getElementById("myft-usage"))
 		.chartType("linechart")
 		.chartOptions({
@@ -206,46 +206,46 @@ function usageOverTime(client) {
 		.prepare();
 
 
-	client.run([nextUsers, followUsers, myFTUsers, articleViews, myftArticleViews], function(err, res) { // run the queries
+	client.run([nextUsers, followUsers, myFtUsers, articleViews, myFtArticleViews], function(err, res) { // run the queries
 
 		var next = res[0].result;
 		var follow = res[1].result;
-		var myft = res[2].result;
+		var myFt = res[2].result;
 		var articles = res[3].result;
-		var myftArticles = res[4].result;
+		var myFtArticles = res[4].result;
 
-		var myFTUsageData = [];
+		var myFtUsageData = [];
 		var articleViewData = [];
 		var articleConsumptionData = [];
 
 		var i=0;
 
 		while (i < follow.length) {
-			myFTUsageData[i]={ // format the data so it can be charted
+			myFtUsageData[i]={ // format the data so it can be charted
 					timeframe: follow[i]["timeframe"],
 					value: [
 							{ category: "Next Users", result: next[i]["value"] },
 							{ category: "Follow users", result: follow[i]["value"] },
-							{ category: "myFT users", result: myft[i]["value"] }
+							{ category: "myFT users", result: myFt[i]["value"] }
 					]
 			};
 			articleViewData[i]={ // format the data so it can be charted
 						timeframe: follow[i]["timeframe"],
 						value: [
 								{ category: "Article Views", result: articles[i]["value"] },
-								{ category: "myFT article views", result: myftArticles[i]["value"] }
+								{ category: "myFT article views", result: myFtArticles[i]["value"] }
 						]
 				};
 			articleConsumptionData[i]={ // format the data so it can be charted
 					timeframe: follow[i]["timeframe"],
 					value: [
-							{ category: "myFT Articles consumed per user", result: myftArticles[i]["value"] / myft[i]["value"] }
+							{ category: "myFT Articles consumed per user", result: myFtArticles[i]["value"] / myFt[i]["value"] }
 					]
 			};
 
 			if (i === follow.length-1) { // chart the data
-				myFTChart
-					.parseRawData({ result: myFTUsageData })
+				myFtChart
+					.parseRawData({ result: myFtUsageData })
 					.render();
 
 				viewsChart
