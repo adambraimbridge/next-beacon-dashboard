@@ -3,6 +3,7 @@
 
 var http			= require('http');
 var https			= require('https');
+var aws4			= require('aws4');
 var auth			= require('./middleware/auth');
 var activeUsage			= require('./middleware/active-usage');
 var cookieParser	= require('cookie-parser');
@@ -18,7 +19,7 @@ require('es6-promise').polyfill();
 
 var KEEN_PROJECT_ID = process.env.KEEN_PROJECT_ID;
 var KEEN_READ_KEY = process.env.KEEN_READ_KEY;
-var keen_explorer = process.env.KEEN_EXPLORER;
+var KEEN_MASTER_KEY = process.env.KEEN_MASTER;
 
 // Indicates the app is behind a front-facing proxy, and to use the X-Forwarded-* headers to determine the connection and the IP address of the client. NOTE: X-Forwarded-* headers are easily spoofed and the detected IP addresses are unreliable.
 // See: http://expressjs.com/api.html
@@ -47,23 +48,28 @@ app.use(auth);
 
 // pipe through to an AWS bucket containing Redshift exports
 app.get('/reports/*', function(req, res) {
-	var path = process.env.S3_HOST + '/' + req.params[0];
-	https.get(path, function(proxyRes) {
-		proxyRes.pipe(res);
+	// url: `https://${process.env.S3_HOST}/{req.params[0]}`
+	var signed = aws4.sign({
+		service: 's3',
+		hostname: process.env.S3_HOST,
+		path: '/' + req.params[0],
+		signQuery: true,
+		region: 'eu-west-1',
+	}, {
+		accessKeyId: process.env.S3_AWS_ACCESS,
+		secretAccessKey: process.env.S3_AWS_SECRET
 	});
-});
-
-app.get('/dist/*', function(req, res) {
-	var path = 'http://' + keen_explorer + req.path;
-	http.get(path, function(proxyRes) {
+	https.get(signed, function(proxyRes) {
 		proxyRes.pipe(res);
 	});
 });
 
 app.get('/explorer', function(req, res) {
-	var path = 'http://' + keen_explorer + req.path;
-	http.get(path, function(proxyRes) {
-		proxyRes.pipe(res);
+	res.render('keen', {
+		layout: null, 
+		keen_project: KEEN_PROJECT_ID,
+		keen_read_key: KEEN_READ_KEY,
+		keen_master_key: KEEN_MASTER_KEY
 	});
 });
 

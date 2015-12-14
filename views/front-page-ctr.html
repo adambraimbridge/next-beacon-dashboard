@@ -1,24 +1,41 @@
 {{#defineBlock 'vertical-nav'}}
 	<h3>Homepage</h3>
 	<div class="front-page__controls js-front-page-toggles">
-	<ul>
-		<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-component="all" checked>All</li>
-		<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-component="header">Header</li>
-		<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-component="lead-today">Top Stories</li>
-		<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-component="fastft">FastFT</li>
-		<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-component="editors-picks">Editors Picks</li>
-		<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-component="opinion">Opinion</li>
-		<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-component="popular">Most Popular</li>
-		<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-component="topic-life-arts">Life & Arts</li>
-		<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-component="topic-markets">Markets</li>
-		<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-component="topic-technology">Technology</li>
-		<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-component="video-picks">Videos</li>
-	</ul>
-</div>
+		<ul>
+			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="all" data-variant="all" checked>All</li>
+			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="header" data-variant="header">Header</li>
+			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="lead-today" data-variant="top-stories | card">Top Stories</li>
+			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="fastft" data-variant="top-stories | fastft">FastFT</li>
+			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="editors-picks" data-variant="editors-picks">Editors Picks</li>
+			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="opinion" data-variant="opinion">Opinion</li>
+			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="popular" data-variant="most-popular">Most Popular</li>
+			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="topic-life-arts" data-variant="life-and-arts">Life & Arts</li>
+			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="topic-markets" data-variant="markets">Markets</li>
+			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="topic-technology" data-variant="technology">Technology</li>
+			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="video-picks" data-variant="video">Videos</li>
+		</ul>
+	</div>
 {{/defineBlock}}
 
 <h1>Front Page: CTR {{#if query.layout}}(Layout: {{query.layout}}){{/if}}</h1>
 
+<div class="nav--horizontal">
+	<h3>Timeframe (days):</h3>
+	<ul>
+		<li><a class="timeframe-days" href="?timeframe-days=7&amp;ab-cohort={{query.ab-cohort}}">7</a></li>
+		<li><a class="timeframe-days" href="?timeframe-days=14&amp;ab-cohort={{query.ab-cohort}}">14</a></li>
+		<li><a class="timeframe-days" href="?timeframe-days=21&amp;ab-cohort={{query.ab-cohort}}">21</a></li>
+		<li><a class="timeframe-days" href="?timeframe-days=28&amp;ab-cohort={{query.ab-cohort}}">28</a></li>
+	</ul>
+</div>
+
+<div class="nav--horizontal">
+	<h3>A/B Test:</h3>
+	<ul>
+		<li><a class="ab-cohort" href="?ab-cohort=control&amp;timeframe-days={{query.timeframe-days}}">Control</a></li>
+		<li><a class="ab-cohort" href="?ab-cohort=variant&amp;timeframe-days={{query.timeframe-days}}">Variant</a></li>
+	</ul>
+</div>
 
 <div id="charts" class="o-grid-container front-page">
 	<div class="front-page__metrics o-grid-row">
