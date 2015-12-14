@@ -6,7 +6,7 @@ const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search.substr(1));
 const queryTimeframe = queryParameters.timeframe || "this_7_days";
 
-const startOfAbTest = 201548; //week the ab test data started
+const startOfAbTest = 201549; //week the ab test data started
 
 const colors = {
 	control: '#91DCD0',
@@ -74,7 +74,7 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 
 	client.run(pageViewsQueries, (err, [articlesRead, users]) => {
 		//exlude weeks before the ab test started
-		articlesRead.result = articlesRead.result.filter(week =>  week['time.week'] > startOfAbTest);
+		articlesRead.result = articlesRead.result.filter(week => week['time.week'] > startOfAbTest);
 		users.result = users.result.filter(week => week['time.week'] > startOfAbTest);
 		const byWeek = _.groupBy(articlesRead.result, 'time.week');
 		const data = Object.keys(byWeek).map((week, index) => {
