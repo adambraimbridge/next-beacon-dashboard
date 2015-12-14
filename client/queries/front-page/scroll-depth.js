@@ -21,7 +21,7 @@ const render = () => {
 	scrollDepthEl.classList.add('o-grid-row');
 	scrollDepthEl.innerHTML = `
 		<h2 data-o-grid-colspan="12">
-			Percentage of visitors that see the 1st component, 2nd component, etc
+			Percentage of page views that see the 1st component, 2nd component, etc
 		</h2>
 	`;
 	el.appendChild(scrollDepthEl);
@@ -103,7 +103,10 @@ const render = () => {
 			.el(graphEl)
 			.height(450)
 			.chartOptions({
-				isStacked: true
+				isStacked: true,
+				legend: {
+					position: 'none'
+				}
 			})
 			.prepare();
 	});
