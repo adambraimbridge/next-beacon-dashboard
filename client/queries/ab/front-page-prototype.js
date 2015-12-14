@@ -6,8 +6,7 @@ const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search.substr(1));
 const queryTimeframe = queryParameters.timeframe || "this_7_days";
 
-const startDate = "2015-12-07";
-const currDate = new Date().toISOString();
+const startOfAbTest = 201548; //week the ab test data started
 
 const colors = {
 	control: '#91DCD0',
@@ -51,10 +50,7 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 			eventCollection: 'dwell',
 			filters: getFilters(state, 'article'),
 			groupBy: ['time.week','user.uuid'],
-			timeframe: {
-				start: startDate,
-				end: currDate
-			},
+			timeframe: 'previous_12_weeks',
 			timezone: 'UTC'
 		}, queryOpts)),
 		new Keen.Query('count_unique', Object.assign({
@@ -62,10 +58,7 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 			eventCollection: 'dwell',
 			filters: getFilters(state),
 			groupBy: ['time.week'],
-			timeframe: {
-				start: startDate,
-				end: currDate
-			},
+			timeframe: 'previous_12_weeks',
 			timezone: 'UTC'
 		}, queryOpts)),
 	];
@@ -80,6 +73,9 @@ var generateAverageViews = (type, state, queryOpts = {}) => {
 
 
 	client.run(pageViewsQueries, (err, [articlesRead, users]) => {
+		//exlude weeks before the ab test started
+		articlesRead.result = articlesRead.result.filter(week =>  week['time.week'] > startOfAbTest);
+		users.result = users.result.filter(week => week['time.week'] > startOfAbTest);
 		const byWeek = _.groupBy(articlesRead.result, 'time.week');
 		const data = Object.keys(byWeek).map((week, index) => {
 			const visitsForWeek = byWeek[week];
