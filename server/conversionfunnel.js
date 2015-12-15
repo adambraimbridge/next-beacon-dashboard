@@ -1,5 +1,5 @@
 const filterByValue = (data, key, value) => {
-  return data.filter(element => element[key] == value);
+  return data.filter(element => element[key] === value);
 };
 
 const resultsFor = (data, key) => {
