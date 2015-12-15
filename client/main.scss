@@ -322,10 +322,20 @@ body {
 .performance-form {
 	.o-forms-prefix {
 		line-height: 1.1em;
+		min-width: 80px;
 	}
 
 	.o-buttons {
 		margin-top: 10px;
+	}
+
+	.performance-form__versions {
+		margin-top: 15px;
+	}
+
+	.performance-form__label--inline {
+		display: inline-block;
+		font-weight: 700;
 	}
 }
 

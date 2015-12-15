@@ -3,27 +3,46 @@ import queryString from 'querystring';
 import client from '../lib/wrapped-keen';
 
 const render = () => {
-	const browserNameQuery = new Keen.Query('select_unique', {
-		eventCollection: 'timing',
-		targetProperty: 'ua.browser.name',
-		timeframe: `this_7_days`,
-		filters: [{
-			operator: 'exists',
-			property_name: 'ua.browser.name',
-			property_value: true
-		}],
-		timezone: 'UTC'
-	});
+	const queryParameters = queryString.parse(location.search.substr(1));
+	const selectedDays = queryParameters.days || '28';
+	const selectedBrowserName = queryParameters.browserName || 'All';
+	const selectedBrowserVersion = queryParameters.browserVersion || 'All';
+	const selectedPageType = queryParameters.pageType || 'all';
+	const selectedDeviceType = queryParameters.deviceType || 'all';
 
 	const filters = [];
-	const queryParameters = queryString.parse(location.search.substr(1));
-	if (queryParameters.browserName) {
+	if (selectedBrowserName !== 'All') {
 		filters.push({
-			operator: 'ne',
-			property_name: 'ua.browser.name',
-			property_value: queryParameters.browserName
+			operator: 'eq',
+			property_name: 'deviceAtlas.browserName',
+			property_value: selectedBrowserName
 		})
 	}
+	if (selectedBrowserVersion !== 'All') {
+		filters.push({
+			operator: 'eq',
+			property_name: 'deviceAtlas.browserVersion',
+			property_value: selectedBrowserVersion
+		})
+	}
+	if (selectedPageType !== 'all') {
+		filters.push({
+			operator: 'eq',
+			property_name: 'page.location.type',
+			property_value: selectedPageType
+		})
+	}
+	if (selectedDeviceType !== 'all') {
+		filters.push({
+			operator: 'eq',
+			property_name: 'deviceAtlas.primaryHardwareType',
+			property_value: selectedDeviceType
+		})
+	}
+
+	document.querySelector(`#days-${selectedDays}`).setAttribute('checked', 'checked');
+	document.querySelector(`#page-type-${selectedPageType}`).setAttribute('checked', 'checked');
+	document.querySelector(`#device-type-${selectedDeviceType}`).setAttribute('checked', 'checked');
 
 	const perforamnceChart = new Keen.Dataviz()
 		.el(document.querySelector('#perforamnce-chart'))
@@ -32,23 +51,84 @@ const render = () => {
 		.title('DOM and CSSDOM finished (domContentLoadedEventStart)')
 		.prepare();
 
-	const perforamnceQuery = new Keen.Query('median', {
+	const queries = [];
+	queries.push(new Keen.Query('median', {
 		eventCollection: 'timing',
 		targetProperty: 'ingest.context.timings.offset.domContentLoadedEventStart',
-		timeframe: `this_7_days`,
+		timeframe: `this_${selectedDays}_days`,
 		interval: 'daily',
 		filters,
 		timezone: 'UTC'
-	});
+	}));
 
-	client.run([browserNameQuery, perforamnceQuery], (err, [browserNameResults, performanceResults]) => {
-		console.log(browserNameResults);
-		console.log(performanceResults);
+	// pull out all the potential browsers
+	queries.push(new Keen.Query('select_unique', {
+		eventCollection: 'timing',
+		targetProperty: 'deviceAtlas.browserName',
+		timeframe: `this_${selectedDays}_days`,
+		filters: [
+			{
+				operator: 'exists',
+				property_name: 'deviceAtlas.browserName',
+				property_value: true
+			},
+			{
+				operator: 'ne',
+				property_name: 'deviceAtlas.browserName',
+				property_value: false
+			}
+		],
+		timezone: 'UTC'
+	}));
+
+	// if we selected a browser, pull out the versions too
+	if (selectedBrowserName !== 'All') {
+		queries.push(new Keen.Query('select_unique', {
+			eventCollection: 'timing',
+			targetProperty: 'deviceAtlas.browserVersion',
+			timeframe: `this_${selectedDays}_days`,
+			filters: [
+				{
+					operator: 'exists',
+					property_name: 'deviceAtlas.browserVersion',
+					property_value: true
+				},
+				{
+					operator: 'ne',
+					property_name: 'deviceAtlas.browserVersion',
+					property_value: false
+				},
+				{
+					operator: 'eq',
+					property_name: 'deviceAtlas.browserName',
+					property_value: selectedBrowserName
+				}
+			],
+			timezone: 'UTC'
+		}));
+	}
+
+	client.run(queries, (err, [performanceResults, browserNameResults, browserVersionResults]) => {
 		// create the dropdown
-		const browsersEl = browserNameResults.result
-			.map(browser => `<option>${browser}</option>`)
+		const browserNamesEl = ['All'].concat(browserNameResults.result)
+			.map(browserName => (
+				browserName === selectedBrowserName ?
+					`<option selected>${browserName}</option>` :
+					`<option>${browserName}</option>`
+			))
 			.join('');
-		document.querySelector('#browsers').innerHTML = browsersEl;
+		document.querySelector('#browserNames').innerHTML = browserNamesEl;
+
+		if (browserVersionResults) {
+			const browserVersionsEl = ['All'].concat(browserVersionResults.result)
+				.map(browserVersion => (
+					browserVersion === selectedBrowserVersion ?
+						`<option selected>${browserVersion}</option>` :
+						`<option>${browserVersion}</option>`
+				))
+				.join('');
+			document.querySelector('#browserVersions').innerHTML = browserVersionsEl;
+		}
 
 		perforamnceChart
 			.data(performanceResults)
