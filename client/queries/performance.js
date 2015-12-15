@@ -11,7 +11,8 @@ const render = () => {
 			browserName: 'All',
 			browserVersion: 'All',
 			pageType: 'all',
-			deviceType: 'all'
+			deviceType: 'all',
+			abTest: 'all'
 		},
 		queryString.parse(location.search.substr(1))
 	);
@@ -42,6 +43,13 @@ const render = () => {
 			property_value: query.deviceType
 		})
 	}
+	if (query.abTest !== 'all') {
+		sharedFilters.push({
+			operator: 'eq',
+			property_name: 'ab.frontPageLayoutPrototype',
+			property_value: query.abTest
+		})
+	}
 
 	const filters = [];
 	if (query.browserName !== 'All') {
@@ -62,12 +70,13 @@ const render = () => {
 	document.querySelector(`input[name="days"][value="${query.days}"`).setAttribute('checked', 'checked');
 	document.querySelector(`input[name="pageType"][value="${query.pageType}"`).setAttribute('checked', 'checked');
 	document.querySelector(`input[name="deviceType"][value="${query.deviceType}"`).setAttribute('checked', 'checked');
+	document.querySelector(`input[name="abTest"][value="${query.abTest}"`).setAttribute('checked', 'checked');
 
 	const perforamnceChart = new Keen.Dataviz()
 		.el(document.querySelector('#perforamnce-chart'))
 		.chartType('linechart')
 		.height(450)
-		.title('DOM and CSSDOM finished (domContentLoadedEventStart)')
+		.title('HTML and CSS parsing finished (domContentLoadedEventStart)')
 		.prepare();
 
 	const queries = [];

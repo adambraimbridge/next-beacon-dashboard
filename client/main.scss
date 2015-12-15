@@ -322,7 +322,7 @@ body {
 .performance-form {
 	.o-forms-prefix {
 		line-height: 1.1em;
-		min-width: 80px;
+		min-width: 90px;
 	}
 
 	.o-buttons {
@@ -336,6 +336,7 @@ body {
 	.performance-form__label--inline {
 		display: inline-block;
 		font-weight: 700;
+		min-width: 90px;
 	}
 }
 
