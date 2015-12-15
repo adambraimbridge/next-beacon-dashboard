@@ -1,3 +1,26 @@
-hello there
-Total: {{ conversionData.total }}
-Tablet: {{ conversionData.mobileDevice.Tablet}}
+<h1>Conversion Funnel, last 30 days</h1>
+<p>In the last 30 days we have had {{ conversionData.total }} anonymous visits to the mysterious Proc Step One on Next</p>
+<p></p>
+<ul>
+    <h1>Mobile Device</h1>
+    {{#each conversionData.mobileDevice}}
+    <li>{{@key}}: {{this}}</li>
+    {{/each}}
+</ul>
+<ul>
+    <h1>Attraction Type</h1>
+    {{#each conversionData.attractionType}}
+    <li>{{@key}}: {{this}}</li>
+    {{/each}}
+</ul>
+<ul>
+    <h1>Hurdle</h1>
+    {{#each conversionData.hurdle}}
+    <li>{{@key}}: {{this}}</li>
+    {{/each}}
+</ul>
+<ul><h1>Seg ID</h1>
+    {{#each conversionData.segID}}
+    <li>{{@key}}: {{this}}</li>
+    {{/each}}
+</ul>

@@ -1,7 +1,5 @@
 const filterByValue = (data, key, value) => {
-  return data.filter(jsonObj => {
-    return jsonObj[key] == value;
-  });
+  return data.filter(element => element[key] == value);
 };
 
 const resultsFor = (data, key) => {
@@ -11,11 +9,9 @@ const resultsFor = (data, key) => {
   }, {});
 };
 
-module.exports = function (data) {
+module.exports = (data) => {
   const nextData = filterByValue(data, 'channel', 'next');
-
   const nextAnonData = filterByValue(nextData, 'sub_cohort', '1');
-
   return {
     total: nextAnonData.length,
     mobileDevice: resultsFor(nextAnonData, 'mobile_device'),

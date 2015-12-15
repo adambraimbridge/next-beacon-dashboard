@@ -164,15 +164,11 @@ app.get('/conversionfunnel', function (req, res) {
   });
 
   const url = `https://${hostname}${signed.path}`;
-
   const options = signed;
 
   fetch(url, options)
-    .then(function (response) {
-      console.log(response.status);
-      return response.json();
-    })
-    .then(function (data) {
+    .then(response => response.json())
+    .then(data => {
       res.render('conversionfunnel', {
         conversionData: conversionfunnel(data),
         layout: 'beacon'
