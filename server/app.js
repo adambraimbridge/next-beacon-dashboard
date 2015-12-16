@@ -3,6 +3,7 @@
 
 var http			= require('http');
 var https			= require('https');
+var fetch			= require('isomorphic-fetch');
 var aws4			= require('aws4');
 var auth			= require('./middleware/auth');
 var activeUsage			= require('./middleware/active-usage');
@@ -20,6 +21,8 @@ require('es6-promise').polyfill();
 var KEEN_PROJECT_ID = process.env.KEEN_PROJECT_ID;
 var KEEN_READ_KEY = process.env.KEEN_READ_KEY;
 var KEEN_MASTER_KEY = process.env.KEEN_MASTER;
+
+var conversionfunnel = require('./conversionfunnel');
 
 // Indicates the app is behind a front-facing proxy, and to use the X-Forwarded-* headers to determine the connection and the IP address of the client. NOTE: X-Forwarded-* headers are easily spoofed and the detected IP addresses are unreliable.
 // See: http://expressjs.com/api.html
@@ -66,7 +69,7 @@ app.get('/reports/*', function(req, res) {
 
 app.get('/explorer', function(req, res) {
 	res.render('keen', {
-		layout: null, 
+		layout: null,
 		keen_project: KEEN_PROJECT_ID,
 		keen_read_key: KEEN_READ_KEY,
 		keen_master_key: KEEN_MASTER_KEY
@@ -143,6 +146,34 @@ app.get('/surveycohorts', function (req, res) {
 		keen_read_key: KEEN_READ_KEY,
 		article_id: 'beacon-dashboard-surveycohorts'
 	});
+});
+
+app.get('/conversionfunnel', function (req, res) {
+	const hostname = 'ft-next-redshift.s3.amazonaws.com';
+
+	const signed = aws4.sign({
+		service: 's3',
+		hostname: hostname,
+		path: '/conversion-funnel.json',
+		signQuery: true,
+		timeout: 60000,
+		region: 'eu-west-1'
+	}, {
+		accessKeyId: process.env.S3_AWS_ACCESS,
+		secretAccessKey: process.env.S3_AWS_SECRET
+	});
+
+	const url = `https://${hostname}${signed.path}`;
+	const options = signed;
+
+	fetch(url, options)
+		.then(response => response.json())
+		.then(data => {
+			res.render('conversion-funnel', {
+				conversionData: conversionfunnel(data),
+				layout: 'beacon'
+			});
+		});
 });
 
 module.exports.listen = app.listen(process.env.PORT || 5028);
