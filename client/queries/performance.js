@@ -1,14 +1,144 @@
 import queryString from 'querystring';
-
 import client from '../lib/wrapped-keen';
 
-const sort = (a, b) => parseFloat(b) - parseFloat(a);
+const numericalSort = (a, b) => parseFloat(b) - parseFloat(a);
 
-const buildDropDown = (type, options, query) => {
+const buildDropDown = (type, options, selected) => {
 	document.querySelector(`#${type}s`).innerHTML = ['All'].concat(options)
-		.map(option => option === query[type] ? `<option selected>${option}</option>` : `<option>${option}</option>`)
+		.map(option => option === selected ? `<option selected>${option}</option>` : `<option>${option}</option>`)
 		.join('');
-}
+};
+
+const disableForm = form => {
+	[...form.querySelectorAll('input, select')].forEach(el => el.setAttribute('disabled', 'disabled'));
+};
+
+const enableForm = form => {
+	[...form.querySelectorAll('input, select')].forEach(el => el.removeAttribute('disabled'));
+};
+
+const choicesChange = ev => {
+	// get the filters
+	const form = document.querySelector('.performance-form');
+	disableForm(form);
+	const filters = [
+		{
+			name: 'pageType',
+			propertyName: 'page.location.type'
+		},
+		{
+			name: 'deviceType',
+			propertyName: 'deviceAtlas.primaryHardwareType'
+		},
+		{
+			name: 'abTest',
+			propertyName: 'ab.frontPageLayoutPrototype'
+		}
+	]
+		.map(config => {
+			const value = form.querySelector(`[name="${config.name}"]:checked`).value;
+			return value !== 'all' ?
+				{
+					operator: 'eq',
+					property_name: config.propertyName,
+					property_value: value
+				} :
+				null
+		})
+		.filter(filter => filter);
+
+	// pull out all the potential browsers
+	const browserNameQuery = new Keen.Query('select_unique', {
+		eventCollection: 'timing',
+		targetProperty: 'deviceAtlas.browserName',
+		timeframe: `this_${form.querySelector('[name="days"]:checked').value}_days`,
+		filters: filters.concat([
+			{
+				operator: 'exists',
+				property_name: 'deviceAtlas.browserName',
+				property_value: true
+			},
+			{
+				operator: 'ne',
+				property_name: 'deviceAtlas.browserName',
+				property_value: false
+			}
+		]),
+		timezone: 'UTC'
+	});
+
+	client.run(browserNameQuery, (err, result) => {
+		buildDropDown('browserName', result.result, 'All');
+		buildDropDown('browserVersion', [], 'All');
+		enableForm(form);
+	});
+};
+
+const browserChange = ev => {
+	// get the filters
+	const form = document.querySelector('.performance-form');
+	const browserName = form.querySelector('[name="browserName"]').value;
+	if (browserName === 'All') {
+		form.querySelector('[name="browserVersion"]').innerHTML = '<option selected>All</option>';
+		return;
+	}
+	disableForm(form);
+	const filters = [
+		{
+			name: 'pageType',
+			propertyName: 'page.location.type'
+		},
+		{
+			name: 'deviceType',
+			propertyName: 'deviceAtlas.primaryHardwareType'
+		},
+		{
+			name: 'abTest',
+			propertyName: 'ab.frontPageLayoutPrototype'
+		}
+	]
+		.map(config => {
+			const value = form.querySelector(`[name="${config.name}"]:checked`).value;
+			return value !== 'all' ?
+			{
+				operator: 'eq',
+				property_name: config.propertyName,
+				property_value: value
+			} :
+				null
+		})
+		.filter(filter => filter);
+
+	// pull out all the potential browsers
+	const browserNameQuery = new Keen.Query('select_unique', {
+		eventCollection: 'timing',
+		targetProperty: 'deviceAtlas.browserVersion',
+		timeframe: `this_${form.querySelector('[name="days"]:checked').value}_days`,
+		filters: filters.concat([
+			{
+				operator: 'exists',
+				property_name: 'deviceAtlas.browserVersion',
+				property_value: true
+			},
+			{
+				operator: 'ne',
+				property_name: 'deviceAtlas.browserVersion',
+				property_value: false
+			},
+			{
+				operator: 'eq',
+				property_name: 'deviceAtlas.browserName',
+				property_value: form.querySelector('[name="browserName"]').value
+			}
+		]),
+		timezone: 'UTC'
+	});
+
+	client.run(browserNameQuery, (err, result) => {
+		buildDropDown('browserVersion', result.result.sort(numericalSort), 'All');
+		enableForm(form);
+	});
+};
 
 const render = () => {
 	const query = Object.assign(
@@ -35,6 +165,7 @@ const render = () => {
 			property_value: false
 		}
 	];
+
 	if (query.pageType !== 'all') {
 		sharedFilters.push({
 			operator: 'eq',
@@ -73,10 +204,14 @@ const render = () => {
 		})
 	}
 
-	// update the filters
-	['days', 'pageType', 'deviceType', 'abTest'].forEach(filterQueryName => (
-		document.querySelector(`input[name="${filterQueryName}"][value="${query[filterQueryName]}"`)
+	// update the radio button filters
+	['days', 'pageType', 'deviceType', 'abTest'].forEach(name => (
+		document.querySelector(`input[name="${name}"][value="${query[name]}"`)
 			.setAttribute('checked', 'checked')
+	));
+	// update drop down filters
+	['browserName', 'browserVersion'].forEach(name => (
+		document.querySelector(`select[name="${name}"]`).innerHTML = `<option selected>${query[name]}</option>`
 	));
 
 	const perforamnceChart = new Keen.Dataviz()
@@ -144,29 +279,32 @@ const render = () => {
 		] = results;
 
 		// create the dropdowns
-		buildDropDown('browserName', browserNameResults.result, query);
+		buildDropDown('browserName', browserNameResults.result, query.browserName);
 		if (browserVersionResults) {
-			buildDropDown('browserVersion', browserVersionResults.result.sort(sort), query);
+			buildDropDown('browserVersion', browserVersionResults.result.sort(numericalSort), query.browserVersion);
 		}
+		// handle form changing
+		document.querySelector('.performance-form__choices').addEventListener('change', choicesChange);
+		document.querySelector('.performance-form__browser-names').addEventListener('change', browserChange);
 
 		// munge the data into a single object
 		const performanceResults = domInteractiveResults.result.map((domInteractiveResult, index) => {
 			const values = [
 				{
-					name: 'domInteractive',
-					result: domInteractiveResult.value
-				},
-				{
-					name: 'domContentLoadedEventStart',
-					result: domContentLoadedResults.result[index].value
+					name: 'loadEventStart',
+					result: loadEventResults.result[index].value
 				},
 				{
 					name: 'domComplete',
 					result: domCompleteResults.result[index].value
 				},
 				{
-					name: 'loadEventStart',
-					result: loadEventResults.result[index].value
+					name: 'domContentLoadedEventStart',
+					result: domContentLoadedResults.result[index].value
+				},
+				{
+					name: 'domInteractive',
+					result: domInteractiveResult.value
 				}
 			];
 			return {
