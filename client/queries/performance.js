@@ -27,17 +27,33 @@ const buildDropDown = (type, options, selected) => {
 		.join('');
 };
 
-const disableForm = form => {
-	[...form.querySelectorAll('input, select')].forEach(el => el.setAttribute('disabled', 'disabled'));
+const disableForm = formEl => {
+	[...formEl.querySelectorAll('input, select')].forEach(el => el.setAttribute('disabled', 'disabled'));
 };
 
-const enableForm = form => {
-	[...form.querySelectorAll('input, select')].forEach(el => el.removeAttribute('disabled'));
+const enableForm = formEl => {
+	[...formEl.querySelectorAll('input, select')].forEach(el => el.removeAttribute('disabled'));
 };
 
 const createFilter = (operator, property_name, property_value) => ({ operator, property_name, property_value });
 
-const getFilters = form => (
+const getFilters = (formEl, name) => {
+	// get the radio buttons filters
+	let filters = ['days', 'pageType', 'deviceType', 'abTest']
+		.reduce((currentFilters, name) => {
+			currentFilters[name] = formEl.querySelector(`[name="${name}"]:checked`).value;
+			return currentFilters;
+		}, {});
+	// get the drop down filters
+	filters = ['browserName', 'browserVersion']
+		.reduce((currentFilters, name) => {
+			currentFilters[name] = formEl.querySelector(`[name="${name}"]`).value;
+			return currentFilters;
+		}, filters);
+	return name ? filters[name] : filters;
+};
+
+const getRadioOptions= formEl => (
 	[
 		{
 			name: 'pageType',
@@ -53,23 +69,23 @@ const getFilters = form => (
 		}
 	]
 		.map(config => {
-			const value = form.querySelector(`[name="${config.name}"]:checked`).value;
+			const value = getFilters(formEl, config.name);
 			return value !== 'all' ? createFilter('eq', config.propertyName, value) : null;
 		})
 		.filter(filter => filter)
 );
 
-const choicesChange = ev => {
+const radioChange = () => {
 	// get the filters
-	const form = document.querySelector('.performance-form');
-	disableForm(form);
-	const filters = getFilters(form);
+	const formEl = document.querySelector('.performance-form');
+	disableForm(formEl);
+	const filters = getRadioOptions(formEl);
 
 	// pull out all the potential browsers
 	const browserNameQuery = new Keen.Query('select_unique', {
 		eventCollection,
 		targetProperty: 'deviceAtlas.browserName',
-		timeframe: `this_${form.querySelector('[name="days"]:checked').value}_days`,
+		timeframe: `this_${getFilters(formEl, 'days')}_days`,
 		filters: filters.concat([
 			createFilter('exists', 'deviceAtlas.browserName', true),
 			createFilter('ne', 'deviceAtlas.browserName', false)
@@ -80,37 +96,37 @@ const choicesChange = ev => {
 	client.run(browserNameQuery, (err, result) => {
 		buildDropDown('browserName', result.result, 'All');
 		buildDropDown('browserVersion', [], 'All');
-		enableForm(form);
+		enableForm(formEl);
 	});
 };
 
-const browserChange = ev => {
+const browserChange = () => {
 	// get the filters
-	const form = document.querySelector('.performance-form');
-	const browserName = form.querySelector('[name="browserName"]').value;
+	const formEl = document.querySelector('.performance-form');
+	const browserName = getFilters(formEl, 'browserName');
 	if (browserName === 'All') {
-		form.querySelector('[name="browserVersion"]').innerHTML = '<option selected>All</option>';
+		formEl.querySelector('[name="browserVersion"]').innerHTML = '<option selected>All</option>';
 		return;
 	}
-	disableForm(form);
-	const filters = getFilters(form);
+	disableForm(formEl);
+	const filters = getRadioOptions(formEl);
 
 	// pull out all the potential browsers
 	const browserNameQuery = new Keen.Query('select_unique', {
 		eventCollection,
 		targetProperty: 'deviceAtlas.browserVersion',
-		timeframe: `this_${form.querySelector('[name="days"]:checked').value}_days`,
+		timeframe: `this_${getFilters(formEl, 'days')}_days`,
 		filters: filters.concat([
 			createFilter('exists', 'deviceAtlas.browserVersion', true),
 			createFilter('ne', 'deviceAtlas.browserVersion', false),
-			createFilter('eq', 'deviceAtlas.browserName', form.querySelector('[name="browserName"]').value)
+			createFilter('eq', 'deviceAtlas.browserName', getFilters(formEl, 'browserName'))
 		]),
 		timezone
 	});
 
 	client.run(browserNameQuery, (err, result) => {
 		buildDropDown('browserVersion', result.result.sort(numericalSort), 'All');
-		enableForm(form);
+		enableForm(formEl);
 	});
 };
 
@@ -205,7 +221,7 @@ const render = () => {
 			buildDropDown('browserVersion', browserVersionResults.result.sort(numericalSort), query.browserVersion);
 		}
 		// handle form changing
-		document.querySelector('.performance-form__choices').addEventListener('change', choicesChange);
+		document.querySelector('.performance-form__choices').addEventListener('change', radioChange);
 		document.querySelector('.performance-form__browser-names').addEventListener('change', browserChange);
 
 		// munge the data into a single object
