@@ -1,6 +1,24 @@
 import queryString from 'querystring';
 import client from '../lib/wrapped-keen';
 
+const query = Object.assign(
+	{
+		days: 28,
+		browserName: 'All',
+		browserVersion: 'All',
+		pageType: 'all',
+		deviceType: 'all',
+		abTest: 'all'
+	},
+	queryString.parse(location.search.substr(1))
+);
+
+// default keen query params
+const eventCollection = 'timing';
+const timezone = 'UTC';
+const interval = 'daily';
+const timeframe = `this_${query.days}_days`;
+
 const numericalSort = (a, b) => parseFloat(b) - parseFloat(a);
 
 const buildDropDown = (type, options, selected) => {
@@ -17,11 +35,10 @@ const enableForm = form => {
 	[...form.querySelectorAll('input, select')].forEach(el => el.removeAttribute('disabled'));
 };
 
-const choicesChange = ev => {
-	// get the filters
-	const form = document.querySelector('.performance-form');
-	disableForm(form);
-	const filters = [
+const createFilter = (operator, property_name, property_value) => ({ operator, property_name, property_value });
+
+const getFilters = form => (
+	[
 		{
 			name: 'pageType',
 			propertyName: 'page.location.type'
@@ -37,34 +54,27 @@ const choicesChange = ev => {
 	]
 		.map(config => {
 			const value = form.querySelector(`[name="${config.name}"]:checked`).value;
-			return value !== 'all' ?
-				{
-					operator: 'eq',
-					property_name: config.propertyName,
-					property_value: value
-				} :
-				null
+			return value !== 'all' ? createFilter('eq', config.propertyName, value) : null;
 		})
-		.filter(filter => filter);
+		.filter(filter => filter)
+);
+
+const choicesChange = ev => {
+	// get the filters
+	const form = document.querySelector('.performance-form');
+	disableForm(form);
+	const filters = getFilters(form);
 
 	// pull out all the potential browsers
 	const browserNameQuery = new Keen.Query('select_unique', {
-		eventCollection: 'timing',
+		eventCollection,
 		targetProperty: 'deviceAtlas.browserName',
 		timeframe: `this_${form.querySelector('[name="days"]:checked').value}_days`,
 		filters: filters.concat([
-			{
-				operator: 'exists',
-				property_name: 'deviceAtlas.browserName',
-				property_value: true
-			},
-			{
-				operator: 'ne',
-				property_name: 'deviceAtlas.browserName',
-				property_value: false
-			}
+			createFilter('exists', 'deviceAtlas.browserName', true),
+			createFilter('ne', 'deviceAtlas.browserName', false)
 		]),
-		timezone: 'UTC'
+		timezone
 	});
 
 	client.run(browserNameQuery, (err, result) => {
@@ -83,55 +93,19 @@ const browserChange = ev => {
 		return;
 	}
 	disableForm(form);
-	const filters = [
-		{
-			name: 'pageType',
-			propertyName: 'page.location.type'
-		},
-		{
-			name: 'deviceType',
-			propertyName: 'deviceAtlas.primaryHardwareType'
-		},
-		{
-			name: 'abTest',
-			propertyName: 'ab.frontPageLayoutPrototype'
-		}
-	]
-		.map(config => {
-			const value = form.querySelector(`[name="${config.name}"]:checked`).value;
-			return value !== 'all' ?
-			{
-				operator: 'eq',
-				property_name: config.propertyName,
-				property_value: value
-			} :
-				null
-		})
-		.filter(filter => filter);
+	const filters = getFilters(form);
 
 	// pull out all the potential browsers
 	const browserNameQuery = new Keen.Query('select_unique', {
-		eventCollection: 'timing',
+		eventCollection,
 		targetProperty: 'deviceAtlas.browserVersion',
 		timeframe: `this_${form.querySelector('[name="days"]:checked').value}_days`,
 		filters: filters.concat([
-			{
-				operator: 'exists',
-				property_name: 'deviceAtlas.browserVersion',
-				property_value: true
-			},
-			{
-				operator: 'ne',
-				property_name: 'deviceAtlas.browserVersion',
-				property_value: false
-			},
-			{
-				operator: 'eq',
-				property_name: 'deviceAtlas.browserName',
-				property_value: form.querySelector('[name="browserName"]').value
-			}
+			createFilter('exists', 'deviceAtlas.browserVersion', true),
+			createFilter('ne', 'deviceAtlas.browserVersion', false),
+			createFilter('eq', 'deviceAtlas.browserName', form.querySelector('[name="browserName"]').value)
 		]),
-		timezone: 'UTC'
+		timezone
 	});
 
 	client.run(browserNameQuery, (err, result) => {
@@ -141,67 +115,18 @@ const browserChange = ev => {
 };
 
 const render = () => {
-	const query = Object.assign(
-		{
-			days: 28,
-			browserName: 'All',
-			browserVersion: 'All',
-			pageType: 'all',
-			deviceType: 'all',
-			abTest: 'all'
-		},
-		queryString.parse(location.search.substr(1))
-	);
-
 	const sharedFilters = [
-		{
-			operator: 'exists',
-			property_name: 'deviceAtlas.browserName',
-			property_value: true
-		},
-		{
-			operator: 'ne',
-			property_name: 'deviceAtlas.browserName',
-			property_value: false
-		}
+		createFilter('exists', 'deviceAtlas.browserName', true),
+		createFilter('ne', 'deviceAtlas.browserName', false)
 	];
-
 	if (query.pageType !== 'all') {
-		sharedFilters.push({
-			operator: 'eq',
-			property_name: 'page.location.type',
-			property_value: query.pageType
-		})
+		sharedFilters.push(createFilter('eq', 'page.location.type', query.pageType));
 	}
 	if (query.deviceType !== 'all') {
-		sharedFilters.push({
-			operator: 'eq',
-			property_name: 'deviceAtlas.primaryHardwareType',
-			property_value: query.deviceType
-		})
+		sharedFilters.push(createFilter('eq', 'deviceAtlas.primaryHardwareType', query.deviceType));
 	}
 	if (query.abTest !== 'all') {
-		sharedFilters.push({
-			operator: 'eq',
-			property_name: 'ab.frontPageLayoutPrototype',
-			property_value: query.abTest
-		})
-	}
-
-	const filters = [];
-	if (query.browserName !== 'All') {
-		filters.push({
-			operator: 'eq',
-			property_name: 'deviceAtlas.browserName',
-			property_value: query.browserName
-		})
-	}
-	if (query.browserVersion !== 'All') {
-		filters.push({
-			operator: 'eq',
-			property_name: 'deviceAtlas.browserVersion',
-			property_value: query.browserVersion
-		})
+		sharedFilters.push(createFilter('eq', 'ab.frontPageLayoutPrototype', query.abTest));
 	}
 
 	// update the radio button filters
@@ -221,50 +146,46 @@ const render = () => {
 		.title('Page Loading Events')
 		.prepare();
 
+
+	const filters = [];
+	if (query.browserName !== 'All') {
+		filters.push(createFilter('eq', 'deviceAtlas.browserName', query.browserName));
+	}
+	if (query.browserVersion !== 'All') {
+		filters.push(createFilter('eq', 'deviceAtlas.browserVersion', query.browserVersion));
+	}
 	const queries = ['domInteractive', 'domContentLoadedEventStart', 'domComplete', 'loadEventStart'].map(eventName => (
 		new Keen.Query('median', {
-			eventCollection: 'timing',
+			eventCollection,
 			targetProperty: `ingest.context.timings.offset.${eventName}`,
-			timeframe: `this_${query.days}_days`,
-			interval: 'daily',
+			timeframe,
+			interval,
 			filters: sharedFilters.concat(filters),
-			timezone: 'UTC'
+			timezone
 		})
 	));
 
 	// pull out all the potential browsers
 	queries.push(new Keen.Query('select_unique', {
-		eventCollection: 'timing',
+		eventCollection,
 		targetProperty: 'deviceAtlas.browserName',
-		timeframe: `this_${query.days}_days`,
+		timeframe,
 		filters: sharedFilters,
-		timezone: 'UTC'
+		timezone
 	}));
 
 	// if we selected a browser, pull out the versions too
 	if (query.browserName !== 'All') {
 		queries.push(new Keen.Query('select_unique', {
-			eventCollection: 'timing',
+			eventCollection,
 			targetProperty: 'deviceAtlas.browserVersion',
-			timeframe: `this_${query.days}_days`,
+			timeframe,
 			filters: sharedFilters.concat([
-				{
-					operator: 'exists',
-					property_name: 'deviceAtlas.browserVersion',
-					property_value: true
-				},
-				{
-					operator: 'ne',
-					property_name: 'deviceAtlas.browserVersion',
-					property_value: false
-				},
-				{
-					operator: 'eq',
-					property_name: 'deviceAtlas.browserName',
-					property_value: query.browserName
-				}
+				createFilter('exists', 'deviceAtlas.browserVersion', true),
+				createFilter('ne', 'deviceAtlas.browserVersion', false),
+				createFilter('eq', 'deviceAtlas.browserName', query.browserName)
 			]),
-			timezone: 'UTC'
+			timezone
 		}));
 	}
 
