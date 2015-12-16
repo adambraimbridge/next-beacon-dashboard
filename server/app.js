@@ -165,15 +165,22 @@ app.get('/conversionfunnel', function (req, res) {
 
 	const url = `https://${hostname}${signed.path}`;
 	const options = signed;
+// const conversionPoller = require('./conversionPoller)
+	const Poller = require('ft-poller');
+	const conversionPoller = new Poller({
+		url: url,
+		options: options,
+		autostart: true,
+		refreshInterval: 1200000,
+		parseData: function(data) {
+			return conversionfunnel(data);
+		}
+	});
 
-	fetch(url, options)
-		.then(response => response.json())
-		.then(data => {
-			res.render('conversion-funnel', {
-				conversionData: conversionfunnel(data),
-				layout: 'beacon'
-			});
-		});
+	res.render('conversion-funnel', {
+		conversionData: conversionPoller.getData(),
+		layout: 'beacon'
+	});
 });
 
 module.exports.listen = app.listen(process.env.PORT || 5028);
