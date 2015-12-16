@@ -1,8 +1,8 @@
-const filterByValue = (data, key, value) => {
+const filterByKeyValuePair = (data, key, value) => {
   return data.filter(element => element[key] === value);
 };
 
-const resultsFor = (data, key) => {
+const aggregateValues = (data, key) => {
   return data.reduce((accumulator, element) => {
     accumulator[element[key]] = (accumulator[element[key]] || 0) + 1;
     return accumulator;
@@ -10,13 +10,13 @@ const resultsFor = (data, key) => {
 };
 
 module.exports = (data) => {
-  const nextData = filterByValue(data, 'channel', 'next');
-  const nextAnonData = filterByValue(nextData, 'sub_cohort', '1');
-  return {
-    total: nextAnonData.length,
-    mobileDevice: resultsFor(nextAnonData, 'mobile_device'),
-    attractionType: resultsFor(nextAnonData, 'attraction_type1'),
-    hurdle: resultsFor(nextAnonData, 'hurdle'),
-    segID: resultsFor(nextAnonData, 'last_segid')
-  };
+  const nextData = filterByKeyValuePair(data, 'channel', 'next');
+  const nextAnonData = filterByKeyValuePair(nextData, 'sub_cohort', '1');
+  const allDataTypes = Object.keys(nextAnonData[0]);
+  const unwantedDataTypes = ['visit_id', 'sub_cohort'];
+  return allDataTypes.map(dataType => {
+    if(unwantedDataTypes.indexOf(dataType) === -1) {
+      return {[dataType]: aggregateValues(nextAnonData, dataType)};
+    }
+  });
 };
