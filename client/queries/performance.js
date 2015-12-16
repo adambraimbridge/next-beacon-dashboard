@@ -67,14 +67,15 @@ const render = () => {
 		})
 	}
 
-	document.querySelector(`input[name="days"][value="${query.days}"`).setAttribute('checked', 'checked');
-	document.querySelector(`input[name="pageType"][value="${query.pageType}"`).setAttribute('checked', 'checked');
-	document.querySelector(`input[name="deviceType"][value="${query.deviceType}"`).setAttribute('checked', 'checked');
-	document.querySelector(`input[name="abTest"][value="${query.abTest}"`).setAttribute('checked', 'checked');
+	// update the filters
+	['days', 'pageType', 'deviceType', 'abTest'].forEach(filterQueryName => (
+		document.querySelector(`input[name="${filterQueryName}"][value="${query[filterQueryName]}"`)
+			.setAttribute('checked', 'checked')
+	));
 
 	const perforamnceChart = new Keen.Dataviz()
 		.el(document.querySelector('#perforamnce-chart'))
-		.chartType('linechart')
+		.chartType('areachart')
 		.height(450)
 		.title('HTML and CSS parsing finished (domContentLoadedEventStart)')
 		.prepare();
@@ -82,7 +83,34 @@ const render = () => {
 	const queries = [];
 	queries.push(new Keen.Query('median', {
 		eventCollection: 'timing',
+		targetProperty: 'ingest.context.timings.offset.domInteractive',
+		timeframe: `this_${query.days}_days`,
+		interval: 'daily',
+		filters: sharedFilters.concat(filters),
+		timezone: 'UTC'
+	}));
+
+	queries.push(new Keen.Query('median', {
+		eventCollection: 'timing',
 		targetProperty: 'ingest.context.timings.offset.domContentLoadedEventStart',
+		timeframe: `this_${query.days}_days`,
+		interval: 'daily',
+		filters: sharedFilters.concat(filters),
+		timezone: 'UTC'
+	}));
+
+	queries.push(new Keen.Query('median', {
+		eventCollection: 'timing',
+		targetProperty: 'ingest.context.timings.offset.domComplete',
+		timeframe: `this_${query.days}_days`,
+		interval: 'daily',
+		filters: sharedFilters.concat(filters),
+		timezone: 'UTC'
+	}));
+
+	queries.push(new Keen.Query('median', {
+		eventCollection: 'timing',
+		targetProperty: 'ingest.context.timings.offset.loadEventStart',
 		timeframe: `this_${query.days}_days`,
 		interval: 'daily',
 		filters: sharedFilters.concat(filters),
@@ -125,7 +153,15 @@ const render = () => {
 		}));
 	}
 
-	client.run(queries, (err, [performanceResults, browserNameResults, browserVersionResults]) => {
+	client.run(queries, (err, results) => {
+		const [
+			domInteractiveResults,
+			domContentLoadedResults,
+			domCompleteResults,
+			loadEventResults,
+			browserNameResults,
+			browserVersionResults
+		] = results;
 		// create the dropdown
 		document.querySelector('#browserNames').innerHTML = ['All'].concat(browserNameResults.result)
 			.map(browserName => (
@@ -145,8 +181,34 @@ const render = () => {
 				.join('');
 		}
 
+		// munge the data into a single object
+		const performanceResults = domInteractiveResults.result.map((domInteractiveResult, index) => {
+			const values = [
+				{
+					name: 'domInteractive',
+					result: domInteractiveResult.value
+				},
+				{
+					name: 'domContentLoadedEventStart',
+					result: domContentLoadedResults.result[index].value
+				},
+				{
+					name: 'domComplete',
+					result: domCompleteResults.result[index].value
+				},
+				{
+					name: 'loadEventStart',
+					result: loadEventResults.result[index].value
+				}
+			];
+			return {
+				timeframe: domInteractiveResult.timeframe,
+				value: values
+			}
+		});
+
 		perforamnceChart
-			.data(performanceResults)
+			.data({ result: performanceResults })
 			.render();
 	});
 };
