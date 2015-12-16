@@ -4,6 +4,12 @@ import client from '../lib/wrapped-keen';
 
 const sort = (a, b) => parseFloat(b) - parseFloat(a);
 
+const buildDropDown = (type, options, query) => {
+	document.querySelector(`#${type}s`).innerHTML = ['All'].concat(options)
+		.map(option => option === query[type] ? `<option selected>${option}</option>` : `<option>${option}</option>`)
+		.join('');
+}
+
 const render = () => {
 	const query = Object.assign(
 		{
@@ -77,45 +83,19 @@ const render = () => {
 		.el(document.querySelector('#perforamnce-chart'))
 		.chartType('areachart')
 		.height(450)
-		.title('HTML and CSS parsing finished (domContentLoadedEventStart)')
+		.title('Page Loading Events')
 		.prepare();
 
-	const queries = [];
-	queries.push(new Keen.Query('median', {
-		eventCollection: 'timing',
-		targetProperty: 'ingest.context.timings.offset.domInteractive',
-		timeframe: `this_${query.days}_days`,
-		interval: 'daily',
-		filters: sharedFilters.concat(filters),
-		timezone: 'UTC'
-	}));
-
-	queries.push(new Keen.Query('median', {
-		eventCollection: 'timing',
-		targetProperty: 'ingest.context.timings.offset.domContentLoadedEventStart',
-		timeframe: `this_${query.days}_days`,
-		interval: 'daily',
-		filters: sharedFilters.concat(filters),
-		timezone: 'UTC'
-	}));
-
-	queries.push(new Keen.Query('median', {
-		eventCollection: 'timing',
-		targetProperty: 'ingest.context.timings.offset.domComplete',
-		timeframe: `this_${query.days}_days`,
-		interval: 'daily',
-		filters: sharedFilters.concat(filters),
-		timezone: 'UTC'
-	}));
-
-	queries.push(new Keen.Query('median', {
-		eventCollection: 'timing',
-		targetProperty: 'ingest.context.timings.offset.loadEventStart',
-		timeframe: `this_${query.days}_days`,
-		interval: 'daily',
-		filters: sharedFilters.concat(filters),
-		timezone: 'UTC'
-	}));
+	const queries = ['domInteractive', 'domContentLoadedEventStart', 'domComplete', 'loadEventStart'].map(eventName => (
+		new Keen.Query('median', {
+			eventCollection: 'timing',
+			targetProperty: `ingest.context.timings.offset.${eventName}`,
+			timeframe: `this_${query.days}_days`,
+			interval: 'daily',
+			filters: sharedFilters.concat(filters),
+			timezone: 'UTC'
+		})
+	));
 
 	// pull out all the potential browsers
 	queries.push(new Keen.Query('select_unique', {
@@ -162,23 +142,11 @@ const render = () => {
 			browserNameResults,
 			browserVersionResults
 		] = results;
-		// create the dropdown
-		document.querySelector('#browserNames').innerHTML = ['All'].concat(browserNameResults.result)
-			.map(browserName => (
-				browserName === query.browserName ?
-					`<option selected>${browserName}</option>` :
-					`<option>${browserName}</option>`
-			))
-			.join('');
 
+		// create the dropdowns
+		buildDropDown('browserName', browserNameResults.result, query);
 		if (browserVersionResults) {
-			document.querySelector('#browserVersions').innerHTML = ['All'].concat(browserVersionResults.result.sort(sort))
-				.map(browserVersion => (
-					browserVersion === query.browserVersion ?
-						`<option selected>${browserVersion}</option>` :
-						`<option>${browserVersion}</option>`
-				))
-				.join('');
+			buildDropDown('browserVersion', browserVersionResults.result.sort(sort), query);
 		}
 
 		// munge the data into a single object
