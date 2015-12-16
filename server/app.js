@@ -149,31 +149,31 @@ app.get('/surveycohorts', function (req, res) {
 });
 
 app.get('/conversionfunnel', function (req, res) {
-  const hostname = 'ft-next-redshift.s3.amazonaws.com';
+	const hostname = 'ft-next-redshift.s3.amazonaws.com';
 
-  const signed = aws4.sign({
-    service: 's3',
-    hostname: hostname,
-    path: '/conversion-funnel.json',
-    signQuery: true,
-    timeout: 60000,
-    region: 'eu-west-1'
-  }, {
-    accessKeyId: process.env.S3_AWS_ACCESS,
-    secretAccessKey: process.env.S3_AWS_SECRET
-  });
+	const signed = aws4.sign({
+		service: 's3',
+		hostname: hostname,
+		path: '/conversion-funnel.json',
+		signQuery: true,
+		timeout: 60000,
+		region: 'eu-west-1'
+	}, {
+		accessKeyId: process.env.S3_AWS_ACCESS,
+		secretAccessKey: process.env.S3_AWS_SECRET
+	});
 
-  const url = `https://${hostname}${signed.path}`;
-  const options = signed;
+	const url = `https://${hostname}${signed.path}`;
+	const options = signed;
 
-  fetch(url, options)
-    .then(response => response.json())
-    .then(data => {
-      res.render('conversionfunnel', {
-        conversionData: conversionfunnel(data),
-        layout: 'beacon'
-      });
-    });
+	fetch(url, options)
+		.then(response => response.json())
+		.then(data => {
+			res.render('conversion-funnel', {
+				conversionData: conversionfunnel(data),
+				layout: 'beacon'
+			});
+		});
 });
 
 module.exports.listen = app.listen(process.env.PORT || 5028);
