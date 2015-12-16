@@ -142,7 +142,7 @@ const generateAverageViews = (type, queryOpts = {}) => {
 					timeframe: week.timeframe,
 					value: week.value.map(state => ({
 						category: state['ab.frontPageLayoutPrototype'],
-						result: state['meanVolume']
+						result: state['meanFrequency']
 					}))
 				}))
 			})
