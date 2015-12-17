@@ -1,0 +1,64 @@
+<h1>Performance</h1>
+
+<form class="performance-form">
+    <div class="o-forms-group">
+        <div class="performance-form__choices">
+            <div>
+                <p class="performance-form__label--inline">Timeframe:</p>
+                <input type="radio" name="days" value="7" class="o-forms-radio" id="days-7" />
+                <label class="o-forms-label" for="days-7">7 days</label>
+                <input type="radio" name="days" value="14" class="o-forms-radio" id="days-14" />
+                <label class="o-forms-label" for="days-14">14 days</label>
+                <input type="radio" name="days" value="21" class="o-forms-radio" id="days-21" />
+                <label class="o-forms-label" for="days-21">21 days</label>
+                <input type="radio" name="days" value="28" class="o-forms-radio" id="days-28" />
+                <label class="o-forms-label" for="days-28">28 days</label>
+            </div>
+            <div>
+                <p class="performance-form__label--inline">Page type:</p>
+                <input type="radio" name="pageType" value="all" class="o-forms-radio" id="page-type-all" />
+                <label class="o-forms-label" for="page-type-all">All</label>
+                <input type="radio" name="pageType" value="frontpage" class="o-forms-radio" id="page-type-frontpage" />
+                <label class="o-forms-label" for="page-type-frontpage">Front Page</label>
+                <input type="radio" name="pageType" value="article" class="o-forms-radio" id="page-type-article" />
+                <label class="o-forms-label" for="page-type-article">Article</label>
+                <input type="radio" name="pageType" value="stream" class="o-forms-radio" id="page-type-stream" />
+                <label class="o-forms-label" for="page-type-stream">Stream</label>
+            </div>
+            <div>
+                <p class="performance-form__label--inline">Device type:</p>
+                <input type="radio" name="deviceType" value="all" class="o-forms-radio" id="device-type-all" />
+                <label class="o-forms-label" for="device-type-all">All</label>
+                <input type="radio" name="deviceType" value="Mobile Phone" class="o-forms-radio" id="device-type-mobile-phone" />
+                <label class="o-forms-label" for="device-type-mobile-phone">Mobile Phone</label>
+                <input type="radio" name="deviceType" value="Tablet" class="o-forms-radio" id="device-type-tablet" />
+                <label class="o-forms-label" for="device-type-tablet">Tablet</label>
+                <input type="radio" name="deviceType" value="Desktop" class="o-forms-radio" id="device-type-desktop" />
+                <label class="o-forms-label" for="device-type-desktop">Desktop</label>
+            </div>
+            <div>
+                <p class="performance-form__label--inline">A/B Test (frontPageLayoutPrototype):</p>
+                <input type="radio" name="abTest" value="all" class="o-forms-radio" id="ab-test-all" />
+                <label class="o-forms-label" for="ab-test-all">All</label>
+                <input type="radio" name="abTest" value="control" class="o-forms-radio" id="ab-test-control" />
+                <label class="o-forms-label" for="ab-test-control">Control</label>
+                <input type="radio" name="abTest" value="variant" class="o-forms-radio" id="ab-test-variant" />
+                <label class="o-forms-label" for="ab-test-variant">Variant</label>
+            </div>
+        </div>
+        <div class="o-grid-container">
+            <div class="o-grid-row">
+                <div class="performance-form__browser-names o-forms-affix-wrapper" data-o-grid-colspan="6">
+                    <label class="o-forms-prefix" for="browserNames">Browser</label>
+                    <select class="o-forms-select" name="browserName" id="browserNames"></select>
+                </div>
+                <div class="performance-form__browser-versions o-forms-affix-wrapper" data-o-grid-colspan="6">
+                    <label class="o-forms-prefix" for="browserVersions">Version</label>
+                    <select class="o-forms-select" name="browserVersion" id="browserVersions"></select>
+                </div>
+            </div>
+        </div>
+        <input class="o-buttons" type="submit" value="Update Graph">
+    </div>
+</form>
+<div id="perforamnce-chart"></div>

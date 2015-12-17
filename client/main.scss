@@ -319,6 +319,23 @@ body {
 	margin: 0 auto;
 }
 
+.performance-form {
+	.o-forms-prefix {
+		line-height: 1.1em;
+		min-width: 90px;
+	}
+
+	.o-buttons {
+		margin-top: 10px;
+	}
+
+	.performance-form__label--inline {
+		display: inline-block;
+		font-weight: 700;
+		min-width: 90px;
+	}
+}
+
 
 /* Utils */
 

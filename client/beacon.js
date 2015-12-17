@@ -314,6 +314,10 @@ Keen.ready(function(){
 			require('./queries/front-page/performance').render();
 			break;
 
+		case '/graph/performance':
+			require('./queries/performance').render();
+			break;
+
 		default:
 			console.log('unknown graph');
 
