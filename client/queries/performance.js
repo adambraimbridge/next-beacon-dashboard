@@ -1,3 +1,4 @@
+/* global Keen */
 import queryString from 'querystring';
 import client from '../lib/wrapped-keen';
 
