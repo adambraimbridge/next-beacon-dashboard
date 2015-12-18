@@ -37,9 +37,7 @@ const render = () => {
 		.prepare();
 
 	const filters = [
-		createFilter('exists', 'ingest.context.timings.marks.fontsLoaded', true),
-		createFilter('exists', 'deviceAtlas.browserName', true),
-		createFilter('ne', 'deviceAtlas.browserName', false)
+		createFilter('exists', 'ingest.context.timings.marks.fontsLoaded', true)
 	];
 
 	if (queryParams.deviceType && queryParams.deviceType !== 'all') {
