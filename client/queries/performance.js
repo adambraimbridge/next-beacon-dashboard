@@ -163,7 +163,7 @@ const render = () => {
 		.title('Page Loading Events')
 		.chartOptions({
 			vAxis: {
-				format: '#s'
+				format: '#.##s'
 			},
 			hAxis: {
 				format: 'EEE, d	MMM'
