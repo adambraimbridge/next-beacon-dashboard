@@ -161,6 +161,14 @@ const render = () => {
 		.chartType('areachart')
 		.height(450)
 		.title('Page Loading Events')
+		.chartOptions({
+			vAxis: {
+				format: '#s'
+			},
+			hAxis: {
+				format: 'EEE, d	MMM'
+			},
+		})
 		.prepare();
 
 
@@ -230,19 +238,19 @@ const render = () => {
 			const values = [
 				{
 					name: 'loadEventStart',
-					result: loadEventResults.result[index].value
+					result: loadEventResults.result[index].value / 1000
 				},
 				{
 					name: 'domComplete',
-					result: domCompleteResults.result[index].value
+					result: domCompleteResults.result[index].value / 1000
 				},
 				{
 					name: 'domContentLoadedEventStart',
-					result: domContentLoadedResults.result[index].value
+					result: domContentLoadedResults.result[index].value / 1000
 				},
 				{
 					name: 'domInteractive',
-					result: domInteractiveResult.value
+					result: domInteractiveResult.value / 1000
 				}
 			];
 			return {
