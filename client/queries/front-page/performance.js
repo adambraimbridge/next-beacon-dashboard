@@ -37,7 +37,8 @@ const render = () => {
 		.prepare();
 
 	const filters = [
-		createFilter('exists', 'ingest.context.timings.marks.fontsLoaded', true)
+		createFilter('exists', 'ingest.context.timings.marks.fontsLoaded', true),
+		createFilter('eq', 'page.location.type', 'frontpage')
 	];
 
 	if (queryParams.deviceType && queryParams.deviceType !== 'all') {
