@@ -42,7 +42,7 @@ const render = () => {
 		createFilter('ne', 'deviceAtlas.browserName', false)
 	];
 
-	if (queryParams.deviceType) {
+	if (queryParams.deviceType && queryParams.deviceType !== 'all') {
 		filters.push(createFilter('eq', 'deviceAtlas.primaryHardwareType', queryParams.deviceType))
 	}
 
