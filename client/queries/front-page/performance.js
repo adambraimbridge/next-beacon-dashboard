@@ -1,9 +1,20 @@
 /* global Keen */
+import queryString from 'querystring';
 import client from '../../lib/wrapped-keen';
 
-const capitalise = s => s.substring(0, 1).toUpperCase() + s.substring(1);
+const queryParams = Object.assign(
+	{
+		days: 28,
+		deviceType: 'all'
+	},
+	queryString.parse(location.search.substr(1))
+);
+
+const createFilter = (operator, property_name, property_value) => ({ operator, property_name, property_value });
 
 const render = () => {
+	document.querySelector(`input[name="deviceType"][value="${queryParams.deviceType}"`)
+		.setAttribute('checked', 'checked');
 
 	const perforamnceChart = new Keen.Dataviz()
 		.el(document.querySelector('#performance-chart'))
@@ -25,16 +36,27 @@ const render = () => {
 		})
 		.prepare();
 
-	const query = new Keen.Query('median', {
+	const filters = [
+		createFilter('exists', 'ingest.context.timings.marks.fontsLoaded', true),
+		createFilter('exists', 'deviceAtlas.browserName', true),
+		createFilter('ne', 'deviceAtlas.browserName', false)
+	];
+
+	if (queryParams.deviceType) {
+		filters.push(createFilter('eq', 'deviceAtlas.primaryHardwareType', queryParams.deviceType))
+	}
+
+	const keenQuery = new Keen.Query('median', {
 		eventCollection: 'timing',
 		targetProperty: 'ingest.context.timings.marks.fontsLoaded',
-		timeframe: `this_28_days`,
+		timeframe: `this_${queryParams.days}_days`,
 		group_by: 'ab.frontPageLayoutPrototype',
 		timezone: 'UTC',
-		interval: 'daily'
+		interval: 'daily',
+		filters
 	});
 
-	client.run(query, (err, results) => {
+	client.run(keenQuery, (err, results) => {
 		// fix labels and units
 		const result = results.result.map(result => {
 			const value = result.value.map(value => ({
