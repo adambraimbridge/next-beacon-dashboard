@@ -1,72 +1,57 @@
-'use strict';
+/* global Keen */
+import client from '../../lib/wrapped-keen';
 
-var queryString = require('querystring');
-var queryParameters = queryString.parse(location.search.substr(1));
+const capitalise = s => s.substring(0, 1).toUpperCase() + s.substring(1);
 
-const graphiteBaseUrl = 'https://www.hostedgraphite.com/bbaf3ccf/569381f9-6a60-4c33-a0be-b2272aa7a4a5/graphite/render';
-const chartParams = {
-	bgcolor: 'FFFFFF',
-	fgcolor: '000000',
-	majorGridLineColor: '777777',
-	width: 890,
-	height: 300,
-	from: '-7d',
-	hideLegend: true
-};
-const browsers = [
-	{
-		name: 'Chrome',
-		key: 'chrome'
-	},
-	{
-		name: 'Firefox',
-		key: 'firefox'
-	},
-	{
-		name: 'IE11',
-		key: 'ie_11'
-	}
-];
+const render = () => {
 
-var render = () => {
-	var currentBrowser = queryParameters.browser || browsers[0].key;
-	var targetconfigs = [
-		{
-			title: 'Average page load time',
-			target: [
-				`movingAverage(keepLastValue(wpt.next_ft_com.europe_dublin_aws.${currentBrowser}.homepage.loadEventEnd), "6hours")`,
-				`movingAverage(wpt.next_ft_com.europe_dublin_aws.${currentBrowser}.homepage.loadEventEnd, "7days")`
-			]
-		}
-	];
-	var el = document.getElementById('charts');
+	const perforamnceChart = new Keen.Dataviz()
+		.el(document.querySelector('#performance-chart'))
+		.chartType('areachart')
+		.height(450)
+		.title('Fonts Loaded')
+		.labelMapping({
+			control: 'Control',
+			variant: 'Variant',
+			'null': 'Not in test'
+		})
+		.chartOptions({
+			vAxis: {
+				format: '#s'
+			},
+			hAxis: {
+				format: 'EEE, d	MMM'
+			}
+		})
+		.prepare();
 
-	// add browser toggle
-	var browserOptionsEl = document.createElement('div');
-	browserOptionsEl.classList.add('nav--horizontal');
-	browserOptionsEl.dataset.oGridColspan = '12';
-	var browserItems = browsers
-		.map(({name, key}) => key === currentBrowser ? `<li>${name}</li>` : `<li><a href="?browser=${key}">${name}</a></li>`)
-		.join('');
-	browserOptionsEl.innerHTML = `
-		<h3>Browser: </h3>
-		<ul>
-			${browserItems}
-		</ul>
-	`;
-	el.appendChild(browserOptionsEl);
+	const query = new Keen.Query('median', {
+		eventCollection: 'timing',
+		targetProperty: 'ingest.context.timings.marks.fontsLoaded',
+		timeframe: `this_28_days`,
+		group_by: 'ab.frontPageLayoutPrototype',
+		timezone: 'UTC',
+		interval: 'daily'
+	});
 
-	targetconfigs.forEach(targetConfig => {
-		var titleEl = document.createElement('h2');
-		titleEl.textContent = targetConfig.title;
-		el.appendChild(titleEl);
-		var graphEl = document.createElement('img');
-		var query = queryString.stringify(Object.assign({}, chartParams, { target: targetConfig.target }));
-		graphEl.src = `${graphiteBaseUrl}?${query}`;
-		el.appendChild(graphEl);
+	client.run(query, (err, results) => {
+		// fix labels and units
+		const result = results.result.map(result => {
+			const value = result.value.map(value => ({
+				name: value['ab.frontPageLayoutPrototype'],
+				result: value.result ? (value.result / 1000).toFixed(2) : null
+			}));
+			return {
+				value,
+				timeframe: result.timeframe
+			}
+		});
+		perforamnceChart
+			.data({ result })
+			.render();
 	});
 };
 
-module.exports = {
+export default {
 	render
-};
+}
