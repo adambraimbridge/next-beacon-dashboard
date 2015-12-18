@@ -4,7 +4,7 @@
 const client = require('../../lib/wrapped-keen');
 const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search.substr(1));
-const queryTimeframe = queryParameters.timeframe || "this_7_weeks";
+const queryTimeframe = queryParameters.timeframe || "this_8_weeks";
 
 
 const getFilters = (pageType) => {
@@ -71,8 +71,10 @@ const generateAverageViews = (type, queryOpts = {}) => {
 	const charts = new Map([['meanVolume'], ['atLeast7'], ['atLeast11'], ['meanFrequency'], ['users']]);
 	charts.forEach((value, key, map) => {
 		map.set(key, new Keen.Dataviz()
-				.chartType('columnchart')
+				.chartType('linechart')
 				.chartOptions({
+					height: 500,
+					width: '100%',
 					legend: {
 						position: 'in'
 					}
@@ -90,7 +92,7 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			const volumeByState = _.groupBy(week.value, 'ab.frontPageLayoutPrototype');
 			const visitsByState = _.groupBy(visits.result[index].value, 'ab.frontPageLayoutPrototype');
 			const values = Object.keys(volumeByState).map((abState) => {
-				const volume = volumeByState[abState];
+				const volume = volumeByState[abState].filter(vol => vol.result < 500); //remove outliers
 				const visits = visitsByState[abState];
 				const usersForState = users.result[index].value.find(usersByState => usersByState['ab.frontPageLayoutPrototype'] === abState).result;
 				const atLeastNUsers = (n) => {
