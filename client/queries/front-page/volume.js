@@ -18,7 +18,7 @@ const getFilters = (pageType) => {
 			operator: 'eq',
 			property_name: 'ingest.user.layout',
 			property_value: queryParameters['layout']
-    })
+		});
 	}
 
 	if(pageType) {
@@ -42,10 +42,10 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts)),
-		new Keen.Query('count_unique', Object.assign({
-			targetProperty: 'user.uuid',
+		new Keen.Query('count', Object.assign({
 			eventCollection: 'dwell',
-			filters: getFilters(),
+			filters: getFilters('frontpage'),
+			groupBy: ['user.uuid'],
 			timeframe: queryTimeframe,
 			interval: 'weekly',
 			timezone: 'UTC'
@@ -76,7 +76,7 @@ const generateAverageViews = (type, queryOpts = {}) => {
 				.prepare());
 	});
 
-	client.run(pageViewsQueries, (err, [articlesRead, users, visits ]) => {
+	client.run(pageViewsQueries, (err, [articlesRead, users, visits]) => {
 		const data = articlesRead.result
 		.map((week, index) => {
 			const usersForWeek = users.result[index].value;
@@ -133,7 +133,7 @@ const generateAverageViews = (type, queryOpts = {}) => {
 					value: week['users']
 				}))
 			})
-			.title('Number of users')
+			.title('Number of home page users')
 			.render();
 
 		[7, 11].map((n) => {
