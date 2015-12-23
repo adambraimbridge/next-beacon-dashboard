@@ -6,14 +6,8 @@ const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search.substr(1));
 const queryTimeframe = queryParameters.timeframe || "this_8_weeks";
 
-
 const getFilters = (pageType) => {
 	let filters = [{
-		operator: 'exists',
-		property_name: 'user.ab.frontPageLayoutPrototype',
-		property_value: true
-	},
-	{
 		operator: 'exists',
 		property_name: 'user.uuid',
 		property_value: true
@@ -21,9 +15,9 @@ const getFilters = (pageType) => {
 
 	if(queryParameters['layout']) {
 		filters.push({
-      operator: 'eq',
-      property_name: 'ingest.user.layout',
-      property_value: queryParameters['layout']
+			operator: 'eq',
+			property_name: 'ingest.user.layout',
+			property_value: queryParameters['layout']
     })
 	}
 
@@ -43,7 +37,7 @@ const generateAverageViews = (type, queryOpts = {}) => {
 		new Keen.Query('count', Object.assign({
 			eventCollection: 'dwell',
 			filters: getFilters('article'),
-			groupBy: ['ab.frontPageLayoutPrototype', 'user.uuid'],
+			groupBy: ['user.uuid'],
 			timeframe: queryTimeframe,
 			interval: 'weekly',
 			timezone: 'UTC'
@@ -52,7 +46,6 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			targetProperty: 'user.uuid',
 			eventCollection: 'dwell',
 			filters: getFilters(),
-			groupBy: ['ab.frontPageLayoutPrototype'],
 			timeframe: queryTimeframe,
 			interval: 'weekly',
 			timezone: 'UTC'
@@ -61,7 +54,7 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			targetProperty: 'ingest.device.spoor_session',
 			eventCollection: 'dwell',
 			filters: getFilters(),
-			groupBy: ['ab.frontPageLayoutPrototype', 'user.uuid'],
+			groupBy: ['user.uuid'],
 			timeframe: queryTimeframe,
 			interval: 'weekly',
 			timezone: 'UTC'
@@ -83,109 +76,79 @@ const generateAverageViews = (type, queryOpts = {}) => {
 				.prepare());
 	});
 
-
-
 	client.run(pageViewsQueries, (err, [articlesRead, users, visits ]) => {
-
 		const data = articlesRead.result
 		.map((week, index) => {
-			const volumeByState = _.groupBy(week.value, 'ab.frontPageLayoutPrototype');
-			const visitsByState = _.groupBy(visits.result[index].value, 'ab.frontPageLayoutPrototype');
-			const values = Object.keys(volumeByState).map((abState) => {
-				const volume = volumeByState[abState].filter(vol => vol.result < 500); //remove outliers
-				const visits = visitsByState[abState];
-				const usersForState = users.result[index].value.find(usersByState => usersByState['ab.frontPageLayoutPrototype'] === abState).result;
-				const atLeastNUsers = (n) => {
-					const filteredVolume = volume.filter(vol => vol.result >= n);
-					return (filteredVolume.length / usersForState) * 100
-				};
+			const usersForWeek = users.result[index].value;
+			const visitsForWeek = visits.result[index].value;
+			const volumeForWeek = week.value.filter(vol => vol.result < 500); //remove outliers
 
-				const meanVolume = volume.reduce(function(prev, current) {
-					return prev + current.result;
-				}, 0) / usersForState;
+			const atLeastNUsers = (n) => {
+				const filteredVolume = volumeForWeek.filter(vol => vol.result >= n);
+				return (filteredVolume.length / usersForWeek) * 100
+			};
 
-				const meanFrequency = visits.reduce(function(prev, current) {
-					return prev + current.result;
-				}, 0) / usersForState;
+			const meanVolume = volumeForWeek.reduce(function(prev, current) {
+				return prev + current.result;
+			}, 0) / usersForWeek;
 
-				return {
-					'ab.frontPageLayoutPrototype': abState,
-					'users': usersForState,
-					'atLeast7': atLeastNUsers(7),
-					'atLeast11': atLeastNUsers(11),
-					'meanVolume': meanVolume,
-					'meanFrequency': meanFrequency
-				}
-			});
+			const meanFrequency = visitsForWeek.reduce(function(prev, current) {
+				return prev + current.result;
+			}, 0) / usersForWeek;
 
 			return {
-				timeframe: week.timeframe,
-				value: values
-			};
-		})
-		.filter((week) => week.value[0].users >= 100); //exclude weeks pre ab test
+				'timeframe': week.timeframe,
+				'users': usersForWeek,
+				'atLeast7': atLeastNUsers(7),
+				'atLeast11': atLeastNUsers(11),
+				'meanVolume': meanVolume,
+				'meanFrequency': meanFrequency
+			}
+		});
 
 		charts.get('meanVolume')
 			.data({
 				result: data.map((week) => ({
 					timeframe: week.timeframe,
-					value: week.value.map(state => ({
-						category: state['ab.frontPageLayoutPrototype'],
-						result: state['meanVolume']
-					}))
+					value: week['meanVolume']
 				}))
 			})
-		.title('Average volume of articles read')
-		.render();
+			.title('Average volume of articles read')
+			.render();
 
 		charts.get('meanFrequency')
 			.data({
 				result: data.map((week) => ({
 					timeframe: week.timeframe,
-					value: week.value.map(state => ({
-						category: state['ab.frontPageLayoutPrototype'],
-						result: state['meanFrequency']
-					}))
+					value: week['meanFrequency']
 				}))
 			})
-		.title('Average number of visits')
-		.render();
+			.title('Average number of visits')
+			.render();
 
 		charts.get('users')
 			.data({
 				result: data.map((week) => ({
 					timeframe: week.timeframe,
-					value: week.value.map(state => ({
-						category: state['ab.frontPageLayoutPrototype'],
-						result: state['users']
-					}))
+					value: week['users']
 				}))
 			})
-		.title('Number of users')
-		.render();
-
+			.title('Number of users')
+			.render();
 
 		[7, 11].map((n) => {
 			charts.get('atLeast' + n)
 			.data({
 				result: data.map((week) => ({
 					timeframe: week.timeframe,
-					value: week.value.map(state => ({
-						category: state['ab.frontPageLayoutPrototype'],
-						result: state['atLeast' + n]
-					}))
+					value: week['atLeast' + n]
 				}))
 			})
-				.title('% reading at least ' + n + ' article(s) ')
-				.render();
-
+			.title('% reading at least ' + n + ' article(s) ')
+			.render();
 		})
-
-
 	});
-
 };
-
 
 module.exports = {
 	render : generateAverageViews
