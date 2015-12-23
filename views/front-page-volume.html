@@ -1,0 +1,40 @@
+<h1>Front Page: Volume {{#if query.layout}}(Layout: {{query.layout}}){{/if}}</h1>
+
+<div>
+	<a href="?" >all</a>
+	<a href="?layout=default" >default</a>
+	<a href="?layout=XS">XS</a>
+	<a href="?layout=S">S</a>
+	<a href="?layout=M">M</a>
+	<a href="?layout=L">L</a>
+	<a href="?layout=XL">XL</a>
+</div>
+
+<h2>Volume</h2>
+<p>How many articles do users read per week?</p>
+<div class="chart__container__metrics">
+	<span class="chart__container" id="metric_meanVolume" style="height: 500"></span>
+</div>
+
+<p>What % of users read at least 7 articles per week?</p>
+<div class="chart__container__metrics">
+	<span class="chart__container" id="metric_atLeast7"  style="height: 500"></span>
+</div>
+
+<p>What % of users read at least 11 articles per week?</p>
+<div class="chart__container__metrics">
+	<span class="chart__container" id="metric_atLeast11"  style="height: 500"></span>
+
+</div>
+
+<h2>Frequency</h2>
+<p>In the last 7 days, how many visits on average do users make next.ft.com.</p>
+<div class="chart__container__metrics">
+	<span class="chart__container" id="metric_meanFrequency"  style="height: 500"></span>
+</div>
+
+<h2>Users</h2>
+<p>In the last 7 days, how many users on the AB test</p>
+<div class="chart__container__metrics">
+	<span class="chart__container" id="metric_users"  style="height: 500"></span>
+</div>
