@@ -4,7 +4,7 @@
 const client = require('../../lib/wrapped-keen');
 const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search.substr(1));
-const queryTimeframe = queryParameters.timeframe || "this_8_weeks";
+const queryTimeframe = queryParameters.timeframe || "this_2_weeks";
 
 const getFilters = (pageType) => {
 	let filters = [{
@@ -76,25 +76,29 @@ const generateAverageViews = (type, queryOpts = {}) => {
 				.prepare());
 	});
 
-	client.run(pageViewsQueries, (err, [articlesRead, users, visits]) => {
+	client.run(pageViewsQueries, (err, [articlesRead, frontPageUsers, visits]) => {
 		const data = articlesRead.result
 		.map((week, index) => {
-			const usersForWeek = users.result[index].value;
-			const visitsForWeek = visits.result[index].value;
-			const volumeForWeek = week.value.filter(vol => vol.result < 500); //remove outliers
+			const minFrontPageViews = frontPageUser => frontPageUser.result > 1;
+			const usersForWeek = frontPageUsers.result[index].value.filter(minFrontPageViews);
+			const numUsersForWeek = usersForWeek.length;
 
-			const atLeastNUsers = (n) => {
-				const filteredVolume = volumeForWeek.filter(vol => vol.result >= n);
-				return (filteredVolume.length / usersForWeek) * 100
-			};
+			// const usersForWeek = users.result[index].value;
+			// const visitsForWeek = visits.result[index].value;
+			// const volumeForWeek = week.value.filter(vol => vol.result < 500); //remove outliers
 
-			const meanVolume = volumeForWeek.reduce(function(prev, current) {
-				return prev + current.result;
-			}, 0) / usersForWeek;
+			// const atLeastNUsers = (n) => {
+			// 	const filteredVolume = volumeForWeek.filter(vol => vol.result >= n);
+			// 	return (filteredVolume.length / usersForWeek) * 100
+			// };
 
-			const meanFrequency = visitsForWeek.reduce(function(prev, current) {
-				return prev + current.result;
-			}, 0) / usersForWeek;
+			// const meanVolume = volumeForWeek.reduce(function(prev, current) {
+			// 	return prev + current.result;
+			// }, 0) / usersForWeek;
+
+			// const meanFrequency = visitsForWeek.reduce(function(prev, current) {
+			// 	return prev + current.result;
+			// }, 0) / usersForWeek;
 
 			return {
 				'timeframe': week.timeframe,
