@@ -81,24 +81,25 @@ const generateAverageViews = (type, queryOpts = {}) => {
 		.map((week, index) => {
 			const minFrontPageViews = frontPageUser => frontPageUser.result > 1;
 			const usersForWeek = frontPageUsers.result[index].value.filter(minFrontPageViews);
-			const numUsersForWeek = usersForWeek.length;
+			const usersForWeekArr = usersForWeek.map(function(user) {return user['user.uuid'];});
 
-			// const usersForWeek = users.result[index].value;
-			// const visitsForWeek = visits.result[index].value;
-			// const volumeForWeek = week.value.filter(vol => vol.result < 500); //remove outliers
+			const removeNonFrontPageUsers = (vol) => usersForWeekArr.indexOf(vol['user.uuid']) > -1;
 
-			// const atLeastNUsers = (n) => {
-			// 	const filteredVolume = volumeForWeek.filter(vol => vol.result >= n);
-			// 	return (filteredVolume.length / usersForWeek) * 100
-			// };
+			const visitsForWeek = visits.result[index].value;
+			const volumeForWeek = week.value.filter(vol => vol.result < 500).filter(removeNonFrontPageUsers);
 
-			// const meanVolume = volumeForWeek.reduce(function(prev, current) {
-			// 	return prev + current.result;
-			// }, 0) / usersForWeek;
+			const atLeastNUsers = (n) => {
+				const filteredVolume = volumeForWeek.filter(vol => vol.result >= n);
+				return (filteredVolume.length / usersForWeek) * 100
+			};
 
-			// const meanFrequency = visitsForWeek.reduce(function(prev, current) {
-			// 	return prev + current.result;
-			// }, 0) / usersForWeek;
+			const meanVolume = volumeForWeek.reduce(function(prev, current) {
+				return prev + current.result;
+			}, 0) / usersForWeek;
+
+			const meanFrequency = visitsForWeek.reduce(function(prev, current) {
+				return prev + current.result;
+			}, 0) / usersForWeek;
 
 			return {
 				'timeframe': week.timeframe,
