@@ -6,6 +6,9 @@ const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search.substr(1));
 const queryTimeframe = queryParameters.timeframe || "this_8_weeks";
 
+const breakpoints = ['all', 'default', 'XS', 'S', 'M', 'L', 'XL'];
+const currentBreakpoint = queryParameters['layout'] || breakpoints[0];
+
 const getFilters = (pageType) => {
 	let filters = [{
 		operator: 'exists',
@@ -32,6 +35,29 @@ const getFilters = (pageType) => {
 };
 
 const generateAverageViews = (type, queryOpts = {}) => {
+
+	const el = document.getElementById('charts');
+	const breakpointEl = document.createElement('div');
+	breakpointEl.classList.add('nav--horizontal');
+	breakpointEl.dataset.oGridColspan = '12';
+
+	const breakpointItems = breakpoints
+		.map(breakpoint =>
+			breakpoint === currentBreakpoint
+				? `<li>${breakpoint}</li>`
+				: breakpoint === 'all'
+					? `<li><a href="?">${breakpoint}</a></li>`
+					: `<li><a href="?layout=${breakpoint}">${breakpoint}</a></li>`
+		)
+		.join('');
+
+	breakpointEl.innerHTML = `
+		<h3>Breakpoint: </h3>
+		<ul>
+			${breakpointItems}
+		</ul>
+	`;
+	el.insertBefore(breakpointEl, el.firstChild);
 
 	let pageViewsQueries = [
 		new Keen.Query('count', Object.assign({

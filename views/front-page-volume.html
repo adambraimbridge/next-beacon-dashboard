@@ -1,39 +1,33 @@
 <h1>Front Page: Volume {{#if query.layout}}(Layout: {{query.layout}}){{/if}}</h1>
 
-<div>
-	<a href="?" >all</a>
-	<a href="?layout=default" >default</a>
-	<a href="?layout=XS">XS</a>
-	<a href="?layout=S">S</a>
-	<a href="?layout=M">M</a>
-	<a href="?layout=L">L</a>
-	<a href="?layout=XL">XL</a>
-</div>
+<div id="charts" class="o-grid-row">
 
-<h2>Volume</h2>
-<p>How many articles do front page users read per week?</p>
-<div class="chart__container__metrics">
-	<span class="chart__container" id="metric_meanVolume" style="height: 500"></span>
-</div>
+	<h2 data-o-grid-colspan="12">Volume</h2>
+	<p data-o-grid-colspan="12">How many articles do front page users read per week?</p>
+	<div class="chart__container__metrics" data-o-grid-colspan="12">
+		<span class="chart__container" id="metric_meanVolume" style="height: 500"></span>
+	</div>
 
-<p>What % of front page users read at least 7 articles per week?</p>
-<div class="chart__container__metrics">
-	<span class="chart__container" id="metric_atLeast7"  style="height: 500"></span>
-</div>
+	<p data-o-grid-colspan="12">What % of front page users read at least 7 articles per week?</p>
+	<div class="chart__container__metrics" data-o-grid-colspan="12">
+		<span class="chart__container" id="metric_atLeast7" style="height: 500"></span>
+	</div>
 
-<p>What % of front page users read at least 11 articles per week?</p>
-<div class="chart__container__metrics">
-	<span class="chart__container" id="metric_atLeast11"  style="height: 500"></span>
-</div>
+	<p data-o-grid-colspan="12">What % of front page users read at least 11 articles per week?</p>
+	<div class="chart__container__metrics" data-o-grid-colspan="12">
+		<span class="chart__container" id="metric_atLeast11" style="height: 500"></span>
+	</div>
 
-<h2>Frequency</h2>
-<p>How many visits on average do front page users make next.ft.com per week?</p>
-<div class="chart__container__metrics">
-	<span class="chart__container" id="metric_meanFrequency"  style="height: 500"></span>
-</div>
+	<h2 data-o-grid-colspan="12">Frequency</h2>
+	<p data-o-grid-colspan="12">How many visits on average do front page users make next.ft.com per week?</p>
+	<div class="chart__container__metrics" data-o-grid-colspan="12">
+		<span class="chart__container" id="metric_meanFrequency" style="height: 500"></span>
+	</div>
 
-<h2>Users</h2>
-<p>How many front page users on next.ft.com per week?</p>
-<div class="chart__container__metrics">
-	<span class="chart__container" id="metric_users"  style="height: 500"></span>
+	<h2 data-o-grid-colspan="12">Users</h2>
+	<p data-o-grid-colspan="12">How many front page users on next.ft.com per week?</p>
+	<div class="chart__container__metrics" data-o-grid-colspan="12">
+		<span class="chart__container" id="metric_users" style="height: 500"></span>
+	</div>
+
 </div>
