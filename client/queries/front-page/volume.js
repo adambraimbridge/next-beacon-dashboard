@@ -4,7 +4,7 @@
 const client = require('../../lib/wrapped-keen');
 const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search.substr(1));
-const queryTimeframe = queryParameters.timeframe || "this_8_weeks";
+const queryTimeframe = queryParameters.timeframe || "this_2_weeks";
 
 const breakpoints = ['all', 'default', 'XS', 'S', 'M', 'L', 'XL'];
 const currentBreakpoint = queryParameters['layout'] || breakpoints[0];
