@@ -4,7 +4,7 @@
 const client = require('../../lib/wrapped-keen');
 const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search.substr(1));
-const queryTimeframe = queryParameters.timeframe || "this_2_weeks";
+const queryTimeframe = queryParameters.timeframe || "this_8_weeks";
 
 const getFilters = (pageType) => {
 	let filters = [{
@@ -83,6 +83,8 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			const usersForWeek = frontPageUsers.result[index].value.filter(minFrontPageViews);
 			const usersForWeekArr = usersForWeek.map(function(user) {return user['user.uuid'];});
 
+			const usersForWeekNum = usersForWeek.length;
+
 			const removeNonFrontPageUsers = (vol) => usersForWeekArr.indexOf(vol['user.uuid']) > -1;
 
 			const visitsForWeek = visits.result[index].value;
@@ -90,20 +92,20 @@ const generateAverageViews = (type, queryOpts = {}) => {
 
 			const atLeastNUsers = (n) => {
 				const filteredVolume = volumeForWeek.filter(vol => vol.result >= n);
-				return (filteredVolume.length / usersForWeek) * 100
+				return (filteredVolume.length / usersForWeekNum) * 100
 			};
 
 			const meanVolume = volumeForWeek.reduce(function(prev, current) {
 				return prev + current.result;
-			}, 0) / usersForWeek;
+			}, 0) / usersForWeekNum;
 
 			const meanFrequency = visitsForWeek.reduce(function(prev, current) {
 				return prev + current.result;
-			}, 0) / usersForWeek;
+			}, 0) / usersForWeekNum;
 
 			return {
 				'timeframe': week.timeframe,
-				'users': usersForWeek,
+				'users': usersForWeekNum,
 				'atLeast7': atLeastNUsers(7),
 				'atLeast11': atLeastNUsers(11),
 				'meanVolume': meanVolume,
