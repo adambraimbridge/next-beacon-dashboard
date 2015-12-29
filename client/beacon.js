@@ -314,8 +314,8 @@ Keen.ready(function(){
 			require('./queries/front-page/performance').render();
 			break;
 
-		case '/graph/front-page/volume':
-			require('./queries/front-page/volume').render();
+		case '/graph/front-page/volume-frequency-users':
+			require('./queries/front-page/volume-frequency-users').render();
 			break;
 
 		case '/graph/performance':
