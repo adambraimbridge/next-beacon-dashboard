@@ -111,7 +111,15 @@ const generateAverageViews = (type, queryOpts = {}) => {
 
 			const usersForWeekNum = usersForWeek.length;
 
-			const removeNonFrontPageUsers = (vol) => usersForWeekArr.indexOf(vol['user.uuid']) > -1;
+			const removeNonFrontPageUsers = vol => {
+				let index = usersForWeekArr.indexOf(vol['user.uuid']);
+				if(index > -1) {
+					usersForWeekArr.splice(index, 1);
+					return true;
+				} else {
+					return false;
+				}
+			};
 
 			const visitsForWeek = visits.result[index].value;
 			const volumeForWeek = week.value.filter(vol => vol.result < 500).filter(removeNonFrontPageUsers);
