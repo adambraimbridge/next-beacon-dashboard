@@ -4,10 +4,12 @@
 const client = require('../../lib/wrapped-keen');
 const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search.substr(1));
-const queryTimeframe = queryParameters.timeframe || "this_2_weeks";
 
 const breakpoints = ['all', 'default', 'XS', 'S', 'M', 'L', 'XL'];
+const timeframes = ['2', '4', '6', '8'];
+
 const currentBreakpoint = queryParameters['layout'] || breakpoints[0];
+const currentTimeframe = queryParameters['timeframe'] || timeframes[0];
 
 const getFilters = (pageType) => {
 	let filters = [{
@@ -37,34 +39,45 @@ const getFilters = (pageType) => {
 const generateAverageViews = (type, queryOpts = {}) => {
 
 	const el = document.getElementById('charts');
-	const breakpointEl = document.createElement('div');
-	breakpointEl.classList.add('nav--horizontal');
-	breakpointEl.dataset.oGridColspan = '12';
+	const optionsEl = document.createElement('div');
+	optionsEl.classList.add('nav--horizontal');
+	optionsEl.dataset.oGridColspan = '12';
 
 	const breakpointItems = breakpoints
 		.map(breakpoint =>
 			breakpoint === currentBreakpoint
 				? `<li>${breakpoint}</li>`
 				: breakpoint === 'all'
-					? `<li><a href="?">${breakpoint}</a></li>`
-					: `<li><a href="?layout=${breakpoint}">${breakpoint}</a></li>`
+					? `<li><a href="?timeframe=${currentTimeframe}">${breakpoint}</a></li>`
+					: `<li><a href="?layout=${breakpoint}&amp;timeframe=${currentTimeframe}">${breakpoint}</a></li>`
 		)
 		.join('');
 
-	breakpointEl.innerHTML = `
+	const timeframeItems = timeframes
+		.map(timeframe =>
+			timeframe === currentTimeframe
+				? `<li>${timeframe}</li>`
+				: currentBreakpoint === 'all'
+					? `<li><a href="?timeframe=${timeframe}">${timeframe}</a></li>`
+					: `<li><a href="?layout=${currentBreakpoint}&amp;timeframe=${timeframe}">${timeframe}</a></li>`
+		)
+		.join('');
+
+	optionsEl.innerHTML = `
 		<h3>Breakpoint: </h3>
-		<ul>
-			${breakpointItems}
-		</ul>
+		<ul>${breakpointItems}</ul>
+		</br>
+		<h3>Timeframe (weeks): </h3>
+		<ul>${timeframeItems}</ul>
 	`;
-	el.insertBefore(breakpointEl, el.firstChild);
+	el.insertBefore(optionsEl, el.firstChild);
 
 	let pageViewsQueries = [
 		new Keen.Query('count', Object.assign({
 			eventCollection: 'dwell',
 			filters: getFilters('article'),
 			groupBy: ['user.uuid'],
-			timeframe: queryTimeframe,
+			timeframe: `this_${currentTimeframe}_weeks`,
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts)),
@@ -72,7 +85,7 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			eventCollection: 'dwell',
 			filters: getFilters('frontpage'),
 			groupBy: ['user.uuid'],
-			timeframe: queryTimeframe,
+			timeframe: `this_${currentTimeframe}_weeks`,
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts)),
@@ -81,7 +94,7 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			eventCollection: 'dwell',
 			filters: getFilters(),
 			groupBy: ['user.uuid'],
-			timeframe: queryTimeframe,
+			timeframe: `this_${currentTimeframe}_weeks`,
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts))
