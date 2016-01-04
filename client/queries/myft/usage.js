@@ -2,6 +2,8 @@
 
 'use strict';
 
+var union = require('lodash/array/union');
+
 var queryString = require('querystring');
 var queryParameters = queryString.parse(location.search.substr(1));
 
@@ -155,6 +157,8 @@ function usageOverTime(client) {
 		}]
 	});
 
+
+	// this is the old way, to be replaced
 	var myFtUsers = new Keen.Query('count_unique', {
 		eventCollection: "dwell",
 		interval: interval,
@@ -171,6 +175,43 @@ function usageOverTime(client) {
 			operator: 'contains',
 			property_value: 'myft'
 		}]
+	});
+
+	// the new way requires two queries
+
+	var usersOnMyFtPages = new Keen.Query('select_unique', {
+		eventCollection: "dwell",
+		interval: interval,
+		timeframe: timeframe,
+		targetProperty: 'user.uuid',
+		filters: [
+			{
+				property_name: 'user.uuid',
+				operator: 'exists',
+				property_value: true
+			},
+			{
+				property_name: 'page.location.hash',
+				operator: 'contains',
+				property_value: 'myft'
+			}]
+	});
+
+	var usersOpeningDailyEmail = new Keen.Query('select_unique', {
+		eventCollection: 'email',
+		timeframe: timeframe,
+		interval: interval,
+		target_property: 'user.uuid',
+		filters: [
+			{
+				property_name: 'meta.emailType',
+				operator: 'eq',
+				property_value: 'daily'
+			}, {
+				property_name: 'event',
+				operator: 'eq',
+				property_value: 'open'
+			}]
 	});
 
 
@@ -206,13 +247,15 @@ function usageOverTime(client) {
 		.prepare();
 
 
-	client.run([nextUsers, followUsers, myFtUsers, articleViews, myFtArticleViews], function(err, res) { // run the queries
+	client.run([nextUsers, followUsers, myFtUsers, articleViews, myFtArticleViews, usersOnMyFtPages, usersOpeningDailyEmail], function(err, res) { // run the queries
 
 		var next = res[0].result;
 		var follow = res[1].result;
 		var myFt = res[2].result;
 		var articles = res[3].result;
 		var myFtArticles = res[4].result;
+		var onMyFtPages = res[5].result;
+		var openingMyFtEmails = res[6].result;
 
 		var myFtUsageData = [];
 		var articleViewData = [];
@@ -221,6 +264,9 @@ function usageOverTime(client) {
 		var i=0;
 
 		while (i < follow.length) {
+
+			var myFtUsers = union(onMyFtPages[i].value, openingMyFtEmails[i].value);
+
 			myFtUsageData[i]={ // format the data so it can be charted
 					timeframe: follow[i]["timeframe"],
 					value: [
