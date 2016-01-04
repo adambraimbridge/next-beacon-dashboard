@@ -158,28 +158,7 @@ function usageOverTime(client) {
 	});
 
 
-	// this is the old way, to be replaced
-	var myFtUsers = new Keen.Query('count_unique', {
-		eventCollection: "dwell",
-		interval: interval,
-		timeframe: timeframe,
-		targetProperty: 'user.uuid',
-		filters: [
-		{
-			property_name: 'user.uuid',
-			operator: 'exists',
-			property_value: true
-		},
-		{
-			property_name: 'page.location.hash',
-			operator: 'contains',
-			property_value: 'myft'
-		}]
-	});
-
-	// the new way requires two queries
-
-	var usersOnMyFtPages = new Keen.Query('select_unique', {
+	var usersOnMyFtPagesSelect = new Keen.Query('select_unique', {
 		eventCollection: "dwell",
 		interval: interval,
 		timeframe: timeframe,
@@ -197,7 +176,7 @@ function usageOverTime(client) {
 			}]
 	});
 
-	var usersOpeningDailyEmail = new Keen.Query('select_unique', {
+	var usersOpeningDailyEmailSelect = new Keen.Query('select_unique', {
 		eventCollection: 'email',
 		timeframe: timeframe,
 		interval: interval,
@@ -247,15 +226,14 @@ function usageOverTime(client) {
 		.prepare();
 
 
-	client.run([nextUsers, followUsers, myFtUsers, articleViews, myFtArticleViews, usersOnMyFtPages, usersOpeningDailyEmail], function(err, res) { // run the queries
+	client.run([nextUsers, followUsers, articleViews, myFtArticleViews, usersOnMyFtPagesSelect, usersOpeningDailyEmailSelect], function(err, res) { // run the queries
 
 		var next = res[0].result;
 		var follow = res[1].result;
-		var myFt = res[2].result;
-		var articles = res[3].result;
-		var myFtArticles = res[4].result;
-		var onMyFtPages = res[5].result;
-		var openingMyFtEmails = res[6].result;
+		var articles = res[2].result;
+		var myFtArticles = res[3].result;
+		var onMyFtPagesSelect = res[4].result;
+		var openingMyFtEmailsSelect = res[5].result;
 
 		var myFtUsageData = [];
 		var articleViewData = [];
@@ -265,14 +243,14 @@ function usageOverTime(client) {
 
 		while (i < follow.length) {
 
-			var myFtUsers = union(onMyFtPages[i].value, openingMyFtEmails[i].value);
+			const myFtUsers = union(onMyFtPagesSelect[i].value, openingMyFtEmailsSelect[i].value).length;
 
 			myFtUsageData[i]={ // format the data so it can be charted
 					timeframe: follow[i]["timeframe"],
 					value: [
 							{ category: "Next Users", result: next[i]["value"] },
 							{ category: "Follow users", result: follow[i]["value"] },
-							{ category: "myFT users", result: myFt[i]["value"] }
+							{ category: "myFT users", result: myFtUsers }
 					]
 			};
 			articleViewData[i]={ // format the data so it can be charted
@@ -285,7 +263,7 @@ function usageOverTime(client) {
 			articleConsumptionData[i]={ // format the data so it can be charted
 					timeframe: follow[i]["timeframe"],
 					value: [
-							{ category: "myFT Articles consumed per user", result: myFtArticles[i]["value"] / myFt[i]["value"] }
+							{ category: "myFT Articles consumed per user", result: myFtArticles[i]["value"] / myFtUsers }
 					]
 			};
 
