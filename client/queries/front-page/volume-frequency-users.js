@@ -119,32 +119,33 @@ const generateAverageViews = (type, queryOpts = {}) => {
 		const data = articlesRead.result
 		.map((week, index) => {
 			const minFrontPageViews = frontPageUser => frontPageUser.result > 1;
-			const usersForWeek = frontPageUsers.result[index].value.filter(minFrontPageViews);
-			const usersForWeekNum = usersForWeek.length;
+			const frontPageUsersForWeek = frontPageUsers.result[index].value.filter(minFrontPageViews);
+			const frontPageUsersForWeekNum = frontPageUsersForWeek.length;
 
 			const visitsForWeek = visits.result[index].value;
-			const volumeForWeek = week.value.filter(vol => vol.result < 500);
-			const lookup = _.indexBy(usersForWeek, function(frontPageUser) { return frontPageUser['user.uuid'] });
-			const finalVolumeForWeek = _.filter(volumeForWeek, function(articleUser) {
+
+			const articleUsersForWeek = week.value.filter(vol => vol.result < 500);
+			const lookup = _.indexBy(frontPageUsersForWeek, function(frontPageUser) { return frontPageUser['user.uuid'] });
+			const volumeForWeek = _.filter(articleUsersForWeek, function(articleUser) {
 				return lookup[articleUser['user.uuid']] !== undefined;
 			});
 
 			const atLeastNUsers = (n) => {
-				const filteredVolume = finalVolumeForWeek.filter(vol => vol.result >= n);
-				return (filteredVolume.length / usersForWeekNum) * 100
+				const filteredVolume = volumeForWeek.filter(vol => vol.result >= n);
+				return (filteredVolume.length / frontPageUsersForWeekNum) * 100
 			};
 
-			const meanVolume = finalVolumeForWeek.reduce(function(prev, current) {
+			const meanVolume = volumeForWeek.reduce(function(prev, current) {
 				return prev + current.result;
-			}, 0) / usersForWeekNum;
+			}, 0) / frontPageUsersForWeekNum;
 
 			const meanFrequency = visitsForWeek.reduce(function(prev, current) {
 				return prev + current.result;
-			}, 0) / usersForWeekNum;
+			}, 0) / frontPageUsersForWeekNum;
 
 			return {
 				'timeframe': week.timeframe,
-				'users': usersForWeekNum,
+				'users': frontPageUsersForWeekNum,
 				'atLeast7': atLeastNUsers(7),
 				'atLeast11': atLeastNUsers(11),
 				'meanVolume': meanVolume,
