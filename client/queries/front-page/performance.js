@@ -36,6 +36,12 @@ const render = () => {
 			title: 'Fonts loaded',
 			filters: filters.concat([createFilter('exists', 'ingest.context.timings.marks.fontsLoaded', true)]),
 			targetProperty: 'ingest.context.timings.marks.fontsLoaded'
+		},
+		{
+			el: document.querySelector('#page-loaded'),
+			title: 'Page loaded (offset from domLoading, i.e. doesn\'t include connection latency)',
+			filters: filters.concat([createFilter('exists', 'ingest.context.timings.domLoadingOffset.loadEventEnd', true)]),
+			targetProperty: 'ingest.context.timings.domLoadingOffset.loadEventEnd'
 		}
 	]
 		.map(graph => {
