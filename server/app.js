@@ -172,9 +172,7 @@ app.get('/conversionfunnel', function (req, res) {
 		options: options,
 		autostart: true,
 		refreshInterval: 1200000,
-		parseData: function(data) {
-			return conversionfunnel(data);
-		}
+		parseData: data => conversionfunnel(data)
 	});
 
 	res.render('conversion-funnel', {
