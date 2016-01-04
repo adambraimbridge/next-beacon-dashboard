@@ -11,3 +11,4 @@ static/main.js
 public
 .env
 .idea
+npm-debug.log

@@ -87,6 +87,11 @@ Keen.ready(function(){
 			require('./queries/ab/suggested-read-ctr');
 			break;
 
+		case '/graph/ab/moreon-structure':
+			require('./queries/ab/moreon-structure');
+			require('./queries/ab/moreon-structure-ctr');
+			break;
+
 		case '/graph/opt-in':
 			require('./queries/opt-in');
 			break;

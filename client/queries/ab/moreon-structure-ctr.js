@@ -6,7 +6,8 @@ const articleCTAs = require('../article/article-ctas');
 const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search.substr(1));
 const referrerParameter = queryParameters.referrerType;
-const targets = ["article", "stream", "homepage", "follow"];
+const subComponents = ["more-on"];
+const timeFrame = {"end":"2016-01-31T00:00:00.000+00:00","start":"2016-01-04T00:00:00.000+00:00"};
 const standardQueryFilters = [
 	{"operator":"eq",
 	"property_name":"page.location.type",
@@ -28,20 +29,23 @@ const socialReferrer = [{
 const domPathfilter = [
 	{"operator":"in",
 	"property_name":"meta.domPath",
-	"property_value": metaDomPathArray(targets)}];
+	"property_value": metaDomPathArray(subComponents)}];
 const client = new Keen({
 	projectId: keen_project,
 	readKey: keen_read_key
 });
 
+const metricCTROn = new Keen.Dataviz();
+const metricCTROff = new Keen.Dataviz();
+
 let referrerFilters;
 let chartHeadingModifier;
 
-function filterByTargets(targetTypes, category) {
+function filterBySubCompnents(subComponentTypes, category) {
 	let resultArray = [];
-	targetTypes.forEach(function(type) {
+	subComponentTypes.forEach(function(type) {
 		articleCTAs.filter(function(cta) {
-			return cta["target"] === type;
+			return cta["subComponent"] === type;
 		})
 		.map(function (filteredCTA) {
 			resultArray.push(filteredCTA[category]);
@@ -60,16 +64,12 @@ function getUnique(nonUniqueArray) {
 	return uniqueArray;
 }
 
-function metaDomPathArray(targetTypes) {
-	return filterByTargets(targetTypes, "domPath");
+function metaDomPathArray(subComponentTypes) {
+	return filterBySubCompnents(subComponentTypes, "domPath");
 }
 
-function componentArray(targetTypes) {
-	return getUnique(filterByTargets(targetTypes, "component"));
-}
-
-function subComponentArray(targetTypes) {
-	return getUnique(filterByTargets(targetTypes, "subComponent"));
+function targetArray(subComponentTypes) {
+	return getUnique(filterBySubCompnents(subComponentTypes, "target"));
 }
 
 function ctaQuery() {
@@ -79,8 +79,8 @@ function ctaQuery() {
 			.concat(domPathfilter)
 			.concat(referrerFilters)
 			.concat(standardQueryFilters),
-		groupBy: ["meta.domPath","ab.articleSuggestedRead"],
-		timeframe: {"end":"2015-12-02T00:00:00.000+00:00","start":"2015-10-29T00:00:00.000+00:00"},
+		groupBy: ["meta.domPath","ab.articleMoreOnTopicCard"],
+		timeframe: timeFrame,
 		timezone: "UTC",
 		maxAge:10800
 	};
@@ -93,8 +93,8 @@ function baseQuery() {
 		filters: []
 			.concat(referrerFilters)
 			.concat(standardQueryFilters),
-		groupBy: "ab.articleSuggestedRead",
-		timeframe: {"end":"2015-12-02T00:00:00.000+00:00","start":"2015-10-29T00:00:00.000+00:00"},
+		groupBy: "ab.articleMoreOnTopicCard",
+		timeframe: timeFrame,
 		timezone: "UTC",
 		maxAge:10800
 	};
@@ -111,11 +111,11 @@ function runQuery(types) {
 
 			res.forEach(function(resItem) {
 				resItem.result.map(function(el) {
-					if (el["ab.articleSuggestedRead"] === "control") {
-						el["ab.articleSuggestedRead"] = "off";
+					if (el["ab.articleMoreOnTopicCard"] === "control") {
+						el["ab.articleMoreOnTopicCard"] = "off";
 					}
-					if (el["ab.articleSuggestedRead"] === "variant") {
-						el["ab.articleSuggestedRead"] = "on";
+					if (el["ab.articleMoreOnTopicCard"] === "variant") {
+						el["ab.articleMoreOnTopicCard"] = "on";
 					}
 				});
 			});
@@ -124,15 +124,15 @@ function runQuery(types) {
 			let clickResults = res[0];
 
 			let newBaseResults = [
-				{"ab.articleSuggestedRead":"on",
+				{"ab.articleMoreOnTopicCard":"on",
 				pageViews: 0},
-				{"ab.articleSuggestedRead":"off",
+				{"ab.articleMoreOnTopicCard":"off",
 				pageViews: 0}
 			];
 
 			newBaseResults.map(function(newBaseResult) {
 				baseResults.result.map(function(baseResult) {
-					if (newBaseResult["ab.articleSuggestedRead"] === baseResult["ab.articleSuggestedRead"]) {
+					if (newBaseResult["ab.articleMoreOnTopicCard"] === baseResult["ab.articleMoreOnTopicCard"]) {
 						newBaseResult.pageViews += baseResult.result;
 					}
 				});
@@ -140,11 +140,9 @@ function runQuery(types) {
 
 			let newClickResults = [];
 
-			metaDomPathArray(targets).map(function(path) {
+			metaDomPathArray(subComponents).map(function(path) {
 				let newClickResult = {
 					domPath: path,
-					component: articleCTAs.find(cta => cta.domPath === path)["component"],
-					subComponent: articleCTAs.find(cta => cta.domPath === path)["subComponent"],
 					target: articleCTAs.find(cta => cta.domPath === path)["target"],
 					on: 0,
 					off: 0
@@ -156,84 +154,60 @@ function runQuery(types) {
 				let matchedDomPath = newClickResults.filter(function(newClickResult) {
 					return clickResult["meta.domPath"] === newClickResult.domPath;
 				})[0];
-				if (clickResult["ab.articleSuggestedRead"] === "on") {
+				if (clickResult["ab.articleMoreOnTopicCard"] === "on") {
 					matchedDomPath.on += clickResult.result;
 				}
-				if (clickResult["ab.articleSuggestedRead"] === "off") {
+				if (clickResult["ab.articleMoreOnTopicCard"] === "off") {
 					matchedDomPath.off += clickResult.result;
 				}
 			});
+
+			newClickResults = newClickResults.filter(res => res.on > 0 || res.off > 0);
 
 			//turn clicks into ctr
 
 			newClickResults.map(function (newClickResult) {
 				newBaseResults.forEach(function (newBaseResult) {
-					if (newBaseResult["ab.articleSuggestedRead"] === "on") {
+					if (newBaseResult["ab.articleMoreOnTopicCard"] === "on") {
 						newClickResult.onCtr = parseFloat((newClickResult.on * 100) / newBaseResult.pageViews);
 					}
-					if (newBaseResult["ab.articleSuggestedRead"] === "off") {
+					if (newBaseResult["ab.articleMoreOnTopicCard"] === "off") {
 						newClickResult.offCtr = parseFloat((newClickResult.off * 100) / newBaseResult.pageViews);
 					}
 				});
 			});
 
-			// sum the results up by subComponent
+			// sum the results at top level
 
-			let clickResultsSubComponent = [];
-
-			subComponentArray(targets).map(function (subComponent) {
-				let subComponentResult = {
-					subComponent: subComponent,
-					on: 0,
-					onCtr: 0,
-					off: 0,
-					offCtr: 0
-				};
-				clickResultsSubComponent.push(subComponentResult);
-			});
+			let totalResult = {
+				on: 0,
+				onCtr: 0,
+				off: 0,
+				offCtr: 0
+			};
 
 			newClickResults.map(function (newClickResult) {
-				clickResultsSubComponent.map(function (subComponent) {
-					if (subComponent.subComponent === newClickResult.subComponent) {
-						subComponent.on += newClickResult.on;
-						subComponent.onCtr += newClickResult.onCtr;
-						subComponent.off += newClickResult.off;
-						subComponent.offCtr += newClickResult.offCtr;
-					}
-				});
+				totalResult.on += newClickResult.on;
+				totalResult.onCtr += newClickResult.onCtr;
+				totalResult.off += newClickResult.off;
+				totalResult.offCtr += newClickResult.offCtr;
 			});
 
-			// sum the results up by component
+			metricCTROn
+				.data({result: totalResult.onCtr})
+				.chartType("metric")
+				.render();
 
-			let clickResultsComponent = [];
-
-			componentArray(targets).map(function (component) {
-				let componentResult = {
-					component: component,
-					on: 0,
-					onCtr: 0,
-					off: 0,
-					offCtr: 0
-				};
-				clickResultsComponent.push(componentResult);
-			});
-
-			newClickResults.map(function (newClickResult) {
-				clickResultsComponent.map(function (component) {
-					if (component.component === newClickResult.component) {
-						component.on += newClickResult.on;
-						component.onCtr += newClickResult.onCtr;
-						component.off += newClickResult.off;
-						component.offCtr += newClickResult.offCtr;
-					}
-				});
-			});
+			metricCTROff
+				.data({result: totalResult.offCtr})
+				.chartType("metric")
+				.render();
 
 			// sum the results up by target
 
 			let clickResultsTarget = [];
 
-			targets.map(function (target) {
+			targetArray(subComponents).map(function (target) {
 				let targetResult = {
 					target: target,
 					on: 0,
@@ -254,6 +228,8 @@ function runQuery(types) {
 					}
 				});
 			});
+
+			clickResultsTarget = clickResultsTarget.filter(res => res.on > 0 || res.off > 0);
 
 			//draw the table - by target
 			let tableTarget = $('<table>')
@@ -287,86 +263,19 @@ function runQuery(types) {
 			let el = document.getElementById("table-target");
 			tableTarget.appendTo($(el));
 
-			//draw the table - by component
-			let tableComponent = $('<table>')
-						.addClass("o-table o-table--compact o-table--horizontal-lines o-table--vertical-lines o-table--horizontal-borders o-table--vertical-borders");
-
-			tr = $('<tr>')
-				.append($('<th>').text('CTR% by component ' + chartHeadingModifier).attr("colspan",5));
-
-			tr.appendTo(tableComponent);
-
-			tr = $('<tr>')
-				.append($('<th>').text('Component'))
-				.append($('<th>').text('ON Clicks'))
-				.append($('<th>').text('ON CTR'))
-				.append($('<th>').text('OFF Clicks'))
-				.append($('<th>').text('OFF CTR'));
-
-			tr.appendTo(tableComponent);
-
-			clickResultsComponent.forEach(function(row) {
-				tr = $('<tr>')
-					.append($('<td>').text(row.component))
-					.append($('<td>').text(row.on))
-					.append($('<td>').text(row.onCtr.toFixed(2)))
-					.append($('<td>').text(row.off))
-					.append($('<td>').text(row.offCtr.toFixed(2)));
-
-				tr.appendTo(tableComponent);
-			});
-
-			el = document.getElementById("table-component");
-			tableComponent.appendTo($(el));
-
-			// table by sub component
-
-			let tableSubComponent = $('<table>')
-						.addClass("o-table o-table--compact o-table--horizontal-lines o-table--vertical-lines o-table--horizontal-borders o-table--vertical-borders");
-
-			tr = $('<tr>')
-				.append($('<th>').text('CTR% by sub component ' + chartHeadingModifier).attr("colspan",5));
-
-			tr.appendTo(tableSubComponent);
-
-			tr = $('<tr>')
-				.append($('<th>').text('Sub Component'))
-				.append($('<th>').text('ON Clicks'))
-				.append($('<th>').text('ON CTR'))
-				.append($('<th>').text('OFF Clicks'))
-				.append($('<th>').text('OFF CTR'));
-
-			tr.appendTo(tableSubComponent);
-
-			clickResultsSubComponent.forEach(function(row) {
-				tr = $('<tr>')
-					.append($('<td>').text(row.subComponent))
-					.append($('<td>').text(row.on))
-					.append($('<td>').text(row.onCtr.toFixed(2)))
-					.append($('<td>').text(row.off))
-					.append($('<td>').text(row.offCtr.toFixed(2)));
-
-				tr.appendTo(tableSubComponent);
-			});
-
-			el = document.getElementById("table-sub-component");
-			tableSubComponent.appendTo($(el));
-
 			// table by domPath
 
 			let tableDomPath = $('<table>')
 						.addClass("o-table o-table--compact o-table--horizontal-lines o-table--vertical-lines o-table--horizontal-borders o-table--vertical-borders");
 
 			tr = $('<tr>')
-				.append($('<th>').text('CTR% by domPath ' + chartHeadingModifier).attr("colspan",7));
+				.append($('<th>').text('CTR% by domPath ' + chartHeadingModifier).attr("colspan",6));
 
 			tr.appendTo(tableDomPath);
 
 			tr = $('<tr>')
 				.append($('<th>').text('domPath'))
 				.append($('<th>').text('Target'))
-				.append($('<th>').text('Component'))
-				.append($('<th>').text('Sub Component'))
 				.append($('<th>').text('ON Clicks'))
 				.append($('<th>').text('ON CTR'))
 				.append($('<th>').text('OFF Clicks'))
@@ -378,8 +287,6 @@ function runQuery(types) {
 				tr = $('<tr>')
 					.append($('<td>').text(row.domPath))
 					.append($('<td>').text(row.target))
-					.append($('<td>').text(row.component))
-					.append($('<td>').text(row.subComponent))
 					.append($('<td>').text(row.on))
 					.append($('<td>').text(row.onCtr.toFixed(2)))
 					.append($('<td>').text(row.off))
@@ -409,4 +316,16 @@ switch (referrerParameter) {
 		chartHeadingModifier = '(page referred by ALL SOURCES)';
 }
 
-runQuery(targets);
+metricCTROn
+	.el(document.getElementById("metric-ctr__on"))
+	.height(450)
+	.title("% CTR - ON")
+	.prepare();
+
+metricCTROff
+	.el(document.getElementById("metric-ctr__off"))
+	.height(450)
+	.title("% CTR - OFF")
+	.prepare();
+
+runQuery(subComponents);
