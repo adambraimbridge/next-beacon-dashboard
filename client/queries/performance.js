@@ -167,7 +167,7 @@ const render = () => {
 			},
 			hAxis: {
 				format: 'EEE, d	MMM'
-			},
+			}
 		})
 		.prepare();
 
