@@ -40,14 +40,14 @@ const client = new Keen({
 let referrerFilters;
 let activeFilter;
 
-const metricMoreThanOneOn = new Keen.Dataviz();
-const metricMoreThanOneOff = new Keen.Dataviz();
+const metricMoreThanOneVariant = new Keen.Dataviz();
+const metricMoreThanOneControl = new Keen.Dataviz();
 
-const metricAveragePageViewsOn = new Keen.Dataviz();
-const metricAveragePageViewsOff = new Keen.Dataviz();
+const metricAveragePageViewsVariant = new Keen.Dataviz();
+const metricAveragePageViewsControl = new Keen.Dataviz();
 
-const metricSessionsOn = new Keen.Dataviz();
-const metricSessionsOff = new Keen.Dataviz();
+const metricSessionsVariant = new Keen.Dataviz();
+const metricSessionsControl = new Keen.Dataviz();
 
 function uniqueSessionsQuery() {
 	let parameters = {
@@ -89,7 +89,7 @@ function articleDepthQuery(referredSessionsArray) {
 function distributionTransform(results) {
 
 	let resultsDistribution = [
-		{condition: "on",
+		{condition: "variant",
 		sessions: 0,
 		pageViews: 0,
 		value: [
@@ -97,7 +97,7 @@ function distributionTransform(results) {
 					{bMin: 2, bMax: 999, bFreq: 0, result: 0}
 				],
 		},
-		{condition: "off",
+		{condition: "control",
 		sessions: 0,
 		pageViews: 0,
 		value: [
@@ -107,12 +107,6 @@ function distributionTransform(results) {
 		}];
 
 	results.result.map(function(result) {
-		if (result["ab.articleMoreOnTopicCard"] === "variant") {
-			result["ab.articleMoreOnTopicCard"] = "on";
-		}
-		if (result["ab.articleMoreOnTopicCard"] === "control") {
-			result["ab.articleMoreOnTopicCard"] = "off";
-		}
 		if (result.result > 0) {
 			resultsDistribution.map(function(dist){
 				if (dist.condition === result["ab.articleMoreOnTopicCard"]) {
@@ -133,7 +127,6 @@ function distributionTransform(results) {
 			bucket.result = +((bucket.bFreq*100) / dist.sessions).toFixed(1);
 			bucket.bMin === bucket.bMax ? bucket.articles = bucket.bMin.toString() : bucket.articles = bucket.bMin + ' to ' + bucket.bMax;
 		});
-		dist.conversions = dist.value.find(bucket => bucket.articles === "2 to 999").bFreq;
 		dist.moreThanOne = dist.value.find(bucket => bucket.articles === "2 to 999").result;
 		dist.avgPageViews = +(dist.pageViews / dist.sessions).toFixed(2);
 		delete dist.value;
@@ -159,40 +152,40 @@ switch (referrerParameter) {
 let activeFilterEl = $('<p>').text(activeFilter);
 activeFilterEl.appendTo(document.getElementById("referrer-filter"));
 
-metricMoreThanOneOn
-	.el(document.getElementById("metric-more-than-one__on"))
+metricMoreThanOneVariant
+	.el(document.getElementById("metric-more-than-one__variant"))
 	.height(450)
-	.title("% More Than 1 Article - ON")
+	.title("% More Than 1 Article - VARIANT")
 	.prepare();
 
-metricMoreThanOneOff
-	.el(document.getElementById("metric-more-than-one__off"))
+metricMoreThanOneControl
+	.el(document.getElementById("metric-more-than-one__control"))
 	.height(450)
-	.title("% More Than 1 Article - OFF")
+	.title("% More Than 1 Article - CONTROL")
 	.prepare();
 
-metricAveragePageViewsOn
-	.el(document.getElementById("metric-average-pages__on"))
+metricAveragePageViewsVariant
+	.el(document.getElementById("metric-average-pages__variant"))
 	.height(450)
-	.title("Average Article Page Views - ON")
+	.title("Average Article Page Views - VARIANT")
 	.prepare();
 
-metricAveragePageViewsOff
-	.el(document.getElementById("metric-average-pages__off"))
+metricAveragePageViewsControl
+	.el(document.getElementById("metric-average-pages__control"))
 	.height(450)
-	.title("Average Article Page Views - OFF")
+	.title("Average Article Page Views - CONTROL")
 	.prepare();
 
-metricSessionsOn
-	.el(document.getElementById("metric-number-sessions__on"))
+metricSessionsVariant
+	.el(document.getElementById("metric-number-sessions__variant"))
 	.height(450)
-	.title("Number Of Sessions - ON")
+	.title("Number Of Sessions - VARIANT")
 	.prepare();
 
-metricSessionsOff
-	.el(document.getElementById("metric-number-sessions__off"))
+metricSessionsControl
+	.el(document.getElementById("metric-number-sessions__control"))
 	.height(450)
-	.title("Number Of Sessions - OFF")
+	.title("Number Of Sessions - CONTROL")
 	.prepare();
 
 client.run(uniqueSessionsQuery(), function(err, res) {
@@ -207,36 +200,36 @@ client.run(uniqueSessionsQuery(), function(err, res) {
 			console.log('Err ', err);
 		}
 	const transformedResult = distributionTransform(res);
-	const resultsOn = transformedResult.find(res => res.condition === "on");
-	const resultsOff = transformedResult.find(res => res.condition === "off");
+	const resultsVariant = transformedResult.find(res => res.condition === "variant");
+	const resultsControl = transformedResult.find(res => res.condition === "control");
 
-	metricMoreThanOneOn
-		.data({result: resultsOn.moreThanOne})
+	metricMoreThanOneVariant
+		.data({result: resultsVariant.moreThanOne})
 		.chartType("metric")
 		.render();
 
-	metricMoreThanOneOff
-		.data({result: resultsOff.moreThanOne})
+	metricMoreThanOneControl
+		.data({result: resultsControl.moreThanOne})
 		.chartType("metric")
 		.render();
 
-	metricAveragePageViewsOn
-		.data({result: resultsOn.avgPageViews})
+	metricAveragePageViewsVariant
+		.data({result: resultsVariant.avgPageViews})
 		.chartType("metric")
 		.render();
 
-	metricAveragePageViewsOff
-		.data({result: resultsOff.avgPageViews})
+	metricAveragePageViewsControl
+		.data({result: resultsControl.avgPageViews})
 		.chartType("metric")
 		.render();
 
-	metricSessionsOn
-		.data({result: resultsOn.sessions})
+	metricSessionsVariant
+		.data({result: resultsVariant.sessions})
 		.chartType("metric")
 		.render();
 
-	metricSessionsOff
-		.data({result: resultsOff.sessions})
+	metricSessionsControl
+		.data({result: resultsControl.sessions})
 		.chartType("metric")
 		.render();
 
