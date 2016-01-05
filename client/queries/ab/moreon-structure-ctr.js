@@ -35,8 +35,8 @@ const client = new Keen({
 	readKey: keen_read_key
 });
 
-const metricCTROn = new Keen.Dataviz();
-const metricCTROff = new Keen.Dataviz();
+const metricCTRVariant = new Keen.Dataviz();
+const metricCTRControl = new Keen.Dataviz();
 
 let referrerFilters;
 let chartHeadingModifier;
@@ -109,24 +109,13 @@ function runQuery(types) {
 		}
 		else {
 
-			res.forEach(function(resItem) {
-				resItem.result.map(function(el) {
-					if (el["ab.articleMoreOnTopicCard"] === "control") {
-						el["ab.articleMoreOnTopicCard"] = "off";
-					}
-					if (el["ab.articleMoreOnTopicCard"] === "variant") {
-						el["ab.articleMoreOnTopicCard"] = "on";
-					}
-				});
-			});
-
 			let baseResults = res[1];
 			let clickResults = res[0];
 
 			let newBaseResults = [
-				{"ab.articleMoreOnTopicCard":"on",
+				{"ab.articleMoreOnTopicCard":"variant",
 				pageViews: 0},
-				{"ab.articleMoreOnTopicCard":"off",
+				{"ab.articleMoreOnTopicCard":"control",
 				pageViews: 0}
 			];
 
@@ -144,8 +133,8 @@ function runQuery(types) {
 				let newClickResult = {
 					domPath: path,
 					target: articleCTAs.find(cta => cta.domPath === path)["target"],
-					on: 0,
-					off: 0
+					variant: 0,
+					control: 0
 				};
 				newClickResults.push(newClickResult);
 			});
@@ -154,25 +143,25 @@ function runQuery(types) {
 				let matchedDomPath = newClickResults.filter(function(newClickResult) {
 					return clickResult["meta.domPath"] === newClickResult.domPath;
 				})[0];
-				if (clickResult["ab.articleMoreOnTopicCard"] === "on") {
-					matchedDomPath.on += clickResult.result;
+				if (clickResult["ab.articleMoreOnTopicCard"] === "variant") {
+					matchedDomPath.variant += clickResult.result;
 				}
-				if (clickResult["ab.articleMoreOnTopicCard"] === "off") {
-					matchedDomPath.off += clickResult.result;
+				if (clickResult["ab.articleMoreOnTopicCard"] === "control") {
+					matchedDomPath.control += clickResult.result;
 				}
 			});
 
-			newClickResults = newClickResults.filter(res => res.on > 0 || res.off > 0);
+			newClickResults = newClickResults.filter(res => res.variant > 0 || res.control > 0);
 
 			//turn clicks into ctr
 
 			newClickResults.map(function (newClickResult) {
 				newBaseResults.forEach(function (newBaseResult) {
-					if (newBaseResult["ab.articleMoreOnTopicCard"] === "on") {
-						newClickResult.onCtr = parseFloat((newClickResult.on * 100) / newBaseResult.pageViews);
+					if (newBaseResult["ab.articleMoreOnTopicCard"] === "variant") {
+						newClickResult.variantCtr = parseFloat((newClickResult.variant * 100) / newBaseResult.pageViews);
 					}
-					if (newBaseResult["ab.articleMoreOnTopicCard"] === "off") {
-						newClickResult.offCtr = parseFloat((newClickResult.off * 100) / newBaseResult.pageViews);
+					if (newBaseResult["ab.articleMoreOnTopicCard"] === "control") {
+						newClickResult.controlCtr = parseFloat((newClickResult.control * 100) / newBaseResult.pageViews);
 					}
 				});
 			});
@@ -180,26 +169,26 @@ function runQuery(types) {
 			// sum the results at top level
 
 			let totalResult = {
-				on: 0,
-				onCtr: 0,
-				off: 0,
-				offCtr: 0
+				variant: 0,
+				variantCtr: 0,
+				control: 0,
+				controlCtr: 0
 			};
 
 			newClickResults.map(function (newClickResult) {
-				totalResult.on += newClickResult.on;
-				totalResult.onCtr += newClickResult.onCtr;
-				totalResult.off += newClickResult.off;
-				totalResult.offCtr += newClickResult.offCtr;
+				totalResult.variant += newClickResult.variant;
+				totalResult.variantCtr += newClickResult.variantCtr;
+				totalResult.control += newClickResult.control;
+				totalResult.controlCtr += newClickResult.controlCtr;
 			});
 
-			metricCTROn
-				.data({result: totalResult.onCtr})
+			metricCTRVariant
+				.data({result: totalResult.variantCtr})
 				.chartType("metric")
 				.render();
 
-			metricCTROff
-				.data({result: totalResult.offCtr})
+			metricCTRControl
+				.data({result: totalResult.controlCtr})
 				.chartType("metric")
 				.render();
 
@@ -210,10 +199,10 @@ function runQuery(types) {
 			targetArray(subComponents).map(function (target) {
 				let targetResult = {
 					target: target,
-					on: 0,
-					onCtr: 0,
-					off: 0,
-					offCtr: 0
+					variant: 0,
+					variantCtr: 0,
+					control: 0,
+					controlCtr: 0
 				};
 				clickResultsTarget.push(targetResult);
 			});
@@ -221,15 +210,15 @@ function runQuery(types) {
 			newClickResults.map(function (newClickResult) {
 				clickResultsTarget.map(function (target) {
 					if (target.target === newClickResult.target) {
-						target.on += newClickResult.on;
-						target.onCtr += newClickResult.onCtr;
-						target.off += newClickResult.off;
-						target.offCtr += newClickResult.offCtr;
+						target.variant += newClickResult.variant;
+						target.variantCtr += newClickResult.variantCtr;
+						target.control += newClickResult.control;
+						target.controlCtr += newClickResult.controlCtr;
 					}
 				});
 			});
 
-			clickResultsTarget = clickResultsTarget.filter(res => res.on > 0 || res.off > 0);
+			clickResultsTarget = clickResultsTarget.filter(res => res.variant > 0 || res.control > 0);
 
 			//draw the table - by target
 			let tableTarget = $('<table>')
@@ -242,20 +231,20 @@ function runQuery(types) {
 
 			tr = $('<tr>')
 				.append($('<th>').text('Target'))
-				.append($('<th>').text('ON Clicks'))
-				.append($('<th>').text('ON CTR'))
-				.append($('<th>').text('OFF Clicks'))
-				.append($('<th>').text('OFF CTR'));
+				.append($('<th>').text('VARIANT Clicks'))
+				.append($('<th>').text('VARIANT CTR'))
+				.append($('<th>').text('CONTROL Clicks'))
+				.append($('<th>').text('CONTROL CTR'));
 
 			tr.appendTo(tableTarget);
 
 			clickResultsTarget.forEach(function(row) {
 				tr = $('<tr>')
 					.append($('<td>').text(row.target))
-					.append($('<td>').text(row.on))
-					.append($('<td>').text(row.onCtr.toFixed(2)))
-					.append($('<td>').text(row.off))
-					.append($('<td>').text(row.offCtr.toFixed(2)));
+					.append($('<td>').text(row.variant))
+					.append($('<td>').text(row.variantCtr.toFixed(2)))
+					.append($('<td>').text(row.control))
+					.append($('<td>').text(row.controlCtr.toFixed(2)));
 
 				tr.appendTo(tableTarget);
 			});
@@ -276,10 +265,10 @@ function runQuery(types) {
 			tr = $('<tr>')
 				.append($('<th>').text('domPath'))
 				.append($('<th>').text('Target'))
-				.append($('<th>').text('ON Clicks'))
-				.append($('<th>').text('ON CTR'))
-				.append($('<th>').text('OFF Clicks'))
-				.append($('<th>').text('OFF CTR'));
+				.append($('<th>').text('VARIANT Clicks'))
+				.append($('<th>').text('VARIANT CTR'))
+				.append($('<th>').text('CONTROL Clicks'))
+				.append($('<th>').text('CONTROL CTR'));
 
 			tr.appendTo(tableDomPath);
 
@@ -287,10 +276,10 @@ function runQuery(types) {
 				tr = $('<tr>')
 					.append($('<td>').text(row.domPath))
 					.append($('<td>').text(row.target))
-					.append($('<td>').text(row.on))
-					.append($('<td>').text(row.onCtr.toFixed(2)))
-					.append($('<td>').text(row.off))
-					.append($('<td>').text(row.offCtr.toFixed(2)));
+					.append($('<td>').text(row.variant))
+					.append($('<td>').text(row.variantCtr.toFixed(2)))
+					.append($('<td>').text(row.control))
+					.append($('<td>').text(row.controlCtr.toFixed(2)));
 
 				tr.appendTo(tableDomPath);
 			});
@@ -316,16 +305,16 @@ switch (referrerParameter) {
 		chartHeadingModifier = '(page referred by ALL SOURCES)';
 }
 
-metricCTROn
-	.el(document.getElementById("metric-ctr__on"))
+metricCTRVariant
+	.el(document.getElementById("metric-ctr__variant"))
 	.height(450)
-	.title("% CTR - ON")
+	.title("% CTR - VARIANT")
 	.prepare();
 
-metricCTROff
-	.el(document.getElementById("metric-ctr__off"))
+metricCTRControl
+	.el(document.getElementById("metric-ctr__control"))
 	.height(450)
-	.title("% CTR - OFF")
+	.title("% CTR - CONTROL")
 	.prepare();
 
 runQuery(subComponents);
