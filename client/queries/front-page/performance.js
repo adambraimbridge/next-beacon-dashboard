@@ -5,23 +5,36 @@ import client from '../../lib/wrapped-keen';
 const queryParams = Object.assign(
 	{
 		days: 28,
-		deviceType: 'all'
+		deviceType: 'all',
+		connectionType: 'all'
 	},
 	queryString.parse(location.search.substr(1))
 );
 
-const createFilter = (operator, property_name, property_value) => ({ operator, property_name, property_value });
+const createFilter = (property_name, operator, property_value) => ({ property_name, operator, property_value });
+
+// NOTE: handling the older spec for connection type (http://davidbcalhoun.com/2010/using-navigator-connection-android/)
+const connectionTypes = {
+	cellular: ['cellular', 3, 4],
+	wifi: ['wifi', 2],
+	ethernet: ['ethernet', 1]
+};
 
 const render = () => {
+	// select the form values
 	document.querySelector(`input[name="deviceType"][value="${queryParams.deviceType}"`)
+		.setAttribute('checked', 'checked');
+	document.querySelector(`input[name="connectionType"][value="${queryParams.connectionType}"`)
 		.setAttribute('checked', 'checked');
 
 	const filters = [
-		createFilter('eq', 'page.location.type', 'frontpage')
+		createFilter('page.location.type', 'eq', 'frontpage')
 	];
-
 	if (queryParams.deviceType && queryParams.deviceType !== 'all') {
-		filters.push(createFilter('eq', 'deviceAtlas.primaryHardwareType', queryParams.deviceType))
+		filters.push(createFilter('deviceAtlas.primaryHardwareType', 'eq', queryParams.deviceType))
+	}
+	if (queryParams.connectionType && queryParams.connectionType !== 'all') {
+		filters.push(createFilter('ingest.user.connectionType', 'in', connectionTypes[queryParams.connectionType]))
 	}
 
 	// general page performance graph
@@ -95,25 +108,27 @@ const render = () => {
 			.render();
 	});
 
-	// config for the graphs
+	// config for the custom metric graphs
 	[
-		{
-			el: document.querySelector('#page-loaded'),
-			title: 'Page loaded (offset from domLoading, i.e. doesn\'t include connection latency)',
-			filters: filters.concat([createFilter('exists', 'ingest.context.timings.domLoadingOffset.loadEventEnd', true)]),
-			targetProperty: 'ingest.context.timings.domLoadingOffset.loadEventEnd'
-		},
 		{
 			el: document.querySelector('#first-paint-chart'),
 			title: 'Page starts to render',
-			filters: filters.concat([createFilter('exists', 'ingest.context.timings.custom.firstPaint', true)]),
-			targetProperty: 'ingest.context.timings.custom.firstPaint'
+			filters: [createFilter('ingest.context.timings.custom.firstPaint', 'exists', true), ...filters],
+			targetProperty: 'ingest.context.timings.custom.firstPaint',
+			showBrowsers: true
 		},
 		{
 			el: document.querySelector('#fonts-loaded-chart'),
 			title: 'Fonts loaded',
-			filters: filters.concat([createFilter('exists', 'ingest.context.timings.marks.fontsLoaded', true)]),
-			targetProperty: 'ingest.context.timings.marks.fontsLoaded'
+			filters: [createFilter('ingest.context.timings.marks.fontsLoaded', 'exists', true), ...filters],
+			targetProperty: 'ingest.context.timings.marks.fontsLoaded',
+			showBrowsers: true
+		},
+		{
+			el: document.querySelector('#page-loaded'),
+			title: 'Page loaded (offset from domLoading, i.e. doesn\'t include connection latency)',
+			filters: [createFilter('ingest.context.timings.domLoadingOffset.loadEventEnd', 'exists', true), ...filters],
+			targetProperty: 'ingest.context.timings.domLoadingOffset.loadEventEnd'
 		}
 	]
 		.map(graph => {
@@ -121,7 +136,7 @@ const render = () => {
 				.el(graph.el)
 				.chartType('areachart')
 				.height(450)
-				.title(graph.title)
+				.title(graph.title + (graph.showBrowsers ? ' (limited browser data, see below)' : ''))
 				.labelMapping({
 					control: 'Control',
 					variant: 'Variant',
@@ -141,19 +156,36 @@ const render = () => {
 					}
 				})
 				.prepare();
-			const query = new Keen.Query('median', {
-				eventCollection: 'timing',
-				targetProperty: graph.targetProperty,
-				timeframe: `this_${queryParams.days}_days`,
-				group_by: 'ab.frontPageLayoutPrototype',
-				timezone: 'UTC',
-				interval: 'daily',
-				filters: graph.filters
-			});
+			const queries = [
+				new Keen.Query('median', {
+					eventCollection: 'timing',
+					targetProperty: graph.targetProperty,
+					timeframe: `this_${queryParams.days}_days`,
+					group_by: 'ab.frontPageLayoutPrototype',
+					timezone: 'UTC',
+					interval: 'daily',
+					filters: graph.filters
+				})
+			];
+			if (graph.showBrowsers) {
+				queries.push(
+					new Keen.Query('select_unique', {
+						eventCollection: 'timing',
+						targetProperty: 'deviceAtlas.browserName',
+						timeframe: `this_${queryParams.days}_days`,
+						timezone: 'UTC',
+						filters: [
+							createFilter('deviceAtlas.browserName', 'exists', true),
+							createFilter('deviceAtlas.browserName', 'ne', false),
+							...graph.filters
+						]
+					})
+				);
+			}
 
-			client.run(query, (err, result) => {
+			client.run(queries, (err, results) => {
 				// fix units
-				const data = result.result.map(result => {
+				const data = (results.length ? results[0] : results).result.map(result => {
 					const value = result.value.map(value => ({
 						name: value['ab.frontPageLayoutPrototype'],
 						result: value.result ? (value.result / 1000).toFixed(2) : null
@@ -166,6 +198,13 @@ const render = () => {
 				chart
 					.data({ result: data })
 					.render();
+				// add note if we're showing data from a select group of browsers
+				if (graph.showBrowsers) {
+					const browserInfoEl = document.createElement('p');
+					browserInfoEl.innerHTML =
+						`<strong>Note:</strong> This metric is not well supported. Subsequently, we're only collecting data from ${results[1].result.join(', ')}`;
+					graph.el.appendChild(browserInfoEl);
+				}
 			});
 		});
 };
