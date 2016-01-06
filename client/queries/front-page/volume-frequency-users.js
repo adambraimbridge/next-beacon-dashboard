@@ -3,13 +3,16 @@
 
 const client = require('../../lib/wrapped-keen');
 const queryString = require('querystring');
-const queryParameters = queryString.parse(location.search.substr(1));
 
-const breakpoints = ['all', 'default', 'XS', 'S', 'M', 'L', 'XL'];
-const timeframes = ['2', '4', '6', '8'];
+const queryParams = Object.assign(
+	{
+		deviceType: 'all',
+		layoutType: 'all'
+	},
+	queryString.parse(location.search.substr(1))
+);
 
-const currentBreakpoint = queryParameters['layout'] || breakpoints[0];
-const currentTimeframe = queryParameters['timeframe'] || timeframes[0];
+const createFilter = (operator, property_name, property_value) => ({ operator, property_name, property_value });
 
 const getFilters = (pageType) => {
 	let filters = [{
@@ -18,66 +21,35 @@ const getFilters = (pageType) => {
 		property_value: true
 	}];
 
-	if(queryParameters['layout']) {
-		filters.push({
-			operator: 'eq',
-			property_name: 'ingest.user.layout',
-			property_value: queryParameters['layout']
-		});
+	if (queryParams.deviceType && queryParams.deviceType !== 'all') {
+		filters.push(createFilter('eq', 'deviceAtlas.primaryHardwareType', queryParams.deviceType))
 	}
 
-	if(pageType) {
-		filters.push({
-			operator: 'eq',
-			property_name: 'page.location.type',
-			property_value: pageType
-		});
+	if (queryParams.layoutType && queryParams.layoutType !== 'all') {
+		queryParams.layoutType !== 'XL'
+			? filters.push(createFilter('eq', 'ingest.user.layout', queryParams.layoutType))
+			: filters.push(createFilter('in', 'ingest.user.layout', [queryParams.layoutType, 'XXL']))
+	}
+
+	if (pageType) {
+		filters.push(createFilter('eq', 'page.location.type', pageType))
 	}
 	return filters;
 };
 
 const generateAverageViews = (type, queryOpts = {}) => {
+	document.querySelector(`input[name="deviceType"][value="${queryParams.deviceType}"`)
+		.setAttribute('checked', 'checked');
 
-	const el = document.getElementById('charts');
-	const optionsEl = document.createElement('div');
-	optionsEl.classList.add('nav--horizontal');
-	optionsEl.dataset.oGridColspan = '12';
-
-	const breakpointItems = breakpoints
-		.map(breakpoint =>
-			breakpoint === currentBreakpoint
-				? `<li>${breakpoint}</li>`
-				: breakpoint === 'all'
-					? `<li><a href="?timeframe=${currentTimeframe}">${breakpoint}</a></li>`
-					: `<li><a href="?layout=${breakpoint}&amp;timeframe=${currentTimeframe}">${breakpoint}</a></li>`
-		)
-		.join('');
-
-	const timeframeItems = timeframes
-		.map(timeframe =>
-			timeframe === currentTimeframe
-				? `<li>${timeframe}</li>`
-				: currentBreakpoint === 'all'
-					? `<li><a href="?timeframe=${timeframe}">${timeframe}</a></li>`
-					: `<li><a href="?layout=${currentBreakpoint}&amp;timeframe=${timeframe}">${timeframe}</a></li>`
-		)
-		.join('');
-
-	optionsEl.innerHTML = `
-		<h3>Breakpoint: </h3>
-		<ul>${breakpointItems}</ul>
-		</br>
-		<h3>Timeframe (weeks): </h3>
-		<ul>${timeframeItems}</ul>
-	`;
-	el.insertBefore(optionsEl, el.firstChild);
+	document.querySelector(`input[name="layoutType"][value="${queryParams.layoutType}"`)
+		.setAttribute('checked', 'checked');
 
 	let pageViewsQueries = [
 		new Keen.Query('count', Object.assign({
 			eventCollection: 'dwell',
 			filters: getFilters('article'),
 			groupBy: ['user.uuid'],
-			timeframe: `this_${currentTimeframe}_weeks`,
+			timeframe: 'this_8_weeks',
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts)),
@@ -85,7 +57,7 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			eventCollection: 'dwell',
 			filters: getFilters('frontpage'),
 			groupBy: ['user.uuid'],
-			timeframe: `this_${currentTimeframe}_weeks`,
+			timeframe: 'this_8_weeks',
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts)),
@@ -94,7 +66,7 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			eventCollection: 'dwell',
 			filters: getFilters(),
 			groupBy: ['user.uuid'],
-			timeframe: `this_${currentTimeframe}_weeks`,
+			timeframe: 'this_8_weeks',
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts))
