@@ -24,7 +24,85 @@ const render = () => {
 		filters.push(createFilter('eq', 'deviceAtlas.primaryHardwareType', queryParams.deviceType))
 	}
 
-	const graphs = [
+	// general page performance graph
+	const pageLoadingChart = new Keen.Dataviz()
+		.el(document.querySelector('#page-loading-events'))
+		.chartType('areachart')
+		.height(450)
+		.title('Page Loading Events')
+		.chartOptions({
+			vAxis: {
+				format: '#.##s'
+			},
+			hAxis: {
+				format: 'EEE, d	MMM'
+			},
+			trendlines: {
+				0: { type: 'polynomial', degree: 2 },
+				1: { type: 'polynomial', degree: 2 },
+				2: { type: 'polynomial', degree: 2 },
+				3: { type: 'polynomial', degree: 2 }
+			}
+		})
+		.prepare();
+	const pageLoadingQueries = ['domInteractive', 'domContentLoadedEventStart', 'domComplete', 'loadEventStart']
+		.map(eventName => (
+			new Keen.Query('median', {
+				eventCollection: 'timing',
+				targetProperty: `ingest.context.timings.offset.${eventName}`,
+				timeframe: `this_${queryParams.days}_days`,
+				timezone: 'UTC',
+				interval: 'daily',
+				filters
+			})
+		));
+	client.run(pageLoadingQueries, (err, results) => {
+		const [
+			domInteractiveResults,
+			domContentLoadedResults,
+			domCompleteResults,
+			loadEventResults
+		] = results;
+
+		// munge the data into a single object
+		const pageLoadingResults = domInteractiveResults.result.map((domInteractiveResult, index) => {
+			const values = [
+				{
+					name: 'loadEventStart',
+					result: loadEventResults.result[index].value / 1000
+				},
+				{
+					name: 'domComplete',
+					result: domCompleteResults.result[index].value / 1000
+				},
+				{
+					name: 'domContentLoadedEventStart',
+					result: domContentLoadedResults.result[index].value / 1000
+				},
+				{
+					name: 'domInteractive',
+					result: domInteractiveResult.value / 1000
+				}
+			];
+			return {
+				timeframe: domInteractiveResult.timeframe,
+				value: values
+			}
+		});
+
+		pageLoadingChart
+			.data({ result: pageLoadingResults })
+			.render();
+	});
+
+	// config for the graphs
+	[
+		{
+			el: document.querySelector('#page-loaded'),
+			title: 'Page loaded (offset from domLoading, i.e. doesn\'t include connection latency)',
+			filters: filters.concat([createFilter('exists', 'ingest.context.timings.domLoadingOffset.loadEventEnd', true)]),
+			targetProperty: 'ingest.context.timings.domLoadingOffset.loadEventEnd'
+		},
 		{
 			el: document.querySelector('#first-paint-chart'),
 			title: 'Page starts to render',
@@ -36,12 +114,6 @@ const render = () => {
 			title: 'Fonts loaded',
 			filters: filters.concat([createFilter('exists', 'ingest.context.timings.marks.fontsLoaded', true)]),
 			targetProperty: 'ingest.context.timings.marks.fontsLoaded'
-		},
-		{
-			el: document.querySelector('#page-loaded'),
-			title: 'Page loaded (offset from domLoading, i.e. doesn\'t include connection latency)',
-			filters: filters.concat([createFilter('exists', 'ingest.context.timings.domLoadingOffset.loadEventEnd', true)]),
-			targetProperty: 'ingest.context.timings.domLoadingOffset.loadEventEnd'
 		}
 	]
 		.map(graph => {
@@ -61,6 +133,11 @@ const render = () => {
 					},
 					hAxis: {
 						format: 'EEE, d	MMM'
+					},
+					trendlines: {
+						0: { type: 'polynomial', degree: 2 },
+						1: { type: 'polynomial', degree: 2 },
+						2: { type: 'polynomial', degree: 2 }
 					}
 				})
 				.prepare();
@@ -73,27 +150,24 @@ const render = () => {
 				interval: 'daily',
 				filters: graph.filters
 			});
-			return Object.assign({}, graph, { chart, query });
-		});
 
-	client.run(graphs.map(graph => graph.query), (err, results) => {
-		results.forEach((result, index) => {
-			// fix units
-			const data = result.result.map(result => {
-				const value = result.value.map(value => ({
-					name: value['ab.frontPageLayoutPrototype'],
-					result: value.result ? (value.result / 1000).toFixed(2) : null
-				}));
-				return {
-					value,
-					timeframe: result.timeframe
-				}
+			client.run(query, (err, result) => {
+				// fix units
+				const data = result.result.map(result => {
+					const value = result.value.map(value => ({
+						name: value['ab.frontPageLayoutPrototype'],
+						result: value.result ? (value.result / 1000).toFixed(2) : null
+					}));
+					return {
+						value,
+						timeframe: result.timeframe
+					}
+				});
+				chart
+					.data({ result: data })
+					.render();
 			});
-			graphs[index].chart
-				.data({ result: data })
-				.render();
 		});
-	});
 };
 
 export default {
