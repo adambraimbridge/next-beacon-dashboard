@@ -20,11 +20,17 @@ const getFilters = (pageType) => {
 	}];
 
 	if(queryParameters['layout']) {
+		const layouts = [queryParameters['layout']];
+
+		if(queryParameters['layout'] === 'XL') {
+			layouts.push('XXL')
+		}
+
 		filters.push({
-      operator: 'eq',
-      property_name: 'ingest.user.layout',
-      property_value: queryParameters['layout']
-    })
+			operator: 'in',
+			property_name: 'ingest.user.layout',
+			property_value: layouts
+		})
 	}
 
 	if(pageType) {
