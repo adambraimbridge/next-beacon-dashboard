@@ -3,7 +3,7 @@
   "dependencies": {
     "isomorphic-fetch": "^2.0.0",
     "sprintf": "^1.0.2",
-    "next-js-setup": "^4.0.0",
+    "next-js-setup": "^7.0.3",
     "keen-js": "^3.2.4",
     "ab-test-confidence": "^1.2.0",
     "moment": "^2.10.6"
