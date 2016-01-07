@@ -67,6 +67,8 @@ function usageForPeriod(startDate, endDate, name) {
 				curr: union(myFtPageVisitors.curr.result, myFtDailyEmailOpeners.curr.result).length,
 				prev: union(myFtPageVisitors.prev.result, myFtDailyEmailOpeners.prev.result).length
 			};
+			nextUserCount.curr = nextUserCount.curr.result;
+			nextUserCount.prev = nextUserCount.prev.result;
 
 			const combined = [
 				['Visited Next', nextUserCount.curr, nextUserCount.prev],
@@ -77,10 +79,10 @@ function usageForPeriod(startDate, endDate, name) {
 				.parseRawData({result: combined})
 				.render();
 
-			var usage = myFtUserCount.curr / nextUserCount.curr.result;
+			var usage = myFtUserCount.curr / nextUserCount.curr;
 			section.querySelector('.numbers-table--usage .numbers-table__current').textContent = (Math.round(usage * 10000 ) / 100) + '%';
 
-			var prevUsage = myFtUserCount.prev / nextUserCount.prev.result;
+			var prevUsage = myFtUserCount.prev / nextUserCount.prev;
 			section.querySelector('.numbers-table--usage .numbers-table__previous').textContent = (Math.round(prevUsage * 10000 ) / 100) + '%';
 
 			var usageDiff = ((usage - prevUsage) / prevUsage);
