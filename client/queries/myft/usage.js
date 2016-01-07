@@ -33,6 +33,9 @@ function getFunnelGraph(el) {
 
 function usageForPeriod(startDate, endDate, name) {
 
+	const section = document.querySelector(`.section--${name}`);
+	const funnelGraph = getFunnelGraph(section.querySelector('.funnel'));
+
 	const nextUserCountQuery = new KeenQuery('dwell')
 		.count('user.uuid')
 		.absTime(startDate, endDate)
@@ -46,7 +49,7 @@ function usageForPeriod(startDate, endDate, name) {
 		.compare()
 		.print('json');
 
-	const myFtDailyEmailVisitorsQuery = new KeenQuery('email')
+	const myFtDailyEmailOpenersQuery = new KeenQuery('email')
 		.select('user.uuid')
 		.filter('event=open')
 		.filter('meta.emailType=daily')
@@ -54,21 +57,18 @@ function usageForPeriod(startDate, endDate, name) {
 		.compare()
 		.print('json');
 
-	Promise.all([nextUserCountQuery, myFtPageVisitorsQuery, myFtDailyEmailVisitorsQuery])
+	Promise.all([nextUserCountQuery, myFtPageVisitorsQuery, myFtDailyEmailOpenersQuery])
 		.then(results => {
 			const nextUserCount = results[0];
 			const myFtPageVisitors = results[1];
-			const myFtDailyEmailVisitors = results[2];
+			const myFtDailyEmailOpeners = results[2];
 
 			const myFtUserCount = {
-				curr: union(myFtPageVisitors.curr.result, myFtDailyEmailVisitors.curr.result).length,
-				prev: union(myFtPageVisitors.prev.result, myFtDailyEmailVisitors.prev.result).length
+				curr: union(myFtPageVisitors.curr.result, myFtDailyEmailOpeners.curr.result).length,
+				prev: union(myFtPageVisitors.prev.result, myFtDailyEmailOpeners.prev.result).length
 			};
 
-			var section = document.querySelector(`.section--${name}`);
-			var funnelGraph = getFunnelGraph(section.querySelector('.funnel'));
-
-			var combined = [
+			const combined = [
 				['Visited Next', nextUserCount.curr, nextUserCount.prev],
 				['Is a myFT user', myFtUserCount.curr, myFtUserCount.prev]
 			];
