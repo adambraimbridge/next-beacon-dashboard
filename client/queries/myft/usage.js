@@ -10,10 +10,10 @@ var queryParameters = queryString.parse(location.search.substr(1));
 
 var offset = parseInt(queryParameters.offset) || 0;
 
-function daysFromNow (offset) {
-	offset = offset || 0;
+function dateThisManyDaysFromNow (days) {
+	days = days || 0;
 	var dateObject = new Date();
-	dateObject.setDate(dateObject.getDate() + offset);
+	dateObject.setDate((dateObject.getDate() + days) + offset);
 	return dateObject;
 }
 
@@ -296,12 +296,12 @@ function usageOverTime(client) {
 
 function init(client) {
 
-	usageForPeriod(daysFromNow(-7), new Date(), 'this-week');
-	usageForPeriod(daysFromNow(-1), new Date(), 'today');
+	usageForPeriod(dateThisManyDaysFromNow(-7), dateThisManyDaysFromNow(), 'this-week');
+	usageForPeriod(dateThisManyDaysFromNow(-1), dateThisManyDaysFromNow(), 'today');
 
 	usageOverTime(client);
 
-	document.getElementById('offset-date').textContent = daysFromNow(offset).toISOString();
+	document.getElementById('offset-date').textContent = dateThisManyDaysFromNow().toISOString();
 }
 
 module.exports = {
