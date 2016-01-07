@@ -18,7 +18,7 @@ const query = Object.assign(
 const eventCollection = 'timing';
 const timezone = 'UTC';
 const interval = 'daily';
-const timeframe = `this_${query.days}_days`;
+const timeframe = `previous_${query.days}_days`;
 
 const numericalSort = (a, b) => parseFloat(b) - parseFloat(a);
 
@@ -86,7 +86,7 @@ const radioChange = () => {
 	const browserNameQuery = new Keen.Query('select_unique', {
 		eventCollection,
 		targetProperty: 'deviceAtlas.browserName',
-		timeframe: `this_${getFilters(formEl, 'days')}_days`,
+		timeframe: `previous_${getFilters(formEl, 'days')}_days`,
 		filters: filters.concat([
 			createFilter('exists', 'deviceAtlas.browserName', true),
 			createFilter('ne', 'deviceAtlas.browserName', false)
@@ -116,7 +116,7 @@ const browserChange = () => {
 	const browserNameQuery = new Keen.Query('select_unique', {
 		eventCollection,
 		targetProperty: 'deviceAtlas.browserVersion.major',
-		timeframe: `this_${getFilters(formEl, 'days')}_days`,
+		timeframe: `previous_${getFilters(formEl, 'days')}_days`,
 		filters: filters.concat([
 			createFilter('exists', 'deviceAtlas.browserVersion.major', true),
 			createFilter('ne', 'deviceAtlas.browserVersion.major', false),
