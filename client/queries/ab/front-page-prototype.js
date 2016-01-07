@@ -3,9 +3,16 @@
 
 const client = require('../../lib/wrapped-keen');
 const queryString = require('querystring');
-const queryParameters = queryString.parse(location.search.substr(1));
-const queryTimeframe = queryParameters.timeframe || "this_8_weeks";
 
+const queryParams = Object.assign(
+	{
+		deviceType: 'all',
+		layoutType: 'all'
+	},
+	queryString.parse(location.search.substr(1))
+);
+
+const createFilter = (operator, property_name, property_value) => ({ operator, property_name, property_value });
 
 const getFilters = (pageType) => {
 	let filters = [{
@@ -19,38 +26,39 @@ const getFilters = (pageType) => {
 		property_value: true
 	}];
 
-	if(queryParameters['layout']) {
-		const layouts = [queryParameters['layout']];
+	if (queryParams.deviceType && queryParams.deviceType !== 'all') {
+		filters.push(createFilter('eq', 'deviceAtlas.primaryHardwareType', queryParams.deviceType))
+	}
 
-		if(queryParameters['layout'] === 'XL') {
+	if (queryParams.layoutType && queryParams.layoutType !== 'all') {
+		const layouts = [queryParams.layoutType];
+
+		if(queryParams.layoutType === 'XL') {
 			layouts.push('XXL')
 		}
 
-		filters.push({
-			operator: 'in',
-			property_name: 'ingest.user.layout',
-			property_value: layouts
-		})
+		filters.push(createFilter('in', 'ingest.user.layout', layouts))
 	}
 
-	if(pageType) {
-		filters.push({
-			operator: 'eq',
-			property_name: 'page.location.type',
-			property_value: pageType
-		});
+	if (pageType) {
+		filters.push(createFilter('eq', 'page.location.type', pageType))
 	}
 	return filters;
 };
 
 const generateAverageViews = (type, queryOpts = {}) => {
+	document.querySelector(`input[name="deviceType"][value="${queryParams.deviceType}"`)
+		.setAttribute('checked', 'checked');
+
+	document.querySelector(`input[name="layoutType"][value="${queryParams.layoutType}"`)
+		.setAttribute('checked', 'checked');
 
 	let pageViewsQueries = [
 		new Keen.Query('count', Object.assign({
 			eventCollection: 'dwell',
 			filters: getFilters('article'),
 			groupBy: ['ab.frontPageLayoutPrototype', 'user.uuid'],
-			timeframe: queryTimeframe,
+			timeframe: 'this_8_weeks',
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts)),
@@ -59,7 +67,7 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			eventCollection: 'dwell',
 			filters: getFilters(),
 			groupBy: ['ab.frontPageLayoutPrototype'],
-			timeframe: queryTimeframe,
+			timeframe: 'this_8_weeks',
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts)),
@@ -68,7 +76,7 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			eventCollection: 'dwell',
 			filters: getFilters(),
 			groupBy: ['ab.frontPageLayoutPrototype', 'user.uuid'],
-			timeframe: queryTimeframe,
+			timeframe: 'this_8_weeks',
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts))

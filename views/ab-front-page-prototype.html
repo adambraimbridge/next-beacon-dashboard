@@ -1,40 +1,66 @@
 <h1>A/B - Front Page Layout Prototype {{#if query.layout}}(Layout: {{query.layout}}){{/if}}</h1>
 
-<div>
-	<a href="?" >all</a>
-	<a href="?layout=default" >default</a>
-	<a href="?layout=XS">XS</a>
-	<a href="?layout=S">S</a>
-	<a href="?layout=M">M</a>
-	<a href="?layout=L">L</a>
-	<a href="?layout=XL">XL</a>
-</div>
+<form class="performance-form">
+    <div class="o-forms-group">
+        <div class="performance-form__choices">
+            <div>
+                <p class="performance-form__label--inline">Device type:</p>
+                <input type="radio" name="deviceType" value="all" class="o-forms-radio" id="device-type-all" />
+                <label class="o-forms-label" for="device-type-all">All</label>
+                <input type="radio" name="deviceType" value="Mobile Phone" class="o-forms-radio" id="device-type-mobile-phone" />
+                <label class="o-forms-label" for="device-type-mobile-phone">Mobile Phone</label>
+                <input type="radio" name="deviceType" value="Tablet" class="o-forms-radio" id="device-type-tablet" />
+                <label class="o-forms-label" for="device-type-tablet">Tablet</label>
+                <input type="radio" name="deviceType" value="Desktop" class="o-forms-radio" id="device-type-desktop" />
+                <label class="o-forms-label" for="device-type-desktop">Desktop</label>
+            </div>
+
+            <div>
+                <p class="performance-form__label--inline">Layout:</p>
+                <input type="radio" name="layoutType" value="all" class="o-forms-radio" id="layout-all" />
+                <label class="o-forms-label" for="layout-all">All</label>
+                <input type="radio" name="layoutType" value="default" class="o-forms-radio" id="layout-default" />
+                <label class="o-forms-label" for="layout-default">Default</label>
+                <input type="radio" name="layoutType" value="XS" class="o-forms-radio" id="layout-xs" />
+                <label class="o-forms-label" for="layout-xs">XS</label>
+                <input type="radio" name="layoutType" value="S" class="o-forms-radio" id="layout-s" />
+                <label class="o-forms-label" for="layout-s">S</label>
+                <input type="radio" name="layoutType" value="M" class="o-forms-radio" id="layout-m" />
+                <label class="o-forms-label" for="layout-m">M</label>
+                <input type="radio" name="layoutType" value="L" class="o-forms-radio" id="layout-l" />
+                <label class="o-forms-label" for="layout-l">L</label>
+                <input type="radio" name="layoutType" value="XL" class="o-forms-radio" id="layout-xl" />
+                <label class="o-forms-label" for="layout-xl">XL (inc. XXL)</label>
+            </div>
+        </div>
+        <input class="o-buttons" type="submit" value="Update Graph">
+    </div>
+</form>
 
 <h2>Volume</h2>
 <p>How many articles do users read per week?</p>
 <div class="chart__container__metrics">
-	<span class="chart__container" id="metric_meanVolume" style="height: 500"></span>
+    <span class="chart__container" id="metric_meanVolume" style="height: 500"></span>
 </div>
 
 <p>What % of users read at least 7 articles per week?</p>
 <div class="chart__container__metrics">
-	<span class="chart__container" id="metric_atLeast7"  style="height: 500"></span>
+    <span class="chart__container" id="metric_atLeast7"  style="height: 500"></span>
 </div>
 
 <p>What % of users read at least 11 articles per week?</p>
 <div class="chart__container__metrics">
-	<span class="chart__container" id="metric_atLeast11"  style="height: 500"></span>
-
+    <span class="chart__container" id="metric_atLeast11"  style="height: 500"></span>
 </div>
 
 <h2>Frequency</h2>
 <p>In the last 7 days, how many visits on average do users make next.ft.com.</p>
 <div class="chart__container__metrics">
-	<span class="chart__container" id="metric_meanFrequency"  style="height: 500"></span>
+    <span class="chart__container" id="metric_meanFrequency"  style="height: 500"></span>
 </div>
 
 <h2>Users</h2>
 <p>In the last 7 days, how many users on the AB test</p>
 <div class="chart__container__metrics">
-	<span class="chart__container" id="metric_users"  style="height: 500"></span>
+    <span class="chart__container" id="metric_users"  style="height: 500"></span>
 </div>
