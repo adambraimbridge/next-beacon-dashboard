@@ -20,95 +20,46 @@ const connectionTypes = {
 	ethernet: ['ethernet', 1]
 };
 
-const render = () => {
-	// select the form values
-	document.querySelector(`input[name="deviceType"][value="${queryParams.deviceType}"`)
-		.setAttribute('checked', 'checked');
-	document.querySelector(`input[name="connectionType"][value="${queryParams.connectionType}"`)
-		.setAttribute('checked', 'checked');
-
-	const filters = [
-		createFilter('page.location.type', 'eq', 'frontpage')
-	];
-	if (queryParams.deviceType && queryParams.deviceType !== 'all') {
-		filters.push(createFilter('deviceAtlas.primaryHardwareType', 'eq', queryParams.deviceType))
-	}
-	if (queryParams.connectionType && queryParams.connectionType !== 'all') {
-		filters.push(createFilter('ingest.user.connectionType', 'in', connectionTypes[queryParams.connectionType]))
-	}
-
-	// general page performance graph
-	const pageLoadingChart = new Keen.Dataviz()
-		.el(document.querySelector('#page-loading-events'))
-		.chartType('areachart')
+const browserLoad = filters => {
+	const chart = new Keen.Dataviz()
+		.el(document.querySelector('#browsers-load'))
+		.chartType('barchart')
 		.height(450)
-		.title('Page Loading Events')
+		.title('Average load times over the past 7 days')
 		.chartOptions({
-			vAxis: {
+			hAxis: {
 				format: '#.##s'
 			},
-			hAxis: {
-				format: 'EEE, d	MMM'
-			},
-			trendlines: {
-				0: { type: 'polynomial', degree: 2 },
-				1: { type: 'polynomial', degree: 2 },
-				2: { type: 'polynomial', degree: 2 },
-				3: { type: 'polynomial', degree: 2 }
-			}
+			legend: { position: 'none' }
 		})
 		.prepare();
-	const pageLoadingQueries = ['domInteractive', 'domContentLoadedEventStart', 'domComplete', 'loadEventStart']
-		.map(eventName => (
-			new Keen.Query('median', {
-				eventCollection: 'timing',
-				targetProperty: `ingest.context.timings.offset.${eventName}`,
-				timeframe: `this_${queryParams.days}_days`,
-				timezone: 'UTC',
-				interval: 'daily',
-				filters
-			})
-		));
-	client.run(pageLoadingQueries, (err, results) => {
-		const [
-			domInteractiveResults,
-			domContentLoadedResults,
-			domCompleteResults,
-			loadEventResults
-		] = results;
-
-		// munge the data into a single object
-		const pageLoadingResults = domInteractiveResults.result.map((domInteractiveResult, index) => {
-			const values = [
-				{
-					name: 'loadEventStart',
-					result: loadEventResults.result[index].value / 1000
-				},
-				{
-					name: 'domComplete',
-					result: domCompleteResults.result[index].value / 1000
-				},
-				{
-					name: 'domContentLoadedEventStart',
-					result: domContentLoadedResults.result[index].value / 1000
-				},
-				{
-					name: 'domInteractive',
-					result: domInteractiveResult.value / 1000
-				}
-			];
-			return {
-				timeframe: domInteractiveResult.timeframe,
-				value: values
-			}
-		});
-
-		pageLoadingChart
-			.data({ result: pageLoadingResults })
+	const query =
+		new Keen.Query('median', {
+		eventCollection: 'timing',
+		targetProperty: 'ingest.context.timings.domLoadingOffset.loadEventEnd',
+		timeframe: 'previous_7_days',
+		timezone: 'UTC',
+		groupBy: ['deviceAtlas.browserName'],
+		filters: [
+			createFilter('deviceAtlas.browserName', 'exists', true),
+			createFilter('deviceAtlas.browserName', 'ne', false),
+			createFilter('ingest.context.timings.domLoadingOffset.loadEventEnd', 'exists', true),
+			...filters
+		]
+	});
+	client.run(query, (err, results) => {
+		const browserTimes = results.result
+			// order the browsers by speed
+			.sort((resultOne, resultTwo) => resultOne.result - resultTwo.result)
+			// units in secs
+			.map(result => Object.assign(result, { result: result.result / 1000 }));
+		chart
+			.data({ result: browserTimes })
 			.render();
 	});
+};
 
-	// config for the custom metric graphs
+const customMetrics = filters => {
 	[
 		{
 			el: document.querySelector('#first-paint-chart'),
@@ -160,7 +111,7 @@ const render = () => {
 				new Keen.Query('median', {
 					eventCollection: 'timing',
 					targetProperty: graph.targetProperty,
-					timeframe: `this_${queryParams.days}_days`,
+					timeframe: `previous_${queryParams.days}_days`,
 					group_by: 'ab.frontPageLayoutPrototype',
 					timezone: 'UTC',
 					interval: 'daily',
@@ -172,7 +123,7 @@ const render = () => {
 					new Keen.Query('select_unique', {
 						eventCollection: 'timing',
 						targetProperty: 'deviceAtlas.browserName',
-						timeframe: `this_${queryParams.days}_days`,
+						timeframe: `previous_${queryParams.days}_days`,
 						timezone: 'UTC',
 						filters: [
 							createFilter('deviceAtlas.browserName', 'exists', true),
@@ -188,7 +139,7 @@ const render = () => {
 				const data = (results.length ? results[0] : results).result.map(result => {
 					const value = result.value.map(value => ({
 						name: value['ab.frontPageLayoutPrototype'],
-						result: value.result ? (value.result / 1000).toFixed(2) : null
+						result: value.result ? (value.result / 1000).toFixed(3) : null
 					}));
 					return {
 						value,
@@ -207,6 +158,100 @@ const render = () => {
 				}
 			});
 		});
+};
+
+const generalPageLoad = filters => {
+	const pageLoadingChart = new Keen.Dataviz()
+		.el(document.querySelector('#page-loading-events'))
+		.chartType('areachart')
+		.height(450)
+		.title('Page Loading Events')
+		.chartOptions({
+			vAxis: {
+				format: '#.##s'
+			},
+			hAxis: {
+				format: 'EEE, d	MMM'
+			},
+			trendlines: {
+				0: { type: 'polynomial', degree: 2 },
+				1: { type: 'polynomial', degree: 2 },
+				2: { type: 'polynomial', degree: 2 },
+				3: { type: 'polynomial', degree: 2 }
+			}
+		})
+		.prepare();
+	const pageLoadingQueries = ['domInteractive', 'domContentLoadedEventStart', 'domComplete', 'loadEventStart']
+		.map(eventName => (
+			new Keen.Query('median', {
+				eventCollection: 'timing',
+				targetProperty: `ingest.context.timings.offset.${eventName}`,
+				timeframe: `previous_${queryParams.days}_days`,
+				timezone: 'UTC',
+				interval: 'daily',
+				filters: [createFilter(`ingest.context.timings.offset.${eventName}`, 'exists', true), ...filters]
+			})
+		));
+	client.run(pageLoadingQueries, (err, results) => {
+		const [
+			domInteractiveResults,
+			domContentLoadedResults,
+			domCompleteResults,
+			loadEventResults
+			] = results;
+
+		// munge the data into a single object
+		const pageLoadingResults = domInteractiveResults.result.map((domInteractiveResult, index) => {
+			const values = [
+				{
+					name: 'loadEventStart',
+					result: loadEventResults.result[index].value / 1000
+				},
+				{
+					name: 'domComplete',
+					result: domCompleteResults.result[index].value / 1000
+				},
+				{
+					name: 'domContentLoadedEventStart',
+					result: domContentLoadedResults.result[index].value / 1000
+				},
+				{
+					name: 'domInteractive',
+					result: domInteractiveResult.value / 1000
+				}
+			];
+			return {
+				timeframe: domInteractiveResult.timeframe,
+				value: values
+			}
+		});
+
+		pageLoadingChart
+			.data({ result: pageLoadingResults })
+			.render();
+	});
+}
+
+const render = () => {
+	// select the form values
+	document.querySelector(`input[name="deviceType"][value="${queryParams.deviceType}"`)
+		.setAttribute('checked', 'checked');
+	document.querySelector(`input[name="connectionType"][value="${queryParams.connectionType}"`)
+		.setAttribute('checked', 'checked');
+
+	const filters = [
+		createFilter('page.location.type', 'eq', 'frontpage')
+	];
+	if (queryParams.deviceType && queryParams.deviceType !== 'all') {
+		filters.push(createFilter('deviceAtlas.primaryHardwareType', 'eq', queryParams.deviceType))
+	}
+	if (queryParams.connectionType && queryParams.connectionType !== 'all') {
+		filters.push(createFilter('ingest.user.connectionType', 'in', connectionTypes[queryParams.connectionType]))
+	}
+
+	browserLoad(filters);
+	customMetrics(filters);
+	generalPageLoad(filters);
 };
 
 export default {
