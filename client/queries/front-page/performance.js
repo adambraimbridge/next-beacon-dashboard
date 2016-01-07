@@ -165,7 +165,7 @@ const generalPageLoad = filters => {
 		.el(document.querySelector('#page-loading-events'))
 		.chartType('areachart')
 		.height(450)
-		.title('Page Loading Events')
+		.title('Page Loading Events (offset from domLoading, i.e. doesn\'t include connection latency)')
 		.chartOptions({
 			vAxis: {
 				format: '#.##s'
@@ -189,7 +189,7 @@ const generalPageLoad = filters => {
 				timeframe: `previous_${queryParams.days}_days`,
 				timezone: 'UTC',
 				interval: 'daily',
-				filters: [createFilter(`ingest.context.timings.offset.${eventName}`, 'exists', true), ...filters]
+				filters: [createFilter(`ingest.context.timings.domLoadingOffset.${eventName}`, 'exists', true), ...filters]
 			})
 		));
 	client.run(pageLoadingQueries, (err, results) => {
