@@ -20,7 +20,8 @@ const connectionTypes = {
 	ethernet: ['ethernet', 1]
 };
 
-const browserLoad = filters => {
+const browserLoad = (filters, domLoadingOffset) => {
+	const targetProperty = `ingest.context.timings.${domLoadingOffset ? 'domLoadingOffset' : 'offset'}.loadEventEnd`;
 	const chart = new Keen.Dataviz()
 		.el(document.querySelector('#browsers-load'))
 		.chartType('barchart')
@@ -33,17 +34,16 @@ const browserLoad = filters => {
 			legend: { position: 'none' }
 		})
 		.prepare();
-	const query =
-		new Keen.Query('median', {
+	const query = new Keen.Query('median', {
 		eventCollection: 'timing',
-		targetProperty: 'ingest.context.timings.domLoadingOffset.loadEventEnd',
+		targetProperty,
 		timeframe: 'previous_7_days',
 		timezone: 'UTC',
-		groupBy: ['deviceAtlas.browserName'],
+		groupBy: 'deviceAtlas.browserName',
 		filters: [
 			createFilter('deviceAtlas.browserName', 'exists', true),
 			createFilter('deviceAtlas.browserName', 'ne', false),
-			createFilter('ingest.context.timings.domLoadingOffset.loadEventEnd', 'exists', true),
+			createFilter(targetProperty, 'exists', true),
 			...filters
 		]
 	});
@@ -59,27 +59,30 @@ const browserLoad = filters => {
 	});
 };
 
-const customMetrics = filters => {
+const customMetrics = (filters, domLoadingOffset) => {
+	const firstPaintTargetProperty = `ingest.context.timings.${domLoadingOffset ? 'domLoadingOffset' : 'custom'}.firstPaint`;
+	const fontsLoadedTargetProperty = `ingest.context.timings.${domLoadingOffset ? 'domLoadingOffset' : 'marks'}.fontsLoaded`;
+	const pageLoadedTargetProperty = `ingest.context.timings.${domLoadingOffset ? 'domLoadingOffset' : 'offset'}.loadEventEnd`;
 	[
 		{
 			el: document.querySelector('#first-paint-chart'),
 			title: 'Page starts to render',
-			filters: [createFilter('ingest.context.timings.custom.firstPaint', 'exists', true), ...filters],
-			targetProperty: 'ingest.context.timings.custom.firstPaint',
+			filters: [createFilter(firstPaintTargetProperty, 'exists', true), ...filters],
+			targetProperty: firstPaintTargetProperty,
 			showBrowsers: true
 		},
 		{
 			el: document.querySelector('#fonts-loaded-chart'),
 			title: 'Fonts loaded',
-			filters: [createFilter('ingest.context.timings.marks.fontsLoaded', 'exists', true), ...filters],
-			targetProperty: 'ingest.context.timings.marks.fontsLoaded',
+			filters: [createFilter(fontsLoadedTargetProperty, 'exists', true), ...filters],
+			targetProperty: fontsLoadedTargetProperty,
 			showBrowsers: true
 		},
 		{
 			el: document.querySelector('#page-loaded'),
-			title: 'Page loaded (offset from domLoading, i.e. doesn\'t include connection latency)',
-			filters: [createFilter('ingest.context.timings.domLoadingOffset.loadEventEnd', 'exists', true), ...filters],
-			targetProperty: 'ingest.context.timings.domLoadingOffset.loadEventEnd'
+			title: 'Page loaded',
+			filters: [createFilter(pageLoadedTargetProperty, 'exists', true), ...filters],
+			targetProperty: pageLoadedTargetProperty
 		}
 	]
 		.map(graph => {
@@ -101,9 +104,9 @@ const customMetrics = filters => {
 						format: 'EEE, d	MMM'
 					},
 					trendlines: {
-						0: { type: 'polynomial', degree: 2 },
-						1: { type: 'polynomial', degree: 2 },
-						2: { type: 'polynomial', degree: 2 }
+						0: { },
+						1: { },
+						2: { }
 					}
 				})
 				.prepare();
@@ -160,12 +163,12 @@ const customMetrics = filters => {
 		});
 };
 
-const generalPageLoad = filters => {
+const generalPageLoad = (filters, domLoadingOffset) => {
 	const pageLoadingChart = new Keen.Dataviz()
 		.el(document.querySelector('#page-loading-events'))
 		.chartType('areachart')
 		.height(450)
-		.title('Page Loading Events (offset from domLoading, i.e. doesn\'t include connection latency)')
+		.title('Page loading events')
 		.chartOptions({
 			vAxis: {
 				format: '#.##s'
@@ -174,32 +177,27 @@ const generalPageLoad = filters => {
 				format: 'EEE, d	MMM'
 			},
 			trendlines: {
-				0: { type: 'polynomial', degree: 2 },
-				1: { type: 'polynomial', degree: 2 },
-				2: { type: 'polynomial', degree: 2 },
-				3: { type: 'polynomial', degree: 2 }
+				0: { },
+				1: { },
+				2: { },
+				3: { }
 			}
 		})
 		.prepare();
 	const pageLoadingQueries = ['domInteractive', 'domContentLoadedEventStart', 'domComplete', 'loadEventStart']
-		.map(eventName => (
-			new Keen.Query('median', {
+		.map(eventName => {
+			const targetProperty = `ingest.context.timings.${domLoadingOffset ? 'domLoadingOffset' : 'offset'}.${eventName}`;
+			return new Keen.Query('median', {
 				eventCollection: 'timing',
-				targetProperty: `ingest.context.timings.offset.${eventName}`,
+				targetProperty,
 				timeframe: `previous_${queryParams.days}_days`,
 				timezone: 'UTC',
 				interval: 'daily',
-				filters: [createFilter(`ingest.context.timings.domLoadingOffset.${eventName}`, 'exists', true), ...filters]
-			})
-		));
+				filters: [createFilter(targetProperty, 'exists', true), ...filters]
+			});
+		});
 	client.run(pageLoadingQueries, (err, results) => {
-		const [
-			domInteractiveResults,
-			domContentLoadedResults,
-			domCompleteResults,
-			loadEventResults
-			] = results;
-
+		const [domInteractiveResults, domContentLoadedResults, domCompleteResults, loadEventResults] = results;
 		// munge the data into a single object
 		const pageLoadingResults = domInteractiveResults.result.map((domInteractiveResult, index) => {
 			const values = [
@@ -230,14 +228,18 @@ const generalPageLoad = filters => {
 			.data({ result: pageLoadingResults })
 			.render();
 	});
-}
+};
 
 const render = () => {
 	// select the form values
-	document.querySelector(`input[name="deviceType"][value="${queryParams.deviceType}"`)
+	document.querySelector(`input[name="deviceType"][value="${queryParams.deviceType}"]`)
 		.setAttribute('checked', 'checked');
-	document.querySelector(`input[name="connectionType"][value="${queryParams.connectionType}"`)
+	document.querySelector(`input[name="connectionType"][value="${queryParams.connectionType}"]`)
 		.setAttribute('checked', 'checked');
+	if (queryParams.domLoadingOffset) {
+		document.querySelector(`input[name="domLoadingOffset"]`)
+			.setAttribute('checked', 'checked');
+	}
 
 	const filters = [
 		createFilter('page.location.type', 'eq', 'frontpage')
@@ -249,9 +251,9 @@ const render = () => {
 		filters.push(createFilter('ingest.user.connectionType', 'in', connectionTypes[queryParams.connectionType]))
 	}
 
-	browserLoad(filters);
-	customMetrics(filters);
-	generalPageLoad(filters);
+	browserLoad(filters, queryParams.domLoadingOffset);
+	customMetrics(filters, queryParams.domLoadingOffset);
+	generalPageLoad(filters, queryParams.domLoadingOffset);
 };
 
 export default {
