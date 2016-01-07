@@ -26,9 +26,13 @@ const getFilters = (pageType) => {
 	}
 
 	if (queryParams.layoutType && queryParams.layoutType !== 'all') {
-		queryParams.layoutType !== 'XL'
-			? filters.push(createFilter('eq', 'ingest.user.layout', queryParams.layoutType))
-			: filters.push(createFilter('in', 'ingest.user.layout', [queryParams.layoutType, 'XXL']))
+		const layouts = [queryParams.layoutType];
+
+		if(queryParams.layoutType === 'XL') {
+			layouts.push('XXL')
+		}
+
+		filters.push(createFilter('in', 'ingest.user.layout', layouts))
 	}
 
 	if (pageType) {
