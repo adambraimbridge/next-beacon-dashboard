@@ -18,7 +18,7 @@ const query = Object.assign(
 const eventCollection = 'timing';
 const timezone = 'UTC';
 const interval = 'daily';
-const timeframe = `this_${query.days}_days`;
+const timeframe = `previous_${query.days}_days`;
 
 const numericalSort = (a, b) => parseFloat(b) - parseFloat(a);
 
@@ -86,7 +86,7 @@ const radioChange = () => {
 	const browserNameQuery = new Keen.Query('select_unique', {
 		eventCollection,
 		targetProperty: 'deviceAtlas.browserName',
-		timeframe: `this_${getFilters(formEl, 'days')}_days`,
+		timeframe: `previous_${getFilters(formEl, 'days')}_days`,
 		filters: filters.concat([
 			createFilter('exists', 'deviceAtlas.browserName', true),
 			createFilter('ne', 'deviceAtlas.browserName', false)
@@ -112,14 +112,14 @@ const browserChange = () => {
 	disableForm(formEl);
 	const filters = getRadioOptions(formEl);
 
-	// pull out all the potential browsers
+	// pull out all the potential browser versions
 	const browserNameQuery = new Keen.Query('select_unique', {
 		eventCollection,
-		targetProperty: 'deviceAtlas.browserVersion',
-		timeframe: `this_${getFilters(formEl, 'days')}_days`,
+		targetProperty: 'deviceAtlas.browserVersion.major',
+		timeframe: `previous_${getFilters(formEl, 'days')}_days`,
 		filters: filters.concat([
-			createFilter('exists', 'deviceAtlas.browserVersion', true),
-			createFilter('ne', 'deviceAtlas.browserVersion', false),
+			createFilter('exists', 'deviceAtlas.browserVersion.major', true),
+			createFilter('ne', 'deviceAtlas.browserVersion.major', false),
 			createFilter('eq', 'deviceAtlas.browserName', getFilters(formEl, 'browserName'))
 		]),
 		timezone
@@ -177,7 +177,7 @@ const render = () => {
 		filters.push(createFilter('eq', 'deviceAtlas.browserName', query.browserName));
 	}
 	if (query.browserVersion !== 'All') {
-		filters.push(createFilter('eq', 'deviceAtlas.browserVersion', query.browserVersion));
+		filters.push(createFilter('eq', 'deviceAtlas.browserVersion.major', parseInt(query.browserVersion)));
 	}
 	const queries = ['domInteractive', 'domContentLoadedEventStart', 'domComplete', 'loadEventStart'].map(eventName => (
 		new Keen.Query('median', {
@@ -203,11 +203,11 @@ const render = () => {
 	if (query.browserName !== 'All') {
 		queries.push(new Keen.Query('select_unique', {
 			eventCollection,
-			targetProperty: 'deviceAtlas.browserVersion',
+			targetProperty: 'deviceAtlas.browserVersion.major',
 			timeframe,
 			filters: sharedFilters.concat([
-				createFilter('exists', 'deviceAtlas.browserVersion', true),
-				createFilter('ne', 'deviceAtlas.browserVersion', false),
+				createFilter('exists', 'deviceAtlas.browserVersion.major', true),
+				createFilter('ne', 'deviceAtlas.browserVersion.major', false),
 				createFilter('eq', 'deviceAtlas.browserName', query.browserName)
 			]),
 			timezone
@@ -227,7 +227,7 @@ const render = () => {
 		// create the dropdowns
 		buildDropDown('browserName', browserNameResults.result, query.browserName);
 		if (browserVersionResults) {
-			buildDropDown('browserVersion', browserVersionResults.result.sort(numericalSort), query.browserVersion);
+			buildDropDown('browserVersion', browserVersionResults.result.sort(numericalSort), parseInt(query.browserVersion));
 		}
 		// handle form changing
 		document.querySelector('.performance-form__choices').addEventListener('change', radioChange);
