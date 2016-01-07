@@ -6,7 +6,8 @@
     "next-js-setup": "^7.0.3",
     "keen-js": "^3.2.4",
     "ab-test-confidence": "^1.2.0",
-    "moment": "^2.10.6"
+    "moment": "^2.10.6",
+    "n-keen-query": "^1.0.2"
   },
   "resolutions": {
     "o-errors": "^3.1.0",

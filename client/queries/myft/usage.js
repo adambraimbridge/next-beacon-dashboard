@@ -2,73 +2,20 @@
 
 'use strict';
 
+var KeenQuery = require('n-keen-query');
+var union = require('lodash/array/union');
+
 var queryString = require('querystring');
 var queryParameters = queryString.parse(location.search.substr(1));
 
 var offset = parseInt(queryParameters.offset) || 0;
 
-
-var daysFromNow = function (offset) {
+function daysFromNow (offset) {
 	offset = offset || 0;
 	var dateObject = new Date();
 	dateObject.setDate(dateObject.getDate() + offset);
-	return dateObject.toISOString();
-};
-
-var labels = [
-	'Visited Next',
-	'Is a myFT user'
-];
-
-
-function getDashboard(start, end) {
-	// This is a base step object, for spawning steps.
-	var step = function(options) {
-		return {
-			eventCollection:options.eventCollection || "dwell",
-			actor_property:"user.uuid",
-			timeframe:  {
-				start: start,
-				end: end
-			},
-			filters:options.filters || [],
-		};
-	};
-
-	return {
-		'title' : 'Overall usage of myFT',
-		'labels' : labels,
-		'steps':[
-
-			step({}),
-			step({
-				filters: [{
-					property_name: 'page.location.hash',
-					operator: 'contains',
-					property_value: 'myft'
-				},
-				{
-					property_name: 'page.location.type',
-					operator: 'eq',
-					property_value: 'article'
-				}]
-			})
-		]
-	};
-
+	return dateObject;
 }
-
-function getFunnelDataForTimeframe(start, end) {
-	start = daysFromNow(start);
-	end = daysFromNow(end);
-	var dashboard = getDashboard(start, end);
-	var query = new Keen.Query("funnel", {
-		steps: dashboard.steps,
-		maxAge: 10800
-	});
-	return query;
-}
-
 
 function getFunnelGraph(el) {
 	return new Keen.Dataviz()
@@ -81,6 +28,67 @@ function getFunnelGraph(el) {
 				legend: { position: "none" }
 		})
 		.prepare();
+}
+
+
+function usageForPeriod(startDate, endDate, name) {
+
+	const section = document.querySelector(`.section--${name}`);
+	const funnelGraph = getFunnelGraph(section.querySelector('.funnel'));
+
+	const nextUserCountQuery = new KeenQuery('dwell')
+		.count('user.uuid')
+		.absTime(startDate, endDate)
+		.compare()
+		.print('json');
+
+	const myFtPageVisitorsQuery = new KeenQuery('dwell')
+		.select('user.uuid')
+		.filter('page.location.hash>>myft')
+		.absTime(startDate, endDate)
+		.compare()
+		.print('json');
+
+	const myFtDailyEmailOpenersQuery = new KeenQuery('email')
+		.select('user.uuid')
+		.filter('event=open')
+		.filter('meta.emailType=daily')
+		.absTime(startDate, endDate)
+		.compare()
+		.print('json');
+
+	Promise.all([nextUserCountQuery, myFtPageVisitorsQuery, myFtDailyEmailOpenersQuery])
+		.then(results => {
+			const nextUserCount = results[0];
+			const myFtPageVisitors = results[1];
+			const myFtDailyEmailOpeners = results[2];
+
+			const myFtUserCount = {
+				curr: union(myFtPageVisitors.curr.result, myFtDailyEmailOpeners.curr.result).length,
+				prev: union(myFtPageVisitors.prev.result, myFtDailyEmailOpeners.prev.result).length
+			};
+			nextUserCount.curr = nextUserCount.curr.result;
+			nextUserCount.prev = nextUserCount.prev.result;
+
+			const combined = [
+				['Visited Next', nextUserCount.curr, nextUserCount.prev],
+				['Is a myFT user', myFtUserCount.curr, myFtUserCount.prev]
+			];
+
+			funnelGraph
+				.parseRawData({result: combined})
+				.render();
+
+			var usage = myFtUserCount.curr / nextUserCount.curr;
+			section.querySelector('.numbers-table--usage .numbers-table__current').textContent = (Math.round(usage * 10000 ) / 100) + '%';
+
+			var prevUsage = myFtUserCount.prev / nextUserCount.prev;
+			section.querySelector('.numbers-table--usage .numbers-table__previous').textContent = (Math.round(prevUsage * 10000 ) / 100) + '%';
+
+			var usageDiff = ((usage - prevUsage) / prevUsage);
+			section.querySelector('.numbers-table--usage .numbers-table__change').textContent = (Math.round(usageDiff * 10000 ) / 100) + '%';
+
+		});
 }
 
 
@@ -104,7 +112,7 @@ function usageOverTime(client) {
 		}]
 	});
 
-	var myftArticleViews = new Keen.Query('count', { // second query
+	var myFtArticleViews = new Keen.Query('count', { // second query
 		eventCollection: "dwell",
 		interval: interval,
 		timeframe: timeframe,
@@ -155,26 +163,44 @@ function usageOverTime(client) {
 		}]
 	});
 
-	var myFTUsers = new Keen.Query('count_unique', {
+
+	var usersOnMyFtPagesSelect = new Keen.Query('select_unique', {
 		eventCollection: "dwell",
 		interval: interval,
 		timeframe: timeframe,
 		targetProperty: 'user.uuid',
 		filters: [
-		{
-			property_name: 'user.uuid',
-			operator: 'exists',
-			property_value: true
-		},
-		{
-			property_name: 'page.location.hash',
-			operator: 'contains',
-			property_value: 'myft'
-		}]
+			{
+				property_name: 'user.uuid',
+				operator: 'exists',
+				property_value: true
+			},
+			{
+				property_name: 'page.location.hash',
+				operator: 'contains',
+				property_value: 'myft'
+			}]
+	});
+
+	var usersOpeningDailyEmailSelect = new Keen.Query('select_unique', {
+		eventCollection: 'email',
+		timeframe: timeframe,
+		interval: interval,
+		target_property: 'user.uuid',
+		filters: [
+			{
+				property_name: 'meta.emailType',
+				operator: 'eq',
+				property_value: 'daily'
+			}, {
+				property_name: 'event',
+				operator: 'eq',
+				property_value: 'open'
+			}]
 	});
 
 
-	var myFTChart = new Keen.Dataviz()
+	var myFtChart = new Keen.Dataviz()
 		.el(document.getElementById("myft-usage"))
 		.chartType("linechart")
 		.chartOptions({
@@ -206,46 +232,50 @@ function usageOverTime(client) {
 		.prepare();
 
 
-	client.run([nextUsers, followUsers, myFTUsers, articleViews, myftArticleViews], function(err, res) { // run the queries
+	client.run([nextUsers, followUsers, articleViews, myFtArticleViews, usersOnMyFtPagesSelect, usersOpeningDailyEmailSelect], function(err, res) { // run the queries
 
 		var next = res[0].result;
 		var follow = res[1].result;
-		var myft = res[2].result;
-		var articles = res[3].result;
-		var myftArticles = res[4].result;
+		var articles = res[2].result;
+		var myFtArticles = res[3].result;
+		var onMyFtPagesSelect = res[4].result;
+		var openingMyFtEmailsSelect = res[5].result;
 
-		var myFTUsageData = [];
+		var myFtUsageData = [];
 		var articleViewData = [];
 		var articleConsumptionData = [];
 
 		var i=0;
 
 		while (i < follow.length) {
-			myFTUsageData[i]={ // format the data so it can be charted
+
+			const myFtUsers = union(onMyFtPagesSelect[i].value, openingMyFtEmailsSelect[i].value).length;
+
+			myFtUsageData[i]={ // format the data so it can be charted
 					timeframe: follow[i]["timeframe"],
 					value: [
 							{ category: "Next Users", result: next[i]["value"] },
 							{ category: "Follow users", result: follow[i]["value"] },
-							{ category: "myFT users", result: myft[i]["value"] }
+							{ category: "myFT users", result: myFtUsers }
 					]
 			};
 			articleViewData[i]={ // format the data so it can be charted
 						timeframe: follow[i]["timeframe"],
 						value: [
 								{ category: "Article Views", result: articles[i]["value"] },
-								{ category: "myFT article views", result: myftArticles[i]["value"] }
+								{ category: "myFT article views", result: myFtArticles[i]["value"] }
 						]
 				};
 			articleConsumptionData[i]={ // format the data so it can be charted
 					timeframe: follow[i]["timeframe"],
 					value: [
-							{ category: "myFT Articles consumed per user", result: myftArticles[i]["value"] / myft[i]["value"] }
+							{ category: "myFT Articles consumed per user", result: myFtArticles[i]["value"] / myFtUsers }
 					]
 			};
 
 			if (i === follow.length-1) { // chart the data
-				myFTChart
-					.parseRawData({ result: myFTUsageData })
+				myFtChart
+					.parseRawData({ result: myFtUsageData })
 					.render();
 
 				viewsChart
@@ -265,65 +295,13 @@ function usageOverTime(client) {
 
 
 function init(client) {
-	var flowForTimeframes = function(current, comparison) {
-		var section = document.querySelector(`.section--${current.name}`);
-		var promises = [];
-		promises.push(client.run(getFunnelDataForTimeframe(current.start, current.end)));
-		promises.push(client.run(getFunnelDataForTimeframe(comparison.start, comparison.end)));
 
-
-		var funnelGraph = getFunnelGraph(section.querySelector('.funnel'));
-		Promise.all(promises).then(function([currentResults, previousResults]) {
-			var combined = currentResults.result.map(function(val, index) {
-				return [labels[index], val, previousResults.result[index]];
-			});
-
-			funnelGraph
-				.parseRawData({ result: combined })
-				.labels(labels)
-				.render();
-
-			var usage = currentResults.result[1] / currentResults.result[0];
-
-			section.querySelector('.numbers-table--usage .numbers-table__current').textContent = (Math.round(usage * 10000 ) / 100) + '%';
-
-			var prevUsage = previousResults.result[1] / previousResults.result[0];
-
-			section.querySelector('.numbers-table--usage .numbers-table__previous').textContent = (Math.round(prevUsage * 10000 ) / 100) + '%';
-
-			var usageDiff = ((usage - prevUsage) / prevUsage);
-
-			section.querySelector('.numbers-table--usage .numbers-table__change').textContent = (Math.round(usageDiff * 10000 ) / 100) + '%';
-
-		});
-	};
-
-	flowForTimeframes(
-	{
-		name: 'today',
-		start: -1 + offset,
-		end: 0 + offset
-	}, {
-		name: 'yesterday',
-		start: -2 + offset,
-		end: -1 + offset
-	});
-
-	flowForTimeframes(
-	{
-		name: 'this-week',
-		start: -7 + offset,
-		end: 0 + offset
-	}, {
-		name: 'last-week',
-		start: -14 + offset,
-		end: -7 + offset
-	});
-
-	document.getElementById('offset-date').textContent = daysFromNow(offset);
+	usageForPeriod(daysFromNow(-7), new Date(), 'this-week');
+	usageForPeriod(daysFromNow(-1), new Date(), 'today');
 
 	usageOverTime(client);
 
+	document.getElementById('offset-date').textContent = daysFromNow(offset).toISOString();
 }
 
 module.exports = {
