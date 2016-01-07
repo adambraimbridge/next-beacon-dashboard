@@ -2,6 +2,7 @@
 
 'use strict';
 
+var KeenQuery = require('n-keen-query');
 var union = require('lodash/array/union');
 
 var queryString = require('querystring');
@@ -9,68 +10,12 @@ var queryParameters = queryString.parse(location.search.substr(1));
 
 var offset = parseInt(queryParameters.offset) || 0;
 
-
-var daysFromNow = function (offset) {
+function daysFromNow (offset) {
 	offset = offset || 0;
 	var dateObject = new Date();
 	dateObject.setDate(dateObject.getDate() + offset);
-	return dateObject.toISOString();
-};
-
-var labels = [
-	'Visited Next',
-	'Is a myFT user'
-];
-
-
-function getDashboard(start, end) {
-	// This is a base step object, for spawning steps.
-	var step = function(options) {
-		return {
-			eventCollection:options.eventCollection || "dwell",
-			actor_property:"user.uuid",
-			timeframe:  {
-				start: start,
-				end: end
-			},
-			filters:options.filters || [],
-		};
-	};
-
-	return {
-		'title' : 'Overall usage of myFT',
-		'labels' : labels,
-		'steps':[
-
-			step({}),
-			step({
-				filters: [{
-					property_name: 'page.location.hash',
-					operator: 'contains',
-					property_value: 'myft'
-				},
-				{
-					property_name: 'page.location.type',
-					operator: 'eq',
-					property_value: 'article'
-				}]
-			})
-		]
-	};
-
+	return dateObject;
 }
-
-function getFunnelDataForTimeframe(start, end) {
-	start = daysFromNow(start);
-	end = daysFromNow(end);
-	var dashboard = getDashboard(start, end);
-	var query = new Keen.Query("funnel", {
-		steps: dashboard.steps,
-		maxAge: 10800
-	});
-	return query;
-}
-
 
 function getFunnelGraph(el) {
 	return new Keen.Dataviz()
@@ -83,6 +28,65 @@ function getFunnelGraph(el) {
 				legend: { position: "none" }
 		})
 		.prepare();
+}
+
+
+function usageForPeriod(startDate, endDate, name) {
+
+	const nextUserCountQuery = new KeenQuery('dwell')
+		.count('user.uuid')
+		.absTime(startDate, endDate)
+		.compare()
+		.print('json');
+
+	const myFtPageVisitorsQuery = new KeenQuery('dwell')
+		.select('user.uuid')
+		.filter('page.location.hash>>myft')
+		.absTime(startDate, endDate)
+		.compare()
+		.print('json');
+
+	const myFtDailyEmailVisitorsQuery = new KeenQuery('email')
+		.select('user.uuid')
+		.filter('event=open')
+		.filter('meta.emailType=daily')
+		.absTime(startDate, endDate)
+		.compare()
+		.print('json');
+
+	Promise.all([nextUserCountQuery, myFtPageVisitorsQuery, myFtDailyEmailVisitorsQuery])
+		.then(results => {
+			const nextUserCount = results[0];
+			const myFtPageVisitors = results[1];
+			const myFtDailyEmailVisitors = results[2];
+
+			const myFtUserCount = {
+				curr: union(myFtPageVisitors.curr.result, myFtDailyEmailVisitors.curr.result).length,
+				prev: union(myFtPageVisitors.prev.result, myFtDailyEmailVisitors.prev.result).length
+			};
+
+			var section = document.querySelector(`.section--${name}`);
+			var funnelGraph = getFunnelGraph(section.querySelector('.funnel'));
+
+			var combined = [
+				['Visited Next', nextUserCount.curr, nextUserCount.prev],
+				['Is a myFT user', myFtUserCount.curr, myFtUserCount.prev]
+			];
+
+			funnelGraph
+				.parseRawData({result: combined})
+				.render();
+
+			var usage = myFtUserCount.curr / nextUserCount.curr.result;
+			section.querySelector('.numbers-table--usage .numbers-table__current').textContent = (Math.round(usage * 10000 ) / 100) + '%';
+
+			var prevUsage = myFtUserCount.prev / nextUserCount.prev.result;
+			section.querySelector('.numbers-table--usage .numbers-table__previous').textContent = (Math.round(prevUsage * 10000 ) / 100) + '%';
+
+			var usageDiff = ((usage - prevUsage) / prevUsage);
+			section.querySelector('.numbers-table--usage .numbers-table__change').textContent = (Math.round(usageDiff * 10000 ) / 100) + '%';
+
+		});
 }
 
 
@@ -289,65 +293,13 @@ function usageOverTime(client) {
 
 
 function init(client) {
-	var flowForTimeframes = function(current, comparison) {
-		var section = document.querySelector(`.section--${current.name}`);
-		var promises = [];
-		promises.push(client.run(getFunnelDataForTimeframe(current.start, current.end)));
-		promises.push(client.run(getFunnelDataForTimeframe(comparison.start, comparison.end)));
 
-
-		var funnelGraph = getFunnelGraph(section.querySelector('.funnel'));
-		Promise.all(promises).then(function([currentResults, previousResults]) {
-			var combined = currentResults.result.map(function(val, index) {
-				return [labels[index], val, previousResults.result[index]];
-			});
-
-			funnelGraph
-				.parseRawData({ result: combined })
-				.labels(labels)
-				.render();
-
-			var usage = currentResults.result[1] / currentResults.result[0];
-
-			section.querySelector('.numbers-table--usage .numbers-table__current').textContent = (Math.round(usage * 10000 ) / 100) + '%';
-
-			var prevUsage = previousResults.result[1] / previousResults.result[0];
-
-			section.querySelector('.numbers-table--usage .numbers-table__previous').textContent = (Math.round(prevUsage * 10000 ) / 100) + '%';
-
-			var usageDiff = ((usage - prevUsage) / prevUsage);
-
-			section.querySelector('.numbers-table--usage .numbers-table__change').textContent = (Math.round(usageDiff * 10000 ) / 100) + '%';
-
-		});
-	};
-
-	flowForTimeframes(
-	{
-		name: 'today',
-		start: -1 + offset,
-		end: 0 + offset
-	}, {
-		name: 'yesterday',
-		start: -2 + offset,
-		end: -1 + offset
-	});
-
-	flowForTimeframes(
-	{
-		name: 'this-week',
-		start: -7 + offset,
-		end: 0 + offset
-	}, {
-		name: 'last-week',
-		start: -14 + offset,
-		end: -7 + offset
-	});
-
-	document.getElementById('offset-date').textContent = daysFromNow(offset);
+	usageForPeriod(daysFromNow(-7), new Date(), 'this-week');
+	usageForPeriod(daysFromNow(-1), new Date(), 'today');
 
 	usageOverTime(client);
 
+	document.getElementById('offset-date').textContent = daysFromNow(offset).toISOString();
 }
 
 module.exports = {
