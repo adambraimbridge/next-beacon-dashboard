@@ -46,7 +46,7 @@
                 <label class="o-forms-label" for="ab-test-variant">Variant</label>
             </div>
         </div>
-        <div class="o-grid-container">
+        <div class="performance-form__browser o-grid-container">
             <div class="o-grid-row">
                 <div class="performance-form__browser-names o-forms-affix-wrapper" data-o-grid-colspan="6">
                     <label class="o-forms-prefix" for="browserNames">Browser</label>
@@ -57,6 +57,10 @@
                     <select class="o-forms-select" name="browserVersion" id="browserVersions"></select>
                 </div>
             </div>
+        </div>
+        <div>
+            <input type="checkbox" name="domLoadingOffset" value="1" class="o-forms-checkbox" id="dom-loading-offset"></input>
+            <label class="o-forms-label" for="dom-loading-offset">Offset graphs from the domLoading event, i.e. from the point the page has downloaded</label>
         </div>
         <input class="o-buttons" type="submit" value="Update Graph">
     </div>
