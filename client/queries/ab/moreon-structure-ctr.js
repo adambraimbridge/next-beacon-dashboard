@@ -126,7 +126,7 @@ function runQuery(types) {
 			console.log('Err ', err) ;
 		}
 
-		const inliersSessionsArray = res.result.filter(session => session.result < 100)
+		const inliersSessionsArray = res && res.result.filter(session => session.result < 100)
 						.map(session => session["ingest.device.spoor_session"]);
 
 		const inliersSessionsFilter = [
@@ -142,8 +142,6 @@ function runQuery(types) {
 
 				let baseResults = res[1];
 				let clickResults = res[0];
-
-				console.log('baseResults', baseResults);
 
 				let newBaseResults = [
 					{"ab.articleMoreOnTopicCard":"variant",

@@ -27,7 +27,10 @@ const standardQueryFilters = [
 	"property_value":true},
 	{"operator":"exists",
 	"property_name":"ab.articleMoreOnTopicCard",
-	"property_value": true}
+	"property_value": true},
+	{"operator":"exists",
+	"property_name":"ingest.device.spoor_session",
+	"property_value":true}
 ];
 
 const timeFrame = {"end":"2016-01-31T00:00:00.000+00:00","start":"2016-01-04T00:00:00.000+00:00"}
@@ -55,28 +58,21 @@ function uniqueSessionsQuery() {
 		filters: []
 			.concat(standardQueryFilters)
 			.concat(referrerFilters),
-		targetProperty: "ingest.device.spoor_session",
+		groupBy: "ingest.device.spoor_session",
 		timeframe: timeFrame,
 		timezone: "UTC",
 		maxAge:10800
 	};
-	return new Keen.Query("select_unique", parameters);
+	return new Keen.Query("count", parameters);
 }
 
-function articleDepthQuery(referredSessionsArray) {
-	let referredSessionsFilter;
-	if (!referrerParameter) {
-		referredSessionsFilter = [] ;
-	} else {
-		referredSessionsFilter = [
-			{"operator":"in",
-			"property_name": "ingest.device.spoor_session",
-			"property_value": referredSessionsArray}];
-	}
+function articleDepthQuery(uniqueSessionsArray) {
 	let parameters = {
 		eventCollection: "dwell",
-		filters: []
-			.concat(referredSessionsFilter)
+		filters: [
+			{"operator":"in",
+			"property_name": "ingest.device.spoor_session",
+			"property_value": uniqueSessionsArray}]
 			.concat(standardQueryFilters),
 		groupBy: ["ingest.device.spoor_session", "ab.articleMoreOnTopicCard"],
 		timeframe: timeFrame,
@@ -193,7 +189,8 @@ client.run(uniqueSessionsQuery(), function(err, res) {
 		console.log('Err ', err) ;
 	}
 
-	const uniqueSessionsQueryResult = !res ? [] : res.result;
+	const uniqueSessionsQueryResult = res.result.filter(session => session.result < 100)
+					.map(session => session["ingest.device.spoor_session"]);
 
 	client.run(articleDepthQuery(uniqueSessionsQueryResult), function(err, res) {
 		if (err) {
