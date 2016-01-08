@@ -151,6 +151,10 @@ const render = () => {
 		document.querySelector(`input[name="${name}"][value="${query[name]}"`)
 			.setAttribute('checked', 'checked')
 	));
+	if (query.domLoadingOffset) {
+		document.querySelector(`input[name="domLoadingOffset"]`)
+			.setAttribute('checked', 'checked');
+	}
 	// update drop down filters
 	['browserName', 'browserVersion'].forEach(name => (
 		document.querySelector(`select[name="${name}"]`).innerHTML = `<option selected>${query[name]}</option>`
@@ -171,7 +175,6 @@ const render = () => {
 		})
 		.prepare();
 
-
 	const filters = [];
 	if (query.browserName !== 'All') {
 		filters.push(createFilter('eq', 'deviceAtlas.browserName', query.browserName));
@@ -182,7 +185,7 @@ const render = () => {
 	const queries = ['domInteractive', 'domContentLoadedEventStart', 'domComplete', 'loadEventStart'].map(eventName => (
 		new Keen.Query('median', {
 			eventCollection,
-			targetProperty: `ingest.context.timings.offset.${eventName}`,
+			targetProperty: `ingest.context.timings.${query.domLoadingOffset ? 'domLoadingOffset' : 'offset'}.${eventName}`,
 			timeframe,
 			interval,
 			filters: sharedFilters.concat(filters),
