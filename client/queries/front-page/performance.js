@@ -251,9 +251,9 @@ const render = () => {
 		filters.push(createFilter('ingest.user.connectionType', 'in', connectionTypes[queryParams.connectionType]))
 	}
 
+	generalPageLoad(filters, queryParams.domLoadingOffset);
 	browserLoad(filters, queryParams.domLoadingOffset);
 	customMetrics(filters, queryParams.domLoadingOffset);
-	generalPageLoad(filters, queryParams.domLoadingOffset);
 };
 
 export default {
