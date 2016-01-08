@@ -17,6 +17,9 @@ const standardQueryFilters = [
 	"property_value":true},
 	{"operator":"exists",
 	"property_name":"ab.articleMoreOnTopicCard",
+	"property_value":true},
+	{"operator":"exists",
+	"property_name":"ingest.device.spoor_session",
 	"property_value":true}];
 const searchReferrer = [{
 	"operator":"eq",
@@ -40,6 +43,7 @@ const metricCTRControl = new Keen.Dataviz();
 
 let referrerFilters;
 let chartHeadingModifier;
+
 
 function filterBySubCompnents(subComponentTypes, category) {
 	let resultArray = [];
@@ -72,12 +76,26 @@ function targetArray(subComponentTypes) {
 	return getUnique(filterBySubCompnents(subComponentTypes, "target"));
 }
 
-function ctaQuery() {
+function pageViewsBySessionQuery() {
+	let parameters = {
+		eventCollection: "dwell",
+		filters: []
+			.concat(referrerFilters)
+			.concat(standardQueryFilters),
+		groupBy: "ingest.device.spoor_session",
+		timeframe: timeFrame,
+		timezone: "UTC",
+		maxAge:10800
+	};
+	return new Keen.Query("count", parameters);
+}
+
+function ctaQuery(subComponents, inliersSessionsFilter) {
 	let parameters = {
 		eventCollection: "cta",
 		filters: []
+			.concat(inliersSessionsFilter)
 			.concat(domPathfilter)
-			.concat(referrerFilters)
 			.concat(standardQueryFilters),
 		groupBy: ["meta.domPath","ab.articleMoreOnTopicCard"],
 		timeframe: timeFrame,
@@ -87,11 +105,11 @@ function ctaQuery() {
 	return new Keen.Query("count", parameters);
 }
 
-function baseQuery() {
+function baseQuery(inliersSessionsFilter) {
 	let parameters = {
 		eventCollection: "dwell",
 		filters: []
-			.concat(referrerFilters)
+			.concat(inliersSessionsFilter)
 			.concat(standardQueryFilters),
 		groupBy: "ab.articleMoreOnTopicCard",
 		timeframe: timeFrame,
@@ -103,191 +121,207 @@ function baseQuery() {
 
 function runQuery(types) {
 
-	client.run([ctaQuery(types), baseQuery()], function(err, res) {
+	client.run(pageViewsBySessionQuery(), function (err, res) {
 		if (err) {
-			console.log('err ', err);
+			console.log('Err ', err) ;
 		}
-		else {
 
-			let baseResults = res[1];
-			let clickResults = res[0];
+		const inliersSessionsArray = res.result.filter(session => session.result < 100)
+						.map(session => session["ingest.device.spoor_session"]);
 
-			let newBaseResults = [
-				{"ab.articleMoreOnTopicCard":"variant",
-				pageViews: 0},
-				{"ab.articleMoreOnTopicCard":"control",
-				pageViews: 0}
-			];
+		const inliersSessionsFilter = [
+						{"operator":"in",
+						"property_name": "ingest.device.spoor_session",
+						"property_value": inliersSessionsArray}]
 
-			newBaseResults.map(function(newBaseResult) {
-				baseResults.result.map(function(baseResult) {
-					if (newBaseResult["ab.articleMoreOnTopicCard"] === baseResult["ab.articleMoreOnTopicCard"]) {
-						newBaseResult.pageViews += baseResult.result;
+		client.run([ctaQuery(types, inliersSessionsFilter), baseQuery(inliersSessionsFilter)], function(err, res) {
+			if (err) {
+				console.log('err ', err);
+			}
+			else {
+
+				let baseResults = res[1];
+				let clickResults = res[0];
+
+				console.log('baseResults', baseResults);
+
+				let newBaseResults = [
+					{"ab.articleMoreOnTopicCard":"variant",
+					pageViews: 0},
+					{"ab.articleMoreOnTopicCard":"control",
+					pageViews: 0}
+				];
+
+				newBaseResults.map(function(newBaseResult) {
+					baseResults.result.map(function(baseResult) {
+						if (newBaseResult["ab.articleMoreOnTopicCard"] === baseResult["ab.articleMoreOnTopicCard"]) {
+							newBaseResult.pageViews += baseResult.result;
+						}
+					});
+				});
+
+				let newClickResults = [];
+
+				metaDomPathArray(subComponents).map(function(path) {
+					let newClickResult = {
+						domPath: path,
+						target: articleCTAs.find(cta => cta.domPath === path)["target"],
+						variant: 0,
+						control: 0
+					};
+					newClickResults.push(newClickResult);
+				});
+
+				clickResults.result.map(function(clickResult) {
+					let matchedDomPath = newClickResults.filter(function(newClickResult) {
+						return clickResult["meta.domPath"] === newClickResult.domPath;
+					})[0];
+					if (clickResult["ab.articleMoreOnTopicCard"] === "variant") {
+						matchedDomPath.variant += clickResult.result;
+					}
+					if (clickResult["ab.articleMoreOnTopicCard"] === "control") {
+						matchedDomPath.control += clickResult.result;
 					}
 				});
-			});
 
-			let newClickResults = [];
+				newClickResults = newClickResults.filter(res => res.variant > 0 || res.control > 0);
 
-			metaDomPathArray(subComponents).map(function(path) {
-				let newClickResult = {
-					domPath: path,
-					target: articleCTAs.find(cta => cta.domPath === path)["target"],
-					variant: 0,
-					control: 0
-				};
-				newClickResults.push(newClickResult);
-			});
+				//turn clicks into ctr
 
-			clickResults.result.map(function(clickResult) {
-				let matchedDomPath = newClickResults.filter(function(newClickResult) {
-					return clickResult["meta.domPath"] === newClickResult.domPath;
-				})[0];
-				if (clickResult["ab.articleMoreOnTopicCard"] === "variant") {
-					matchedDomPath.variant += clickResult.result;
-				}
-				if (clickResult["ab.articleMoreOnTopicCard"] === "control") {
-					matchedDomPath.control += clickResult.result;
-				}
-			});
-
-			newClickResults = newClickResults.filter(res => res.variant > 0 || res.control > 0);
-
-			//turn clicks into ctr
-
-			newClickResults.map(function (newClickResult) {
-				newBaseResults.forEach(function (newBaseResult) {
-					if (newBaseResult["ab.articleMoreOnTopicCard"] === "variant") {
-						newClickResult.variantCtr = parseFloat((newClickResult.variant * 100) / newBaseResult.pageViews);
-					}
-					if (newBaseResult["ab.articleMoreOnTopicCard"] === "control") {
-						newClickResult.controlCtr = parseFloat((newClickResult.control * 100) / newBaseResult.pageViews);
-					}
+				newClickResults.map(function (newClickResult) {
+					newBaseResults.forEach(function (newBaseResult) {
+						if (newBaseResult["ab.articleMoreOnTopicCard"] === "variant") {
+							newClickResult.variantCtr = parseFloat((newClickResult.variant * 100) / newBaseResult.pageViews);
+						}
+						if (newBaseResult["ab.articleMoreOnTopicCard"] === "control") {
+							newClickResult.controlCtr = parseFloat((newClickResult.control * 100) / newBaseResult.pageViews);
+						}
+					});
 				});
-			});
 
-			// sum the results at top level
+				// sum the results at top level
 
-			let totalResult = {
-				variant: 0,
-				variantCtr: 0,
-				control: 0,
-				controlCtr: 0
-			};
-
-			newClickResults.map(function (newClickResult) {
-				totalResult.variant += newClickResult.variant;
-				totalResult.variantCtr += newClickResult.variantCtr;
-				totalResult.control += newClickResult.control;
-				totalResult.controlCtr += newClickResult.controlCtr;
-			});
-
-			metricCTRVariant
-				.data({result: totalResult.variantCtr})
-				.chartType("metric")
-				.render();
-
-			metricCTRControl
-				.data({result: totalResult.controlCtr})
-				.chartType("metric")
-				.render();
-
-			// sum the results up by target
-
-			let clickResultsTarget = [];
-
-			targetArray(subComponents).map(function (target) {
-				let targetResult = {
-					target: target,
+				let totalResult = {
 					variant: 0,
 					variantCtr: 0,
 					control: 0,
 					controlCtr: 0
 				};
-				clickResultsTarget.push(targetResult);
-			});
 
-			newClickResults.map(function (newClickResult) {
-				clickResultsTarget.map(function (target) {
-					if (target.target === newClickResult.target) {
-						target.variant += newClickResult.variant;
-						target.variantCtr += newClickResult.variantCtr;
-						target.control += newClickResult.control;
-						target.controlCtr += newClickResult.controlCtr;
-					}
+				newClickResults.map(function (newClickResult) {
+					totalResult.variant += newClickResult.variant;
+					totalResult.variantCtr += newClickResult.variantCtr;
+					totalResult.control += newClickResult.control;
+					totalResult.controlCtr += newClickResult.controlCtr;
 				});
-			});
 
-			clickResultsTarget = clickResultsTarget.filter(res => res.variant > 0 || res.control > 0);
+				metricCTRVariant
+					.data({result: totalResult.variantCtr})
+					.chartType("metric")
+					.render();
 
-			//draw the table - by target
-			let tableTarget = $('<table>')
-						.addClass("o-table o-table--compact o-table--horizontal-lines o-table--vertical-lines o-table--horizontal-borders o-table--vertical-borders");
+				metricCTRControl
+					.data({result: totalResult.controlCtr})
+					.chartType("metric")
+					.render();
 
-			let tr = $('<tr>')
-				.append($('<th>').text('CTR% by target ' + chartHeadingModifier).attr("colspan",5));
+				// sum the results up by target
 
-			tr.appendTo(tableTarget);
+				let clickResultsTarget = [];
 
-			tr = $('<tr>')
-				.append($('<th>').text('Target'))
-				.append($('<th>').text('VARIANT Clicks'))
-				.append($('<th>').text('VARIANT CTR'))
-				.append($('<th>').text('CONTROL Clicks'))
-				.append($('<th>').text('CONTROL CTR'));
+				targetArray(subComponents).map(function (target) {
+					let targetResult = {
+						target: target,
+						variant: 0,
+						variantCtr: 0,
+						control: 0,
+						controlCtr: 0
+					};
+					clickResultsTarget.push(targetResult);
+				});
 
-			tr.appendTo(tableTarget);
+				newClickResults.map(function (newClickResult) {
+					clickResultsTarget.map(function (target) {
+						if (target.target === newClickResult.target) {
+							target.variant += newClickResult.variant;
+							target.variantCtr += newClickResult.variantCtr;
+							target.control += newClickResult.control;
+							target.controlCtr += newClickResult.controlCtr;
+						}
+					});
+				});
 
-			clickResultsTarget.forEach(function(row) {
-				tr = $('<tr>')
-					.append($('<td>').text(row.target))
-					.append($('<td>').text(row.variant))
-					.append($('<td>').text(row.variantCtr.toFixed(2)))
-					.append($('<td>').text(row.control))
-					.append($('<td>').text(row.controlCtr.toFixed(2)));
+				clickResultsTarget = clickResultsTarget.filter(res => res.variant > 0 || res.control > 0);
+
+				//draw the table - by target
+				let tableTarget = $('<table>')
+							.addClass("o-table o-table--compact o-table--horizontal-lines o-table--vertical-lines o-table--horizontal-borders o-table--vertical-borders");
+
+				let tr = $('<tr>')
+					.append($('<th>').text('CTR% by target ' + chartHeadingModifier).attr("colspan",5));
 
 				tr.appendTo(tableTarget);
-			});
 
-			let el = document.getElementById("table-target");
-			tableTarget.appendTo($(el));
-
-			// table by domPath
-
-			let tableDomPath = $('<table>')
-						.addClass("o-table o-table--compact o-table--horizontal-lines o-table--vertical-lines o-table--horizontal-borders o-table--vertical-borders");
-
-			tr = $('<tr>')
-				.append($('<th>').text('CTR% by domPath ' + chartHeadingModifier).attr("colspan",6));
-
-			tr.appendTo(tableDomPath);
-
-			tr = $('<tr>')
-				.append($('<th>').text('domPath'))
-				.append($('<th>').text('Target'))
-				.append($('<th>').text('VARIANT Clicks'))
-				.append($('<th>').text('VARIANT CTR'))
-				.append($('<th>').text('CONTROL Clicks'))
-				.append($('<th>').text('CONTROL CTR'));
-
-			tr.appendTo(tableDomPath);
-
-			newClickResults.forEach(function(row) {
 				tr = $('<tr>')
-					.append($('<td>').text(row.domPath))
-					.append($('<td>').text(row.target))
-					.append($('<td>').text(row.variant))
-					.append($('<td>').text(row.variantCtr.toFixed(2)))
-					.append($('<td>').text(row.control))
-					.append($('<td>').text(row.controlCtr.toFixed(2)));
+					.append($('<th>').text('Target'))
+					.append($('<th>').text('VARIANT Clicks'))
+					.append($('<th>').text('VARIANT CTR'))
+					.append($('<th>').text('CONTROL Clicks'))
+					.append($('<th>').text('CONTROL CTR'));
+
+				tr.appendTo(tableTarget);
+
+				clickResultsTarget.forEach(function(row) {
+					tr = $('<tr>')
+						.append($('<td>').text(row.target))
+						.append($('<td>').text(row.variant))
+						.append($('<td>').text(row.variantCtr.toFixed(2)))
+						.append($('<td>').text(row.control))
+						.append($('<td>').text(row.controlCtr.toFixed(2)));
+
+					tr.appendTo(tableTarget);
+				});
+
+				let el = document.getElementById("table-target");
+				tableTarget.appendTo($(el));
+
+				// table by domPath
+
+				let tableDomPath = $('<table>')
+							.addClass("o-table o-table--compact o-table--horizontal-lines o-table--vertical-lines o-table--horizontal-borders o-table--vertical-borders");
+
+				tr = $('<tr>')
+					.append($('<th>').text('CTR% by domPath ' + chartHeadingModifier).attr("colspan",6));
 
 				tr.appendTo(tableDomPath);
-			});
 
-			el = document.getElementById("table-dom-path");
-			tableDomPath.appendTo($(el));
+				tr = $('<tr>')
+					.append($('<th>').text('domPath'))
+					.append($('<th>').text('Target'))
+					.append($('<th>').text('VARIANT Clicks'))
+					.append($('<th>').text('VARIANT CTR'))
+					.append($('<th>').text('CONTROL Clicks'))
+					.append($('<th>').text('CONTROL CTR'));
 
-		}
+				tr.appendTo(tableDomPath);
+
+				newClickResults.forEach(function(row) {
+					tr = $('<tr>')
+						.append($('<td>').text(row.domPath))
+						.append($('<td>').text(row.target))
+						.append($('<td>').text(row.variant))
+						.append($('<td>').text(row.variantCtr.toFixed(2)))
+						.append($('<td>').text(row.control))
+						.append($('<td>').text(row.controlCtr.toFixed(2)));
+
+					tr.appendTo(tableDomPath);
+				});
+
+				el = document.getElementById("table-dom-path");
+				tableDomPath.appendTo($(el));
+
+			}
+		});
 	});
 }
 
