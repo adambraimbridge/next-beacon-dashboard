@@ -7,7 +7,8 @@ const queryString = require('querystring');
 const queryParams = Object.assign(
 	{
 		deviceType: 'all',
-		layoutType: 'all'
+		layoutType: 'all',
+		timeframe: 'this_8_weeks'
 	},
 	queryString.parse(location.search.substr(1))
 );
@@ -53,12 +54,15 @@ const generateAverageViews = (type, queryOpts = {}) => {
 	document.querySelector(`input[name="layoutType"][value="${queryParams.layoutType}"`)
 		.setAttribute('checked', 'checked');
 
+	document.querySelector(`input[name="timeframe"][value="${queryParams.timeframe}"`)
+		.setAttribute('checked', 'checked');
+
 	let pageViewsQueries = [
 		new Keen.Query('count', Object.assign({
 			eventCollection: 'dwell',
 			filters: getFilters('article'),
 			groupBy: ['ab.frontPageLayoutPrototype', 'user.uuid'],
-			timeframe: 'this_8_weeks',
+			timeframe: queryParams.timeframe,
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts)),
@@ -67,7 +71,7 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			eventCollection: 'dwell',
 			filters: getFilters(),
 			groupBy: ['ab.frontPageLayoutPrototype'],
-			timeframe: 'this_8_weeks',
+			timeframe: queryParams.timeframe,
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts)),
@@ -76,7 +80,7 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			eventCollection: 'dwell',
 			filters: getFilters(),
 			groupBy: ['ab.frontPageLayoutPrototype', 'user.uuid'],
-			timeframe: 'this_8_weeks',
+			timeframe: queryParams.timeframe,
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts))
