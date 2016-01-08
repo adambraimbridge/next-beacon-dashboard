@@ -26,7 +26,7 @@ const browserLoad = (filters, domLoadingOffset) => {
 		.el(document.querySelector('#browsers-load'))
 		.chartType('barchart')
 		.height(450)
-		.title('Average load times over the past 7 days')
+		.title('Average load time over the past 7 days')
 		.chartOptions({
 			hAxis: {
 				format: '#.##s'
