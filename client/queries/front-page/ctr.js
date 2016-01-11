@@ -23,12 +23,12 @@ const filter = {
 		}],
 		hasLayout: [{
 			"operator":"exists",
-			"property_name":"ingest.user.layout",
+			"property_name":"deviceAtlas.primaryHardwareType",
 			"property_value":true
 		},
 		{
 			"operator":"ne",
-			"property_name":"ingest.user.layout",
+			"property_name":"deviceAtlas.primaryHardwareType",
 			"property_value": ""
 		}],
 		hasUUID: [{
@@ -48,7 +48,7 @@ const filter = {
 		}],
 		layout: [{
 			operator: 'eq',
-			property_name: 'ingest.user.layout',
+			property_name: 'deviceAtlas.primaryHardwareType',
 			property_value: queryParameters['layout']
 		}],
 		abControl: [
@@ -86,7 +86,7 @@ const getDataForTimeframe = (timeframeDays, interval, abCohort) => {
 			eventCollection: 'dwell',
 			target_property: 'user.uuid',
 			filters: defaultFilters.concat(filter.hasLayout),
-			groupBy: ['ingest.user.layout'],
+			groupBy: ['deviceAtlas.primaryHardwareType'],
 			timeframe,
 			timezone: 'UTC',
 			interval: interval,
@@ -96,7 +96,7 @@ const getDataForTimeframe = (timeframeDays, interval, abCohort) => {
 	const views = new Keen.Query('count', {
 			eventCollection: 'dwell',
 			filters: defaultFilters.concat(filter.hasLayout),
-			groupBy: ['ingest.user.layout'],
+			groupBy: ['deviceAtlas.primaryHardwareType'],
 			timeframe,
 			timezone: 'UTC',
 			interval: interval,
@@ -126,7 +126,7 @@ const getDataForTimeframe = (timeframeDays, interval, abCohort) => {
 		return new Keen.Query('count', {
 			eventCollection: 'cta',
 			filters: defaultFilters.concat(filter.isAClick),
-			groupBy: ['ingest.user.layout', 'user.uuid', 'meta.domPath'],
+			groupBy: ['deviceAtlas.primaryHardwareType', 'user.uuid', 'meta.domPath'],
 			timeframe: {
 				start: daysAgo(from),
 				end: daysAgo(to)
@@ -192,8 +192,8 @@ const getDataForTimeframe = (timeframeDays, interval, abCohort) => {
 							if(data['meta.domPath'] && line.component && line.component !== 'all') {
 									isMatch = isMatch && (data['meta.domPath'].indexOf(line.component) === 0);
 							}
-							if(data['ingest.user.layout'] && line.layout && line.layout !== 'all') {
-								isMatch = isMatch && (data['ingest.user.layout'] === line.layout);
+							if(data['deviceAtlas.primaryHardwareType'] && line.layout && line.layout !== 'all') {
+								isMatch = isMatch && (data['deviceAtlas.primaryHardwareType'] === line.layout);
 							}
 
 							return isMatch;

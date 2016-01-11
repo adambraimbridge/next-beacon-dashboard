@@ -17,7 +17,7 @@
 	</div>
 {{/defineBlock}}
 
-<h1>Front Page: CTR {{#if query.layout}}(Layout: {{query.layout}}){{/if}}</h1>
+<h1>Front Page: CTR {{#if query.layout}}(Device: {{query.layout}}){{/if}}</h1>
 
 <div class="nav--horizontal">
 	<h3>Timeframe (days):</h3>
@@ -48,15 +48,11 @@
 	<div class="front-page__charts o-grid-row">
 
 		<div class="front-page__controls js-front-page-toggles is-hidden">
-			<strong>Breakpoint:</strong>
+			<strong>Device Type:</strong>
 			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="all" data-column="1" checked>All
-			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="default" data-column="2">Default
-			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="XS" data-column="3">XS
-			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="S" data-column="4">S
-			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="M" data-column="5">M
-			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="L" data-column="6">L
-			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="XL" data-column="7">XL
-			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="XXL" data-column="8">XXL
+			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="Mobile Phone" data-column="2">Mobile Phone
+			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="Tablet" data-column="3">Tablet
+			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="Desktop" data-column="4">Desktop
 		</div>
 
 
