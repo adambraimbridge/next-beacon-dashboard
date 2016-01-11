@@ -193,8 +193,8 @@ Keen.ready(function(){
 			require('./queries/frequency-recency').init(client);
 			break;
 
-		case '/graph/myft/usage':
-			require('./queries/myft/usage').init(client);
+		case '/graph/myft/overview':
+			require('./queries/myft/overview')();
 			break;
 
 		case '/graph/myft/saved-articles':
