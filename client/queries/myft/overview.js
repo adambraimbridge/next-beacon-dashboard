@@ -2,12 +2,12 @@ import KeenQuery from 'n-keen-query';
 import union from 'lodash/array/union';
 import intersection from 'lodash/array/intersection';
 
-function getMyFtUserUuidsThisWeekCompared() {
-
-	const myFtPageVisitorsQuery = '@comparePast(dwell->select(user.uuid)->filter(page.location.hash>>myft)->time(7_days)->print(json))';
+function getMyFtUsers(timeFrame) {
+	const timeComponent = timeFrame ? `time(${timeFrame})->` : '';
+	const myFtPageVisitorsQuery = `@comparePast(dwell->select(user.uuid)->filter(page.location.hash>>myft)->${timeComponent}print(json))`;
 	const myFtPageVisitorsPromise = KeenQuery.execute(myFtPageVisitorsQuery);
 
-	const myFtDailyEmailOpenersQuery = '@comparePast(email->select(user.uuid)->filter(event=open)->filter(meta.emailType=daily)->time(7_days)->print(json))';
+	const myFtDailyEmailOpenersQuery = `@comparePast(email->select(user.uuid)->filter(event=open)->filter(meta.emailType=daily)->${timeComponent}print(json))`;
 	const myFtDailyEmailOpenersPromise = KeenQuery.execute(myFtDailyEmailOpenersQuery);
 
 	return Promise.all([myFtPageVisitorsPromise, myFtDailyEmailOpenersPromise]).then(results => {
@@ -40,7 +40,7 @@ export default function render () {
 	const daysVisitedThisWeekQuery = '@comparePast(dwell->select(user.uuid)->time(7_days)->group(time.day)->print(json))';
 	const daysVisitedThisWeekPromise = KeenQuery.execute(daysVisitedThisWeekQuery);
 
-	Promise.all([getMyFtUserUuidsThisWeekCompared(), daysVisitedThisWeekPromise]).then(result => {
+	Promise.all([getMyFtUsers('7_days'), daysVisitedThisWeekPromise]).then(result => {
 
 		const myFtUsers = result[0];
 		const allUsersVisitDays = {
