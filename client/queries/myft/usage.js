@@ -36,39 +36,37 @@ function usageForPeriod(startDate, endDate, name) {
 	const section = document.querySelector(`.section--${name}`);
 	const funnelGraph = getFunnelGraph(section.querySelector('.funnel'));
 
-	const nextUserCountQuery = new KeenQuery('dwell')
-		.count('user.uuid')
-		.absTime(startDate, endDate)
-		.compare()
-		.print('json');
+	const nextUserCountQuery = `@comparePast(dwell->count(user.uuid)->absTime(${startDate.toISOString()},${endDate.toISOString()})->print(json))`;
+	const nextUserCountPromise = KeenQuery.execute(nextUserCountQuery);
 
-	const myFtPageVisitorsQuery = new KeenQuery('dwell')
-		.select('user.uuid')
-		.filter('page.location.hash>>myft')
-		.absTime(startDate, endDate)
-		.compare()
-		.print('json');
+	const myFtPageVisitorsQuery = `@comparePast(dwell->select(user.uuid)->filter(page.location.hash>>myft)->absTime(${startDate.toISOString()},${endDate.toISOString()})->print(json))`;
+	const myFtPageVisitorsPromise = KeenQuery.execute(myFtPageVisitorsQuery);
 
-	const myFtDailyEmailOpenersQuery = new KeenQuery('email')
-		.select('user.uuid')
-		.filter('event=open')
-		.filter('meta.emailType=daily')
-		.absTime(startDate, endDate)
-		.compare()
-		.print('json');
+	const myFtDailyEmailOpenersQuery = `@comparePast(email->select(user.uuid)->filter(event=open)->filter(meta.emailType=daily)->absTime(${startDate.toISOString()},${endDate.toISOString()})->print(json))`;
+	const myFtDailyEmailOpenersPromise = KeenQuery.execute(myFtDailyEmailOpenersQuery);
 
-	Promise.all([nextUserCountQuery, myFtPageVisitorsQuery, myFtDailyEmailOpenersQuery])
+	Promise.all([nextUserCountPromise, myFtPageVisitorsPromise, myFtDailyEmailOpenersPromise])
 		.then(results => {
-			const nextUserCount = results[0];
-			const myFtPageVisitors = results[1];
-			const myFtDailyEmailOpeners = results[2];
+
+			const nextUserCount = {
+				curr: results[0].queries[0].data.result,
+				prev: results[0].queries[1].data.result
+			};
+
+			const myFtPageVisitors = {
+				curr: results[1].queries[0].data.result,
+				prev: results[1].queries[1].data.result
+			};
+
+			const myFtDailyEmailOpeners = {
+				curr: results[2].queries[0].data.result,
+				prev: results[2].queries[1].data.result
+			};
 
 			const myFtUserCount = {
-				curr: union(myFtPageVisitors.curr.result, myFtDailyEmailOpeners.curr.result).length,
-				prev: union(myFtPageVisitors.prev.result, myFtDailyEmailOpeners.prev.result).length
+				curr: union(myFtPageVisitors.curr, myFtDailyEmailOpeners.curr).length,
+				prev: union(myFtPageVisitors.prev, myFtDailyEmailOpeners.prev).length
 			};
-			nextUserCount.curr = nextUserCount.curr.result;
-			nextUserCount.prev = nextUserCount.prev.result;
 
 			const combined = [
 				['Visited Next', nextUserCount.curr, nextUserCount.prev],
