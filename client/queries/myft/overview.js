@@ -2,21 +2,29 @@ import KeenQuery from 'n-keen-query';
 import union from 'lodash/array/union';
 import intersection from 'lodash/array/intersection';
 
-function getMyFtUserUuidsThisWeek() {
+function getMyFtUserUuidsThisWeekCompared() {
 
-	const myFtPageVisitorsQuery = 'dwell->select(user.uuid)->filter(page.location.hash>>myft)->time(7_days)->print(json)';
+	const myFtPageVisitorsQuery = '@comparePast(dwell->select(user.uuid)->filter(page.location.hash>>myft)->time(7_days)->print(json))';
 	const myFtPageVisitorsPromise = KeenQuery.execute(myFtPageVisitorsQuery);
 
-	const myFtDailyEmailOpenersQuery = 'email->select(user.uuid)->filter(event=open)->filter(meta.emailType=daily)->time(7_days)->print(json)';
+	const myFtDailyEmailOpenersQuery = '@comparePast(email->select(user.uuid)->filter(event=open)->filter(meta.emailType=daily)->time(7_days)->print(json))';
 	const myFtDailyEmailOpenersPromise = KeenQuery.execute(myFtDailyEmailOpenersQuery);
 
 	return Promise.all([myFtPageVisitorsPromise, myFtDailyEmailOpenersPromise]).then(results => {
 
-		// todo why in the second column? ask rhys
-		const myFtPageVisitors = results[0].rows.map(a => a[1]);
-		const myFtDailyEmailOpeners = results[1].rows.map(a => a[1]);
+		const myFtPageVisitors = {
+			curr: results[0].queries[0].data.result,
+			prev: results[0].queries[1].data.result
+		};
+		const myFtDailyEmailOpeners = {
+			curr: results[1].queries[0].data.result,
+			prev: results[1].queries[1].data.result
+		};
 
-		return union(myFtPageVisitors, myFtDailyEmailOpeners);
+		return {
+			curr: union(myFtPageVisitors.curr, myFtDailyEmailOpeners.curr),
+			prev: union(myFtPageVisitors.prev, myFtDailyEmailOpeners.prev)
+		};
 	})
 
 }
@@ -25,27 +33,41 @@ export default function render () {
 	const daysVisitedThisWeekGraph = new Keen.Dataviz()
 		.el(document.querySelector('.js-days-visited-this-week'))
 		.prepare();
+	const daysVisitedLastWeekGraph = new Keen.Dataviz()
+		.el(document.querySelector('.js-days-visited-last-week'))
+		.prepare();
 
-	const daysVisitedThisWeekQuery = 'dwell->select(user.uuid)->time(7_days)->group(time.day)->print(json)';
+	const daysVisitedThisWeekQuery = '@comparePast(dwell->select(user.uuid)->time(7_days)->group(time.day)->print(json))';
 	const daysVisitedThisWeekPromise = KeenQuery.execute(daysVisitedThisWeekQuery);
 
-	Promise.all([getMyFtUserUuidsThisWeek(), daysVisitedThisWeekPromise]).then(result => {
+	Promise.all([getMyFtUserUuidsThisWeekCompared(), daysVisitedThisWeekPromise]).then(result => {
 
 		const myFtUsers = result[0];
-		const allUsersVisitDays = result[1].rows;
+		const allUsersVisitDays = {
+			curr: result[1].queries[0].data.result.map(r => r.result),
+			prev: result[1].queries[1].data.result.map(r => r.result)
+		};
 
-		const myFtUsersVisitDays = [];
-		allUsersVisitDays.forEach(((day, i) => {
-			myFtUsersVisitDays[i] = intersection(myFtUsers, day[1]).length;
-		}));
+		const averageDaysVistedThisWeek = allUsersVisitDays.curr
+			.map(day => intersection(myFtUsers.curr, day).length)
+			.reduce((a, b) => a + b, 0) / myFtUsers.curr.length;
 
-		const averageDaysVisited = myFtUsersVisitDays.reduce((a, b) => a + b, 0) / myFtUsers.length;
+		const averageDaysVistedLastWeek = allUsersVisitDays.prev
+				.map(day => intersection(myFtUsers.prev, day).length)
+				.reduce((a, b) => a + b, 0) / myFtUsers.prev.length;
 
 		daysVisitedThisWeekGraph
 			.data({
-				result: averageDaysVisited
+				result: averageDaysVistedThisWeek
 			})
 			.title('This week')
+			.render();
+
+		daysVisitedLastWeekGraph
+			.data({
+				result: averageDaysVistedLastWeek
+			})
+			.title('Last week')
 			.render();
 
 	})
