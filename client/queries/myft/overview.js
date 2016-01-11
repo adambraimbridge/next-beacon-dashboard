@@ -48,24 +48,25 @@ export default function render () {
 			prev: result[1].queries[1].data.result.map(r => r.result)
 		};
 
-		const averageDaysVistedThisWeek = allUsersVisitDays.curr
-			.map(day => intersection(myFtUsers.curr, day).length)
-			.reduce((a, b) => a + b, 0) / myFtUsers.curr.length;
+		function getAverageDaysVisited(timeKey) {
+			return allUsersVisitDays[timeKey]
+					.map(day => intersection(myFtUsers[timeKey], day).length)
+					.reduce((a, b) => a + b, 0) / myFtUsers[timeKey].length;
+		}
 
-		const averageDaysVistedLastWeek = allUsersVisitDays.prev
-				.map(day => intersection(myFtUsers.prev, day).length)
-				.reduce((a, b) => a + b, 0) / myFtUsers.prev.length;
+		const averageDaysVisitedThisWeek = getAverageDaysVisited('curr');
+		const averageDaysVisitedLastWeek = getAverageDaysVisited('prev');
 
 		daysVisitedThisWeekGraph
 			.data({
-				result: averageDaysVistedThisWeek
+				result: averageDaysVisitedThisWeek
 			})
 			.title('This week')
 			.render();
 
 		daysVisitedLastWeekGraph
 			.data({
-				result: averageDaysVistedLastWeek
+				result: averageDaysVisitedLastWeek
 			})
 			.title('Last week')
 			.render();
