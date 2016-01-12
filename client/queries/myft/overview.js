@@ -1,6 +1,7 @@
+/* global Keen */
+
 import KeenQuery from 'n-keen-query';
 import union from 'lodash/array/union';
-import intersection from 'lodash/array/intersection';
 
 function getMyFtUsersByWeek (weeks) {
 	const myFtPageVisitorsQuery = `dwell->select(user.uuid)->filter(page.location.hash>>myft)->interval(w)->time(${weeks}_weeks)->print(json)`;
