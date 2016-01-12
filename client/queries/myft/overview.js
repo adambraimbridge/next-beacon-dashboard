@@ -75,7 +75,9 @@ export default function render () {
 		.el(document.querySelector('.js-days-visited-over-time'))
 		.chartType("linechart")
 		.chartOptions({
-			height: 500
+			height: 300,
+			hAxis: { title: 'Last 90 days', textPosition: 'none' },
+			vAxis: { textPosition: 'none' }
 		})
 		.prepare();
 
