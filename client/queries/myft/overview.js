@@ -2,11 +2,11 @@ import KeenQuery from 'n-keen-query';
 import union from 'lodash/array/union';
 import intersection from 'lodash/array/intersection';
 
-function getMyFtUsersByWeek (lastHowManyWeeks) {
-	const myFtPageVisitorsQuery = `dwell->select(user.uuid)->filter(page.location.hash>>myft)->interval(w)->time(${lastHowManyWeeks}_weeks)->print(json)`;
+function getMyFtUsersByWeek (weeks) {
+	const myFtPageVisitorsQuery = `dwell->select(user.uuid)->filter(page.location.hash>>myft)->interval(w)->time(${weeks}_weeks)->print(json)`;
 	const myFtPageVisitorsPromise = KeenQuery.execute(myFtPageVisitorsQuery);
 
-	const myFtDailyEmailOpenersQuery = `email->select(user.uuid)->filter(event=open)->filter(meta.emailType=daily)->interval(w)->time(${lastHowManyWeeks}_weeks)->print(json)`;
+	const myFtDailyEmailOpenersQuery = `email->select(user.uuid)->filter(event=open)->filter(meta.emailType=daily)->interval(w)->time(${weeks}_weeks)->print(json)`;
 	const myFtDailyEmailOpenersPromise = KeenQuery.execute(myFtDailyEmailOpenersQuery);
 
 	return Promise.all([myFtPageVisitorsPromise, myFtDailyEmailOpenersPromise]).then(results => {
@@ -36,25 +36,18 @@ function getAverageDaysVisitedByUsersInWeek (users, visitorsThisWeek) {
 			.reduce((a, b) => a + b, 0) / users.length;
 }
 
-export default function render () {
+function getAverageDaysVisitedForMyFtUsers () {
 	const weeks = 12;
-	const daysVisitedThisWeekGraph = new Keen.Dataviz()
-		.el(document.querySelector('.js-days-visited-this-week'))
-		.prepare();
-	const daysVisitedLastWeekGraph = new Keen.Dataviz()
-		.el(document.querySelector('.js-days-visited-last-week'))
-		.prepare();
-
 	const daysVisitedQuery = `dwell->select(user.uuid)->time(${weeks}_weeks)->interval(d)->print(json)`;
 	const daysVisitedPromise = KeenQuery.execute(daysVisitedQuery);
 
-	Promise.all([getMyFtUsersByWeek(weeks), daysVisitedPromise]).then(results => {
+	return Promise.all([getMyFtUsersByWeek(weeks), daysVisitedPromise]).then(results => {
 
 		const myFtUsersByWeek = results[0];
 		const allUsersByDay = results[1].rows;
 
 		const allUsersByWeekAndDay = [];
-		for(let i = 0; i < weeks; i++) {
+		for (let i = 0; i < weeks; i++) {
 			allUsersByWeekAndDay.push(
 				allUsersByDay
 					.slice(i * 7, (i + 1) * 7)
@@ -62,26 +55,49 @@ export default function render () {
 			)
 		}
 
-		const averagesOverTime = myFtUsersByWeek
+		return myFtUsersByWeek
 			.map((week, i) => [
 				week[0],
 				getAverageDaysVisitedByUsersInWeek(week[1], allUsersByWeekAndDay[i])
-			]);
+			])
+			.map(week => ({timeframe: week[0], value: week[1]}));
+	});
+}
 
+export default function render () {
+	const daysVisitedThisWeekGraph = new Keen.Dataviz()
+		.el(document.querySelector('.js-days-visited-this-week'))
+		.prepare();
+	const daysVisitedLastWeekGraph = new Keen.Dataviz()
+		.el(document.querySelector('.js-days-visited-last-week'))
+		.prepare();
+	const daysVisitedOverTimeGraph = new Keen.Dataviz()
+		.el(document.querySelector('.js-days-visited-over-time'))
+		.chartType("linechart")
+		.chartOptions({
+			height: 500
+		})
+		.prepare();
 
-		daysVisitedThisWeekGraph
-			.data({
-				result: averagesOverTime[averagesOverTime.length - 1][1]
-			})
-			.title('This week')
-			.render();
+	getAverageDaysVisitedForMyFtUsers()
+		.then(result => {
 
-		daysVisitedLastWeekGraph
-			.data({
-				result: averagesOverTime[averagesOverTime.length - 2][1]
-			})
-			.title('Last week')
-			.render();
+			daysVisitedThisWeekGraph
+				.data({
+					result: result[result.length - 1].value
+				})
+				.title('This week')
+				.render();
 
-	})
+			daysVisitedLastWeekGraph
+				.data({
+					result: result[result.length - 2].value
+				})
+				.title('Last week')
+				.render();
+
+			daysVisitedOverTimeGraph
+				.parseRawData({result})
+				.render();
+		})
 }
