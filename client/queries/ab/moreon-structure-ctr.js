@@ -90,11 +90,12 @@ function pageViewsBySessionQuery() {
 	return new Keen.Query("count", parameters);
 }
 
-function ctaQuery(subComponents, inliersSessionsFilter) {
+function ctaQuery(subComponents, outliersSessionsFilter) {
 	let parameters = {
 		eventCollection: "cta",
 		filters: []
-			.concat(inliersSessionsFilter)
+			.concat(outliersSessionsFilter)
+			.concat(referrerFilters)
 			.concat(domPathfilter)
 			.concat(standardQueryFilters),
 		groupBy: ["meta.domPath","ab.articleMoreOnTopicCard"],
@@ -105,11 +106,12 @@ function ctaQuery(subComponents, inliersSessionsFilter) {
 	return new Keen.Query("count", parameters);
 }
 
-function baseQuery(inliersSessionsFilter) {
+function baseQuery(outliersSessionsFilter) {
 	let parameters = {
 		eventCollection: "dwell",
 		filters: []
-			.concat(inliersSessionsFilter)
+			.concat(referrerFilters)
+			.concat(outliersSessionsFilter)
 			.concat(standardQueryFilters),
 		groupBy: "ab.articleMoreOnTopicCard",
 		timeframe: timeFrame,
@@ -126,15 +128,20 @@ function runQuery(types) {
 			console.log('Err ', err) ;
 		}
 
-		const inliersSessionsArray = res && res.result.filter(session => session.result < 100)
+		const outliersSessionsArray = res && res.result.filter(session => session.result > 100)
 						.map(session => session["ingest.device.spoor_session"]);
 
-		const inliersSessionsFilter = [
-						{"operator":"in",
-						"property_name": "ingest.device.spoor_session",
-						"property_value": inliersSessionsArray}]
+		const outliersSessionsFilter = [];
 
-		client.run([ctaQuery(types, inliersSessionsFilter), baseQuery(inliersSessionsFilter)], function(err, res) {
+		outliersSessionsArray.forEach(function (session) {
+			outliersSessionsFilter.push(
+				{"operator":"ne",
+				"property_name": "ingest.device.spoor_session",
+				"property_value": session}
+			);
+		});
+
+		client.run([ctaQuery(types, outliersSessionsFilter), baseQuery(outliersSessionsFilter)], function(err, res) {
 			if (err) {
 				console.log('err ', err);
 			}

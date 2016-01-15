@@ -52,7 +52,7 @@ const metricAveragePageViewsControl = new Keen.Dataviz();
 const metricSessionsVariant = new Keen.Dataviz();
 const metricSessionsControl = new Keen.Dataviz();
 
-function uniqueSessionsQuery() {
+function pageViewsBySessionQuery() {
 	let parameters = {
 		eventCollection: "dwell",
 		filters: []
@@ -66,13 +66,12 @@ function uniqueSessionsQuery() {
 	return new Keen.Query("count", parameters);
 }
 
-function articleDepthQuery(uniqueSessionsArray) {
+function articleDepthQuery(outliersSessionsFilter) {
 	let parameters = {
 		eventCollection: "dwell",
-		filters: [
-			{"operator":"in",
-			"property_name": "ingest.device.spoor_session",
-			"property_value": uniqueSessionsArray}]
+		filters: []
+			.concat(outliersSessionsFilter)
+			.concat(referrerFilters)
 			.concat(standardQueryFilters),
 		groupBy: ["ingest.device.spoor_session", "ab.articleMoreOnTopicCard"],
 		timeframe: timeFrame,
@@ -184,15 +183,25 @@ metricSessionsControl
 	.title("Number Of Sessions - CONTROL")
 	.prepare();
 
-client.run(uniqueSessionsQuery(), function(err, res) {
+client.run(pageViewsBySessionQuery(), function(err, res) {
 	if (err) {
 		console.log('Err ', err) ;
 	}
 
-	const uniqueSessionsQueryResult = res.result.filter(session => session.result < 100)
+	const outliersSessionsArray = res && res.result.filter(session => session.result > 100)
 					.map(session => session["ingest.device.spoor_session"]);
 
-	client.run(articleDepthQuery(uniqueSessionsQueryResult), function(err, res) {
+	const outliersSessionsFilter = [];
+
+	outliersSessionsArray.forEach(function (session) {
+		outliersSessionsFilter.push(
+			{"operator":"ne",
+			"property_name": "ingest.device.spoor_session",
+			"property_value": session}
+		);
+	});
+
+	client.run(articleDepthQuery(outliersSessionsFilter), function(err, res) {
 		if (err) {
 			console.log('Err ', err);
 		}
