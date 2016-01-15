@@ -13,9 +13,9 @@ var app				= module.exports = require('ft-next-express')({
 	withBackendAuthentication: false
 });
 
-const p1 = require('./ps1Poller');
-const p2 = require('./ps2Poller');
-const p3 = require('./ps3Poller');
+const p1 = require('./conversion-funnel/one');
+const p2 = require('./conversion-funnel/two');
+const p3 = require('./conversion-funnel/three');
 
 var fs 				= require('fs');
 var marked 			= require('marked');

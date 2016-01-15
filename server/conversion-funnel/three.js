@@ -1,5 +1,5 @@
 const Poller = require("ft-poller");
-const conversionParser = require('./conversionfunnel');
+const conversionParser = require('./utils');
 var aws4 = require('aws4');
 
 const hostname = 'ft-next-redshift.s3.amazonaws.com';
@@ -7,7 +7,7 @@ const hostname = 'ft-next-redshift.s3.amazonaws.com';
 const signed = aws4.sign({
   service: 's3',
   hostname: hostname,
-  path: '/conversion-funnel-two.json',
+  path: '/conversion-funnel-three.json', // pass the path in?
   signQuery: true,
   timeout: 60000,
   region: 'eu-west-1'
@@ -22,7 +22,7 @@ var pollerData = [];
 var poller = new Poller({
   url: url,
   parseData: function (data) {
-    console.log('polled 2 received');
+    console.log('polled 3 received');
     data = JSON.parse(data);
     pollerData = conversionParser(data);
   }
