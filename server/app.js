@@ -18,11 +18,13 @@ var marked 			= require('marked');
 
 require('es6-promise').polyfill();
 
+require('./ps1Poller').start();
+require('./ps2Poller').start();
+require('./ps3Poller').start();
+
 var KEEN_PROJECT_ID = process.env.KEEN_PROJECT_ID;
 var KEEN_READ_KEY = process.env.KEEN_READ_KEY;
 var KEEN_MASTER_KEY = process.env.KEEN_MASTER;
-
-var conversionfunnel = require('./conversionfunnel');
 
 // Indicates the app is behind a front-facing proxy, and to use the X-Forwarded-* headers to determine the connection and the IP address of the client. NOTE: X-Forwarded-* headers are easily spoofed and the detected IP addresses are unreliable.
 // See: http://expressjs.com/api.html
@@ -149,36 +151,12 @@ app.get('/surveycohorts', function (req, res) {
 });
 
 app.get('/conversionfunnel', function (req, res) {
-	const hostname = 'ft-next-redshift.s3.amazonaws.com';
-
-	const signed = aws4.sign({
-		service: 's3',
-		hostname: hostname,
-		path: '/conversion-funnel.json',
-		signQuery: true,
-		timeout: 60000,
-		region: 'eu-west-1'
-	}, {
-		accessKeyId: process.env.S3_AWS_ACCESS,
-		secretAccessKey: process.env.S3_AWS_SECRET
-	});
-
-	const url = `https://${hostname}${signed.path}`;
-	const options = signed;
-// const conversionPoller = require('./conversionPoller)
-	const Poller = require('ft-poller');
-	const conversionPoller = new Poller({
-		url: url,
-		options: options,
-		autostart: true,
-		refreshInterval: 1200000,
-		parseData: data => conversionfunnel(data)
-	});
-
-	res.render('conversion-funnel', {
-		conversionData: conversionPoller.getData(),
-		layout: 'beacon'
-	});
+  res.render('conversion-funnel', {
+    ps1: require('./ps1Poller').getData(),
+    ps2: require('./ps2Poller').getData(),
+    ps3: require('./ps3Poller').getData(),
+    layout: 'beacon'
+  });
 });
 
 module.exports.listen = app.listen(process.env.PORT || 5028);
