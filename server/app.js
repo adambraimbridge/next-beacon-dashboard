@@ -13,14 +13,18 @@ var app				= module.exports = require('ft-next-express')({
 	withBackendAuthentication: false
 });
 
+const p1 = require('./ps1Poller');
+const p2 = require('./ps2Poller');
+const p3 = require('./ps3Poller');
+
 var fs 				= require('fs');
 var marked 			= require('marked');
 
 require('es6-promise').polyfill();
 
-require('./ps1Poller').start();
-require('./ps2Poller').start();
-require('./ps3Poller').start();
+p1.start();
+p2.start();
+p3.start();
 
 var KEEN_PROJECT_ID = process.env.KEEN_PROJECT_ID;
 var KEEN_READ_KEY = process.env.KEEN_READ_KEY;
@@ -152,9 +156,9 @@ app.get('/surveycohorts', function (req, res) {
 
 app.get('/conversionfunnel', function (req, res) {
   res.render('conversion-funnel', {
-    ps1: require('./ps1Poller').getData(),
-    ps2: require('./ps2Poller').getData(),
-    ps3: require('./ps3Poller').getData(),
+    ps1: p1.getData(),
+    ps2: p2.getData(),
+    ps3: p3.getData(),
     layout: 'beacon'
   });
 });

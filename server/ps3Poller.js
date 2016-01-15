@@ -22,6 +22,7 @@ var pollerData = [];
 var poller = new Poller({
   url: url,
   parseData: function (data) {
+    console.log('polled 3 received');
     data = JSON.parse(data);
     pollerData = conversionParser(data);
   }
