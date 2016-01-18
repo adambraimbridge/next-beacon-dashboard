@@ -3,7 +3,6 @@
 
 var http			= require('http');
 var https			= require('https');
-var fetch			= require('isomorphic-fetch');
 var aws4			= require('aws4');
 var auth			= require('./middleware/auth');
 var activeUsage			= require('./middleware/active-usage');
