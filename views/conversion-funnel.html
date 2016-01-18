@@ -4,7 +4,32 @@
 <p>The total figure for those users is the number found under the 'channel: next' heading.</p>
 <p>Updated daily</p>
 
-{{#each conversionData}}
+<p>PS1:</p>{{ps1}}
+<p>PS2:</p>{{ps2}}
+<p>PS3:</p>{{ps3}}
+
+<p>PS1:</p>
+{{#each ps1}}
+{{#each this}}
+<ul><h1>{{@key}}</h1>
+    {{#each this}}
+    <li>{{@key}}: {{this}}</li>
+    {{/each}}
+</ul>
+{{/each}}
+{{/each}}
+<p>PS2:</p>
+{{#each ps2}}
+{{#each this}}
+<ul><h1>{{@key}}</h1>
+    {{#each this}}
+    <li>{{@key}}: {{this}}</li>
+    {{/each}}
+</ul>
+{{/each}}
+{{/each}}
+<p>PS3:</p>
+{{#each ps3}}
 {{#each this}}
 <ul><h1>{{@key}}</h1>
     {{#each this}}

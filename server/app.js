@@ -3,26 +3,31 @@
 
 var http			= require('http');
 var https			= require('https');
-var fetch			= require('isomorphic-fetch');
 var aws4			= require('aws4');
 var auth			= require('./middleware/auth');
 var activeUsage			= require('./middleware/active-usage');
-var cookieParser	= require('cookie-parser');
+var cookieParser		= require('cookie-parser');
 var app				= module.exports = require('ft-next-express')({
 	layoutsDir: __dirname + '/../views/layouts',
 	withBackendAuthentication: false
 });
+
+const p1 = require('./conversion-funnel/one');
+const p2 = require('./conversion-funnel/two');
+const p3 = require('./conversion-funnel/three');
 
 var fs 				= require('fs');
 var marked 			= require('marked');
 
 require('es6-promise').polyfill();
 
+p1.start();
+p2.start();
+p3.start();
+
 var KEEN_PROJECT_ID = process.env.KEEN_PROJECT_ID;
 var KEEN_READ_KEY = process.env.KEEN_READ_KEY;
 var KEEN_MASTER_KEY = process.env.KEEN_MASTER;
-
-var conversionfunnel = require('./conversionfunnel');
 
 // Indicates the app is behind a front-facing proxy, and to use the X-Forwarded-* headers to determine the connection and the IP address of the client. NOTE: X-Forwarded-* headers are easily spoofed and the detected IP addresses are unreliable.
 // See: http://expressjs.com/api.html
@@ -149,31 +154,12 @@ app.get('/surveycohorts', function (req, res) {
 });
 
 app.get('/conversionfunnel', function (req, res) {
-	const hostname = 'ft-next-redshift.s3.amazonaws.com';
-
-	const signed = aws4.sign({
-		service: 's3',
-		hostname: hostname,
-		path: '/conversion-funnel.json',
-		signQuery: true,
-		timeout: 60000,
-		region: 'eu-west-1'
-	}, {
-		accessKeyId: process.env.S3_AWS_ACCESS,
-		secretAccessKey: process.env.S3_AWS_SECRET
+	res.render('conversion-funnel', {
+		ps1: p1.getData(),
+		ps2: p2.getData(),
+		ps3: p3.getData(),
+		layout: 'beacon'
 	});
-
-	const url = `https://${hostname}${signed.path}`;
-	const options = signed;
-
-	fetch(url, options)
-		.then(response => response.json())
-		.then(data => {
-			res.render('conversion-funnel', {
-				conversionData: conversionfunnel(data),
-				layout: 'beacon'
-			});
-		});
 });
 
 module.exports.listen = app.listen(process.env.PORT || 5028);
