@@ -7,7 +7,7 @@ var fetch			= require('isomorphic-fetch');
 var aws4			= require('aws4');
 var auth			= require('./middleware/auth');
 var activeUsage			= require('./middleware/active-usage');
-var cookieParser	= require('cookie-parser');
+var cookieParser		= require('cookie-parser');
 var app				= module.exports = require('ft-next-express')({
 	layoutsDir: __dirname + '/../views/layouts',
 	withBackendAuthentication: false
@@ -155,12 +155,12 @@ app.get('/surveycohorts', function (req, res) {
 });
 
 app.get('/conversionfunnel', function (req, res) {
-  res.render('conversion-funnel', {
-    ps1: p1.getData(),
-    ps2: p2.getData(),
-    ps3: p3.getData(),
-    layout: 'beacon'
-  });
+	res.render('conversion-funnel', {
+		ps1: p1.getData(),
+		ps2: p2.getData(),
+		ps3: p3.getData(),
+		layout: 'beacon'
+	});
 });
 
 module.exports.listen = app.listen(process.env.PORT || 5028);
