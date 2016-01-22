@@ -1,41 +1,89 @@
-{{#defineBlock 'vertical-nav'}}
-	<h3>Homepage</h3>
-	<div class="front-page__controls js-front-page-toggles">
-		<ul>
-			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="all" data-variant="all" checked>All</li>
-			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="header" data-variant="header">Header</li>
-			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="lead-today" data-variant="top-stories | card">Top Stories</li>
-			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="fastft" data-variant="top-stories | fastft">FastFT</li>
-			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="editors-picks" data-variant="editors-picks">Editors Picks</li>
-			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="opinion" data-variant="opinion">Opinion</li>
-			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="popular" data-variant="most-popular">Most Popular</li>
-			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="topic-life-arts" data-variant="life-and-arts">Life & Arts</li>
-			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="topic-markets" data-variant="markets">Markets</li>
-			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="topic-technology" data-variant="technology">Technology</li>
-			<li><input type="checkbox" name="toggle-components" class="toggle-line js-toggle-components" data-control="video-picks" data-variant="video">Videos</li>
-		</ul>
-	</div>
-{{/defineBlock}}
 
 <h1>Front Page: CTR {{#if query.layout}}(Device: {{query.layout}}){{/if}}</h1>
 
-<div class="nav--horizontal">
-	<h3>Timeframe (days):</h3>
-	<ul>
-		<li><a class="timeframe-days" href="?timeframe-days=7&amp;ab-cohort={{query.ab-cohort}}">7</a></li>
-		<li><a class="timeframe-days" href="?timeframe-days=14&amp;ab-cohort={{query.ab-cohort}}">14</a></li>
-		<li><a class="timeframe-days" href="?timeframe-days=21&amp;ab-cohort={{query.ab-cohort}}">21</a></li>
-		<li><a class="timeframe-days" href="?timeframe-days=28&amp;ab-cohort={{query.ab-cohort}}">28</a></li>
-	</ul>
-</div>
 
-<div class="nav--horizontal">
-	<h3>A/B Test:</h3>
-	<ul>
-		<li><a class="ab-cohort" href="?ab-cohort=control&amp;timeframe-days={{query.timeframe-days}}">Control</a></li>
-		<li><a class="ab-cohort" href="?ab-cohort=variant&amp;timeframe-days={{query.timeframe-days}}">Variant</a></li>
-	</ul>
-</div>
+	<form class="performance-form">
+    <div class="o-forms-group">
+        <div class="performance-form__choices">
+            <div>
+                <p class="performance-form__label--inline">Device type:</p>
+                <input type="radio" name="deviceType" value="all" class="o-forms-radio" id="device-type-all" />
+                <label class="o-forms-label" for="device-type-all">All</label>
+                <input type="radio" name="deviceType" value="Mobile Phone" class="o-forms-radio" id="device-type-mobile-phone" />
+                <label class="o-forms-label" for="device-type-mobile-phone">Mobile Phone</label>
+                <input type="radio" name="deviceType" value="Tablet" class="o-forms-radio" id="device-type-tablet" />
+                <label class="o-forms-label" for="device-type-tablet">Tablet</label>
+                <input type="radio" name="deviceType" value="Desktop" class="o-forms-radio" id="device-type-desktop" />
+                <label class="o-forms-label" for="device-type-desktop">Desktop</label>
+            </div>
+
+            <div>
+                <p class="performance-form__label--inline">Components:</p>
+                <input type="radio" name="component" value="all" class="o-forms-radio" id="layout-all" />
+                <label class="o-forms-label" for="layout-all">All</label>
+
+                <input type="radio" name="component" value="header" class="o-forms-radio" id="layout-header" />
+                <label class="o-forms-label" for="layout-header">Header</label>
+
+                <input type="radio" name="component" value="top-stories | card | main-link,top-stories | card | primary-tag,top-stories | card | image,lead-today | story | title | main-link,lead-today | story | image,lead-today | story | primary-tag,lead-today | story | related-links | title" class="o-forms-radio" id="layout-top-stories" />
+                <label class="o-forms-label" for="layout-top-stories">Top Stories</label>
+
+                <input type="radio" name="component" value="top-stories | fastft" class="o-forms-radio" id="layout-fastft" />
+                <label class="o-forms-label" for="layout-fastft">FastFT</label>
+
+                <input type="radio" name="component" value="editors-picks" class="o-forms-radio" id="layout-editors-picks" />
+                <label class="o-forms-label" for="layout-editors-picks">Editors Picks</label>
+
+                <input type="radio" name="component" value="opinion" class="o-forms-radio" id="layout-opinion" />
+                <label class="o-forms-label" for="layout-opinion">Opinion</label>
+
+                <input type="radio" name="component" value="most-popular" class="o-forms-radio" id="layout-most-popular" />
+                <label class="o-forms-label" for="layout-most-popular">Most Popular</label>
+
+                <input type="radio" name="component" value="life-and-arts" class="o-forms-radio" id="layout-life-and-arts" />
+                <label class="o-forms-label" for="layout-life-and-arts">Life and Arts</label>
+
+                <input type="radio" name="component" value="markets" class="o-forms-radio" id="layout-markets" />
+                <label class="o-forms-label" for="layout-markets">Markets</label>
+
+                <input type="radio" name="component" value="technology" class="o-forms-radio" id="layout-technology" />
+                <label class="o-forms-label" for="layout-technology">Technology</label>
+
+                <input type="radio" name="component" value="video" class="o-forms-radio" id="layout-video" />
+                <label class="o-forms-label" for="layout-video">Video</label>
+            </div>
+
+
+            <div>
+                <p class="performance-form__label--inline">Timeframe (weeks):</p>
+                <input type="radio" name="timeframe" value="2" class="o-forms-radio" id="timeframe-2" />
+                <label class="o-forms-label" for="timeframe-2">2</label>
+                <input type="radio" name="timeframe" value="4" class="o-forms-radio" id="timeframe-4" />
+                <label class="o-forms-label" for="timeframe-4">4</label>
+                <input type="radio" name="timeframe" value="6" class="o-forms-radio" id="timeframe-6" />
+                <label class="o-forms-label" for="timeframe-6">6</label>
+                <input type="radio" name="timeframe" value="8" class="o-forms-radio" id="timeframe-8" />
+                <label class="o-forms-label" for="timeframe-8">8</label>
+								<input type="radio" name="timeframe" value="12" class="o-forms-radio" id="timeframe-12" />
+                <label class="o-forms-label" for="timeframe-12">12</label>
+								<input type="radio" name="timeframe" value="24" class="o-forms-radio" id="timeframe-24" />
+                <label class="o-forms-label" for="timeframe-24">24</label>
+
+            </div>
+            <div>
+                <p class="performance-form__label--inline">AB: frontPageLayoutPrototype</p>
+                <input type="radio" name="abLayoutPrototype" value="" class="o-forms-radio" id="abLayoutPrototype-" />
+                <label class="o-forms-label" for="abLayoutPrototype-all">Everyone</label>
+                <input type="radio" name="abLayoutPrototype" value="control" class="o-forms-radio" id="abLayoutPrototype-control" />
+                <label class="o-forms-label" for="abLayoutPrototype-control">Control</label>
+                <input type="radio" name="abLayoutPrototype" value="variant" class="o-forms-radio" id="abLayoutPrototype-variant" />
+                <label class="o-forms-label" for="abLayoutPrototype-variant">Variant</label>
+
+            </div>
+        </div>
+        <input class="o-buttons" type="submit" value="Update Graph">
+    </div>
+</form>
 
 <div id="charts" class="o-grid-container front-page">
 	<div class="front-page__metrics o-grid-row">
@@ -46,16 +94,6 @@
 	</div>
 
 	<div class="front-page__charts o-grid-row">
-
-		<div class="front-page__controls js-front-page-toggles is-hidden">
-			<strong>Device Type:</strong>
-			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="all" data-column="1" checked>All
-			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="Mobile Phone" data-column="2">Mobile Phone
-			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="Tablet" data-column="3">Tablet
-			<input type="checkbox" name="toggle-layouts" class="toggle-line js-toggle-layout" data-layout="Desktop" data-column="4">Desktop
-		</div>
-
-
 
 
 		<span id="front-page-ctr-chart" class="front-page__chart-anchor"></span>

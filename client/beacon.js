@@ -39,6 +39,10 @@ Keen.ready(function(){
 			require('./queries/ab/front-page-prototype').render();
 			break;
 
+		case '/graph/ab/front-page-prototype-scroll-depth':
+			require('./queries/ab/front-page-prototype-scroll-depth').render();
+			break;
+
 		case '/graph/ab/aa':
 
 			render(require('./queries/ab/aa'));
