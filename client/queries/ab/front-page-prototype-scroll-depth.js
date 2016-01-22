@@ -8,11 +8,11 @@ const client = require('../../lib/wrapped-keen');
 
 const breakpoints = ['default', 'XS', 'S', 'M', 'L', 'XL'];
 const userTypes = ['subscriber', 'registered', 'anonymous'];
-const timeframeTypes = ['7', '14', '21', '28'];
+const abCohortTypes = ['variant', 'control'];
 
 const render = () => {
 	const currentUserType = queryParameters['user-type'] || userTypes[0];
-	const currentTimeframe = queryParameters['timeframe'] || timeframeTypes[0];
+	const currentabCohort = queryParameters['ab-cohort'] || abCohortTypes[0];
 	const el = document.getElementById('charts');
 
 	const scrollDepthEl = document.createElement('div');
@@ -34,7 +34,7 @@ const render = () => {
 				? `<li>${userType}</li>`
 				: `
 					<li>
-						<a href="?user-type=${userType}&amp;timeframe=${currentTimeframe}">
+						<a href="?user-type=${userType}&amp;ab-cohort=${currentabCohort}">
 							${userType}
 						</a>
 					</li>
@@ -42,14 +42,14 @@ const render = () => {
 		)
 		.join('');
 
-	const timeframeItems = timeframeTypes
-		.map(timeframeType =>
-			timeframeType === currentTimeframe
-				? `<li>${timeframeType}</li>`
+	const abCohortItems = abCohortTypes
+		.map(abCohortType =>
+			abCohortType === currentabCohort
+				? `<li>${abCohortType}</li>`
 				: `
 					<li>
-						<a href="?user-type=${currentUserType}&amp;timeframe=${timeframeType}">
-							${timeframeType}
+						<a href="?user-type=${currentUserType}&amp;ab-cohort=${abCohortType}">
+							${abCohortType}
 						</a>
 					</li>
 				`
@@ -62,9 +62,9 @@ const render = () => {
 			${userItems}
 		</ul>
 		<br>
-		<h3>Timeframe (days):</h3>
+		<h3>A/B Test:</h3>
 		<ul>
-			${timeframeItems}
+			${abCohortItems}
 		</ul>
 	`;
 	scrollDepthEl.insertBefore(userTypeEl, scrollDepthEl.firstChild);
@@ -90,47 +90,60 @@ const render = () => {
 			.prepare();
 	});
 
-	const filters = [
-		{
-			operator: 'eq',
-			property_name: 'page.location.type',
-			property_value: 'frontpage'
-		},
-		{
-			operator: 'exists',
-			property_name: 'meta.domPath',
-			property_value: true
-		},
-		{
-			operator: 'eq',
-			property_name: 'cohort.incumbent',
-			property_value: currentUserType
-		}
-	];
-
-
 	const scrollDepthQuery = new Keen.Query('count', {
 		eventCollection: 'scrolldepth',
-		filters: filters,
+		filters: [
+			{
+				operator: 'eq',
+				property_name: 'page.location.type',
+				property_value: 'frontpage'
+			},
+			{
+				operator: 'exists',
+				property_name: 'ab.frontPageLayoutPrototype',
+				property_value: true
+			},
+			{
+				operator: 'eq',
+				property_name: 'ab.frontPageLayoutPrototype',
+				property_value: currentabCohort
+			},
+			{
+				operator: 'exists',
+				property_name: 'meta.domPath',
+				property_value: true
+			},
+			{
+				operator: 'eq',
+				property_name: 'cohort.incumbent',
+				property_value: currentUserType
+			}
+		],
 		groupBy: ['meta.componentPos', 'meta.domPath', 'ingest.user.layout'],
-		timeframe: `previous_${currentTimeframe}_days`,
+		timeframe: {
+        "start": "2015-11-30T00:00:00.000Z",
+        "end": "2016-01-15T00:00:00.000Z"
+    },
 		timezone: 'UTC'
 	});
 
 	const acquireTotal = resultObjectArray => {
 		const topSectionObject = resultObjectArray.filter((resultObject) => {
 			const topSection = resultObject['meta.domPath'][0];
-			return topSection === 'top-stories' || topSection === 'lead-today'; //for old homepage (legacy)
+			return currentabCohort === 'variant' ? topSection === 'top-stories' : topSection === 'lead-today';
 		});
 		return topSectionObject ? topSectionObject[0].result : null
 	};
 
 	const calculatePercentage = (result, total) => parseFloat(((100 / total) * result.result).toFixed(2));
 
-	const components = ['top-stories', 'opinion', 'editors-picks', 'most-popular', 'technology', 'markets', 'life-and-arts', 'video'];
+	const components = {
+		variant: ['top-stories', 'opinion', 'editors-picks', 'most-popular', 'technology', 'markets', 'life-and-arts', 'video'],
+		control: ['lead-today', 'editors-picks', 'opinion', 'topic-life-arts', 'topic-markets', 'topic-technology', 'video-picks']
+	};
 
 	const validComponentFilter = resultObject => (
-		components[resultObject['meta.componentPos']-1] === resultObject['meta.domPath'][0]
+		components[currentabCohort][resultObject['meta.componentPos']-1] === resultObject['meta.domPath'][0]
 	);
 
 	const breakpointFilter = (breakpoint, resultObject) => resultObject['ingest.user.layout'] === breakpoint;
