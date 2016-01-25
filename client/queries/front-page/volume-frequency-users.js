@@ -3,12 +3,13 @@
 
 const client = require('../../lib/wrapped-keen');
 const queryString = require('querystring');
+const moment = require('moment');
 
 const queryParams = Object.assign(
 	{
 		deviceType: 'all',
 		layoutType: 'all',
-		timeframe: 'this_8_weeks'
+		timeframe: '4'
 	},
 	queryString.parse(location.search.substr(1))
 );
@@ -42,6 +43,26 @@ const getFilters = (pageType) => {
 	return filters;
 };
 
+const createTimestamp = daysAgoNum => {
+	const timestamp = convertToTimestamp(daysAgoNum);
+	return getPrecedingSunday(timestamp);
+}
+
+const convertToTimestamp = n => { return moment.unix(moment().startOf('day').unix()-(n * 86400)).toDate(); }
+
+const getPrecedingSunday = timestamp => {
+	const diff = timestamp.getDate() - timestamp.getDay();
+	return new Date(timestamp.setDate(diff));
+}
+
+const getStartDate = timeframe => {
+	return createTimestamp(parseInt(timeframe) * 7);
+}
+
+const getEndDate = timeframe => {
+	return createTimestamp((parseInt(timeframe) - 4) * 7);
+}
+
 const generateAverageViews = (type, queryOpts = {}) => {
 	document.querySelector(`input[name="deviceType"][value="${queryParams.deviceType}"`)
 		.setAttribute('checked', 'checked');
@@ -57,7 +78,10 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			eventCollection: 'dwell',
 			filters: getFilters('article'),
 			groupBy: ['user.uuid'],
-			timeframe: queryParams.timeframe,
+			timeframe: {
+				start: getStartDate(queryParams.timeframe),
+				end: getEndDate(queryParams.timeframe)
+			},
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts)),
@@ -65,7 +89,10 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			eventCollection: 'dwell',
 			filters: getFilters('frontpage'),
 			groupBy: ['user.uuid'],
-			timeframe: queryParams.timeframe,
+			timeframe: {
+				start: getStartDate(queryParams.timeframe),
+				end: getEndDate(queryParams.timeframe)
+			},
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts)),
@@ -74,7 +101,10 @@ const generateAverageViews = (type, queryOpts = {}) => {
 			eventCollection: 'dwell',
 			filters: getFilters(),
 			groupBy: ['user.uuid'],
-			timeframe: queryParams.timeframe,
+			timeframe: {
+				start: getStartDate(queryParams.timeframe),
+				end: getEndDate(queryParams.timeframe)
+			},
 			interval: 'weekly',
 			timezone: 'UTC'
 		}, queryOpts))
