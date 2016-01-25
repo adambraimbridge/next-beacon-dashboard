@@ -12,7 +12,7 @@ const queryParams = Object.assign(
 	{
 		deviceType: 'all',
 		component: 'all',
-		timeframe: 'this_8_weeks',
+		timeframe: '8',
 		abLayoutPrototype: ''
 	},
 	queryString.parse(location.search.substr(1))
