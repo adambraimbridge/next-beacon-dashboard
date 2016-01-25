@@ -5,44 +5,8 @@
 <h1>Mobile:</h1>
 <div id="mobile_chart"></div>
 
-<h1>PS1:</h1>
-{{#each ps1.formatted}}
-{{#each this}}
-<ul><h1>{{@key}}</h1>
-    {{#each this}}
-    <li>{{@key}}: {{this}}</li>
-    {{/each}}
-</ul>
-{{/each}}
-{{/each}}
-
-<h1>PS2:</h1>
-{{#each ps2.formatted}}
-{{#each this}}
-<ul><h1>{{@key}}</h1>
-    {{#each this}}
-    <li>{{@key}}: {{this}}</li>
-    {{/each}}
-</ul>
-{{/each}}
-{{/each}}
-
-<h1>PS3:</h2>
-{{#each ps3.formatted}}
-{{#each this}}
-<ul><h1>{{@key}}</h1>
-    {{#each this}}
-    <li>{{@key}}: {{this}}</li>
-    {{/each}}
-</ul>
-{{/each}}
-{{/each}}
-
 <script>
-
-
  window.addEventListener('load', function () {
-
      google.charts.load('current', {packages: ['bar']});
      google.charts.setOnLoadCallback(drawAllCharts);
 
