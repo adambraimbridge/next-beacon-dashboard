@@ -15,9 +15,14 @@ module.exports = (data) => {
 	const allDataTypes = Object.keys(nextAnonData[0]);
 	const unwantedDataTypes = ['visit_id', 'sub_cohort'];
 
-	return allDataTypes.map(dataType => {
+	const formatted = allDataTypes.map(dataType => {
 		if(unwantedDataTypes.indexOf(dataType) === -1) {
 			return { [dataType]: aggregateValues(nextAnonData, dataType) };
 		}
 	});
+
+	return {
+		total: nextAnonData.length,
+		formatted: formatted
+	};
 };

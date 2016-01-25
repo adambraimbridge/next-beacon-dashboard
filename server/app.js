@@ -157,7 +157,7 @@ app.get('/conversionfunnel', function (req, res) {
 	res.render('conversion-funnel', {
 		ps1: p1.getData(),
 		ps2: p2.getData(),
-		ps3: p3.getData(),
+	  	ps3: p3.getData(),
 		layout: 'beacon'
 	});
 });

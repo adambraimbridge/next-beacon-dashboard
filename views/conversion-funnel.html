@@ -2,7 +2,7 @@
 <h1>Conversion Funnel, last 30 days</h1>
 <div id="chart_div"></div>
 <h1>PS1:</h1>
-{{#each ps1}}
+{{#each ps1.formatted}}
 {{#each this}}
 <ul><h1>{{@key}}</h1>
     {{#each this}}
@@ -13,7 +13,7 @@
 {{/each}}
 
 <h1>PS2:</h1>
-{{#each ps2}}
+{{#each ps2.formatted}}
 {{#each this}}
 <ul><h1>{{@key}}</h1>
     {{#each this}}
@@ -24,7 +24,7 @@
 {{/each}}
 
 <h1>PS3:</h2>
-{{#each ps3}}
+{{#each ps3.formatted}}
 {{#each this}}
 <ul><h1>{{@key}}</h1>
     {{#each this}}
@@ -33,3 +33,31 @@
 </ul>
 {{/each}}
 {{/each}}
+
+<script>
+
+
+ window.addEventListener('load', function () {
+
+     google.charts.load('current', {packages: ['corechart', 'bar']});
+     google.charts.setOnLoadCallback(drawFunnelChart);
+
+     function drawFunnelChart() {
+         var data = new google.visualization.DataTable();
+
+         data.addColumn('string', 'Process stage');
+         data.addColumn('number', 'Users');
+
+         data.addRows([
+             ['PS1', {{ ps1.total }}],  // want to do ps1.total, then once drilling down do ps1.mobile and so on
+             ['PS2', {{ ps2.total }}],
+             ['PS3', {{ ps3.total }}]
+         ]);
+
+         var material = new google.charts.Bar(document.getElementById('chart_div'));
+         material.draw(data);
+
+     }
+ })
+
+</script>
