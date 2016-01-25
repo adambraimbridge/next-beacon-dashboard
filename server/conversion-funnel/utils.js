@@ -23,6 +23,7 @@ module.exports = (data) => {
 
 	return {
 		total: nextAnonData.length,
+		mobile: filterByKeyValuePair(nextAnonData, 'mobile_device', 'Mobile Phone').length,
 		formatted: formatted
 	};
 };

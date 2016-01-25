@@ -1,6 +1,10 @@
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <h1>Conversion Funnel, last 30 days</h1>
+<h1>Total:</h1>
 <div id="chart_div"></div>
+<h1>Mobile:</h1>
+<div id="mobile_chart"></div>
+
 <h1>PS1:</h1>
 {{#each ps1.formatted}}
 {{#each this}}
@@ -39,8 +43,13 @@
 
  window.addEventListener('load', function () {
 
-     google.charts.load('current', {packages: ['corechart', 'bar']});
-     google.charts.setOnLoadCallback(drawFunnelChart);
+     google.charts.load('current', {packages: ['bar']});
+     google.charts.setOnLoadCallback(drawAllCharts);
+
+     function drawAllCharts() {
+         drawFunnelChart();
+         drawMobileChart();
+     };
 
      function drawFunnelChart() {
          var data = new google.visualization.DataTable();
@@ -49,15 +58,31 @@
          data.addColumn('number', 'Users');
 
          data.addRows([
-             ['PS1', {{ ps1.total }}],  // want to do ps1.total, then once drilling down do ps1.mobile and so on
+             ['PS1', {{ ps1.total }}],
              ['PS2', {{ ps2.total }}],
              ['PS3', {{ ps3.total }}]
          ]);
 
          var material = new google.charts.Bar(document.getElementById('chart_div'));
-         material.draw(data);
+         material.draw(data, { bars: 'horizontal' });
 
      }
+
+     function drawMobileChart() {
+         var data = new google.visualization.DataTable();
+
+         data.addColumn('string', 'Process stage');
+         data.addColumn('number', 'Users');
+
+         data.addRows([
+             ['PS1', {{ ps1.mobile }}],
+             ['PS2', {{ ps2.mobile }}],
+             ['PS3', {{ ps3.mobile }}]
+         ]);
+
+         var material = new google.charts.Bar(document.getElementById('mobile_chart'));
+         material.draw(data, { bars: 'horizontal'});
+     };
  })
 
 </script>
