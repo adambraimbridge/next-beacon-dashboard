@@ -331,6 +331,10 @@ Keen.ready(function(){
 			require('./queries/performance').render();
 			break;
 
+		case '/conversionfunnel':
+			require('./pages/conversionfunnel');
+			break;
+
 		default:
 			console.log('unknown graph');
 
