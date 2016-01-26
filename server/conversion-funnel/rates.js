@@ -1,5 +1,5 @@
 module.exports = (counts) => {
-	const rate  = (a, b) => (a / b * 100).toFixed(2);
+	const rate = (a, b) => (a / b * 100).toFixed(2);
 
 	const generate = domain => {
 		return {
