@@ -3,12 +3,13 @@
 
 const client = require('../../lib/wrapped-keen');
 const queryString = require('querystring');
+const moment = require('moment');
 
 const queryParams = Object.assign(
 	{
 		deviceType: 'all',
 		layoutType: 'all',
-		timeframe: 'this_8_weeks'
+		timeframe: '4'
 	},
 	queryString.parse(location.search.substr(1))
 );
@@ -42,7 +43,23 @@ const getFilters = (pageType) => {
 	return filters;
 };
 
-const generateAverageViews = (type, queryOpts = {}) => {
+const createTimestamp = daysAgoNum => {
+	const timestamp = convertToTimestamp(daysAgoNum);
+	return getPrecedingSunday(timestamp);
+}
+
+const convertToTimestamp = n => moment.unix(moment().startOf('day').unix()-(n * 86400)).toDate();
+
+const getPrecedingSunday = timestamp => {
+	const diff = timestamp.getDate() - timestamp.getDay();
+	return new Date(timestamp.setDate(diff));
+}
+
+const getStartDate = timeframe => createTimestamp(parseInt(timeframe) * 7);
+
+const getEndDate = timeframe => createTimestamp((parseInt(timeframe) - 4) * 7);
+
+const generateAverageViews = () => {
 	document.querySelector(`input[name="deviceType"][value="${queryParams.deviceType}"`)
 		.setAttribute('checked', 'checked');
 
@@ -52,31 +69,27 @@ const generateAverageViews = (type, queryOpts = {}) => {
 	document.querySelector(`input[name="timeframe"][value="${queryParams.timeframe}"`)
 		.setAttribute('checked', 'checked');
 
+	const queryOpts = {
+		eventCollection: 'dwell',
+		groupBy: ['user.uuid'],
+		timeframe: {
+			start: getStartDate(queryParams.timeframe),
+			end: getEndDate(queryParams.timeframe)
+		},
+		interval: 'weekly',
+		timezone: 'UTC'	
+	}
+
 	let pageViewsQueries = [
 		new Keen.Query('count', Object.assign({
-			eventCollection: 'dwell',
 			filters: getFilters('article'),
-			groupBy: ['user.uuid'],
-			timeframe: queryParams.timeframe,
-			interval: 'weekly',
-			timezone: 'UTC'
 		}, queryOpts)),
 		new Keen.Query('count', Object.assign({
-			eventCollection: 'dwell',
 			filters: getFilters('frontpage'),
-			groupBy: ['user.uuid'],
-			timeframe: queryParams.timeframe,
-			interval: 'weekly',
-			timezone: 'UTC'
 		}, queryOpts)),
 		new Keen.Query('count_unique', Object.assign({
 			targetProperty: 'ingest.device.spoor_session',
-			eventCollection: 'dwell',
 			filters: getFilters(),
-			groupBy: ['user.uuid'],
-			timeframe: queryParams.timeframe,
-			interval: 'weekly',
-			timezone: 'UTC'
 		}, queryOpts))
 	];
 
@@ -112,16 +125,17 @@ const generateAverageViews = (type, queryOpts = {}) => {
 
 			const atLeastNUsers = (n) => {
 				const filteredVolume = volumeForWeek.filter(vol => vol.result >= n);
-				return (filteredVolume.length / frontPageUsersForWeekNum) * 100
+				const result = ((filteredVolume.length / frontPageUsersForWeekNum) * 100);
+				return parseFloat(result.toFixed(2))
 			};
 
-			const meanVolume = volumeForWeek.reduce(function(prev, current) {
+			const meanVolume = parseFloat((volumeForWeek.reduce(function(prev, current) {
 				return prev + current.result;
-			}, 0) / frontPageUsersForWeekNum;
+			}, 0) / frontPageUsersForWeekNum).toFixed(2));
 
-			const meanFrequency = visitsForWeek.reduce(function(prev, current) {
+			const meanFrequency = parseFloat((visitsForWeek.reduce(function(prev, current) {
 				return prev + current.result;
-			}, 0) / frontPageUsersForWeekNum;
+			}, 0) / frontPageUsersForWeekNum).toFixed(2));
 
 			return {
 				'timeframe': week.timeframe,
