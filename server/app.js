@@ -15,6 +15,7 @@ var app				= module.exports = require('ft-next-express')({
 const p1 = require('./conversion-funnel/one');
 const p2 = require('./conversion-funnel/two');
 const p3 = require('./conversion-funnel/three');
+const conversionRates = require('./conversion-funnel/rates');
 
 var fs 				= require('fs');
 var marked 			= require('marked');
@@ -154,10 +155,15 @@ app.get('/surveycohorts', function (req, res) {
 });
 
 app.get('/conversionfunnel', function (req, res) {
-	res.render('conversion-funnel', {
+	const conversionCounts = {
 		ps1: p1.getData(),
 		ps2: p2.getData(),
-		ps3: p3.getData(),
+		ps3: p3.getData()
+	};
+
+	res.render('conversion-funnel', {
+		counts: conversionCounts,
+		rates : conversionRates(conversionCounts),
 		layout: 'beacon'
 	});
 });
