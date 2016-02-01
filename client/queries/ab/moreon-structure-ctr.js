@@ -7,7 +7,7 @@ const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search.substr(1));
 const referrerParameter = queryParameters.referrerType;
 const subComponents = ["more-on"];
-const timeFrame = {"end":"2016-01-31T00:00:00.000+00:00","start":"2016-01-04T00:00:00.000+00:00"};
+const timeFrame = {"end":"2016-02-28T00:00:00.000+00:00","start":"2016-01-11T00:00:00.000+00:00"};
 const standardQueryFilters = [
 	{"operator":"eq",
 	"property_name":"page.location.type",
