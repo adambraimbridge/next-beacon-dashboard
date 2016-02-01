@@ -33,7 +33,7 @@ const standardQueryFilters = [
 	"property_value":true}
 ];
 
-const timeFrame = {"end":"2016-01-31T00:00:00.000+00:00","start":"2016-01-04T00:00:00.000+00:00"}
+const timeFrame = {"end":"2016-02-28T00:00:00.000+00:00","start":"2016-01-11T00:00:00.000+00:00"}
 
 const client = new Keen({
 	projectId: keen_project,
