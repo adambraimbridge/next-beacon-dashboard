@@ -62,6 +62,9 @@ var render = (el, type, queryType, queryOpts = {}) => {
         var frontPageDwellYesterday = frontPageResults.slice(-1).shift().value;
         var siteDwellYesterday = siteResults.slice(-1).shift().value;
         charts.get('percentage')
+			.chartOptions({
+				suffix: '%'
+			})
             .data({
                 result: parseFloat(((100 / siteDwellYesterday) * frontPageDwellYesterday).toFixed(1))
             })
