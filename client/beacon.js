@@ -331,6 +331,10 @@ Keen.ready(function(){
 			require('./queries/front-page/volume-frequency-users').render();
 			break;
 
+		case '/graph/front-page/sections-breakdown':
+			require('./queries/front-page/sections-breakdown').render();
+			break;
+
 		case '/graph/performance':
 			require('./queries/performance').render();
 			break;
