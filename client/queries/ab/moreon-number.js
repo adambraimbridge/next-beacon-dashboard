@@ -26,6 +26,9 @@ const standardQueryFilters = [
 	"property_name":"ingest.context.is_inline",
 	"property_value":false},
 	{"operator":"exists",
+	"property_name":"content.features.hasStoryPackage",
+	"property_value":true},
+	{"operator":"exists",
 	"property_name":"user.uuid",
 	"property_value":true},
 	{"operator":"exists",
@@ -232,7 +235,7 @@ metricSessionsSeven
 	.title("Number Of Sessions - SEVEN LINKS")
 	.prepare();
 
-metricSessionsVariant
+metricSessionsNine
 	.el(document.getElementById("metric-number-sessions__nine"))
 	.height(450)
 	.title("Number Of Sessions - NINE LINKS")

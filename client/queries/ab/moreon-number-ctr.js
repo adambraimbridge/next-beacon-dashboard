@@ -16,6 +16,9 @@ const standardQueryFilters = [
 	"property_name":"ingest.context.is_inline",
 	"property_value":false},
 	{"operator":"exists",
+	"property_name":"content.features.hasStoryPackage",
+	"property_value":true},
+	{"operator":"exists",
 	"property_name":"user.uuid",
 	"property_value":true},
 	{"operator":"exists",
@@ -45,6 +48,16 @@ const metricCTRThree = new Keen.Dataviz();
 const metricCTRSeven = new Keen.Dataviz();
 const metricCTRNine = new Keen.Dataviz();
 const metricCTRControl = new Keen.Dataviz();
+
+const metricCTRThreeStoryPackage = new Keen.Dataviz();
+const metricCTRSevenStoryPackage = new Keen.Dataviz();
+const metricCTRNineStoryPackage = new Keen.Dataviz();
+const metricCTRControlStoryPackage = new Keen.Dataviz();
+
+const metricCTRThreeNoStoryPackage = new Keen.Dataviz();
+const metricCTRSevenNoStoryPackage = new Keen.Dataviz();
+const metricCTRNineNoStoryPackage = new Keen.Dataviz();
+const metricCTRControlNoStoryPackage = new Keen.Dataviz();
 
 let referrerFilters;
 let chartHeadingModifier;
@@ -103,7 +116,7 @@ function ctaQuery(subComponents, outliersSessionsFilter) {
 			.concat(referrerFilters)
 			.concat(domPathfilter)
 			.concat(standardQueryFilters),
-		groupBy: ["meta.domPath","ab.articleMoreOnNumber"],
+		groupBy: ["meta.domPath","ab.articleMoreOnNumber", "content.features.hasStoryPackage"],
 		timeframe: timeFrame,
 		timezone: "UTC",
 		maxAge:10800
@@ -118,7 +131,7 @@ function baseQuery(outliersSessionsFilter) {
 			.concat(referrerFilters)
 			.concat(outliersSessionsFilter)
 			.concat(standardQueryFilters),
-		groupBy: "ab.articleMoreOnNumber",
+		groupBy: ["ab.articleMoreOnNumber", "content.features.hasStoryPackage"],
 		timeframe: timeFrame,
 		timezone: "UTC",
 		maxAge:10800
@@ -166,15 +179,57 @@ function runQuery(types) {
 					pageViews: 0}
 				];
 
+				let newBaseResultsStoryPackage = [
+					{"ab.articleMoreOnNumber":"three",
+					pageViews: 0},
+					{"ab.articleMoreOnNumber":"seven",
+					pageViews: 0},
+					{"ab.articleMoreOnNumber":"nine",
+					pageViews: 0},
+					{"ab.articleMoreOnNumber":"control",
+					pageViews: 0}
+				];
+
+				let newBaseResultsNoStoryPackage = [
+					{"ab.articleMoreOnNumber":"three",
+					pageViews: 0},
+					{"ab.articleMoreOnNumber":"seven",
+					pageViews: 0},
+					{"ab.articleMoreOnNumber":"nine",
+					pageViews: 0},
+					{"ab.articleMoreOnNumber":"control",
+					pageViews: 0}
+				];
+
 				newBaseResults.map(function(newBaseResult) {
 					baseResults.result.map(function(baseResult) {
-						if (newBaseResult["ab.articleMoreOnTopicCard"] === baseResult["ab.articleMoreOnTopicCard"]) {
+						if (newBaseResult["ab.articleMoreOnNumber"] === baseResult["ab.articleMoreOnNumber"]) {
+							newBaseResult.pageViews += baseResult.result;
+						}
+					});
+				});
+
+				newBaseResultsStoryPackage.map(function(newBaseResult) {
+					baseResults.result.map(function(baseResult) {
+						if (newBaseResult["ab.articleMoreOnNumber"] === baseResult["ab.articleMoreOnNumber"]
+								&& baseResult["content.features.hasStoryPackage"] === true) {
+							newBaseResult.pageViews += baseResult.result;
+						}
+					});
+				});
+
+				newBaseResultsNoStoryPackage.map(function(newBaseResult) {
+					baseResults.result.map(function(baseResult) {
+						if (newBaseResult["ab.articleMoreOnNumber"] === baseResult["ab.articleMoreOnNumber"]
+								&& baseResult["content.features.hasStoryPackage"] === false) {
 							newBaseResult.pageViews += baseResult.result;
 						}
 					});
 				});
 
 				let newClickResults = [];
+				let newClickResultsStoryPackage = [];
+				let newClickResultsNoStoryPackage = [];
 
 				metaDomPathArray(subComponents).map(function(path) {
 					let newClickResult = {
@@ -186,30 +241,82 @@ function runQuery(types) {
 						control: 0
 					};
 					newClickResults.push(newClickResult);
+					let newClickResultStoryPackage = {
+						domPath: path,
+						target: articleCTAs.find(cta => cta.domPath === path)["target"],
+						three: 0,
+						seven: 0,
+						nine: 0,
+						control: 0
+					};
+					newClickResultsStoryPackage.push(newClickResultStoryPackage);
+					let newClickResultNoStoryPackage = {
+						domPath: path,
+						target: articleCTAs.find(cta => cta.domPath === path)["target"],
+						three: 0,
+						seven: 0,
+						nine: 0,
+						control: 0
+					};
+					newClickResultsNoStoryPackage.push(newClickResultNoStoryPackage);
 				});
 
 				clickResults.result.map(function(clickResult) {
 					let matchedDomPath = newClickResults.filter(function(newClickResult) {
 						return clickResult["meta.domPath"] === newClickResult.domPath;
 					})[0];
+					let matchedDomPathStoryPackage = newClickResultsStoryPackage.filter(function(newClickResult) {
+						return clickResult["meta.domPath"] === newClickResult.domPath;
+					})[0];
+					let matchedDomPathNoStoryPackage = newClickResultsNoStoryPackage.filter(function(newClickResult) {
+						return clickResult["meta.domPath"] === newClickResult.domPath;
+					})[0];
 					if (clickResult["ab.articleMoreOnNumber"] === "three") {
 						matchedDomPath.three += clickResult.result;
+						if (clickResult["content.features.hasStoryPackage"] === true) {
+							matchedDomPathStoryPackage.three += clickResult.result;
+						} else {
+							matchedDomPathNoStoryPackage.three += clickResult.result;
+						}
 					}
 					if (clickResult["ab.articleMoreOnNumber"] === "seven") {
 						matchedDomPath.seven += clickResult.result;
+						if (clickResult["content.features.hasStoryPackage"] === true) {
+							matchedDomPathStoryPackage.seven += clickResult.result;
+						} else {
+							matchedDomPathNoStoryPackage.seven += clickResult.result;
+						}
 					}
 					if (clickResult["ab.articleMoreOnNumber"] === "nine") {
 						matchedDomPath.nine += clickResult.result;
+						if (clickResult["content.features.hasStoryPackage"] === true) {
+							matchedDomPathStoryPackage.nine += clickResult.result;
+						} else {
+							matchedDomPathNoStoryPackage.nine += clickResult.result;
+						}
 					}
-					if (clickResult["ab.articleMoreOnTopicCard"] === "control") {
+					if (clickResult["ab.articleMoreOnNumber"] === "control") {
 						matchedDomPath.control += clickResult.result;
+						if (clickResult["content.features.hasStoryPackage"] === true) {
+							matchedDomPathStoryPackage.control += clickResult.result;
+						} else {
+							matchedDomPathNoStoryPackage.control += clickResult.result;
+						}
 					}
 				});
 
 				newClickResults = newClickResults
 					.filter(res => res.three > 0 || res.seven > 0 || res.nine > 0 || res.control > 0);
 
+				newClickResultsStoryPackage = newClickResultsStoryPackage
+					.filter(res => res.three > 0 || res.seven > 0 || res.nine > 0 || res.control > 0);
+
+				newClickResultsNoStoryPackage = newClickResultsNoStoryPackage
+					.filter(res => res.three > 0 || res.seven > 0 || res.nine > 0 || res.control > 0);
+
 				//turn clicks into ctr
+
+				// With and without Story Package Total
 
 				newClickResults.map(function (newClickResult) {
 					newBaseResults.forEach(function (newBaseResult) {
@@ -227,8 +334,6 @@ function runQuery(types) {
 						}
 					});
 				});
-
-				// sum the results at top level
 
 				let totalResult = {
 					three: 0,
@@ -252,6 +357,88 @@ function runQuery(types) {
 					totalResult.controlCtr += newClickResult.controlCtr;
 				});
 
+				// With Story Package
+
+				newClickResultsStoryPackage.map(function (newClickResult) {
+					newBaseResultsStoryPackage.forEach(function (newBaseResult) {
+						if (newBaseResult["ab.articleMoreOnNumber"] === "three") {
+							newClickResult.threeCtr = parseFloat((newClickResult.three * 100) / newBaseResult.pageViews);
+						}
+						if (newBaseResult["ab.articleMoreOnNumber"] === "seven") {
+							newClickResult.sevenCtr = parseFloat((newClickResult.seven * 100) / newBaseResult.pageViews);
+						}
+						if (newBaseResult["ab.articleMoreOnNumber"] === "nine") {
+							newClickResult.nineCtr = parseFloat((newClickResult.nine * 100) / newBaseResult.pageViews);
+						}
+						if (newBaseResult["ab.articleMoreOnNumber"] === "control") {
+							newClickResult.controlCtr = parseFloat((newClickResult.control * 100) / newBaseResult.pageViews);
+						}
+					});
+				});
+
+				let totalResultStoryPackage = {
+					three: 0,
+					threeCtr: 0,
+					seven: 0,
+					sevenCtr: 0,
+					nine: 0,
+					nineCtr: 0,
+					control: 0,
+					controlCtr: 0
+				};
+
+				newClickResultsStoryPackage.map(function (newClickResult) {
+					totalResultStoryPackage.three += newClickResult.three;
+					totalResultStoryPackage.threeCtr += newClickResult.threeCtr;
+					totalResultStoryPackage.seven += newClickResult.seven;
+					totalResultStoryPackage.sevenCtr += newClickResult.sevenCtr;
+					totalResultStoryPackage.nine += newClickResult.nine;
+					totalResultStoryPackage.nineCtr += newClickResult.nineCtr;
+					totalResultStoryPackage.control += newClickResult.control;
+					totalResultStoryPackage.controlCtr += newClickResult.controlCtr;
+				});
+
+				// Without Story Package
+
+				newClickResultsNoStoryPackage.map(function (newClickResult) {
+					newBaseResultsNoStoryPackage.forEach(function (newBaseResult) {
+						if (newBaseResult["ab.articleMoreOnNumber"] === "three") {
+							newClickResult.threeCtr = parseFloat((newClickResult.three * 100) / newBaseResult.pageViews);
+						}
+						if (newBaseResult["ab.articleMoreOnNumber"] === "seven") {
+							newClickResult.sevenCtr = parseFloat((newClickResult.seven * 100) / newBaseResult.pageViews);
+						}
+						if (newBaseResult["ab.articleMoreOnNumber"] === "nine") {
+							newClickResult.nineCtr = parseFloat((newClickResult.nine * 100) / newBaseResult.pageViews);
+						}
+						if (newBaseResult["ab.articleMoreOnNumber"] === "control") {
+							newClickResult.controlCtr = parseFloat((newClickResult.control * 100) / newBaseResult.pageViews);
+						}
+					});
+				});
+
+				let totalResultNoStoryPackage = {
+					three: 0,
+					threeCtr: 0,
+					seven: 0,
+					sevenCtr: 0,
+					nine: 0,
+					nineCtr: 0,
+					control: 0,
+					controlCtr: 0
+				};
+
+				newClickResultsNoStoryPackage.map(function (newClickResult) {
+					totalResultNoStoryPackage.three += newClickResult.three;
+					totalResultNoStoryPackage.threeCtr += newClickResult.threeCtr;
+					totalResultNoStoryPackage.seven += newClickResult.seven;
+					totalResultNoStoryPackage.sevenCtr += newClickResult.sevenCtr;
+					totalResultNoStoryPackage.nine += newClickResult.nine;
+					totalResultNoStoryPackage.nineCtr += newClickResult.nineCtr;
+					totalResultNoStoryPackage.control += newClickResult.control;
+					totalResultNoStoryPackage.controlCtr += newClickResult.controlCtr;
+				});
+
 				metricCTRThree
 					.data({result: totalResult.threeCtr})
 					.chartType("metric")
@@ -269,6 +456,46 @@ function runQuery(types) {
 
 				metricCTRControl
 					.data({result: totalResult.controlCtr})
+					.chartType("metric")
+					.render();
+
+				metricCTRThreeStoryPackage
+					.data({result: totalResultStoryPackage.threeCtr})
+					.chartType("metric")
+					.render();
+
+				metricCTRSevenStoryPackage
+					.data({result: totalResultStoryPackage.sevenCtr})
+					.chartType("metric")
+					.render();
+
+				metricCTRNineStoryPackage
+					.data({result: totalResultStoryPackage.nineCtr})
+					.chartType("metric")
+					.render();
+
+				metricCTRControlStoryPackage
+					.data({result: totalResultStoryPackage.controlCtr})
+					.chartType("metric")
+					.render();
+
+				metricCTRThreeNoStoryPackage
+					.data({result: totalResultNoStoryPackage.threeCtr})
+					.chartType("metric")
+					.render();
+
+				metricCTRSevenNoStoryPackage
+					.data({result: totalResultNoStoryPackage.sevenCtr})
+					.chartType("metric")
+					.render();
+
+				metricCTRNineNoStoryPackage
+					.data({result: totalResultNoStoryPackage.nineCtr})
+					.chartType("metric")
+					.render();
+
+				metricCTRControlNoStoryPackage
+					.data({result: totalResultNoStoryPackage.controlCtr})
 					.chartType("metric")
 					.render();
 
@@ -323,11 +550,11 @@ function runQuery(types) {
 					.append($('<th>').text('THREE Clicks'))
 					.append($('<th>').text('THREE CTR'))
 					.append($('<th>').text('FIVE (C) Clicks'))
-					.append($('<th>').text('FIVE (C) CTR'));
+					.append($('<th>').text('FIVE (C) CTR'))
 					.append($('<th>').text('SEVEN Clicks'))
 					.append($('<th>').text('SEVEN CTR'))
 					.append($('<th>').text('NINE Clicks'))
-					.append($('<th>').text('NINE CTR'))
+					.append($('<th>').text('NINE CTR'));
 
 				tr.appendTo(tableTarget);
 
@@ -337,11 +564,11 @@ function runQuery(types) {
 						.append($('<td>').text(row.three))
 						.append($('<td>').text(row.threeCtr.toFixed(2)))
 						.append($('<td>').text(row.control))
-						.append($('<td>').text(row.controlCtr.toFixed(2)));
+						.append($('<td>').text(row.controlCtr.toFixed(2)))
 						.append($('<td>').text(row.seven))
 						.append($('<td>').text(row.sevenCtr.toFixed(2)))
 						.append($('<td>').text(row.nine))
-						.append($('<td>').text(row.nineCtr.toFixed(2)))
+						.append($('<td>').text(row.nineCtr.toFixed(2)));
 
 					tr.appendTo(tableTarget);
 				});
@@ -365,11 +592,11 @@ function runQuery(types) {
 					.append($('<th>').text('THREE Clicks'))
 					.append($('<th>').text('THREE CTR'))
 					.append($('<th>').text('FIVE (C) Clicks'))
-					.append($('<th>').text('FIVE (C) CTR'));
+					.append($('<th>').text('FIVE (C) CTR'))
 					.append($('<th>').text('SEVEN Clicks'))
 					.append($('<th>').text('SEVEN CTR'))
 					.append($('<th>').text('NINE Clicks'))
-					.append($('<th>').text('NINE CTR'))
+					.append($('<th>').text('NINE CTR'));
 
 				tr.appendTo(tableDomPath);
 
@@ -380,11 +607,11 @@ function runQuery(types) {
 						.append($('<td>').text(row.three))
 						.append($('<td>').text(row.threeCtr.toFixed(2)))
 						.append($('<td>').text(row.control))
-						.append($('<td>').text(row.controlCtr.toFixed(2)));
+						.append($('<td>').text(row.controlCtr.toFixed(2)))
 						.append($('<td>').text(row.seven))
 						.append($('<td>').text(row.sevenCtr.toFixed(2)))
 						.append($('<td>').text(row.nine))
-						.append($('<td>').text(row.nineCtr.toFixed(2)))
+						.append($('<td>').text(row.nineCtr.toFixed(2)));
 
 					tr.appendTo(tableDomPath);
 				});
@@ -431,6 +658,54 @@ metricCTRNine
 
 metricCTRControl
 	.el(document.getElementById("metric-ctr__control"))
+	.height(450)
+	.title("% CTR - FIVE (CONTROL)")
+	.prepare();
+
+metricCTRThreeStoryPackage
+	.el(document.getElementById("metric-ctr__three--sp"))
+	.height(450)
+	.title("% CTR - THREE")
+	.prepare();
+
+metricCTRSevenStoryPackage
+	.el(document.getElementById("metric-ctr__seven--sp"))
+	.height(450)
+	.title("% CTR - SEVEN")
+	.prepare();
+
+metricCTRNineStoryPackage
+	.el(document.getElementById("metric-ctr__nine--sp"))
+	.height(450)
+	.title("% CTR - NINE")
+	.prepare();
+
+metricCTRControlStoryPackage
+	.el(document.getElementById("metric-ctr__control--sp"))
+	.height(450)
+	.title("% CTR - FIVE (CONTROL)")
+	.prepare();
+
+metricCTRThreeNoStoryPackage
+	.el(document.getElementById("metric-ctr__three--no-sp"))
+	.height(450)
+	.title("% CTR - THREE")
+	.prepare();
+
+metricCTRSevenNoStoryPackage
+	.el(document.getElementById("metric-ctr__seven--no-sp"))
+	.height(450)
+	.title("% CTR - SEVEN")
+	.prepare();
+
+metricCTRNineNoStoryPackage
+	.el(document.getElementById("metric-ctr__nine--no-sp"))
+	.height(450)
+	.title("% CTR - NINE")
+	.prepare();
+
+metricCTRControlNoStoryPackage
+	.el(document.getElementById("metric-ctr__control--no-sp"))
 	.height(450)
 	.title("% CTR - FIVE (CONTROL)")
 	.prepare();

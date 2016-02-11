@@ -404,5 +404,5 @@
 {"domPath":"welcome-overlay | done", "component": "welcome", "subComponent": "overlay", "target": "internal"},
 {"domPath":"welcome-overlay | follow", "component": "welcome", "subComponent": "overlay", "target": "follow"},
 {"domPath":"welcome-overlay | myft-topics", "component": "welcome", "subComponent": "overlay", "target": "other"},
-{"domPath":"welcome-overlay | remind-me-later", "component": "welcome", "subComponent": "overlay", "target": "internal"}]
+{"domPath":"welcome-overlay | remind-me-later", "component": "welcome", "subComponent": "overlay", "target": "internal"}
 ]
