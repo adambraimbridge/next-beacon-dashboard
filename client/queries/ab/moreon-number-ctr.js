@@ -61,7 +61,8 @@ const metricCTRControlNoStoryPackage = new Keen.Dataviz();
 
 let referrerFilters;
 let chartHeadingModifier;
-
+let clickResults;
+let baseResults;
 
 function filterBySubCompnents(subComponentTypes, category) {
 	let resultArray = [];
@@ -94,6 +95,21 @@ function targetArray(subComponentTypes) {
 	return getUnique(filterBySubCompnents(subComponentTypes, "target"));
 }
 
+function ctrByVariant(variant, storyPackage) {
+	let ctrArray = clickResults
+		.filter(res => res["ab.articleMoreOnNumber"] === "three");
+	if (storyPackage === "yes") {
+		ctrArray = ctrArray.filter(res => res["content.features.hasStoryPackage"] === true)
+	}
+	if (storyPackage === "no") {
+		ctrArray = ctrArray.filter(res => !res["content.features.hasStoryPackage"] === false)
+	}
+	console.log('ctrArray ', ctrArray);
+	return ctrArray
+		.map(res => res.ctrHighLevel)
+		.reduce((carry, item) => carry + item);
+}
+
 function pageViewsBySessionQuery() {
 	let parameters = {
 		eventCollection: "dwell",
@@ -103,7 +119,7 @@ function pageViewsBySessionQuery() {
 		groupBy: "ingest.device.spoor_session",
 		timeframe: timeFrame,
 		timezone: "UTC",
-		maxAge:10800
+		maxAge:1800
 	};
 	return new Keen.Query("count", parameters);
 }
@@ -119,7 +135,7 @@ function ctaQuery(subComponents, outliersSessionsFilter) {
 		groupBy: ["meta.domPath","ab.articleMoreOnNumber", "content.features.hasStoryPackage"],
 		timeframe: timeFrame,
 		timezone: "UTC",
-		maxAge:10800
+		maxAge:1800
 	};
 	return new Keen.Query("count", parameters);
 }
@@ -134,7 +150,7 @@ function baseQuery(outliersSessionsFilter) {
 		groupBy: ["ab.articleMoreOnNumber", "content.features.hasStoryPackage"],
 		timeframe: timeFrame,
 		timezone: "UTC",
-		maxAge:10800
+		maxAge:1800
 	};
 	return new Keen.Query("count", parameters);
 }
@@ -165,9 +181,92 @@ function runQuery(types) {
 			}
 			else {
 
-				let baseResults = res[1];
-				let clickResults = res[0];
+				baseResults = res[1].result;
+				clickResults = res[0].result;
 
+				baseResults.forEach(baseResult => {
+					const hasStoryPackage = baseResult["content.features.hasStoryPackage"];
+					switch (baseResult["ab.articleMoreOnNumber"]) {
+						case "three":
+							baseResult.totalLinks = hasStoryPackage ? 11 : 6;
+							break;
+						case "seven":
+							baseResult.totalLinks = hasStoryPackage ? 19 : 14;
+							break;
+						case "nine":
+							baseResult.totalLinks = hasStoryPackage ? 23 : 18;
+							break;
+						case "control":
+							baseResult.totalLinks = hasStoryPackage ? 15 : 10;
+							break;
+						default:
+							baseResult.totalLinks = false;
+					}
+				});
+
+				clickResults.forEach(clickResult => {
+					let domPathArray = clickResult["meta.domPath"].split('|');
+					domPathArray.forEach(item => item.trim());
+					let linksPerPod;
+					switch (clickResult["ab.articleMoreOnNumber"]) {
+						case "three":
+						linksPerPod = 3;
+						break;
+						case "seven":
+						linksPerPod = 7;
+						break;
+						case "nine":
+						linksPerPod = 9;
+						break;
+						default:
+						linksPerPod = 5;
+					}
+					const hasStoryPackage = clickResult["content.features.hasStoryPackage"];
+					const domPathArrayElOne = domPathArray[0].split('-');
+					const domPathArrayElTwo = domPathArray[1].split('-');
+					let parentIndex = 0;
+					if (domPathArrayElOne[0] === 'more') {
+						parentIndex += parseInt(domPathArrayElOne[2]);
+						if (hasStoryPackage) {
+							parentIndex ++;
+						}
+					}
+					const moreOnTotalLinks = 2 * linksPerPod;
+					const storyPackageLinks = hasStoryPackage ? 5 : 0;
+					if (domPathArray.length === 3 && domPathArray[2].indexOf('article') > -1) {
+						const podIndex = parseInt(domPathArrayElTwo[1]);
+						let linkIndex;
+						switch (parentIndex) {
+							case 0:
+							linkIndex = podIndex;
+							break;
+							case 1:
+							linkIndex = hasStoryPackage ? 5 + podIndex: linksPerPod + podIndex;
+							break;
+							case 2:
+							linkIndex = 5 + linksPerPod + podIndex;
+							break;
+							default:
+							linkIndex = false;
+						}
+						clickResult.linkIndex = linkIndex + 1;
+					}
+					clickResult.totalLinks = storyPackageLinks + moreOnTotalLinks;
+					clickResult.ctrSpecific = parseFloat(
+						(clickResult.result * 100) / baseResults.find(res => res.totalLinks === (storyPackageLinks + moreOnTotalLinks)).result
+					);
+					let highLevelPageViews = baseResults
+						.filter(res => res["ab.articleMoreOnNumber"] === clickResult["ab.articleMoreOnNumber"])
+						.map(res => res.result)
+						.reduce((carry, item) => carry + item);
+					clickResult.ctrHighLevel = parseFloat((clickResult.result * 100) / highLevelPageViews);
+				});
+
+				const ctrThreeTotal = ctrByVariant("three");
+				const ctrThreeStoryPackage = ctrByVariant("three", "yes");
+				const ctrThreeNoStoryPackage = ctrByVariant("three", "no");
+
+				console.log('3 ', ctrThreeTotal, ' 3SP ', ctrThreeStoryPackage, ' 3NoSP ', ctrThreeNoStoryPackage);
 				let newBaseResults = [
 					{"ab.articleMoreOnNumber":"three",
 					pageViews: 0},
@@ -202,7 +301,7 @@ function runQuery(types) {
 				];
 
 				newBaseResults.map(function(newBaseResult) {
-					baseResults.result.map(function(baseResult) {
+					baseResults.map(function(baseResult) {
 						if (newBaseResult["ab.articleMoreOnNumber"] === baseResult["ab.articleMoreOnNumber"]) {
 							newBaseResult.pageViews += baseResult.result;
 						}
@@ -210,7 +309,7 @@ function runQuery(types) {
 				});
 
 				newBaseResultsStoryPackage.map(function(newBaseResult) {
-					baseResults.result.map(function(baseResult) {
+					baseResults.map(function(baseResult) {
 						if (newBaseResult["ab.articleMoreOnNumber"] === baseResult["ab.articleMoreOnNumber"]
 								&& baseResult["content.features.hasStoryPackage"] === true) {
 							newBaseResult.pageViews += baseResult.result;
@@ -232,27 +331,34 @@ function runQuery(types) {
 				let newClickResultsNoStoryPackage = [];
 
 				metaDomPathArray(subComponents).map(function(path) {
+					const target = articleCTAs.find(cta => cta.domPath === path)["target"];
+
 					let newClickResult = {
 						domPath: path,
-						target: articleCTAs.find(cta => cta.domPath === path)["target"],
+						target: target,
+						linkIndex: 0,
 						three: 0,
 						seven: 0,
 						nine: 0,
 						control: 0
 					};
 					newClickResults.push(newClickResult);
+
 					let newClickResultStoryPackage = {
 						domPath: path,
-						target: articleCTAs.find(cta => cta.domPath === path)["target"],
+						target: target,
+						linkIndex: 0,
 						three: 0,
 						seven: 0,
 						nine: 0,
 						control: 0
 					};
 					newClickResultsStoryPackage.push(newClickResultStoryPackage);
+
 					let newClickResultNoStoryPackage = {
 						domPath: path,
-						target: articleCTAs.find(cta => cta.domPath === path)["target"],
+						target: target,
+						linkIndex: 0,
 						three: 0,
 						seven: 0,
 						nine: 0,
@@ -261,7 +367,7 @@ function runQuery(types) {
 					newClickResultsNoStoryPackage.push(newClickResultNoStoryPackage);
 				});
 
-				clickResults.result.map(function(clickResult) {
+				clickResults.map(function(clickResult) {
 					let matchedDomPath = newClickResults.filter(function(newClickResult) {
 						return clickResult["meta.domPath"] === newClickResult.domPath;
 					})[0];
@@ -438,6 +544,8 @@ function runQuery(types) {
 					totalResultNoStoryPackage.control += newClickResult.control;
 					totalResultNoStoryPackage.controlCtr += newClickResult.controlCtr;
 				});
+
+
 
 				metricCTRThree
 					.data({result: totalResult.threeCtr})
@@ -618,6 +726,87 @@ function runQuery(types) {
 
 				el = document.getElementById("table-dom-path");
 				tableDomPath.appendTo($(el));
+
+				// Click Rate By Link Index and Total Links
+
+				let clickResultsLinkIndex;
+
+				clickResultsLinkIndex = clickResults
+					.filter(res => res.linkIndex);
+
+				const uniqueLinkIndices = [];
+				clickResultsLinkIndex
+					.map(res => res.linkIndex)
+					.forEach(res => {
+						if (uniqueLinkIndices.indexOf(res) === -1) {
+							uniqueLinkIndices.push(res);
+						}
+					});
+				uniqueLinkIndices.sort((a,b) => a-b);
+
+				const uniqueTotalLinks = [];
+				clickResultsLinkIndex
+					.map(res => res.totalLinks)
+					.forEach(res => {
+						if (uniqueTotalLinks.indexOf(res) === -1) {
+							uniqueTotalLinks.push(res);
+						}
+					});
+				uniqueTotalLinks.sort((a,b) => a-b);
+
+				let tableLinkIndex = $('<table>')
+							.addClass("o-table o-table--compact o-table--horizontal-lines o-table--vertical-lines o-table--horizontal-borders o-table--vertical-borders");
+
+				tr = $('<tr>')
+					.append($('<th>').text('CTR% by Link Index ' + chartHeadingModifier).attr("colspan",9));
+
+				tr.appendTo(tableDomPath);
+
+				tr = $('<tr>')
+					.append($('<th>').text('Link Index'));
+
+				uniqueTotalLinks.forEach(item => {
+					tr.append($('<th>').text(`${item} Links`))
+				});
+
+				tr.appendTo(tableLinkIndex);
+
+				uniqueLinkIndices.forEach(link => {
+					tr = $('<tr>')
+						.append($('<td>').text(link));
+
+					uniqueTotalLinks.forEach(total => {
+						let ctr;
+						const ctrArray = clickResultsLinkIndex
+							.filter(res => res.linkIndex === link && res.totalLinks === total);
+						if (ctrArray.length > 0) {
+							ctr = ctrArray
+								.map(res => res.ctrSpecific)
+								.reduce((carry, item) => carry + item);
+						} else {
+							ctr = 0;
+						}
+						tr.append($('<td>').text(ctr.toFixed(2)));
+					})
+
+					tr.appendTo(tableLinkIndex);
+				});
+
+				tr = $('<tr>').append($('<td>').text('Total CTR%'));
+
+				uniqueTotalLinks.forEach(total => {
+					const ctr = clickResultsLinkIndex
+						.filter(res => res.totalLinks === total)
+						.map(res => res.ctrSpecific)
+						.reduce((carry, item) => carry + item);
+					tr.append($('<td>').text(ctr.toFixed(2)));
+				});
+
+				tr.appendTo(tableLinkIndex);
+
+				el = document.getElementById("table-link-index");
+				tableLinkIndex.appendTo($(el));
+
 
 			}
 		});

@@ -73,7 +73,7 @@ function pageViewsBySessionQuery() {
 		groupBy: "ingest.device.spoor_session",
 		timeframe: timeFrame,
 		timezone: "UTC",
-		maxAge:10800
+		maxAge:1800
 	};
 	return new Keen.Query("count", parameters);
 }
@@ -88,7 +88,7 @@ function articleDepthQuery(outliersSessionsFilter) {
 		groupBy: ["ingest.device.spoor_session", "ab.articleMoreOnNumber"],
 		timeframe: timeFrame,
 		timezone: "UTC",
-		maxAge:10800
+		maxAge:1800
 	};
 	return new Keen.Query("count", parameters);
 }
