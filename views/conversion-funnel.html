@@ -1,15 +1,107 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.13/d3.js"></script>
+<script src="https://rawgit.com/smilli/d3-funnel-charts/master/dist/d3-funnel-charts.min.js"></script>
+
 <h1>Conversion Funnel, last 30 days</h1>
+<div class="o-grid-container">
+    <div class="o-grid-row">
+        <div class="next-anon-data" data-o-grid-colspan="6">
+            <h1>Anonymous users of Next:</h1>
+            <div class="next_anon_funnel"></div>
+            <h2>PS1 -> PS2: {{rates.nextAnons.oneToTwo}}%</h2>
+            <h2>PS1 -> PS3: {{rates.nextAnons.oneToThree}}%</h2>
+            <h2>PS2 -> PS3: {{rates.nextAnons.twoToThree}}%</h2>
+            <div class="next_anon_bars"></div>
+        </div>
+        <div class="ft-com-anon-data" data-o-grid-colspan="6">
+            <h1>Anonymous users of Ft.com:</h1>
+            <div class="ft_anon_funnel"></div>
+            <h2>PS1 -> PS2: {{rates.ftAnons.oneToTwo}}%</h2>
+            <h2>PS1 -> PS3: {{rates.ftAnons.oneToThree}}%</h2>
+            <h2>PS2 -> PS3: {{rates.ftAnons.twoToThree}}%</h2>
+            <div class="ft_anon_bars"></div>
+        </div>
+        <div class="next-anon-mobile-data" data-o-grid-colspan="6">
+            <h1>Next anons on Mobile:</h1>
+            <div class="next_anon_mobile_funnel"></div>
+            <h2>PS1 -> PS2: {{rates.nextAnonsMobile.oneToTwo}}%</h2>
+            <h2>PS1 -> PS3: {{rates.nextAnonsMobile.oneToThree}}%</h2>
+            <h2>PS2 -> PS3: {{rates.nextAnonsMobile.twoToThree}}%</h2>
+            <div class="next_anon_mobile_bars"></div>
+        </div>
+        <div class="ft-com-anon-mobile-data" data-o-grid-colspan="6">
+            <h1>FT.com anons on Mobile:</h1>
+            <div class="ft_anon_mobile_funnel"></div>
+            <h2>PS1 -> PS2: {{rates.ftAnonsMobile.oneToTwo}}%</h2>
+            <h2>PS1 -> PS3: {{rates.ftAnonsMobile.oneToThree}}%</h2>
+            <h2>PS2 -> PS3: {{rates.ftAnonsMobile.twoToThree}}%</h2>
+            <div class="ft_anon_mobile_bars"></div>
+        </div>
+    </div>
+</div>
 
-<p>This is a preliminary dump of conversion funnel data pulled out of the main FT warehouse (so please excuse the unformatted nature for now). It is currently filtered to represent information about all anonymous users who went from Next to the top half of the FT subscription form.</p>
-<p>The total figure for those users is the number found under the 'channel: next' heading.</p>
-<p>Updated daily</p>
+<script>
+ const nextAnonRows = [
+     ['PS1', {{ counts.ps1.nextAnons }}],
+     ['PS2', {{ counts.ps2.nextAnons }}],
+     ['PS3', {{ counts.ps3.nextAnons }}]
+ ];
 
-{{#each conversionData}}
-{{#each this}}
-<ul><h1>{{@key}}</h1>
-    {{#each this}}
-    <li>{{@key}}: {{this}}</li>
-    {{/each}}
-</ul>
-{{/each}}
-{{/each}}
+ const nextAnonMobileRows = [
+     ['PS1', {{ counts.ps1.nextAnonsMobile }}],
+     ['PS2', {{ counts.ps2.nextAnonsMobile }}],
+     ['PS3', {{ counts.ps3.nextAnonsMobile }}]
+ ];
+
+ const ftAnonRows = [
+     ['PS1', {{ counts.ps1.ftAnons }}],
+     ['PS2', {{ counts.ps2.ftAnons }}],
+     ['PS3', {{ counts.ps3.ftAnons }}]
+ ];
+
+ const ftAnonMobileRows = [
+     ['PS1', {{ counts.ps1.ftAnonsMobile }}],
+     ['PS2', {{ counts.ps2.ftAnonsMobile }}],
+     ['PS3', {{ counts.ps3.ftAnonsMobile }}]
+ ];
+
+ function drawGoogleBarChart(rows, targetElement) {
+     var data = new google.visualization.DataTable();
+
+     data.addColumn('string', 'Process stage');
+     data.addColumn('number', 'Users');
+
+     data.addRows(rows);
+
+     var material = new google.charts.Bar(document.querySelector(targetElement));
+     material.draw(data);
+ }
+
+ function drawD3Funnel(rows, targetElement) {
+     var chart = new FunnelChart({
+         data: rows,
+         width: 300,
+         height: 450,
+         bottomPct: 1/4
+     });
+     chart.draw(targetElement, 3);
+ };
+
+ function drawCharts() {
+     drawGoogleBarChart(nextAnonRows, '.next_anon_bars');
+     drawGoogleBarChart(ftAnonRows, '.ft_anon_bars');
+     drawGoogleBarChart(nextAnonMobileRows, '.next_anon_mobile_bars');
+     drawGoogleBarChart(ftAnonMobileRows, '.ft_anon_mobile_bars')
+
+     drawD3Funnel(nextAnonRows, '.next_anon_funnel');
+     drawD3Funnel(ftAnonRows, '.ft_anon_funnel');
+     drawD3Funnel(nextAnonMobileRows, '.next_anon_mobile_funnel');
+     drawD3Funnel(ftAnonMobileRows, '.ft_anon_mobile_funnel');
+ };
+
+ window.addEventListener('load', function () {
+     google.charts.load('current', {packages: ['bar']});
+     google.charts.setOnLoadCallback(drawCharts);
+ })
+
+</script>

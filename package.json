@@ -14,6 +14,7 @@
     "forever": "^0.11.1",
     "ft-next-express": "^15.0.0",
     "ft-next-logger": "^1.1.0",
+    "ft-poller": "^2.6.0",
     "humanize": "0.0.9",
     "isomorphic-fetch": "^2.2.0",
     "keen.io": "^0.1.3",

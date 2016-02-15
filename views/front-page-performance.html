@@ -1,3 +1,41 @@
 <h1>Front Page: Performance</h1>
 
-<div id="charts"></div>
+<form class="performance-form">
+    <div class="o-forms-group">
+        <div class="performance-form__choices">
+            <div>
+                <p class="performance-form__label--inline">Device type:</p>
+                <input type="radio" name="deviceType" value="all" class="o-forms-radio" id="device-type-all" />
+                <label class="o-forms-label" for="device-type-all">All</label>
+                <input type="radio" name="deviceType" value="Mobile Phone" class="o-forms-radio" id="device-type-mobile-phone" />
+                <label class="o-forms-label" for="device-type-mobile-phone">Mobile Phone</label>
+                <input type="radio" name="deviceType" value="Tablet" class="o-forms-radio" id="device-type-tablet" />
+                <label class="o-forms-label" for="device-type-tablet">Tablet</label>
+                <input type="radio" name="deviceType" value="Desktop" class="o-forms-radio" id="device-type-desktop" />
+                <label class="o-forms-label" for="device-type-desktop">Desktop</label>
+            </div>
+            <div>
+                <p class="performance-form__label--inline">Connection type:</p>
+                <input type="radio" name="connectionType" value="all" class="o-forms-radio" id="connection-type-all" />
+                <label class="o-forms-label" for="connection-type-all">All</label>
+                <input type="radio" name="connectionType" value="cellular" class="o-forms-radio" id="connection-type-cellular" />
+                <label class="o-forms-label" for="connection-type-cellular">Cellular (2G, 3G, etc)</label>
+                <input type="radio" name="connectionType" value="wifi" class="o-forms-radio" id="connection-type-wifi" />
+                <label class="o-forms-label" for="connection-type-wifi">WiFi</label>
+                <input type="radio" name="connectionType" value="ethernet" class="o-forms-radio" id="connection-type-ethernet" />
+                <label class="o-forms-label" for="connection-type-ethernet">Ethernet</label>
+            </div>
+            <div>
+                <input type="checkbox" name="domLoadingOffset" value="1" class="o-forms-checkbox" id="dom-loading-offset"></input>
+                <label class="o-forms-label" for="dom-loading-offset">Offset graphs from the domLoading event, i.e. from the point the page has downloaded</label>
+            </div>
+        </div>
+        <input class="o-buttons" type="submit" value="Update Graph">
+    </div>
+</form>
+
+<div id="fonts-loaded-chart"></div>
+<div id="first-paint-chart"></div>
+<div id="page-loaded"></div>
+<div id="browsers-load"></div>
+<div id="page-loading-events"></div>

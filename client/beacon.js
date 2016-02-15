@@ -39,6 +39,10 @@ Keen.ready(function(){
 			require('./queries/ab/front-page-prototype').render();
 			break;
 
+		case '/graph/ab/front-page-prototype-scroll-depth':
+			require('./queries/ab/front-page-prototype-scroll-depth').render();
+			break;
+
 		case '/graph/ab/aa':
 
 			render(require('./queries/ab/aa'));
@@ -85,6 +89,16 @@ Keen.ready(function(){
 		case '/graph/ab/suggested-read':
 			require('./queries/ab/suggested-read');
 			require('./queries/ab/suggested-read-ctr');
+			break;
+
+		case '/graph/ab/moreon-structure':
+			require('./queries/ab/moreon-structure');
+			require('./queries/ab/moreon-structure-ctr');
+			break;
+
+		case '/graph/ab/moreon-number':
+			require('./queries/ab/moreon-number');
+			require('./queries/ab/moreon-number-ctr');
 			break;
 
 		case '/graph/opt-in':
@@ -186,6 +200,10 @@ Keen.ready(function(){
 
 		case '/graph/frequency-recency':
 			require('./queries/frequency-recency').init(client);
+			break;
+
+		case '/graph/myft/overview':
+			require('./queries/myft/overview')();
 			break;
 
 		case '/graph/myft/usage':
@@ -312,6 +330,18 @@ Keen.ready(function(){
 
 		case '/graph/front-page/performance':
 			require('./queries/front-page/performance').render();
+			break;
+
+		case '/graph/front-page/volume-frequency-users':
+			require('./queries/front-page/volume-frequency-users').render();
+			break;
+
+		case '/graph/front-page/sections-breakdown':
+			require('./queries/front-page/sections-breakdown').render();
+			break;
+
+		case '/graph/performance':
+			require('./queries/performance').render();
 			break;
 
 		default:

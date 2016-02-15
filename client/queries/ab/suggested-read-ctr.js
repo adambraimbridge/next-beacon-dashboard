@@ -14,11 +14,8 @@ const standardQueryFilters = [
 	{"operator":"exists",
 	"property_name":"user.uuid",
 	"property_value":true},
-	{"operator":"in",
-	"property_name":"ingest.user.layout",
-	"property_value":["XL","L"]},
 	{"operator":"exists",
-	"property_name":"ab.articleSuggestedRead",
+	"property_name":"ab.articleMoreOnTopicCard",
 	"property_value":true}];
 const searchReferrer = [{
 	"operator":"eq",

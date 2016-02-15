@@ -17,7 +17,7 @@ body {
 
 .deprecation-notice {
 	display: block;
-	background: #eaa;
+	background: #eeaaaa;
 	font-size: 40px;
 	text-align: center;
 }
@@ -324,6 +324,27 @@ body {
 	border-width: 30px 30px 0;
 	border-color: #49c5b1 transparent transparent;
 	margin: 0 auto;
+}
+
+.performance-form {
+	.o-forms-prefix {
+		line-height: 1.1em;
+		min-width: 90px;
+	}
+
+	.o-buttons {
+		margin-top: 10px;
+	}
+
+	.performance-form__label--inline {
+		display: inline-block;
+		font-weight: 700;
+		min-width: 90px;
+	}
+
+	.performance-form__browser {
+		margin-bottom: 15px;
+	}
 }
 
 
