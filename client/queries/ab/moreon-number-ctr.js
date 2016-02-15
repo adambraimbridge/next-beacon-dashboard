@@ -97,16 +97,16 @@ function targetArray(subComponentTypes) {
 
 function ctrByVariant(variant, storyPackage) {
 	let ctrArray = clickResults
-		.filter(res => res["ab.articleMoreOnNumber"] === "three");
+		.filter(res => res["ab.articleMoreOnNumber"] === variant);
 	if (storyPackage === "yes") {
 		ctrArray = ctrArray.filter(res => res["content.features.hasStoryPackage"] === true)
 	}
 	if (storyPackage === "no") {
-		ctrArray = ctrArray.filter(res => !res["content.features.hasStoryPackage"] === false)
+		ctrArray = ctrArray.filter(res => res["content.features.hasStoryPackage"] === false)
 	}
-	console.log('ctrArray ', ctrArray);
+	const ctrType = storyPackage === 'all' ? "ctrHighLevel" : "ctrSpecific";
 	return ctrArray
-		.map(res => res.ctrHighLevel)
+		.map(res => res[ctrType])
 		.reduce((carry, item) => carry + item);
 }
 
@@ -262,11 +262,6 @@ function runQuery(types) {
 					clickResult.ctrHighLevel = parseFloat((clickResult.result * 100) / highLevelPageViews);
 				});
 
-				const ctrThreeTotal = ctrByVariant("three");
-				const ctrThreeStoryPackage = ctrByVariant("three", "yes");
-				const ctrThreeNoStoryPackage = ctrByVariant("three", "no");
-
-				console.log('3 ', ctrThreeTotal, ' 3SP ', ctrThreeStoryPackage, ' 3NoSP ', ctrThreeNoStoryPackage);
 				let newBaseResults = [
 					{"ab.articleMoreOnNumber":"three",
 					pageViews: 0},
@@ -318,7 +313,7 @@ function runQuery(types) {
 				});
 
 				newBaseResultsNoStoryPackage.map(function(newBaseResult) {
-					baseResults.result.map(function(baseResult) {
+					baseResults.map(function(baseResult) {
 						if (newBaseResult["ab.articleMoreOnNumber"] === baseResult["ab.articleMoreOnNumber"]
 								&& baseResult["content.features.hasStoryPackage"] === false) {
 							newBaseResult.pageViews += baseResult.result;
@@ -548,62 +543,62 @@ function runQuery(types) {
 
 
 				metricCTRThree
-					.data({result: totalResult.threeCtr})
+					.data({result: ctrByVariant("three", "all")})
 					.chartType("metric")
 					.render();
 
 				metricCTRSeven
-					.data({result: totalResult.sevenCtr})
+					.data({result: ctrByVariant("seven", "all")})
 					.chartType("metric")
 					.render();
 
 				metricCTRNine
-					.data({result: totalResult.nineCtr})
+					.data({result: ctrByVariant("nine", "all")})
 					.chartType("metric")
 					.render();
 
 				metricCTRControl
-					.data({result: totalResult.controlCtr})
+					.data({result: ctrByVariant("control", "all")})
 					.chartType("metric")
 					.render();
 
 				metricCTRThreeStoryPackage
-					.data({result: totalResultStoryPackage.threeCtr})
+					.data({result: ctrByVariant("three", "yes")})
 					.chartType("metric")
 					.render();
 
 				metricCTRSevenStoryPackage
-					.data({result: totalResultStoryPackage.sevenCtr})
+					.data({result: ctrByVariant("seven", "yes")})
 					.chartType("metric")
 					.render();
 
 				metricCTRNineStoryPackage
-					.data({result: totalResultStoryPackage.nineCtr})
+					.data({result: ctrByVariant("nine", "yes")})
 					.chartType("metric")
 					.render();
 
 				metricCTRControlStoryPackage
-					.data({result: totalResultStoryPackage.controlCtr})
+					.data({result: ctrByVariant("control", "yes")})
 					.chartType("metric")
 					.render();
 
 				metricCTRThreeNoStoryPackage
-					.data({result: totalResultNoStoryPackage.threeCtr})
+					.data({result: ctrByVariant("three", "no")})
 					.chartType("metric")
 					.render();
 
 				metricCTRSevenNoStoryPackage
-					.data({result: totalResultNoStoryPackage.sevenCtr})
+					.data({result: ctrByVariant("seven", "no")})
 					.chartType("metric")
 					.render();
 
 				metricCTRNineNoStoryPackage
-					.data({result: totalResultNoStoryPackage.nineCtr})
+					.data({result: ctrByVariant("nine", "no")})
 					.chartType("metric")
 					.render();
 
 				metricCTRControlNoStoryPackage
-					.data({result: totalResultNoStoryPackage.controlCtr})
+					.data({result: ctrByVariant("control", "no")})
 					.chartType("metric")
 					.render();
 
