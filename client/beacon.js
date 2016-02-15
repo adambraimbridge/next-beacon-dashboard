@@ -96,6 +96,11 @@ Keen.ready(function(){
 			require('./queries/ab/moreon-structure-ctr');
 			break;
 
+		case '/graph/ab/moreon-number':
+			require('./queries/ab/moreon-number');
+			require('./queries/ab/moreon-number-ctr');
+			break;
+
 		case '/graph/opt-in':
 			require('./queries/opt-in');
 			break;
