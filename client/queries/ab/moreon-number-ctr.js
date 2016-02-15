@@ -211,28 +211,6 @@ function runQuery(types) {
 				baseResults = res[1].result;
 				clickResults = res[0].result;
 
-				// Decorate baseResults with total number of links
-
-				baseResults.forEach(baseResult => {
-					const hasStoryPackage = baseResult["content.features.hasStoryPackage"];
-					switch (baseResult["ab.articleMoreOnNumber"]) {
-						case "three":
-							baseResult.totalLinks = hasStoryPackage ? 11 : 6;
-							break;
-						case "seven":
-							baseResult.totalLinks = hasStoryPackage ? 19 : 14;
-							break;
-						case "nine":
-							baseResult.totalLinks = hasStoryPackage ? 23 : 18;
-							break;
-						case "control":
-							baseResult.totalLinks = hasStoryPackage ? 15 : 10;
-							break;
-						default:
-							baseResult.totalLinks = false;
-					}
-				});
-
 				clickResults.forEach(clickResult => {
 					// Calculate Link Index for each result
 					let domPathArray = clickResult["meta.domPath"].split('|');
@@ -285,7 +263,15 @@ function runQuery(types) {
 					clickResult.totalLinks = storyPackageLinks + moreOnTotalLinks;
 					// Decorate with ctr for story package variant
 					clickResult.ctrSpecific = parseFloat(
-						(clickResult.result * 100) / baseResults.find(res => res.totalLinks === (storyPackageLinks + moreOnTotalLinks)).result
+						(clickResult.result * 100)
+							/ baseResults.find(res => {
+								if (
+									res["content.features.hasStoryPackage"] === clickResult["content.features.hasStoryPackage"]
+									&& res["ab.articleMoreOnNumber"] === clickResult["ab.articleMoreOnNumber"]
+								) {
+									return res;
+								}
+							}).result
 					);
 					// Decorate with ctr regardless of story package variant
 					let highLevelPageViews = baseResults
@@ -450,37 +436,41 @@ function runQuery(types) {
 				let tableLinkIndex = $('<table>')
 							.addClass("o-table o-table--compact o-table--horizontal-lines o-table--vertical-lines o-table--horizontal-borders o-table--vertical-borders");
 
+				// Table title
 				tr = $('<tr>')
 					.append($('<th>').text('CTR% by Link Index ' + chartHeadingModifier).attr("colspan",9));
-
 				tr.appendTo(tableLinkIndex);
 
+				// Table column headings
 				tr = $('<tr>')
 					.append($('<th>').text('Link Index'));
-
 				uniqueTotalLinks.forEach(totalLinks => {
 					tr.append($('<th>').text(`${totalLinks} Links`))
 				});
-
 				tr.appendTo(tableLinkIndex);
 
+				// Append row per link index
 				uniqueLinkIndices.forEach(linkIndex => {
 					tr = $('<tr>')
 						.append($('<td>').text(linkIndex));
-
 					uniqueTotalLinks.forEach(totalLinks => {
 						tr.append($('<td>').text(aggregation({totalLinks: totalLinks, linkIndex: linkIndex, resType: "ctr"}).toFixed(2)));
 					})
-
 					tr.appendTo(tableLinkIndex);
 				});
 
+				// Append row of total CTR%
 				tr = $('<tr>').append($('<td>').text('Total CTR%'));
-
 				uniqueTotalLinks.forEach(totalLinks => {
 					tr.append($('<td>').text(aggregation({totalLinks: totalLinks, target: "article", resType: "ctr"}).toFixed(2)));
 				});
+				tr.appendTo(tableLinkIndex);
 
+				// Append row of total clicks
+				tr = $('<tr>').append($('<td>').text('Total Clicks'));
+				uniqueTotalLinks.forEach(totalLinks => {
+					tr.append($('<td>').text(aggregation({totalLinks: totalLinks, target: "article", resType: "clicks"})));
+				});
 				tr.appendTo(tableLinkIndex);
 
 				el = document.getElementById("table-link-index");
