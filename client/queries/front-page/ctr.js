@@ -12,8 +12,7 @@ const queryParams = Object.assign(
 	{
 		deviceType: 'all',
 		component: 'all',
-		timeframe: '8',
-		abLayoutPrototype: ''
+		timeframe: '8'
 	},
 	queryString.parse(location.search.substr(1))
 );
@@ -63,11 +62,6 @@ const filter = {
 				operator: 'contains',
 				property_name: 'deviceAtlas.primaryHardwareType',
 				property_value: queryParams['deviceType'] === 'all' ? '' : (queryParams['deviceType'] || '')
-		}],
-		abLayoutPrototype: [{
-				operator: 'contains',
-				property_name: 'ab.frontPageLayoutPrototype',
-				property_value: queryParams.abLayoutPrototype
 		}]
 };
 
@@ -75,11 +69,6 @@ const getDataForTimeframe = (timeframeDays, interval) => {
 	const timeframe = `previous_${timeframeDays}_days`;
 
 	let defaultFilters = filter.isOnHomepage.concat(filter.deviceType)
-
-	if(queryParams.abLayoutPrototype) {
-		defaultFilters = defaultFilters.concat(filter.abLayoutPrototype);
-	}
-
 
 	const users = new Keen.Query('count_unique', {
 			eventCollection: 'dwell',
@@ -239,9 +228,6 @@ const render = () => {
 		.setAttribute('checked', 'checked');
 
 	document.querySelector(`input[name="timeframe"][value="${queryParams.timeframe}"`)
-		.setAttribute('checked', 'checked');
-
-	document.querySelector(`input[name="abLayoutPrototype"][value="${queryParams.abLayoutPrototype}"`)
 		.setAttribute('checked', 'checked');
 
 	if(!document.location.hash) {
