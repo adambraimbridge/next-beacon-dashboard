@@ -178,73 +178,73 @@ activeFilterEl.appendTo(document.getElementById("referrer-filter"));
 metricMoreThanOneThree
 	.el(document.getElementById("metric-more-than-one__three"))
 	.height(450)
-	.title("% More Than 1 Article - THREE LINKS")
+	.title("% More Than 1 Article - THREE")
 	.prepare();
 
 metricMoreThanOneSeven
 	.el(document.getElementById("metric-more-than-one__seven"))
 	.height(450)
-	.title("% More Than 1 Article - SEVEN LINKS")
+	.title("% More Than 1 Article - SEVEN")
 	.prepare();
 
 metricMoreThanOneNine
 	.el(document.getElementById("metric-more-than-one__nine"))
 	.height(450)
-	.title("% More Than 1 Article - NINE LINKS")
+	.title("% More Than 1 Article - NINE")
 	.prepare();
 
 metricMoreThanOneControl
 	.el(document.getElementById("metric-more-than-one__control"))
 	.height(450)
-	.title("% More Than 1 Article - FIVE LINKS (control)")
+	.title("% More Than 1 Article - FIVE (C)")
 	.prepare();
 
 metricAveragePageViewsThree
 	.el(document.getElementById("metric-average-pages__three"))
 	.height(450)
-	.title("Average Article Page Views - THREE LINKS")
+	.title("Average Article Page Views - THREE")
 	.prepare();
 
 metricAveragePageViewsSeven
 	.el(document.getElementById("metric-average-pages__seven"))
 	.height(450)
-	.title("Average Article Page Views - SEVEN LINKS")
+	.title("Average Article Page Views - SEVEN")
 	.prepare();
 
 metricAveragePageViewsNine
 	.el(document.getElementById("metric-average-pages__nine"))
 	.height(450)
-	.title("Average Article Page Views - NINE LINKS")
+	.title("Average Article Page Views - NINE")
 	.prepare();
 
 metricAveragePageViewsControl
 	.el(document.getElementById("metric-average-pages__control"))
 	.height(450)
-	.title("Average Article Page Views - FIVE LINKS (control)")
+	.title("Average Article Page Views - FIVE (C)")
 	.prepare();
 
 metricSessionsThree
 	.el(document.getElementById("metric-number-sessions__three"))
 	.height(450)
-	.title("Number Of Sessions - THREE LINKS")
+	.title("Number Of Sessions - THREE")
 	.prepare();
 
 metricSessionsSeven
 	.el(document.getElementById("metric-number-sessions__seven"))
 	.height(450)
-	.title("Number Of Sessions - SEVEN LINKS")
+	.title("Number Of Sessions - SEVEN")
 	.prepare();
 
 metricSessionsNine
 	.el(document.getElementById("metric-number-sessions__nine"))
 	.height(450)
-	.title("Number Of Sessions - NINE LINKS")
+	.title("Number Of Sessions - NINE")
 	.prepare();
 
 metricSessionsControl
 	.el(document.getElementById("metric-number-sessions__control"))
 	.height(450)
-	.title("Number Of Sessions - FIVE LINKS (control)")
+	.title("Number Of Sessions - FIVE (C)")
 	.prepare();
 
 client.run(pageViewsBySessionQuery(), function(err, res) {

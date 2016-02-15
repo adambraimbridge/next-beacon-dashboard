@@ -80,10 +80,11 @@ function filterBySubCompnents(subComponentTypes, category) {
 function getUnique(nonUniqueArray) {
 	let uniqueArray = [];
 	nonUniqueArray.forEach(function(nonUnique) {
-		if (uniqueArray.indexOf(nonUnique) === -1) {
+		if (uniqueArray.indexOf(nonUnique) === -1 && typeof nonUnique !== "undefined") {
 			uniqueArray.push(nonUnique);
 		}
 	});
+	uniqueArray.sort((a,b) => a-b);
 	return uniqueArray;
 }
 
@@ -95,19 +96,45 @@ function targetArray(subComponentTypes) {
 	return getUnique(filterBySubCompnents(subComponentTypes, "target"));
 }
 
-function ctrByVariant(variant, storyPackage) {
-	let ctrArray = clickResults
-		.filter(res => res["ab.articleMoreOnNumber"] === variant);
-	if (storyPackage === "yes") {
-		ctrArray = ctrArray.filter(res => res["content.features.hasStoryPackage"] === true)
+function aggregation(options) {
+	let resArray = clickResults;
+	if (options.variant)
+		resArray = clickResults
+			.filter(res => res["ab.articleMoreOnNumber"] === options.variant);
+	if (options.storyPackage === "yes") {
+		resArray = resArray.filter(res => res["content.features.hasStoryPackage"] === true);
 	}
-	if (storyPackage === "no") {
-		ctrArray = ctrArray.filter(res => res["content.features.hasStoryPackage"] === false)
+	if (options.storyPackage === "no") {
+		resArray = resArray.filter(res => res["content.features.hasStoryPackage"] === false);
 	}
-	const ctrType = storyPackage === 'all' ? "ctrHighLevel" : "ctrSpecific";
-	return ctrArray
-		.map(res => res[ctrType])
-		.reduce((carry, item) => carry + item);
+	if (options.target) {
+		resArray = resArray.filter(res => res.target === options.target);
+	}
+	if (options.metaDomPath) {
+		resArray = resArray.filter(res => res["meta.domPath"] === options.metaDomPath);
+	}
+	if (options.linkIndex) {
+		resArray = resArray.filter(res => res.linkIndex === options.linkIndex);
+	}
+	if (options.totalLinks) {
+		resArray = resArray.filter(res => res.totalLinks === options.totalLinks);
+	}
+	let resType;
+	if (options && options.resType === "ctr" && resArray.length > 0) {
+		const ctrType = (options.storyPackage === "yes"
+									|| options.storyPackage === "no"
+									|| options.totalLinks > 0)
+									? "ctrSpecific" : "ctrHighLevel";
+		return resArray
+			.map(res => res[ctrType])
+			.reduce((carry, item) => carry + item);
+	} else if (options && options.resType === "clicks" && resArray.length > 0) {
+		return resArray
+			.map(res => res.result)
+			.reduce((carry, item) => carry + item);
+	} else {
+		return 0;
+	}
 }
 
 function pageViewsBySessionQuery() {
@@ -184,6 +211,8 @@ function runQuery(types) {
 				baseResults = res[1].result;
 				clickResults = res[0].result;
 
+				// Decorate baseResults with total number of links
+
 				baseResults.forEach(baseResult => {
 					const hasStoryPackage = baseResult["content.features.hasStoryPackage"];
 					switch (baseResult["ab.articleMoreOnNumber"]) {
@@ -205,6 +234,7 @@ function runQuery(types) {
 				});
 
 				clickResults.forEach(clickResult => {
+					// Calculate Link Index for each result
 					let domPathArray = clickResult["meta.domPath"].split('|');
 					domPathArray.forEach(item => item.trim());
 					let linksPerPod;
@@ -251,395 +281,85 @@ function runQuery(types) {
 						}
 						clickResult.linkIndex = linkIndex + 1;
 					}
+					// Decorate with total links
 					clickResult.totalLinks = storyPackageLinks + moreOnTotalLinks;
+					// Decorate with ctr for story package variant
 					clickResult.ctrSpecific = parseFloat(
 						(clickResult.result * 100) / baseResults.find(res => res.totalLinks === (storyPackageLinks + moreOnTotalLinks)).result
 					);
+					// Decorate with ctr regardless of story package variant
 					let highLevelPageViews = baseResults
 						.filter(res => res["ab.articleMoreOnNumber"] === clickResult["ab.articleMoreOnNumber"])
 						.map(res => res.result)
 						.reduce((carry, item) => carry + item);
 					clickResult.ctrHighLevel = parseFloat((clickResult.result * 100) / highLevelPageViews);
+					// Decorate with link target
+					clickResult.target = articleCTAs.find(cta => cta.domPath === clickResult["meta.domPath"]).target;
 				});
 
-				let newBaseResults = [
-					{"ab.articleMoreOnNumber":"three",
-					pageViews: 0},
-					{"ab.articleMoreOnNumber":"seven",
-					pageViews: 0},
-					{"ab.articleMoreOnNumber":"nine",
-					pageViews: 0},
-					{"ab.articleMoreOnNumber":"control",
-					pageViews: 0}
-				];
-
-				let newBaseResultsStoryPackage = [
-					{"ab.articleMoreOnNumber":"three",
-					pageViews: 0},
-					{"ab.articleMoreOnNumber":"seven",
-					pageViews: 0},
-					{"ab.articleMoreOnNumber":"nine",
-					pageViews: 0},
-					{"ab.articleMoreOnNumber":"control",
-					pageViews: 0}
-				];
-
-				let newBaseResultsNoStoryPackage = [
-					{"ab.articleMoreOnNumber":"three",
-					pageViews: 0},
-					{"ab.articleMoreOnNumber":"seven",
-					pageViews: 0},
-					{"ab.articleMoreOnNumber":"nine",
-					pageViews: 0},
-					{"ab.articleMoreOnNumber":"control",
-					pageViews: 0}
-				];
-
-				newBaseResults.map(function(newBaseResult) {
-					baseResults.map(function(baseResult) {
-						if (newBaseResult["ab.articleMoreOnNumber"] === baseResult["ab.articleMoreOnNumber"]) {
-							newBaseResult.pageViews += baseResult.result;
-						}
-					});
-				});
-
-				newBaseResultsStoryPackage.map(function(newBaseResult) {
-					baseResults.map(function(baseResult) {
-						if (newBaseResult["ab.articleMoreOnNumber"] === baseResult["ab.articleMoreOnNumber"]
-								&& baseResult["content.features.hasStoryPackage"] === true) {
-							newBaseResult.pageViews += baseResult.result;
-						}
-					});
-				});
-
-				newBaseResultsNoStoryPackage.map(function(newBaseResult) {
-					baseResults.map(function(baseResult) {
-						if (newBaseResult["ab.articleMoreOnNumber"] === baseResult["ab.articleMoreOnNumber"]
-								&& baseResult["content.features.hasStoryPackage"] === false) {
-							newBaseResult.pageViews += baseResult.result;
-						}
-					});
-				});
-
-				let newClickResults = [];
-				let newClickResultsStoryPackage = [];
-				let newClickResultsNoStoryPackage = [];
-
-				metaDomPathArray(subComponents).map(function(path) {
-					const target = articleCTAs.find(cta => cta.domPath === path)["target"];
-
-					let newClickResult = {
-						domPath: path,
-						target: target,
-						linkIndex: 0,
-						three: 0,
-						seven: 0,
-						nine: 0,
-						control: 0
-					};
-					newClickResults.push(newClickResult);
-
-					let newClickResultStoryPackage = {
-						domPath: path,
-						target: target,
-						linkIndex: 0,
-						three: 0,
-						seven: 0,
-						nine: 0,
-						control: 0
-					};
-					newClickResultsStoryPackage.push(newClickResultStoryPackage);
-
-					let newClickResultNoStoryPackage = {
-						domPath: path,
-						target: target,
-						linkIndex: 0,
-						three: 0,
-						seven: 0,
-						nine: 0,
-						control: 0
-					};
-					newClickResultsNoStoryPackage.push(newClickResultNoStoryPackage);
-				});
-
-				clickResults.map(function(clickResult) {
-					let matchedDomPath = newClickResults.filter(function(newClickResult) {
-						return clickResult["meta.domPath"] === newClickResult.domPath;
-					})[0];
-					let matchedDomPathStoryPackage = newClickResultsStoryPackage.filter(function(newClickResult) {
-						return clickResult["meta.domPath"] === newClickResult.domPath;
-					})[0];
-					let matchedDomPathNoStoryPackage = newClickResultsNoStoryPackage.filter(function(newClickResult) {
-						return clickResult["meta.domPath"] === newClickResult.domPath;
-					})[0];
-					if (clickResult["ab.articleMoreOnNumber"] === "three") {
-						matchedDomPath.three += clickResult.result;
-						if (clickResult["content.features.hasStoryPackage"] === true) {
-							matchedDomPathStoryPackage.three += clickResult.result;
-						} else {
-							matchedDomPathNoStoryPackage.three += clickResult.result;
-						}
-					}
-					if (clickResult["ab.articleMoreOnNumber"] === "seven") {
-						matchedDomPath.seven += clickResult.result;
-						if (clickResult["content.features.hasStoryPackage"] === true) {
-							matchedDomPathStoryPackage.seven += clickResult.result;
-						} else {
-							matchedDomPathNoStoryPackage.seven += clickResult.result;
-						}
-					}
-					if (clickResult["ab.articleMoreOnNumber"] === "nine") {
-						matchedDomPath.nine += clickResult.result;
-						if (clickResult["content.features.hasStoryPackage"] === true) {
-							matchedDomPathStoryPackage.nine += clickResult.result;
-						} else {
-							matchedDomPathNoStoryPackage.nine += clickResult.result;
-						}
-					}
-					if (clickResult["ab.articleMoreOnNumber"] === "control") {
-						matchedDomPath.control += clickResult.result;
-						if (clickResult["content.features.hasStoryPackage"] === true) {
-							matchedDomPathStoryPackage.control += clickResult.result;
-						} else {
-							matchedDomPathNoStoryPackage.control += clickResult.result;
-						}
-					}
-				});
-
-				newClickResults = newClickResults
-					.filter(res => res.three > 0 || res.seven > 0 || res.nine > 0 || res.control > 0);
-
-				newClickResultsStoryPackage = newClickResultsStoryPackage
-					.filter(res => res.three > 0 || res.seven > 0 || res.nine > 0 || res.control > 0);
-
-				newClickResultsNoStoryPackage = newClickResultsNoStoryPackage
-					.filter(res => res.three > 0 || res.seven > 0 || res.nine > 0 || res.control > 0);
-
-				//turn clicks into ctr
-
-				// With and without Story Package Total
-
-				newClickResults.map(function (newClickResult) {
-					newBaseResults.forEach(function (newBaseResult) {
-						if (newBaseResult["ab.articleMoreOnNumber"] === "three") {
-							newClickResult.threeCtr = parseFloat((newClickResult.three * 100) / newBaseResult.pageViews);
-						}
-						if (newBaseResult["ab.articleMoreOnNumber"] === "seven") {
-							newClickResult.sevenCtr = parseFloat((newClickResult.seven * 100) / newBaseResult.pageViews);
-						}
-						if (newBaseResult["ab.articleMoreOnNumber"] === "nine") {
-							newClickResult.nineCtr = parseFloat((newClickResult.nine * 100) / newBaseResult.pageViews);
-						}
-						if (newBaseResult["ab.articleMoreOnNumber"] === "control") {
-							newClickResult.controlCtr = parseFloat((newClickResult.control * 100) / newBaseResult.pageViews);
-						}
-					});
-				});
-
-				let totalResult = {
-					three: 0,
-					threeCtr: 0,
-					seven: 0,
-					sevenCtr: 0,
-					nine: 0,
-					nineCtr: 0,
-					control: 0,
-					controlCtr: 0
-				};
-
-				newClickResults.map(function (newClickResult) {
-					totalResult.three += newClickResult.three;
-					totalResult.threeCtr += newClickResult.threeCtr;
-					totalResult.seven += newClickResult.seven;
-					totalResult.sevenCtr += newClickResult.sevenCtr;
-					totalResult.nine += newClickResult.nine;
-					totalResult.nineCtr += newClickResult.nineCtr;
-					totalResult.control += newClickResult.control;
-					totalResult.controlCtr += newClickResult.controlCtr;
-				});
-
-				// With Story Package
-
-				newClickResultsStoryPackage.map(function (newClickResult) {
-					newBaseResultsStoryPackage.forEach(function (newBaseResult) {
-						if (newBaseResult["ab.articleMoreOnNumber"] === "three") {
-							newClickResult.threeCtr = parseFloat((newClickResult.three * 100) / newBaseResult.pageViews);
-						}
-						if (newBaseResult["ab.articleMoreOnNumber"] === "seven") {
-							newClickResult.sevenCtr = parseFloat((newClickResult.seven * 100) / newBaseResult.pageViews);
-						}
-						if (newBaseResult["ab.articleMoreOnNumber"] === "nine") {
-							newClickResult.nineCtr = parseFloat((newClickResult.nine * 100) / newBaseResult.pageViews);
-						}
-						if (newBaseResult["ab.articleMoreOnNumber"] === "control") {
-							newClickResult.controlCtr = parseFloat((newClickResult.control * 100) / newBaseResult.pageViews);
-						}
-					});
-				});
-
-				let totalResultStoryPackage = {
-					three: 0,
-					threeCtr: 0,
-					seven: 0,
-					sevenCtr: 0,
-					nine: 0,
-					nineCtr: 0,
-					control: 0,
-					controlCtr: 0
-				};
-
-				newClickResultsStoryPackage.map(function (newClickResult) {
-					totalResultStoryPackage.three += newClickResult.three;
-					totalResultStoryPackage.threeCtr += newClickResult.threeCtr;
-					totalResultStoryPackage.seven += newClickResult.seven;
-					totalResultStoryPackage.sevenCtr += newClickResult.sevenCtr;
-					totalResultStoryPackage.nine += newClickResult.nine;
-					totalResultStoryPackage.nineCtr += newClickResult.nineCtr;
-					totalResultStoryPackage.control += newClickResult.control;
-					totalResultStoryPackage.controlCtr += newClickResult.controlCtr;
-				});
-
-				// Without Story Package
-
-				newClickResultsNoStoryPackage.map(function (newClickResult) {
-					newBaseResultsNoStoryPackage.forEach(function (newBaseResult) {
-						if (newBaseResult["ab.articleMoreOnNumber"] === "three") {
-							newClickResult.threeCtr = parseFloat((newClickResult.three * 100) / newBaseResult.pageViews);
-						}
-						if (newBaseResult["ab.articleMoreOnNumber"] === "seven") {
-							newClickResult.sevenCtr = parseFloat((newClickResult.seven * 100) / newBaseResult.pageViews);
-						}
-						if (newBaseResult["ab.articleMoreOnNumber"] === "nine") {
-							newClickResult.nineCtr = parseFloat((newClickResult.nine * 100) / newBaseResult.pageViews);
-						}
-						if (newBaseResult["ab.articleMoreOnNumber"] === "control") {
-							newClickResult.controlCtr = parseFloat((newClickResult.control * 100) / newBaseResult.pageViews);
-						}
-					});
-				});
-
-				let totalResultNoStoryPackage = {
-					three: 0,
-					threeCtr: 0,
-					seven: 0,
-					sevenCtr: 0,
-					nine: 0,
-					nineCtr: 0,
-					control: 0,
-					controlCtr: 0
-				};
-
-				newClickResultsNoStoryPackage.map(function (newClickResult) {
-					totalResultNoStoryPackage.three += newClickResult.three;
-					totalResultNoStoryPackage.threeCtr += newClickResult.threeCtr;
-					totalResultNoStoryPackage.seven += newClickResult.seven;
-					totalResultNoStoryPackage.sevenCtr += newClickResult.sevenCtr;
-					totalResultNoStoryPackage.nine += newClickResult.nine;
-					totalResultNoStoryPackage.nineCtr += newClickResult.nineCtr;
-					totalResultNoStoryPackage.control += newClickResult.control;
-					totalResultNoStoryPackage.controlCtr += newClickResult.controlCtr;
-				});
-
-
+				// Draw key metrics
 
 				metricCTRThree
-					.data({result: ctrByVariant("three", "all")})
+					.data({result: aggregation({variant: "three", resType: "ctr"})})
 					.chartType("metric")
 					.render();
 
 				metricCTRSeven
-					.data({result: ctrByVariant("seven", "all")})
+					.data({result: aggregation({variant: "seven", resType: "ctr"})})
 					.chartType("metric")
 					.render();
 
 				metricCTRNine
-					.data({result: ctrByVariant("nine", "all")})
+					.data({result: aggregation({variant: "nine", resType: "ctr"})})
 					.chartType("metric")
 					.render();
 
 				metricCTRControl
-					.data({result: ctrByVariant("control", "all")})
+					.data({result: aggregation({variant: "control", resType: "ctr"})})
 					.chartType("metric")
 					.render();
 
 				metricCTRThreeStoryPackage
-					.data({result: ctrByVariant("three", "yes")})
+					.data({result: aggregation({variant: "three", resType: "ctr", storyPackage: "yes"})})
 					.chartType("metric")
 					.render();
 
 				metricCTRSevenStoryPackage
-					.data({result: ctrByVariant("seven", "yes")})
+					.data({result: aggregation({variant: "seven", resType: "ctr", storyPackage: "yes"})})
 					.chartType("metric")
 					.render();
 
 				metricCTRNineStoryPackage
-					.data({result: ctrByVariant("nine", "yes")})
+					.data({result: aggregation({variant: "nine", resType: "ctr", storyPackage: "yes"})})
 					.chartType("metric")
 					.render();
 
 				metricCTRControlStoryPackage
-					.data({result: ctrByVariant("control", "yes")})
+					.data({result: aggregation({variant: "control", resType: "ctr", storyPackage: "yes"})})
 					.chartType("metric")
 					.render();
 
 				metricCTRThreeNoStoryPackage
-					.data({result: ctrByVariant("three", "no")})
+					.data({result: aggregation({variant: "three", resType: "ctr", storyPackage: "no"})})
 					.chartType("metric")
 					.render();
 
 				metricCTRSevenNoStoryPackage
-					.data({result: ctrByVariant("seven", "no")})
+					.data({result: aggregation({variant: "seven", resType: "ctr", storyPackage: "no"})})
 					.chartType("metric")
 					.render();
 
 				metricCTRNineNoStoryPackage
-					.data({result: ctrByVariant("nine", "no")})
+					.data({result: aggregation({variant: "nine", resType: "ctr", storyPackage: "no"})})
 					.chartType("metric")
 					.render();
 
 				metricCTRControlNoStoryPackage
-					.data({result: ctrByVariant("control", "no")})
+					.data({result: aggregation({variant: "control", resType: "ctr", storyPackage: "no"})})
 					.chartType("metric")
 					.render();
 
-				// sum the results up by target
-
-				let clickResultsTarget = [];
-
-				targetArray(subComponents).map(function (target) {
-					let targetResult = {
-						target: target,
-						three: 0,
-						threeCtr: 0,
-						seven: 0,
-						sevenCtr: 0,
-						nine: 0,
-						nineCtr: 0,
-						control: 0,
-						controlCtr: 0
-					};
-					clickResultsTarget.push(targetResult);
-				});
-
-				newClickResults.map(function (newClickResult) {
-					clickResultsTarget.map(function (target) {
-						if (target.target === newClickResult.target) {
-							target.three += newClickResult.three;
-							target.threeCtr += newClickResult.threeCtr;
-							target.seven += newClickResult.seven;
-							target.sevenCtr += newClickResult.sevenCtr;
-							target.nine += newClickResult.nine;
-							target.nineCtr += newClickResult.nineCtr;
-							target.control += newClickResult.control;
-							target.controlCtr += newClickResult.controlCtr;
-						}
-					});
-				});
-
-				clickResultsTarget = clickResultsTarget
-					.filter(res => res.three > 0 || res.seven > 0 || res.nine > 0 || res.control > 0);
-
-				//draw the table - by target
+				// Draw table - by target
 				let tableTarget = $('<table>')
 							.addClass("o-table o-table--compact o-table--horizontal-lines o-table--vertical-lines o-table--horizontal-borders o-table--vertical-borders");
 
@@ -661,25 +381,25 @@ function runQuery(types) {
 
 				tr.appendTo(tableTarget);
 
-				clickResultsTarget.forEach(function(row) {
+				targetArray(subComponents).forEach(target => {
 					tr = $('<tr>')
-						.append($('<td>').text(row.target))
-						.append($('<td>').text(row.three))
-						.append($('<td>').text(row.threeCtr.toFixed(2)))
-						.append($('<td>').text(row.control))
-						.append($('<td>').text(row.controlCtr.toFixed(2)))
-						.append($('<td>').text(row.seven))
-						.append($('<td>').text(row.sevenCtr.toFixed(2)))
-						.append($('<td>').text(row.nine))
-						.append($('<td>').text(row.nineCtr.toFixed(2)));
+						.append($('<td>').text(target))
+						.append($('<td>').text(aggregation({variant: "three", resType: "clicks", target: target})))
+						.append($('<td>').text(aggregation({variant: "three", resType: "ctr", target: target}).toFixed(2)))
+						.append($('<td>').text(aggregation({variant: "control", resType: "clicks", target: target})))
+						.append($('<td>').text(aggregation({variant: "control", resType: "ctr", target: target}).toFixed(2)))
+						.append($('<td>').text(aggregation({variant: "seven", resType: "clicks", target: target})))
+						.append($('<td>').text(aggregation({variant: "seven", resType: "ctr", target: target}).toFixed(2)))
+						.append($('<td>').text(aggregation({variant: "nine", resType: "clicks", target: target})))
+						.append($('<td>').text(aggregation({variant: "nine", resType: "ctr", target: target}).toFixed(2)));
 
 					tr.appendTo(tableTarget);
-				});
+				})
 
 				let el = document.getElementById("table-target");
 				tableTarget.appendTo($(el));
 
-				// table by domPath
+				// Draw table by domPath
 
 				let tableDomPath = $('<table>')
 							.addClass("o-table o-table--compact o-table--horizontal-lines o-table--vertical-lines o-table--horizontal-borders o-table--vertical-borders");
@@ -703,18 +423,18 @@ function runQuery(types) {
 
 				tr.appendTo(tableDomPath);
 
-				newClickResults.forEach(function(row) {
+				metaDomPathArray(subComponents).forEach(metaDomPath => {
 					tr = $('<tr>')
-						.append($('<td>').text(row.domPath))
-						.append($('<td>').text(row.target))
-						.append($('<td>').text(row.three))
-						.append($('<td>').text(row.threeCtr.toFixed(2)))
-						.append($('<td>').text(row.control))
-						.append($('<td>').text(row.controlCtr.toFixed(2)))
-						.append($('<td>').text(row.seven))
-						.append($('<td>').text(row.sevenCtr.toFixed(2)))
-						.append($('<td>').text(row.nine))
-						.append($('<td>').text(row.nineCtr.toFixed(2)));
+						.append($('<td>').text(metaDomPath))
+						.append($('<td>').text(articleCTAs.find(cta => cta.domPath === metaDomPath).target))
+						.append($('<td>').text(aggregation({variant: "three", resType: "clicks",  metaDomPath: metaDomPath})))
+						.append($('<td>').text(aggregation({variant: "three", resType: "ctr",  metaDomPath: metaDomPath}).toFixed(2)))
+						.append($('<td>').text(aggregation({variant: "control", resType: "clicks",  metaDomPath: metaDomPath})))
+						.append($('<td>').text(aggregation({variant: "control", resType: "ctr",  metaDomPath: metaDomPath}).toFixed(2)))
+						.append($('<td>').text(aggregation({variant: "seven", resType: "clicks",  metaDomPath: metaDomPath})))
+						.append($('<td>').text(aggregation({variant: "seven", resType: "ctr",  metaDomPath: metaDomPath}).toFixed(2)))
+						.append($('<td>').text(aggregation({variant: "nine", resType: "clicks",  metaDomPath: metaDomPath})))
+						.append($('<td>').text(aggregation({variant: "nine", resType: "ctr",  metaDomPath: metaDomPath}).toFixed(2)));
 
 					tr.appendTo(tableDomPath);
 				});
@@ -722,32 +442,10 @@ function runQuery(types) {
 				el = document.getElementById("table-dom-path");
 				tableDomPath.appendTo($(el));
 
-				// Click Rate By Link Index and Total Links
+				// Draw table of ctr By Link Index and Total Links
 
-				let clickResultsLinkIndex;
-
-				clickResultsLinkIndex = clickResults
-					.filter(res => res.linkIndex);
-
-				const uniqueLinkIndices = [];
-				clickResultsLinkIndex
-					.map(res => res.linkIndex)
-					.forEach(res => {
-						if (uniqueLinkIndices.indexOf(res) === -1) {
-							uniqueLinkIndices.push(res);
-						}
-					});
-				uniqueLinkIndices.sort((a,b) => a-b);
-
-				const uniqueTotalLinks = [];
-				clickResultsLinkIndex
-					.map(res => res.totalLinks)
-					.forEach(res => {
-						if (uniqueTotalLinks.indexOf(res) === -1) {
-							uniqueTotalLinks.push(res);
-						}
-					});
-				uniqueTotalLinks.sort((a,b) => a-b);
+				const uniqueLinkIndices = getUnique(clickResults.map(res => res.linkIndex));
+				const uniqueTotalLinks = getUnique(clickResults.map(res => res.totalLinks));
 
 				let tableLinkIndex = $('<table>')
 							.addClass("o-table o-table--compact o-table--horizontal-lines o-table--vertical-lines o-table--horizontal-borders o-table--vertical-borders");
@@ -755,33 +453,23 @@ function runQuery(types) {
 				tr = $('<tr>')
 					.append($('<th>').text('CTR% by Link Index ' + chartHeadingModifier).attr("colspan",9));
 
-				tr.appendTo(tableDomPath);
+				tr.appendTo(tableLinkIndex);
 
 				tr = $('<tr>')
 					.append($('<th>').text('Link Index'));
 
-				uniqueTotalLinks.forEach(item => {
-					tr.append($('<th>').text(`${item} Links`))
+				uniqueTotalLinks.forEach(totalLinks => {
+					tr.append($('<th>').text(`${totalLinks} Links`))
 				});
 
 				tr.appendTo(tableLinkIndex);
 
-				uniqueLinkIndices.forEach(link => {
+				uniqueLinkIndices.forEach(linkIndex => {
 					tr = $('<tr>')
-						.append($('<td>').text(link));
+						.append($('<td>').text(linkIndex));
 
-					uniqueTotalLinks.forEach(total => {
-						let ctr;
-						const ctrArray = clickResultsLinkIndex
-							.filter(res => res.linkIndex === link && res.totalLinks === total);
-						if (ctrArray.length > 0) {
-							ctr = ctrArray
-								.map(res => res.ctrSpecific)
-								.reduce((carry, item) => carry + item);
-						} else {
-							ctr = 0;
-						}
-						tr.append($('<td>').text(ctr.toFixed(2)));
+					uniqueTotalLinks.forEach(totalLinks => {
+						tr.append($('<td>').text(aggregation({totalLinks: totalLinks, linkIndex: linkIndex, resType: "ctr"}).toFixed(2)));
 					})
 
 					tr.appendTo(tableLinkIndex);
@@ -789,20 +477,14 @@ function runQuery(types) {
 
 				tr = $('<tr>').append($('<td>').text('Total CTR%'));
 
-				uniqueTotalLinks.forEach(total => {
-					const ctr = clickResultsLinkIndex
-						.filter(res => res.totalLinks === total)
-						.map(res => res.ctrSpecific)
-						.reduce((carry, item) => carry + item);
-					tr.append($('<td>').text(ctr.toFixed(2)));
+				uniqueTotalLinks.forEach(totalLinks => {
+					tr.append($('<td>').text(aggregation({totalLinks: totalLinks, target: "article", resType: "ctr"}).toFixed(2)));
 				});
 
 				tr.appendTo(tableLinkIndex);
 
 				el = document.getElementById("table-link-index");
 				tableLinkIndex.appendTo($(el));
-
-
 			}
 		});
 	});
@@ -822,6 +504,7 @@ switch (referrerParameter) {
 		chartHeadingModifier = '(page referred by ALL SOURCES)';
 }
 
+// Prepare metric placeholders
 metricCTRThree
 	.el(document.getElementById("metric-ctr__three"))
 	.height(450)
@@ -843,7 +526,7 @@ metricCTRNine
 metricCTRControl
 	.el(document.getElementById("metric-ctr__control"))
 	.height(450)
-	.title("% CTR - FIVE (CONTROL)")
+	.title("% CTR - FIVE (C)")
 	.prepare();
 
 metricCTRThreeStoryPackage
@@ -867,7 +550,7 @@ metricCTRNineStoryPackage
 metricCTRControlStoryPackage
 	.el(document.getElementById("metric-ctr__control--sp"))
 	.height(450)
-	.title("% CTR - FIVE (CONTROL)")
+	.title("% CTR - FIVE (C)")
 	.prepare();
 
 metricCTRThreeNoStoryPackage
@@ -891,7 +574,7 @@ metricCTRNineNoStoryPackage
 metricCTRControlNoStoryPackage
 	.el(document.getElementById("metric-ctr__control--no-sp"))
 	.height(450)
-	.title("% CTR - FIVE (CONTROL)")
+	.title("% CTR - FIVE (C)")
 	.prepare();
 
 runQuery(subComponents);
