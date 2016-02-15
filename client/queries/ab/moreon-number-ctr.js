@@ -119,7 +119,6 @@ function aggregation(options) {
 	if (options.totalLinks) {
 		resArray = resArray.filter(res => res.totalLinks === options.totalLinks);
 	}
-	let resType;
 	if (options && options.resType === "ctr" && resArray.length > 0) {
 		const ctrType = (options.storyPackage === "yes"
 									|| options.storyPackage === "no"
@@ -413,14 +412,14 @@ function runQuery(types) {
 					tr = $('<tr>')
 						.append($('<td>').text(metaDomPath))
 						.append($('<td>').text(articleCTAs.find(cta => cta.domPath === metaDomPath).target))
-						.append($('<td>').text(aggregation({variant: "three", resType: "clicks",  metaDomPath: metaDomPath})))
-						.append($('<td>').text(aggregation({variant: "three", resType: "ctr",  metaDomPath: metaDomPath}).toFixed(2)))
-						.append($('<td>').text(aggregation({variant: "control", resType: "clicks",  metaDomPath: metaDomPath})))
-						.append($('<td>').text(aggregation({variant: "control", resType: "ctr",  metaDomPath: metaDomPath}).toFixed(2)))
-						.append($('<td>').text(aggregation({variant: "seven", resType: "clicks",  metaDomPath: metaDomPath})))
-						.append($('<td>').text(aggregation({variant: "seven", resType: "ctr",  metaDomPath: metaDomPath}).toFixed(2)))
-						.append($('<td>').text(aggregation({variant: "nine", resType: "clicks",  metaDomPath: metaDomPath})))
-						.append($('<td>').text(aggregation({variant: "nine", resType: "ctr",  metaDomPath: metaDomPath}).toFixed(2)));
+						.append($('<td>').text(aggregation({variant: "three", resType: "clicks", metaDomPath: metaDomPath})))
+						.append($('<td>').text(aggregation({variant: "three", resType: "ctr", metaDomPath: metaDomPath}).toFixed(2)))
+						.append($('<td>').text(aggregation({variant: "control", resType: "clicks", metaDomPath: metaDomPath})))
+						.append($('<td>').text(aggregation({variant: "control", resType: "ctr", metaDomPath: metaDomPath}).toFixed(2)))
+						.append($('<td>').text(aggregation({variant: "seven", resType: "clicks", metaDomPath: metaDomPath})))
+						.append($('<td>').text(aggregation({variant: "seven", resType: "ctr", metaDomPath: metaDomPath}).toFixed(2)))
+						.append($('<td>').text(aggregation({variant: "nine", resType: "clicks", metaDomPath: metaDomPath})))
+						.append($('<td>').text(aggregation({variant: "nine", resType: "ctr", metaDomPath: metaDomPath}).toFixed(2)));
 
 					tr.appendTo(tableDomPath);
 				});
