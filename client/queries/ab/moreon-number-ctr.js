@@ -6,6 +6,7 @@ const articleCTAs = require('../article/article-ctas');
 const queryString = require('querystring');
 const queryParameters = queryString.parse(location.search.substr(1));
 const referrerParameter = queryParameters.referrerType;
+const displayParameter = queryParameters.displayType;
 const subComponents = ["more-on", "story-package"];
 const timeFrame = {"end":"2016-03-31T00:00:00.000+00:00","start":"2016-02-11T00:00:00.000+00:00"};
 const standardQueryFilters = [
@@ -27,6 +28,8 @@ const standardQueryFilters = [
 	{"operator":"exists",
 	"property_name":"ingest.device.spoor_session",
 	"property_value":true}];
+
+// TO DO refactor this into a function
 const searchReferrer = [{
 	"operator":"eq",
 	"property_name":"referringSource.websiteType",
@@ -35,10 +38,14 @@ const socialReferrer = [{
 	"operator":"eq",
 	"property_name":"referringSource.websiteType",
 	"property_value":"social-network"}];
+
 const domPathfilter = [
 	{"operator":"in",
 	"property_name":"meta.domPath",
 	"property_value": metaDomPathArray(subComponents)}];
+
+// TO DO add a function for display filter
+
 const client = new Keen({
 	projectId: keen_project,
 	readKey: keen_read_key
@@ -59,10 +66,28 @@ const metricCTRSevenNoStoryPackage = new Keen.Dataviz();
 const metricCTRNineNoStoryPackage = new Keen.Dataviz();
 const metricCTRControlNoStoryPackage = new Keen.Dataviz();
 
-let referrerFilters;
+const referrerFilters = referrerParameter ? getReferrerFilter() : [];
+const displayFilters = displayParameter ? getDisplayFilter() : [];
 let chartHeadingModifier;
 let clickResults;
 let baseResults;
+
+function getReferrerFilter () {
+	return [{
+					"operator":"eq",
+					"property_name":"referringSource.websiteType",
+					"property_value": referrerParameter
+				}];
+}
+
+function getDisplayFilter () {
+	// TO DO map parameter to array of sizes
+	return [{
+					"operator":"eq",
+					"property_name":"referringSource.websiteType",
+					"property_value": XXXX 
+				}];
+}
 
 function filterBySubCompnents(subComponentTypes, category) {
 	let resultArray = [];
@@ -491,6 +516,24 @@ switch (referrerParameter) {
 	default:
 		referrerFilters = [];
 		chartHeadingModifier = '(page referred by ALL SOURCES)';
+}
+
+switch (displayParameter) {
+	case 'mobile':
+		displayFilters = mobileDisplay;
+		chartHeadingModifier = '(page viewed on MOBILE)';
+		break;
+	case 'tablet':
+		displayFilters = tabletDisplay;
+		chartHeadingModifier = '(page viewed on TABLET)';
+		break;
+	case 'computer':
+		displayFilters = computerDisplay;
+		chartHeadingModifier = '(page viewed on COMPUTER)';
+		break;
+	default:
+		displayFilters = [];
+		chartHeadingModifier = '(page viewed across ALL DEVICES)';
 }
 
 // Prepare metric placeholders
