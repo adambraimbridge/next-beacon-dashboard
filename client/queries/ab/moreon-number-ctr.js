@@ -34,6 +34,7 @@ const standardQueryFilters = [
 	{"operator":"exists",
 	"property_name":"ingest.device.spoor_session",
 	"property_value":true}];
+
 const domPathfilter = [
 	{"operator":"in",
 	"property_name":"meta.domPath",
@@ -62,7 +63,7 @@ function getDisplayFilter () {
 		default:
 			displayParameters = null;
 	}
-	return displayBaseFilter = [{
+	return [{
 					"operator":"in",
 					"property_name":"ingest.user.layout",
 					"property_value":displayParameters
@@ -71,8 +72,15 @@ function getDisplayFilter () {
 
 const displayFilters = queryParameters.displayType ? getDisplayFilter() : [];
 
-
 let chartHeadingModifier;
+if (queryParameters.referrerType) {
+	chartHeadingModifier = `(page referred by ${queryParameters.referrerType})`;
+} else if (queryParameters.displayType) {
+	chartHeadingModifier = `(page referred by ${queryParameters.displayType})`;
+} else {
+	chartHeadingModifier = '(across ALL SOURCES and DEVICES)';
+}
+
 let clickResults;
 let baseResults;
 
@@ -509,30 +517,6 @@ const metricCTRSevenNoStoryPackage = new Keen.Dataviz();
 const metricCTRNineNoStoryPackage = new Keen.Dataviz();
 const metricCTRControlNoStoryPackage = new Keen.Dataviz();
 
-switch (queryParameters.referrerParameter) {
-	case 'search':
-		chartHeadingModifier = '(page referred by SEARCH)';
-		break;
-	case 'social':
-		chartHeadingModifier = '(page referred by SOCIAL)';
-		break;
-	default:
-		chartHeadingModifier = '(page referred by ALL SOURCES)';
-}
-
-switch (queryParameters.displayParameter) {
-	case 'mobile':
-		chartHeadingModifier = '(page viewed on MOBILE)';
-		break;
-	case 'tablet':
-		chartHeadingModifier = '(page viewed on TABLET)';
-		break;
-	case 'computer':
-		chartHeadingModifier = '(page viewed on COMPUTER)';
-		break;
-	default:
-		chartHeadingModifier = '(page viewed across ALL DEVICES)';
-}
 
 // Prepare metric placeholders
 metricCTRThree

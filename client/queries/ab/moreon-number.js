@@ -57,7 +57,7 @@ function getDisplayFilter () {
 		default:
 			displayParameters = null;
 	}
-	return displayBaseFilter = [{
+	return [{
 					"operator":"in",
 					"property_name":"ingest.user.layout",
 					"property_value":displayParameters
@@ -65,8 +65,6 @@ function getDisplayFilter () {
 }
 
 const displayFilters = queryParameters.displayType ? getDisplayFilter() : [];
-
-let activeFilter;
 
 function pageViewsBySessionQuery() {
 	let parameters = {
@@ -179,33 +177,12 @@ const metricSessionsSeven = new Keen.Dataviz();
 const metricSessionsNine = new Keen.Dataviz();
 const metricSessionsControl = new Keen.Dataviz();
 
-switch (queryParameters.referrerParameter) {
-	case 'search':
-		chartHeadingModifier = '(page referred by SEARCH)';
-		break;
-	case 'social':
-		chartHeadingModifier = '(page referred by SOCIAL)';
-		break;
-	default:
-		chartHeadingModifier = '(page referred by ALL SOURCES)';
-}
+const activeReferrerFilterEl = $('<p>').text(queryParameters.referrerType || 'none');
+activeReferrerFilterEl.appendTo(document.getElementById("referrer-filter"));
 
-switch (queryParameters.displayParameter) {
-	case 'mobile':
-		chartHeadingModifier = '(page viewed on MOBILE)';
-		break;
-	case 'tablet':
-		chartHeadingModifier = '(page viewed on TABLET)';
-		break;
-	case 'computer':
-		chartHeadingModifier = '(page viewed on COMPUTER)';
-		break;
-	default:
-		chartHeadingModifier = '(page viewed across ALL DEVICES)';
-}
+const activeDisplayFilterEl = $('<p>').text(queryParameters.displayType || 'none');
+activeDisplayFilterEl.appendTo(document.getElementById("display-filter"));
 
-let activeFilterEl = $('<p>').text(activeFilter);
-activeFilterEl.appendTo(document.getElementById("referrer-filter"));
 
 metricMoreThanOneThree
 	.el(document.getElementById("metric-more-than-one__three"))
