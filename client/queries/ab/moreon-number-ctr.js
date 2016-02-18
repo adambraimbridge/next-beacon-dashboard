@@ -2,13 +2,19 @@
 
 'use strict';
 
+const client = new Keen({
+	projectId: keen_project,
+	readKey: keen_read_key
+});
+
 const articleCTAs = require('../article/article-ctas');
 const queryString = require('querystring');
+
 const queryParameters = queryString.parse(location.search.substr(1));
-const referrerParameter = queryParameters.referrerType;
-const displayParameter = queryParameters.displayType;
 const subComponents = ["more-on", "story-package"];
 const timeFrame = {"end":"2016-03-31T00:00:00.000+00:00","start":"2016-02-11T00:00:00.000+00:00"};
+
+// Query Filters
 const standardQueryFilters = [
 	{"operator":"eq",
 	"property_name":"page.location.type",
@@ -28,66 +34,47 @@ const standardQueryFilters = [
 	{"operator":"exists",
 	"property_name":"ingest.device.spoor_session",
 	"property_value":true}];
-
-// TO DO refactor this into a function
-const searchReferrer = [{
-	"operator":"eq",
-	"property_name":"referringSource.websiteType",
-	"property_value":"search"}];
-const socialReferrer = [{
-	"operator":"eq",
-	"property_name":"referringSource.websiteType",
-	"property_value":"social-network"}];
-
 const domPathfilter = [
 	{"operator":"in",
 	"property_name":"meta.domPath",
 	"property_value": metaDomPathArray(subComponents)}];
 
-// TO DO add a function for display filter
+// User selected filters
+const referrerBaseFilter = [{
+				"operator":"eq",
+				"property_name":"referringSource.websiteType",
+				"property_value": queryParameters.referrerType
+			}]
+const referrerFilters = queryParameters.referrerType ? referrerBaseFilter : [];
 
-const client = new Keen({
-	projectId: keen_project,
-	readKey: keen_read_key
-});
+function getDisplayFilter () {
+	let displayParameters;
+	switch (queryParameters.displayType) {
+		case "computer":
+			displayParameters = ["L", "XL"];
+			break;
+		case "tablet":
+			displayParameters = ["M"];
+			break;
+		case "mobile":
+			displayParameters = ["default", "XS", "S"];
+			break;
+		default:
+			displayParameters = null;
+	}
+	return displayBaseFilter = [{
+					"operator":"in",
+					"property_name":"ingest.user.layout",
+					"property_value":displayParameters
+				}];
+}
 
-const metricCTRThree = new Keen.Dataviz();
-const metricCTRSeven = new Keen.Dataviz();
-const metricCTRNine = new Keen.Dataviz();
-const metricCTRControl = new Keen.Dataviz();
+const displayFilters = queryParameters.displayType ? getDisplayFilter() : [];
 
-const metricCTRThreeStoryPackage = new Keen.Dataviz();
-const metricCTRSevenStoryPackage = new Keen.Dataviz();
-const metricCTRNineStoryPackage = new Keen.Dataviz();
-const metricCTRControlStoryPackage = new Keen.Dataviz();
 
-const metricCTRThreeNoStoryPackage = new Keen.Dataviz();
-const metricCTRSevenNoStoryPackage = new Keen.Dataviz();
-const metricCTRNineNoStoryPackage = new Keen.Dataviz();
-const metricCTRControlNoStoryPackage = new Keen.Dataviz();
-
-const referrerFilters = referrerParameter ? getReferrerFilter() : [];
-const displayFilters = displayParameter ? getDisplayFilter() : [];
 let chartHeadingModifier;
 let clickResults;
 let baseResults;
-
-function getReferrerFilter () {
-	return [{
-					"operator":"eq",
-					"property_name":"referringSource.websiteType",
-					"property_value": referrerParameter
-				}];
-}
-
-function getDisplayFilter () {
-	// TO DO map parameter to array of sizes
-	return [{
-					"operator":"eq",
-					"property_name":"referringSource.websiteType",
-					"property_value": XXXX 
-				}];
-}
 
 function filterBySubCompnents(subComponentTypes, category) {
 	let resultArray = [];
@@ -166,6 +153,7 @@ function pageViewsBySessionQuery() {
 		eventCollection: "dwell",
 		filters: []
 			.concat(referrerFilters)
+			.concat(displayFilters)
 			.concat(standardQueryFilters),
 		groupBy: "ingest.device.spoor_session",
 		timeframe: timeFrame,
@@ -181,6 +169,7 @@ function ctaQuery(subComponents, outliersSessionsFilter) {
 		filters: []
 			.concat(outliersSessionsFilter)
 			.concat(referrerFilters)
+			.concat(displayFilters)
 			.concat(domPathfilter)
 			.concat(standardQueryFilters),
 		groupBy: ["meta.domPath","ab.articleMoreOnNumber", "content.features.hasStoryPackage"],
@@ -196,6 +185,7 @@ function baseQuery(outliersSessionsFilter) {
 		eventCollection: "dwell",
 		filters: []
 			.concat(referrerFilters)
+			.concat(displayFilters)
 			.concat(outliersSessionsFilter)
 			.concat(standardQueryFilters),
 		groupBy: ["ab.articleMoreOnNumber", "content.features.hasStoryPackage"],
@@ -504,35 +494,43 @@ function runQuery(types) {
 	});
 }
 
-switch (referrerParameter) {
+const metricCTRThree = new Keen.Dataviz();
+const metricCTRSeven = new Keen.Dataviz();
+const metricCTRNine = new Keen.Dataviz();
+const metricCTRControl = new Keen.Dataviz();
+
+const metricCTRThreeStoryPackage = new Keen.Dataviz();
+const metricCTRSevenStoryPackage = new Keen.Dataviz();
+const metricCTRNineStoryPackage = new Keen.Dataviz();
+const metricCTRControlStoryPackage = new Keen.Dataviz();
+
+const metricCTRThreeNoStoryPackage = new Keen.Dataviz();
+const metricCTRSevenNoStoryPackage = new Keen.Dataviz();
+const metricCTRNineNoStoryPackage = new Keen.Dataviz();
+const metricCTRControlNoStoryPackage = new Keen.Dataviz();
+
+switch (queryParameters.referrerParameter) {
 	case 'search':
-		referrerFilters = searchReferrer;
 		chartHeadingModifier = '(page referred by SEARCH)';
 		break;
 	case 'social':
-		referrerFilters = socialReferrer;
 		chartHeadingModifier = '(page referred by SOCIAL)';
 		break;
 	default:
-		referrerFilters = [];
 		chartHeadingModifier = '(page referred by ALL SOURCES)';
 }
 
-switch (displayParameter) {
+switch (queryParameters.displayParameter) {
 	case 'mobile':
-		displayFilters = mobileDisplay;
 		chartHeadingModifier = '(page viewed on MOBILE)';
 		break;
 	case 'tablet':
-		displayFilters = tabletDisplay;
 		chartHeadingModifier = '(page viewed on TABLET)';
 		break;
 	case 'computer':
-		displayFilters = computerDisplay;
 		chartHeadingModifier = '(page viewed on COMPUTER)';
 		break;
 	default:
-		displayFilters = [];
 		chartHeadingModifier = '(page viewed across ALL DEVICES)';
 }
 
