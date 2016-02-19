@@ -2,22 +2,17 @@
 
 'use strict';
 
+const client = new Keen({
+	projectId: keen_project,
+	readKey: keen_read_key
+});
+
 const queryString = require('querystring');
+
 const queryParameters = queryString.parse(location.search.substr(1));
-const referrerParameter = queryParameters.referrerType;
+const timeFrame = {"end":"2016-03-31T00:00:00.000+00:00","start":"2016-02-11T00:00:00.000+00:00"};
 
-const searchReferrer = [{
-	"operator":"eq",
-	"property_name":"referringSource.websiteType",
-	"property_value":"search"
-}];
-
-const socialReferrer = [{
-	"operator":"eq",
-	"property_name":"referringSource.websiteType",
-	"property_value":"social-network"
-}];
-
+// Query Filters
 const standardQueryFilters = [
 	{"operator":"eq",
 	"property_name":"page.location.type",
@@ -39,36 +34,44 @@ const standardQueryFilters = [
 	"property_value":true}
 ];
 
-const timeFrame = {"end":"2016-03-31T00:00:00.000+00:00","start":"2016-02-11T00:00:00.000+00:00"}
+// User selected filters
+const referrerBaseFilter = [{
+				"operator":"eq",
+				"property_name":"referringSource.websiteType",
+				"property_value": queryParameters.referrerType
+			}]
+const referrerFilters = queryParameters.referrerType ? referrerBaseFilter : [];
 
-const client = new Keen({
-	projectId: keen_project,
-	readKey: keen_read_key
-});
+function getDisplayFilter () {
+	let displayParameters;
+	switch (queryParameters.displayType) {
+		case "computer":
+			displayParameters = ["L", "XL"];
+			break;
+		case "tablet":
+			displayParameters = ["M"];
+			break;
+		case "mobile":
+			displayParameters = ["default", "XS", "S"];
+			break;
+		default:
+			displayParameters = null;
+	}
+	return [{
+					"operator":"in",
+					"property_name":"ingest.user.layout",
+					"property_value":displayParameters
+				}];
+}
 
-let referrerFilters;
-let activeFilter;
-
-const metricMoreThanOneThree = new Keen.Dataviz();
-const metricMoreThanOneSeven = new Keen.Dataviz();
-const metricMoreThanOneNine = new Keen.Dataviz();
-const metricMoreThanOneControl = new Keen.Dataviz();
-
-const metricAveragePageViewsThree = new Keen.Dataviz();
-const metricAveragePageViewsSeven = new Keen.Dataviz();
-const metricAveragePageViewsNine = new Keen.Dataviz();
-const metricAveragePageViewsControl = new Keen.Dataviz();
-
-const metricSessionsThree = new Keen.Dataviz();
-const metricSessionsSeven = new Keen.Dataviz();
-const metricSessionsNine = new Keen.Dataviz();
-const metricSessionsControl = new Keen.Dataviz();
+const displayFilters = queryParameters.displayType ? getDisplayFilter() : [];
 
 function pageViewsBySessionQuery() {
 	let parameters = {
 		eventCollection: "dwell",
 		filters: []
 			.concat(standardQueryFilters)
+			.concat(displayFilters)
 			.concat(referrerFilters),
 		groupBy: "ingest.device.spoor_session",
 		timeframe: timeFrame,
@@ -84,6 +87,7 @@ function articleDepthQuery(outliersSessionsFilter) {
 		filters: []
 			.concat(outliersSessionsFilter)
 			.concat(referrerFilters)
+			.concat(displayFilters)
 			.concat(standardQueryFilters),
 		groupBy: ["ingest.device.spoor_session", "ab.articleMoreOnNumber"],
 		timeframe: timeFrame,
@@ -158,22 +162,27 @@ function distributionTransform(results) {
 	return resultsDistribution;
 }
 
-switch (referrerParameter) {
-	case 'search':
-		referrerFilters = searchReferrer;
-		activeFilter = 'referred by SEARCH';
-		break;
-	case 'social':
-		referrerFilters = socialReferrer;
-		activeFilter = 'referred by SOCIAL';
-		break;
-	default:
-		referrerFilters = [];
-		activeFilter = 'referred by ALL SOURCES';
-}
+const metricMoreThanOneThree = new Keen.Dataviz();
+const metricMoreThanOneSeven = new Keen.Dataviz();
+const metricMoreThanOneNine = new Keen.Dataviz();
+const metricMoreThanOneControl = new Keen.Dataviz();
 
-let activeFilterEl = $('<p>').text(activeFilter);
-activeFilterEl.appendTo(document.getElementById("referrer-filter"));
+const metricAveragePageViewsThree = new Keen.Dataviz();
+const metricAveragePageViewsSeven = new Keen.Dataviz();
+const metricAveragePageViewsNine = new Keen.Dataviz();
+const metricAveragePageViewsControl = new Keen.Dataviz();
+
+const metricSessionsThree = new Keen.Dataviz();
+const metricSessionsSeven = new Keen.Dataviz();
+const metricSessionsNine = new Keen.Dataviz();
+const metricSessionsControl = new Keen.Dataviz();
+
+const activeReferrerFilterEl = $('<p>').text(queryParameters.referrerType || 'none');
+activeReferrerFilterEl.appendTo(document.getElementById("referrer-filter"));
+
+const activeDisplayFilterEl = $('<p>').text(queryParameters.displayType || 'none');
+activeDisplayFilterEl.appendTo(document.getElementById("display-filter"));
+
 
 metricMoreThanOneThree
 	.el(document.getElementById("metric-more-than-one__three"))
